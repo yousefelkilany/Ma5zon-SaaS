@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Banknote, Loader2 } from 'lucide-react'
+import { Banknote } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Spinner } from '@/components/ui/spinner'
 
 interface SplashScreenProps {
   isReady: boolean
@@ -48,7 +49,7 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
         </div>
 
         <div className="flex items-center justify-center pt-12">
-          <Loader2 className="h-6 w-6 animate-spin text-secondary" />
+          <Spinner className="h-6 w-6 text-secondary" />
         </div>
       </main>
 
