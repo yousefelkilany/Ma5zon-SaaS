@@ -38,7 +38,8 @@ export function LeftSideBar({ children, className }: LeftSideBarProps) {
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-1 hover:bg-surface-container-high rounded text-on-surface-variant"
+          className="p-1 hover:bg-surface-container-high rounded text-on-surface-variant focus-visible:ring-2 focus-visible:ring-primary"
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           <span className="material-symbols-outlined text-[20px]">
             {collapsed ? 'menu' : 'menu_open'}
