@@ -1,8 +1,4 @@
-import { useUIStore } from '@/store/ui-store'
-
 export function Navbar() {
-  const leftSidebarVisible = useUIStore(state => state.leftSidebarVisible)
-
   return (
     <header className="flex items-center h-16 px-gutter bg-surface-container-low border-b border-outline-variant shrink-0">
       {/* Left: Logo */}
