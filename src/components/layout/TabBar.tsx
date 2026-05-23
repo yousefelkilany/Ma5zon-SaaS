@@ -1,15 +1,12 @@
-import { useNavigate } from 'react-router-dom'
 import { useTabStore } from '@/store/tab-store'
 import { cn } from '@/lib/utils'
-import type { TabType } from '@/lib/utils'
 
 export function TabBar() {
-  const navigate = useNavigate()
   const { tabs, activeTabId, setActiveTab, addTab, removeTab } = useTabStore()
 
-  const handleTabClick = (tabId: string, tabType: TabType) => {
+  const handleTabClick = (tabId: string) => {
     setActiveTab(tabId)
-    navigate(`/${tabType}`)
+    // Let MainWindowContent effect handle URL sync after state updates
   }
 
   const handleAddTab = () => {
@@ -18,7 +15,6 @@ export function TabBar() {
       type: 'new-tab',
       closable: true,
     })
-    navigate('/new-tab')
   }
 
   const handleCloseTab = (e: React.MouseEvent, tabId: string) => {
@@ -39,7 +35,7 @@ export function TabBar() {
             role="tab"
             aria-selected={isActive}
             tabIndex={isActive ? 0 : -1}
-            onClick={() => handleTabClick(tab.id, tab.type)}
+            onClick={() => handleTabClick(tab.id)}
             className={cn(
               'flex items-center px-4 h-full text-[11px] font-label-caps font-medium cursor-pointer shrink-0 border-b-2 transition-colors',
               isActive

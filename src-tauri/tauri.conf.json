@@ -16,7 +16,7 @@
         "label": "loading-screen",
         "title": "Tauri loading screen",
         "width": 1250,
-        "height": 1150,
+        "height": 950,
         "minWidth": 1000,
         "minHeight": 1000,
         "resizable": false,

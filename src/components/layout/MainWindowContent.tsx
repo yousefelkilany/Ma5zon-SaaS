@@ -1,35 +1,31 @@
+import { useEffect, useRef } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
-import { useEffect, useCallback } from 'react'
+import { flushSync } from 'react-dom'
 import { useTabStore } from '@/store/tab-store'
 import { DashboardContent, NewTabContent } from '@/components/tabs'
 
 export function MainWindowContent() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { tabs, activeTabId, setActiveTab } = useTabStore()
+  const { tabs, activeTabId, setActiveTab: _setActiveTab } = useTabStore()
+  const isNavigatingRef = useRef(false)
 
-  const syncActiveTabFromPath = useCallback(() => {
-    const path = location.pathname.replace('/', '') || 'dashboard'
-    const matchingTab = tabs.find(t => t.type === path)
-    if (matchingTab && matchingTab.id !== activeTabId) {
-      setActiveTab(matchingTab.id)
-    }
-  }, [location.pathname, tabs, activeTabId, setActiveTab])
+  // Sync both URL and active tab in a single effect to prevent feedback loops
+  useEffect(() => {
+    if (isNavigatingRef.current) return
 
-  const syncPathFromActiveTab = useCallback(() => {
     const activeTab = tabs.find(t => t.id === activeTabId)
+
+    // Active tab changed → update URL to match
     if (activeTab && location.pathname !== `/${activeTab.type}`) {
-      navigate(`/${activeTab.type}`, { replace: true })
+      isNavigatingRef.current = true
+      try {
+        flushSync(() => navigate(`/${activeTab.type}`, { replace: true }))
+      } finally {
+        isNavigatingRef.current = false
+      }
     }
-  }, [activeTabId, tabs, navigate, location.pathname])
-
-  useEffect(() => {
-    syncActiveTabFromPath()
-  }, [syncActiveTabFromPath])
-
-  useEffect(() => {
-    syncPathFromActiveTab()
-  }, [syncPathFromActiveTab])
+  }, [location.pathname, activeTabId, tabs, navigate])
 
   return (
     <div className="flex h-full flex-col bg-background">
