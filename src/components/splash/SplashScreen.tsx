@@ -48,7 +48,7 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
               onError={() => setLogoError(true)}
             />
           ) : (
-            <LogoIcon className="h-16 w-16 text-secondary" />
+            <LogoIcon className="h-[120px] w-[120px] text-secondary" />
           )}
         </div>
 
