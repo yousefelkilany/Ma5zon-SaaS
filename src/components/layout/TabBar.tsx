@@ -13,7 +13,7 @@ export function TabBar() {
   }
 
   const handleAddTab = () => {
-    const newId = addTab({
+    addTab({
       title: 'New Tab',
       type: 'new-tab',
       closable: true,

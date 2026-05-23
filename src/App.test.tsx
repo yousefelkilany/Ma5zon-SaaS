@@ -8,21 +8,14 @@ describe('App', () => {
   it('renders main window layout', () => {
     render(<App />)
     expect(
-      screen.getByRole('heading', { name: /hello world/i })
+      screen.getByRole('heading', { name: /AccuLedger/i })
     ).toBeInTheDocument()
   })
 
-  it('renders title bar with traffic light buttons', () => {
+  it('renders sidebar navigation', () => {
     render(<App />)
-    // Find specifically the window control buttons in the title bar
-    const titleBarButtons = screen
-      .getAllByRole('button')
-      .filter(
-        button =>
-          button.getAttribute('aria-label')?.includes('window') ||
-          button.className.includes('window-control')
-      )
-    // Should have at least the window control buttons
-    expect(titleBarButtons.length).toBeGreaterThan(0)
+    // Should have navigation links in the sidebar
+    expect(screen.getByText(/Invoices/)).toBeInTheDocument()
+    expect(screen.getByText(/Customers/)).toBeInTheDocument()
   })
 })

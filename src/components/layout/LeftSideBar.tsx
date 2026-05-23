@@ -6,7 +6,7 @@ interface LeftSideBarProps {
   className?: string
 }
 
-export function LeftSideBar({ children, className }: LeftSideBarProps) {
+export function LeftSideBar({ className }: LeftSideBarProps) {
   const [collapsed, setCollapsed] = useState(false)
 
   return (

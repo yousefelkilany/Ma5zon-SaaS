@@ -1,36 +1,35 @@
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import { useTabStore } from '@/store/tab-store'
 import { DashboardContent, NewTabContent } from '@/components/tabs'
-import { cn } from '@/lib/utils'
 
-interface MainWindowContentProps {
-  children?: React.ReactNode
-  className?: string
-}
-
-export function MainWindowContent({
-  children,
-  className,
-}: MainWindowContentProps) {
+export function MainWindowContent() {
   const navigate = useNavigate()
   const location = useLocation()
   const { tabs, activeTabId, setActiveTab } = useTabStore()
 
-  useEffect(() => {
+  const syncActiveTabFromPath = useCallback(() => {
     const path = location.pathname.replace('/', '') || 'dashboard'
     const matchingTab = tabs.find(t => t.type === path)
     if (matchingTab && matchingTab.id !== activeTabId) {
       setActiveTab(matchingTab.id)
     }
-  }, [location.pathname])
+  }, [location.pathname, tabs, activeTabId, setActiveTab])
 
-  useEffect(() => {
+  const syncPathFromActiveTab = useCallback(() => {
     const activeTab = tabs.find(t => t.id === activeTabId)
     if (activeTab && location.pathname !== `/${activeTab.type}`) {
       navigate(`/${activeTab.type}`, { replace: true })
     }
-  }, [activeTabId])
+  }, [activeTabId, tabs, navigate, location.pathname])
+
+  useEffect(() => {
+    syncActiveTabFromPath()
+  }, [syncActiveTabFromPath])
+
+  useEffect(() => {
+    syncPathFromActiveTab()
+  }, [syncPathFromActiveTab])
 
   return (
     <div className="flex h-full flex-col bg-background">

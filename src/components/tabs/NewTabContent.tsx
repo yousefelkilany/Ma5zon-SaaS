@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useTabStore } from '@/store/tab-store'
+import type { TabType } from '@/lib/utils'
 
 function KpiCard({ label, value, trend, trendType }: {
   label: string
@@ -97,10 +98,10 @@ export function NewTabContent() {
   const navigate = useNavigate()
   const { addTab } = useTabStore()
 
-  const handleActionClick = (type: string, title: string) => {
+  const handleActionClick = (type: TabType, title: string) => {
     addTab({
       title,
-      type: type as any,
+      type,
       closable: true,
     })
     navigate(`/${type}`)

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import type { Tab, TabType } from '$lib/utils'
+import type { Tab, TabType } from '@/lib/utils'
 
 const DEFAULT_DASHBOARD_TAB = {
   id: 'dashboard',

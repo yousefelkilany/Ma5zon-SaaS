@@ -17,8 +17,8 @@ describe('useTabStore', () => {
   it('should have dashboard as initial tab', () => {
     const { tabs, activeTabId } = useTabStore.getState()
     expect(tabs).toHaveLength(1)
-    expect(tabs[0].type).toBe('dashboard')
-    expect(tabs[0].closable).toBe(false)
+    expect(tabs.at(0)?.type).toBe('dashboard')
+    expect(tabs.at(0)?.closable).toBe(false)
     expect(activeTabId).toBe('dashboard')
   })
 
@@ -29,7 +29,7 @@ describe('useTabStore', () => {
     const { tabs, activeTabId } = useTabStore.getState()
     expect(tabs).toHaveLength(2)
     expect(activeTabId).toBe(newId)
-    expect(tabs[1].title).toBe('New Tab')
+    expect(tabs.at(1)?.title).toBe('New Tab')
   })
 
   it('should remove a closable tab', () => {
@@ -39,7 +39,7 @@ describe('useTabStore', () => {
 
     const { tabs } = useTabStore.getState()
     expect(tabs).toHaveLength(1)
-    expect(tabs[0].type).toBe('dashboard')
+    expect(tabs.at(0)?.type).toBe('dashboard')
   })
 
   it('should not remove non-closable tab', () => {
@@ -48,12 +48,12 @@ describe('useTabStore', () => {
 
     const { tabs } = useTabStore.getState()
     expect(tabs).toHaveLength(1)
-    expect(tabs[0].type).toBe('dashboard')
+    expect(tabs.at(0)?.type).toBe('dashboard')
   })
 
   it('should switch active tab', () => {
     const { addTab, setActiveTab } = useTabStore.getState()
-    const newId = addTab({ title: 'Test', type: 'new-tab', closable: true })
+    addTab({ title: 'Test', type: 'new-tab', closable: true })
     setActiveTab('dashboard')
 
     const { activeTabId } = useTabStore.getState()
@@ -83,8 +83,8 @@ describe('useTabStore', () => {
 
     removeTab(tab1Id)
 
-    const { activeTabId, tabs } = useTabStore.getState()
+    const { tabs } = useTabStore.getState()
     expect(tabs).toHaveLength(2)
-    expect(tabs[1].id).toBe(tab2Id)
+    expect(tabs.at(1)?.id).toBe(tab2Id)
   })
 })
