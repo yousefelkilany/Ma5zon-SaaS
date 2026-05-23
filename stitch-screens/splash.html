@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AccuLedger - Splash Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#00311f",
+                        "surface-variant": "#26364a",
+                        "tertiary-container": "#39000a",
+                        "surface-bright": "#2a3a4f",
+                        "primary-container": "#0f172a",
+                        "on-secondary-fixed": "#002113",
+                        "inverse-primary": "#565e74",
+                        "surface": "#031427",
+                        "surface-container-highest": "#26364a",
+                        "on-tertiary-fixed": "#40000c",
+                        "surface-dim": "#031427",
+                        "surface-container-lowest": "#000f21",
+                        "on-error": "#690005",
+                        "inverse-surface": "#d3e4fe",
+                        "background": "#031427",
+                        "secondary": "#4edea3",
+                        "on-primary-fixed": "#131b2e",
+                        "primary": "#bec6e0",
+                        "inverse-on-surface": "#213145",
+                        "on-primary": "#283044",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#920028",
+                        "on-surface-variant": "#c6c6cd",
+                        "outline": "#909097",
+                        "surface-container-high": "#1b2b3f",
+                        "tertiary-fixed": "#ffdada",
+                        "surface-container": "#102034",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-surface": "#d3e4fe",
+                        "surface-container-low": "#0b1c30",
+                        "on-secondary": "#003824",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed-dim": "#ffb3b6",
+                        "on-error-container": "#ffdad6",
+                        "on-background": "#d3e4fe",
+                        "tertiary": "#ffb3b6",
+                        "secondary-fixed-dim": "#4edea3",
+                        "outline-variant": "#45464d",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary-container": "#798098",
+                        "on-tertiary-container": "#f42f54",
+                        "secondary-container": "#00a572",
+                        "primary-fixed-dim": "#bec6e0",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-tint": "#bec6e0",
+                        "on-tertiary": "#68001a",
+                        "on-secondary-fixed-variant": "#005236"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-edge": "2rem",
+                        "gutter": "1rem",
+                        "cozy-gap": "1rem",
+                        "compact-gap": "0.5rem",
+                        "cozy-padding": "1.5rem",
+                        "compact-padding": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "data-tabular": ["14px", {"lineHeight": "1", "fontWeight": "500"}],
+                        "label-caps": ["11px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #031427; /* Surface Color from Design System */
+        }
+        .progress-fill {
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface h-screen flex flex-col items-center justify-center overflow-hidden">
+<!-- Splash Content Wrapper -->
+<main class="flex-grow flex flex-col items-center justify-center space-y-8 animate-in fade-in duration-1000">
+<!-- Logo Section -->
+<div class="w-[120px] h-[120px] flex items-center justify-center">
+<img alt="AccuLedger Logo" class="w-full h-full object-contain" src="data:image/png;base64,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"/>
+</div>
+<!-- Brand Identity -->
+<div class="text-center space-y-2">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">AccuLedger</h1>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-70">Precision in every transaction.</p>
+</div>
+<!-- Progress Indicator -->
+<div class="pt-12">
+<div class="w-[300px] h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container progress-fill" id="splash-progress"></div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="pb-10 w-full flex justify-center">
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-50">
+            © 2024 AccuLedger v1.0.0
+        </p>
+</footer>
+<!-- Initialization & Mock Progress Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const progressBar = document.getElementById('splash-progress');
+            let progress = 0;
+            
+            // Simulating a smooth loading sequence
+            const interval = setInterval(() => {
+                // Varying speed for more "realistic" feel
+                const increment = Math.random() * 5 + 1;
+                progress += increment;
+                
+                if (progress >= 100) {
+                    progress = 100;
+                    progressBar.style.width = '100%';
+                    clearInterval(interval);
+                    
+                    // Optional: Trigger transition to main dashboard after a brief pause
+                    setTimeout(() => {
+                        console.log('App ready');
+                        // In a real app, logic for window.location.href or state change would go here
+                    }, 500);
+                } else {
+                    progressBar.style.width = `${progress}%`;
+                }
+            }, 80);
+        });
+    </script>
+</body></html>

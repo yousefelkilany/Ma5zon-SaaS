@@ -15,10 +15,10 @@
       {
         "label": "loading-screen",
         "title": "Tauri loading screen",
-        "width": 150,
-        "height": 100,
-        "minWidth": 150,
-        "minHeight": 100,
+        "width": 250,
+        "height": 150,
+        "minWidth": 1,
+        "minHeight": 1,
         "resizable": false,
         "fullscreen": false,
         "maximized": false,
@@ -64,7 +64,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/yousefelkilany/accountaant-SaaS/releases/latest/download/latest.json"
+        "https://github.com/yousefelkilany/accountant-SaaS/releases/latest/download/latest.json"
       ],
       "dialog": true,
       "pubkey": "YOUR_UPDATER_PUBLIC_KEY_HERE"
