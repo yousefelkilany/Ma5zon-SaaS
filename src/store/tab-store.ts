@@ -10,7 +10,7 @@ const DEFAULT_DASHBOARD_TAB = {
 }
 
 function generateId(): string {
-  return Math.random().toString(36).substring(2, 9)
+  return crypto.randomUUID()
 }
 
 interface TabState {

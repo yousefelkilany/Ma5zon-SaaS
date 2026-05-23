@@ -59,4 +59,32 @@ describe('useTabStore', () => {
     const { activeTabId } = useTabStore.getState()
     expect(activeTabId).toBe('dashboard')
   })
+
+  it('should get active tab', () => {
+    const { getActiveTab } = useTabStore.getState()
+    const activeTab = getActiveTab()
+    expect(activeTab).toBeDefined()
+    expect(activeTab?.type).toBe('dashboard')
+  })
+
+  it('should get tab by type', () => {
+    const { getTabByType } = useTabStore.getState()
+    const dashboardTab = getTabByType('dashboard')
+    expect(dashboardTab).toBeDefined()
+    expect(dashboardTab?.id).toBe('dashboard')
+  })
+
+  it('should switch to adjacent tab when closing active tab', () => {
+    const { addTab, removeTab, setActiveTab } = useTabStore.getState()
+    const tab1Id = addTab({ title: 'Tab 1', type: 'new-tab', closable: true })
+    const tab2Id = addTab({ title: 'Tab 2', type: 'new-tab', closable: true })
+
+    setActiveTab(tab1Id)
+
+    removeTab(tab1Id)
+
+    const { activeTabId, tabs } = useTabStore.getState()
+    expect(tabs).toHaveLength(2)
+    expect(tabs[1].id).toBe(tab2Id)
+  })
 })
