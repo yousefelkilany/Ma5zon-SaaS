@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Banknote } from 'lucide-react'
+import { Banknote, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Spinner } from '@/components/ui/spinner'
+import logoUrl from '@/assets/logo.png'
 
 interface SplashScreenProps {
   isReady: boolean
@@ -10,6 +11,7 @@ interface SplashScreenProps {
 
 function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
   const [visible, setVisible] = useState(true)
+  const [logoError, setLogoError] = useState(false)
 
   useEffect(() => {
     const startTime = Date.now()
@@ -27,6 +29,8 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
 
   if (!visible) return null
 
+  const LogoIcon: LucideIcon = Banknote
+
   return (
     <div
       className={cn(
@@ -36,7 +40,16 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
     >
       <main className="flex flex-1 flex-col items-center justify-center space-y-8">
         <div className="h-[120px] w-[120px] flex items-center justify-center">
-          <Banknote className="h-16 w-16 text-secondary" />
+          {!logoError ? (
+            <img
+              src={logoUrl}
+              alt="AccuLedger Logo"
+              className="h-full w-full object-contain"
+              onError={() => setLogoError(true)}
+            />
+          ) : (
+            <LogoIcon className="h-16 w-16 text-secondary" />
+          )}
         </div>
 
         <div className="text-center space-y-2">
