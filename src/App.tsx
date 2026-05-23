@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { check } from '@tauri-apps/plugin-updater'
 import { relaunch } from '@tauri-apps/plugin-process'
 import { initializeCommandSystem } from './lib/commands'
@@ -9,67 +9,56 @@ import { cleanupOldFiles } from './lib/recovery'
 import { commands } from './lib/tauri-bindings'
 import './App.css'
 import { MainWindow } from './components/layout/MainWindow'
+import { SplashScreen } from './components/splash'
 import { ThemeProvider } from './components/ThemeProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { useSquareCornersEffect } from './hooks/useSquareCornersEffect'
 
 function App() {
   useSquareCornersEffect()
+  const [isAppReady, setIsAppReady] = useState(false)
 
-  // Initialize command system and cleanup on app startup
   useEffect(() => {
     logger.info('🚀 Frontend application starting up')
-    initializeCommandSystem()
-    logger.debug('Command system initialized')
 
-    // Initialize language based on saved preference or system locale
-    const initLanguageAndMenu = async () => {
+    const initApp = async () => {
+      initializeCommandSystem()
+      logger.debug('Command system initialized')
+
       try {
-        // Load preferences to get saved language
         const result = await commands.loadPreferences()
-        const savedLanguage =
-          result.status === 'ok' ? result.data.language : null
-
-        // Initialize language (will use system locale if no preference)
+        const savedLanguage = result.status === 'ok' ? result.data.language : null
         await initializeLanguage(savedLanguage)
-
-        // Build the application menu with the initialized language
         await buildAppMenu()
         logger.debug('Application menu built')
         setupMenuLanguageListener()
       } catch (error) {
         logger.warn('Failed to initialize language or menu', { error })
       }
+
+      try {
+        await cleanupOldFiles()
+      } catch (error) {
+        logger.warn('Failed to cleanup old recovery files', { error })
+      }
+
+      setIsAppReady(true)
     }
 
-    initLanguageAndMenu()
+    initApp()
 
-    // Clean up old recovery files on startup
-    cleanupOldFiles().catch(error => {
-      logger.warn('Failed to cleanup old recovery files', { error })
-    })
-
-    // Example of logging with context
-    logger.info('App environment', {
-      isDev: import.meta.env.DEV,
-      mode: import.meta.env.MODE,
-    })
-
-    // Auto-updater logic - check for updates 5 seconds after app loads
     const checkForUpdates = async () => {
       try {
         const update = await check()
         if (update) {
           logger.info(`Update available: ${update.version}`)
 
-          // Show confirmation dialog
           const shouldUpdate = confirm(
             `Update available: ${update.version}\n\nWould you like to install this update now?`
           )
 
           if (shouldUpdate) {
             try {
-              // Download and install with progress logging
               await update.downloadAndInstall(event => {
                 switch (event.event) {
                   case 'Started':
@@ -84,7 +73,6 @@ function App() {
                 }
               })
 
-              // Ask if user wants to restart now
               const shouldRestart = confirm(
                 'Update completed successfully!\n\nWould you like to restart the app now to use the new version?'
               )
@@ -102,11 +90,9 @@ function App() {
         }
       } catch (checkError) {
         logger.error(`Update check failed: ${String(checkError)}`)
-        // Silent fail for update checks - don't bother user with network issues
       }
     }
 
-    // Check for updates 5 seconds after app loads
     const updateTimer = setTimeout(checkForUpdates, 5000)
     return () => clearTimeout(updateTimer)
   }, [])
@@ -114,6 +100,7 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
+        <SplashScreen isReady={isAppReady} minDuration={3000} />
         <MainWindow />
       </ThemeProvider>
     </ErrorBoundary>
