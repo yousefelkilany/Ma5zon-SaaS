@@ -4,6 +4,7 @@ import {
   ResizableHandle,
 } from '@/components/ui/resizable'
 import { Navbar } from './Navbar'
+import { TabBar } from './TabBar'
 import { LeftSideBar } from './LeftSideBar'
 import { RightSideBar } from './RightSideBar'
 import { MainWindowContent } from './MainWindowContent'
@@ -40,7 +41,10 @@ export function MainWindow() {
 
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden rounded-[var(--app-corner-radius)] bg-background">
-      <Navbar />
+      <header className="flex flex-col shrink-0 z-40">
+        <Navbar />
+        <TabBar />
+      </header>
 
       <div className="flex flex-1 overflow-hidden">
         <ResizablePanelGroup direction="horizontal">
