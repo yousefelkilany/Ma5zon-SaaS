@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Banknote, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Spinner } from '@/components/ui/spinner'
-import logoUrl from '@/assets/logo.png'
 
 interface SplashScreenProps {
   isReady: boolean
@@ -42,7 +41,7 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
         <div className="h-[120px] w-[120px] flex items-center justify-center">
           {!logoError ? (
             <img
-              src={logoUrl}
+              src={new URL('@/assets/logo.png', import.meta.url).href}
               alt="AccuLedger Logo"
               className="h-full w-full object-contain"
               onError={() => setLogoError(true)}
