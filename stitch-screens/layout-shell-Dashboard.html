@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>AccuLedger | Action-Oriented Utility Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#bec6e0",
+              "on-tertiary-container": "#f42f54",
+              "surface-tint": "#bec6e0",
+              "surface-container-highest": "#26364a",
+              "on-secondary-container": "#00311f",
+              background: "#031427",
+              "surface-container-low": "#0b1c30",
+              "tertiary-container": "#39000a",
+              "surface-container-lowest": "#000f21",
+              "on-primary-fixed-variant": "#3f465c",
+              "tertiary-fixed": "#ffdada",
+              "on-error-container": "#ffdad6",
+              "on-secondary": "#003824",
+              "surface-container-high": "#1b2b3f",
+              "primary-container": "#0f172a",
+              "secondary-container": "#00a572",
+              "outline-variant": "#45464d",
+              "on-secondary-fixed": "#002113",
+              error: "#ffb4ab",
+              "tertiary-fixed-dim": "#ffb3b6",
+              "on-surface-variant": "#c6c6cd",
+              "on-primary-container": "#798098",
+              "on-surface": "#d3e4fe",
+              surface: "#031427",
+              "primary-fixed-dim": "#bec6e0",
+              "on-tertiary-fixed-variant": "#920028",
+              "error-container": "#93000a",
+              "on-primary-fixed": "#131b2e",
+              outline: "#909097",
+              "inverse-primary": "#565e74",
+              secondary: "#4edea3",
+              "on-secondary-fixed-variant": "#005236",
+              "on-error": "#690005",
+              "inverse-on-surface": "#213145",
+              "surface-variant": "#26364a",
+              "surface-dim": "#031427",
+              "on-tertiary-fixed": "#40000c",
+              "secondary-fixed": "#6ffbbe",
+              tertiary: "#ffb3b6",
+              "surface-bright": "#2a3a4f",
+              "on-background": "#d3e4fe",
+              "inverse-surface": "#d3e4fe",
+              "surface-container": "#102034",
+              "secondary-fixed-dim": "#4edea3",
+              "on-tertiary": "#68001a",
+              "primary-fixed": "#dae2fd",
+              "on-primary": "#283044",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "margin-edge": "2rem",
+              "compact-padding": "0.75rem",
+              "cozy-gap": "1rem",
+              gutter: "1rem",
+              "cozy-padding": "1.5rem",
+              "compact-gap": "0.5rem",
+            },
+            fontFamily: {
+              "headline-lg": ["Inter"],
+              "data-tabular": ["Inter"],
+              "label-caps": ["Inter"],
+              "headline-sm": ["Inter"],
+              "body-md": ["Inter"],
+              "body-lg": ["Inter"],
+              "headline-md": ["Inter"],
+              "body-sm": ["Inter"],
+            },
+            fontSize: {
+              "headline-lg": [
+                "32px",
+                {
+                  lineHeight: "1.2",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "600",
+                },
+              ],
+              "data-tabular": ["14px", { lineHeight: "1", fontWeight: "500" }],
+              "label-caps": [
+                "11px",
+                { lineHeight: "1", letterSpacing: "0.05em", fontWeight: "700" },
+              ],
+              "headline-sm": ["20px", { lineHeight: "1.4", fontWeight: "500" }],
+              "body-md": ["14px", { lineHeight: "1.5", fontWeight: "400" }],
+              "body-lg": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+              "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+              "body-sm": ["13px", { lineHeight: "1.5", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+        vertical-align: middle;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .mask-fade {
+        mask-image: linear-gradient(to right, black 80%, transparent 100%);
+      }
+      .sparkline {
+        height: 32px;
+        width: 80px;
+        background: linear-gradient(
+          90deg,
+          rgba(78, 222, 163, 0.1) 0%,
+          rgba(78, 222, 163, 0.4) 50%,
+          rgba(78, 222, 163, 0.1) 100%
+        );
+        clip-path: polygon(
+          0 80%,
+          10% 70%,
+          20% 85%,
+          30% 60%,
+          40% 65%,
+          50% 40%,
+          60% 45%,
+          70% 20%,
+          80% 30%,
+          90% 10%,
+          100% 15%,
+          100% 100%,
+          0 100%
+        );
+      }
+      .sparkline-down {
+        background: linear-gradient(
+          90deg,
+          rgba(244, 47, 84, 0.1) 0%,
+          rgba(244, 47, 84, 0.4) 50%,
+          rgba(244, 47, 84, 0.1) 100%
+        );
+        clip-path: polygon(
+          0 20%,
+          10% 30%,
+          20% 15%,
+          30% 40%,
+          40% 35%,
+          50% 60%,
+          60% 55%,
+          70% 80%,
+          80% 70%,
+          90% 90%,
+          100% 85%,
+          100% 100%,
+          0 100%
+        );
+      }
+      .tab-active {
+        border-bottom: 2px solid #4edea3;
+        color: #4edea3;
+        background: #1b2b3f;
+      }
+      #sidebar.collapsed {
+        width: 64px;
+      }
+      #sidebar.collapsed .sidebar-text,
+      #sidebar.collapsed .sidebar-category-label,
+      #sidebar.collapsed .logo-text {
+        display: none;
+      }
+      #sidebar.collapsed .sidebar-item {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-surface font-body-md overflow-hidden selection:bg-secondary selection:text-on-secondary"
+  >
+    <div class="flex h-screen overflow-hidden">
+      <!-- Collapsible Sidebar from SCREEN_10 -->
+      <aside
+        class="flex flex-col h-full bg-surface-container w-64 border-r border-outline-variant transition-all duration-300 relative z-50"
+        id="sidebar"
+      >
+        <div
+          class="px-gutter py-cozy-padding flex items-center justify-between"
+        >
+          <div class="flex items-center gap-compact-gap">
+            <img
+              alt="AccuLedger Logo"
+              class="w-8 h-8 shrink-0"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiZVh33XK4sg0Cf0Pm2N5FrKbpAMT8lNGK97INqjoemoBZsqlzyY7NiAgGS3jiGjEPzRX6s5XJyPyyEixFtC4Vj_hvysR6CBiupoA-ceSylGa8Dy44bMRlPcrGzA1WYFEJT-HR4cXIEJ2PUFTlS2QdTf5AjhxMrOmkibHJVWkrHMx6bzFoXPqCkiP2vlxvuyDbwHrlWKWaYlW8EV3M6ocVQ5ds4g6WyTZnIWhEHMvf2OV0ztC5yFT_0sF1Q4d-rcpdwYtHWMm6Azo"
+            />
+            <div class="logo-text flex flex-col">
+              <span
+                class="font-headline-sm text-headline-sm font-bold text-on-surface"
+                >AccuLedger</span
+              >
+              <span class="font-label-caps text-[9px] text-on-surface-variant"
+                >Enterprise Finance</span
+              >
+            </div>
+          </div>
+          <button
+            class="p-1 hover:bg-surface-container-high rounded text-on-surface-variant"
+            onclick="toggleSidebar()"
+          >
+            <span
+              class="material-symbols-outlined text-[20px]"
+              data-icon="menu_open"
+              >menu_open</span
+            >
+          </button>
+        </div>
+        <nav class="flex-1 overflow-y-auto px-3 py-2 space-y-4 no-scrollbar">
+          <!-- Sales -->
+          <div>
+            <p
+              class="sidebar-category-label px-4 text-[10px] font-label-caps text-on-surface-variant mb-2 uppercase opacity-60"
+            >
+              Sales
+            </p>
+            <div class="space-y-1">
+              <a
+                class="sidebar-item text-on-surface-variant flex items-center gap-compact-gap px-4 py-2 hover:bg-surface-container-high rounded transition-all"
+                href="#"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >receipt</span
+                >
+                <span class="sidebar-text font-body-sm text-body-sm"
+                  >Invoices</span
+                >
+              </a>
+              <a
+                class="sidebar-item text-on-surface-variant flex items-center gap-compact-gap px-4 py-2 hover:bg-surface-container-high rounded transition-all"
+                href="#"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >groups</span
+                >
+                <span class="sidebar-text font-body-sm text-body-sm"
+                  >Customers</span
+                >
+              </a>
+            </div>
+          </div>
+          <!-- Purchases -->
+          <div>
+            <p
+              class="sidebar-category-label px-4 text-[10px] font-label-caps text-on-surface-variant mb-2 uppercase opacity-60"
+            >
+              Purchases
+            </p>
+            <div class="space-y-1">
+              <a
+                class="sidebar-item text-on-surface-variant flex items-center gap-compact-gap px-4 py-2 hover:bg-surface-container-high rounded transition-all"
+                href="#"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >shopping_cart</span
+                >
+                <span class="sidebar-text font-body-sm text-body-sm"
+                  >Bills</span
+                >
+              </a>
+              <a
+                class="sidebar-item text-on-surface-variant flex items-center gap-compact-gap px-4 py-2 hover:bg-surface-container-high rounded transition-all"
+                href="#"
+              >
+                <span class="material-symbols-outlined text-[20px]">store</span>
+                <span class="sidebar-text font-body-sm text-body-sm"
+                  >Vendors</span
+                >
+              </a>
+            </div>
+          </div>
+          <!-- Inventory -->
+          <div>
+            <p
+              class="sidebar-category-label px-4 text-[10px] font-label-caps text-on-surface-variant mb-2 uppercase opacity-60"
+            >
+              Inventory
+            </p>
+            <div class="space-y-1">
+              <a
+                class="sidebar-item text-on-surface-variant flex items-center gap-compact-gap px-4 py-2 hover:bg-surface-container-high rounded transition-all"
+                href="#"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >inventory_2</span
+                >
+                <span class="sidebar-text font-body-sm text-body-sm"
+                  >Stock</span
+                >
+              </a>
+              <a
+                class="sidebar-item text-on-surface-variant flex items-center gap-compact-gap px-4 py-2 hover:bg-surface-container-high rounded transition-all"
+                href="#"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >warehouse</span
+                >
+                <span class="sidebar-text font-body-sm text-body-sm"
+                  >Warehouses</span
+                >
+              </a>
+            </div>
+          </div>
+          <!-- Finance -->
+          <div>
+            <p
+              class="sidebar-category-label px-4 text-[10px] font-label-caps text-on-surface-variant mb-2 uppercase opacity-60"
+            >
+              Finance
+            </p>
+            <div class="space-y-1">
+              <a
+                class="sidebar-item text-secondary flex items-center gap-compact-gap px-4 py-2 bg-surface-container-high rounded transition-all"
+                href="#"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >account_balance_wallet</span
+                >
+                <span
+                  class="sidebar-text font-body-sm text-body-sm font-semibold"
+                  >Ledgers</span
+                >
+              </a>
+              <a
+                class="sidebar-item text-on-surface-variant flex items-center gap-compact-gap px-4 py-2 hover:bg-surface-container-high rounded transition-all"
+                href="#"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >analytics</span
+                >
+                <span class="sidebar-text font-body-sm text-body-sm"
+                  >P&amp;L Report</span
+                >
+              </a>
+            </div>
+          </div>
+          <!-- System -->
+          <div>
+            <p
+              class="sidebar-category-label px-4 text-[10px] font-label-caps text-on-surface-variant mb-2 uppercase opacity-60"
+            >
+              System
+            </p>
+            <div class="space-y-1">
+              <a
+                class="sidebar-item text-on-surface-variant flex items-center gap-compact-gap px-4 py-2 hover:bg-surface-container-high rounded transition-all"
+                href="#"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >bar_chart</span
+                >
+                <span class="sidebar-text font-body-sm text-body-sm"
+                  >Reports</span
+                >
+              </a>
+              <a
+                class="sidebar-item text-on-surface-variant flex items-center gap-compact-gap px-4 py-2 hover:bg-surface-container-high rounded transition-all"
+                href="#"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >settings</span
+                >
+                <span class="sidebar-text font-body-sm text-body-sm"
+                  >Settings</span
+                >
+              </a>
+            </div>
+          </div>
+        </nav>
+        <div class="px-3 pb-6 mt-auto">
+          <div class="border-t border-outline-variant mb-4"></div>
+          <a
+            class="sidebar-item text-on-surface-variant flex items-center gap-compact-gap px-4 py-2 hover:bg-surface-container-high rounded transition-all"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-[20px]">logout</span>
+            <span class="sidebar-text font-body-sm text-body-sm">Logout</span>
+          </a>
+        </div>
+      </aside>
+      <!-- Main Shell -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Top App Bar -->
+        <header
+          class="flex flex-col bg-surface-container-low border-b border-outline-variant shrink-0 z-40"
+        >
+          <div class="flex justify-between items-center h-16 px-gutter">
+            <!-- Global Search -->
+            <div class="flex-1 flex items-center max-w-xl">
+              <div class="relative w-full">
+                <span
+                  class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]"
+                  >search</span
+                >
+                <input
+                  class="bg-surface-container-high border border-outline-variant/30 rounded-lg pl-10 pr-4 py-2 text-body-sm font-body-sm text-on-surface focus:ring-1 focus:ring-primary w-full transition-all"
+                  placeholder="Global Search (Records, Invoices, Customers)..."
+                  type="text"
+                />
+              </div>
+            </div>
+            <!-- Right Actions -->
+            <div class="flex items-center gap-cozy-gap ml-4">
+              <button
+                class="bg-secondary text-on-secondary px-4 py-2 rounded-lg flex items-center gap-2 font-label-caps text-label-caps font-bold hover:opacity-90 transition-all"
+              >
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                Quick Add
+              </button>
+              <div
+                class="flex items-center gap-2 border-l border-outline-variant pl-cozy-gap"
+              >
+                <button
+                  class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full relative"
+                >
+                  <span class="material-symbols-outlined">notifications</span>
+                  <span
+                    class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface-container-low"
+                  ></span>
+                </button>
+                <button
+                  class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full"
+                >
+                  <span class="material-symbols-outlined">settings</span>
+                </button>
+                <div
+                  class="flex items-center gap-compact-gap cursor-pointer hover:bg-surface-container-high p-1 pr-3 rounded-full transition-colors ml-2"
+                >
+                  <img
+                    alt="User Profile"
+                    class="w-8 h-8 rounded-full border border-secondary"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUBAQM9pd0d2Y8CyJX6QTiPWqXNZTzy2Dvsz_OYI_RhgqqQBO7jfH7iXr3tiD5m58oLfeYLboKxEeJ6qRvPmL8wgFw2mJV51DGt9FMuZQ0dntsReqcm4VhWQPJwNU8efHXGmD-wxzLibbyzc2khT29AKRbbhOivAOxGwe6H69jXIJIHK5699KvwRPkaSdrstAeU3WY2_A9cWK1lGotJwgcZtxQwXxWXeUt-9iDBQH5Udos-CZmoHXZIZLI-cP9eXuaw6LFlHbu96k"
+                  />
+                  <div class="hidden lg:block leading-tight">
+                    <p class="font-body-sm text-body-sm font-bold text-primary">
+                      Alex Sterling
+                    </p>
+                    <p
+                      class="font-label-caps text-[9px] text-on-surface-variant uppercase"
+                    >
+                      Senior Analyst
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Tabbed Navigation from SCREEN_10 -->
+          <div
+            class="flex items-center h-10 px-gutter bg-surface-container-lowest gap-1 overflow-x-auto no-scrollbar border-t border-outline-variant/30"
+          >
+            <div
+              class="flex items-center px-4 h-full tab-active text-[11px] font-label-caps font-bold cursor-pointer shrink-0"
+            >
+              Dashboard
+            </div>
+            <div
+              class="flex items-center px-4 h-full text-on-surface-variant text-[11px] font-label-caps font-medium hover:bg-surface-container-high cursor-pointer shrink-0 border-b-2 border-transparent"
+            >
+              Invoices #2024-001
+              <span class="material-symbols-outlined text-[14px] ml-2"
+                >close</span
+              >
+            </div>
+            <div
+              class="flex items-center px-4 h-full text-on-surface-variant text-[11px] font-label-caps font-medium hover:bg-surface-container-high cursor-pointer shrink-0 border-b-2 border-transparent"
+            >
+              P&amp;L Report Q3
+              <span class="material-symbols-outlined text-[14px] ml-2"
+                >close</span
+              >
+            </div>
+            <div
+              class="flex items-center px-4 h-full text-on-surface-variant hover:bg-surface-container-high cursor-pointer"
+            >
+              <span class="material-symbols-outlined text-[18px]">add</span>
+            </div>
+          </div>
+        </header>
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto no-scrollbar bg-background">
+          <div class="px-margin-edge py-6">
+            <nav
+              class="flex text-on-surface-variant text-[11px] font-label-caps uppercase tracking-wider mb-6"
+            >
+              <a class="hover:text-primary" href="#">Finance</a>
+              <span class="mx-2">/</span>
+              <span class="text-on-surface font-bold">Executive Overview</span>
+            </nav>
+            <div class="max-w-[1440px] mx-auto space-y-gutter">
+              <!-- Executive Overview Focused Content -->
+              <div class="space-y-gutter">
+                <!-- KPI Cards -->
+                <section
+                  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter"
+                >
+                  <div
+                    class="bg-surface-container p-cozy-padding border border-outline-variant rounded hover:border-secondary/30 transition-all flex flex-col justify-between h-36"
+                  >
+                    <div class="flex justify-between items-start">
+                      <span
+                        class="text-label-caps font-label-caps text-on-surface-variant"
+                        >Total Revenue</span
+                      >
+                      <span
+                        class="text-secondary text-body-sm font-data-tabular"
+                        >+12.4%</span
+                      >
+                    </div>
+                    <div>
+                      <p
+                        class="text-headline-lg font-headline-lg text-on-surface"
+                      >
+                        $8,242,910
+                      </p>
+                      <p
+                        class="text-on-surface-variant text-[12px] font-data-tabular uppercase"
+                      >
+                        Year to Date
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="bg-surface-container p-cozy-padding border border-outline-variant rounded hover:border-secondary/30 transition-all flex flex-col justify-between h-36"
+                  >
+                    <div class="flex justify-between items-start">
+                      <span
+                        class="text-label-caps font-label-caps text-on-surface-variant"
+                        >Operating Expenses</span
+                      >
+                      <span
+                        class="text-on-tertiary-container text-body-sm font-data-tabular"
+                        >+2.1%</span
+                      >
+                    </div>
+                    <div>
+                      <p
+                        class="text-headline-lg font-headline-lg text-on-surface"
+                      >
+                        $4,120,405
+                      </p>
+                      <p
+                        class="text-on-surface-variant text-[12px] font-data-tabular uppercase"
+                      >
+                        Monthly Average
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="bg-surface-container p-cozy-padding border border-outline-variant rounded hover:border-secondary/30 transition-all flex flex-col justify-between h-36"
+                  >
+                    <div class="flex justify-between items-start">
+                      <span
+                        class="text-label-caps font-label-caps text-on-surface-variant"
+                        >Net Profit</span
+                      >
+                      <span
+                        class="text-secondary text-body-sm font-data-tabular"
+                        >+18.1%</span
+                      >
+                    </div>
+                    <div>
+                      <p
+                        class="text-headline-lg font-headline-lg text-on-surface"
+                      >
+                        $4,122,505
+                      </p>
+                      <p
+                        class="text-on-surface-variant text-[12px] font-data-tabular uppercase"
+                      >
+                        Net Margin: 50%
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="bg-surface-container p-cozy-padding border border-outline-variant rounded hover:border-secondary/30 transition-all flex flex-col justify-between h-36"
+                  >
+                    <div class="flex justify-between items-start">
+                      <span
+                        class="text-label-caps font-label-caps text-on-surface-variant"
+                        >Cash Reserve</span
+                      >
+                      <span
+                        class="text-on-surface-variant text-body-sm font-data-tabular"
+                        >Optimal</span
+                      >
+                    </div>
+                    <div>
+                      <p
+                        class="text-headline-lg font-headline-lg text-on-surface"
+                      >
+                        $2,290,112
+                      </p>
+                      <p
+                        class="text-on-surface-variant text-[12px] font-data-tabular uppercase"
+                      >
+                        Ready Liquidity
+                      </p>
+                    </div>
+                  </div>
+                </section>
+                <!-- Charts Section -->
+                <section class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+                  <!-- Cash Flow Trends (Area Chart Placeholder) -->
+                  <div
+                    class="bg-surface-container border border-outline-variant rounded p-cozy-padding min-h-[400px] flex flex-col"
+                  >
+                    <div class="flex justify-between items-center mb-6">
+                      <h3 class="text-headline-sm text-on-surface">
+                        Cash Flow Trends
+                      </h3>
+                      <button
+                        class="text-secondary text-label-caps font-label-caps hover:underline"
+                      >
+                        Download Report
+                      </button>
+                    </div>
+                    <div
+                      class="flex-1 bg-surface-container-low/50 rounded border border-outline-variant/20 flex items-center justify-center relative overflow-hidden"
+                    >
+                      <div class="absolute inset-0 opacity-20 flex items-end">
+                        <div
+                          class="w-full h-1/2 bg-secondary"
+                          style="
+                            clip-path: polygon(
+                              0 80%,
+                              15% 40%,
+                              30% 60%,
+                              45% 20%,
+                              60% 50%,
+                              75% 30%,
+                              90% 45%,
+                              100% 10%,
+                              100% 100%,
+                              0% 100%
+                            );
+                          "
+                        ></div>
+                      </div>
+                      <p
+                        class="text-on-surface-variant font-label-caps uppercase tracking-widest z-10"
+                      >
+                        Cash In vs. Cash Out (Area Visualization)
+                      </p>
+                    </div>
+                  </div>
+                  <!-- Revenue by Category (Bar Chart Placeholder) -->
+                  <div
+                    class="bg-surface-container border border-outline-variant rounded p-cozy-padding min-h-[400px] flex flex-col"
+                  >
+                    <div class="flex justify-between items-center mb-6">
+                      <h3 class="text-headline-sm text-on-surface">
+                        Revenue by Category
+                      </h3>
+                      <div class="flex gap-2">
+                        <span class="w-3 h-3 bg-secondary rounded-full"></span>
+                        <span class="w-3 h-3 bg-primary rounded-full"></span>
+                      </div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-end gap-4 px-4">
+                      <div class="flex items-end gap-gutter h-full">
+                        <div
+                          class="flex-1 bg-secondary rounded-t-sm group relative"
+                          style="height: 85%"
+                        >
+                          <span
+                            class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-label-caps text-on-surface opacity-0 group-hover:opacity-100 transition-opacity"
+                            >Consulting</span
+                          >
+                        </div>
+                        <div
+                          class="flex-1 bg-primary rounded-t-sm group relative"
+                          style="height: 60%"
+                        ></div>
+                        <div
+                          class="flex-1 bg-secondary rounded-t-sm group relative"
+                          style="height: 45%"
+                        ></div>
+                        <div
+                          class="flex-1 bg-primary rounded-t-sm group relative"
+                          style="height: 75%"
+                        ></div>
+                        <div
+                          class="flex-1 bg-secondary rounded-t-sm group relative"
+                          style="height: 95%"
+                        ></div>
+                        <div
+                          class="flex-1 bg-primary rounded-t-sm group relative"
+                          style="height: 30%"
+                        ></div>
+                      </div>
+                      <div
+                        class="border-t border-outline-variant pt-2 flex justify-between text-[9px] font-label-caps text-on-surface-variant uppercase"
+                      >
+                        <span>Jan</span><span>Feb</span><span>Mar</span
+                        ><span>Apr</span><span>May</span><span>Jun</span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <script>
+      function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.classList.toggle("collapsed");
+        const icon = sidebar.querySelector('[data-icon="menu_open"]');
+        if (sidebar.classList.contains("collapsed")) {
+          icon.innerText = "menu";
+        } else {
+          icon.innerText = "menu_open";
+        }
+      }
+
+      // Simple micro-interaction for active states
+      document.querySelectorAll("button, a").forEach((el) => {
+        el.addEventListener("mousedown", () => el.classList.add("opacity-70"));
+        el.addEventListener("mouseup", () => el.classList.remove("opacity-70"));
+        el.addEventListener("mouseleave", () =>
+          el.classList.remove("opacity-70"),
+        );
+      });
+
+      console.log(
+        "AccuLedger Dashboard Layout Updated: Enterprise Shell Integrated.",
+      );
+    </script>
+  </body>
+</html>
