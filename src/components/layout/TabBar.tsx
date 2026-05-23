@@ -1,12 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import { useTabStore } from '@/store/tab-store'
 import { cn } from '@/lib/utils'
+import type { TabType } from '@/lib/utils'
 
 export function TabBar() {
   const navigate = useNavigate()
   const { tabs, activeTabId, setActiveTab, addTab, removeTab } = useTabStore()
 
-  const handleTabClick = (tabId: string, tabType: string) => {
+  const handleTabClick = (tabId: string, tabType: TabType) => {
     setActiveTab(tabId)
     navigate(`/${tabType}`)
   }
@@ -17,10 +18,7 @@ export function TabBar() {
       type: 'new-tab',
       closable: true,
     })
-    const newTab = useTabStore.getState().tabs.find(t => t.id === newId)
-    if (newTab) {
-      navigate(`/new-tab`)
-    }
+    navigate('/new-tab')
   }
 
   const handleCloseTab = (e: React.MouseEvent, tabId: string) => {
@@ -29,12 +27,18 @@ export function TabBar() {
   }
 
   return (
-    <div className="flex items-center h-10 px-gutter bg-surface-container-lowest gap-1 overflow-x-auto no-scrollbar border-t border-outline-variant/30">
+    <div
+      role="tablist"
+      className="flex items-center h-10 px-gutter bg-surface-container-lowest gap-1 overflow-x-auto no-scrollbar border-t border-outline-variant/30"
+    >
       {tabs.map((tab) => {
         const isActive = tab.id === activeTabId
         return (
           <div
             key={tab.id}
+            role="tab"
+            aria-selected={isActive}
+            tabIndex={isActive ? 0 : -1}
             onClick={() => handleTabClick(tab.id, tab.type)}
             className={cn(
               'flex items-center px-4 h-full text-[11px] font-label-caps font-medium cursor-pointer shrink-0 border-b-2 transition-colors',
