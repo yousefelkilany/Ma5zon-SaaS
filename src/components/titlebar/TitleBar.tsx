@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { usePlatform, type AppPlatform } from '@/hooks/use-platform'
@@ -36,8 +37,9 @@ export function TitleBar({ className, title, forcePlatform }: TitleBarProps) {
   const { t } = useTranslation()
   const displayTitle = title ?? t('titlebar.default')
   const detectedPlatform = usePlatform()
-  const activeTab = useTabStore(state => state.getActiveTab())
-  const tabTitle = activeTab?.title ?? ''
+  const tabs = useTabStore(state => state.tabs)
+  const activeTabId = useTabStore(state => state.activeTabId)
+  const tabTitle = useMemo(() => tabs.find(t => t.id === activeTabId)?.title ?? '', [tabs, activeTabId])
 
   const platform =
     import.meta.env.DEV && forcePlatform ? forcePlatform : detectedPlatform
