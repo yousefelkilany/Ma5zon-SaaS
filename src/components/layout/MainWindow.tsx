@@ -4,7 +4,6 @@ import { LeftSideBar } from './LeftSideBar'
 import { MainWindowContent } from './MainWindowContent'
 import { TitleBar } from '@/components/titlebar/TitleBar'
 import { CommandPalette } from '@/components/command-palette/CommandPalette'
-import { PreferencesDialog } from '@/components/preferences/PreferencesDialog'
 import { Toaster } from 'sonner'
 import { useTheme } from '@/hooks/use-theme'
 import { useUIStore } from '@/store/ui-store'
@@ -32,7 +31,6 @@ export function MainWindow() {
 
       {/* Global UI Components (hidden until triggered) */}
       <CommandPalette />
-      <PreferencesDialog />
       <Toaster
         position="bottom-right"
         theme={
