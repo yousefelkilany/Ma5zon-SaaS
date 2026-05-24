@@ -48,6 +48,10 @@ function isLikelyCSSClass(value: string): boolean {
   if (/^[a-z]+(-[a-z]+)+$/.test(value)) return true
   if (value.includes('[') || value.includes(']')) return true
   if (value.includes(':') && !value.includes(' ')) return true
+  if (value.startsWith('@/')) return true
+  if (/^[a-z]+-[a-z]+-\d+$/.test(value)) return true
+  if (/^w-\d+$/.test(value)) return true
+  if (/\//.test(value) && !value.includes(' ')) return true
   return false
 }
 
@@ -212,7 +216,9 @@ function main() {
   for (const file of files) {
     const code = fs.readFileSync(file, 'utf-8')
     const strings = extractStringsFromAST(code)
-    const feature = file.includes('sidebar') ? 'sidebar' :
+    const fileName = path.basename(file).toLowerCase()
+    const filePath = file.toLowerCase()
+    const feature = fileName.includes('sidebar') || filePath.includes('/layout/') ? 'sidebar' :
                     file.includes('dashboard') ? 'dashboard' :
                     file.includes('titlebar') ? 'titlebar' : 'common'
 
