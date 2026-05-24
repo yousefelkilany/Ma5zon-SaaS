@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useTabStore } from '@/store/tab-store'
 import type { TabType } from '@/lib/utils'
 
@@ -95,6 +96,7 @@ function WorkflowPanel({ title, badge, badgeType = 'active', actions, stats }: W
 }
 
 export function NewTabContent() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { addTab } = useTabStore()
 
@@ -110,78 +112,78 @@ export function NewTabContent() {
   return (
     <div className="px-margin-edge py-6">
       <nav className="flex text-on-surface-variant text-[11px] font-label-caps uppercase tracking-wider mb-6">
-        <a className="hover:text-primary" href="#">Finance</a>
+        <a className="hover:text-primary" href="#">{t('dashboard.breadcrumb.finance')}</a>
         <span className="mx-2">/</span>
-        <span className="text-on-surface font-bold">Executive Overview</span>
+        <span className="text-on-surface font-bold">{t('dashboard.breadcrumb.executiveOverview')}</span>
       </nav>
 
       <div className="max-w-[1440px] mx-auto space-y-gutter">
         {/* KPI Cards */}
         <section className="grid grid-cols-1 md:grid-cols-4 gap-gutter">
-          <KpiCard label="Gross Revenue (MTD)" value="$2,842,910" trend="+12.4%" trendType="positive" />
-          <KpiCard label="Total Expenses" value="$1,120,405" trend="+4.2%" trendType="negative" />
-          <KpiCard label="Net Profit" value="$1,722,505" trend="+18.1%" trendType="positive" />
-          <KpiCard label="Cash Position" value="$4,290,112" trend="Stable" trendType="neutral" />
+          <KpiCard label={t('dashboard.kpi.grossRevenue')} value="$2,842,910" trend="+12.4%" trendType="positive" />
+          <KpiCard label={t('dashboard.kpi.totalExpenses')} value="$1,120,405" trend="+4.2%" trendType="negative" />
+          <KpiCard label={t('dashboard.kpi.netProfit')} value="$1,722,505" trend="+18.1%" trendType="positive" />
+          <KpiCard label={t('dashboard.kpi.cashPosition')} value="$4,290,112" trend="Stable" trendType="neutral" />
         </section>
 
         {/* Workflow Panels */}
         <section className="grid grid-cols-1 lg:grid-cols-4 gap-gutter">
           <WorkflowPanel
-            title="Sales Workflow"
+            title={t('dashboard.workflow.salesWorkflow')}
             badge="5 Active"
             actions={[
-              { label: 'Create New Invoice' },
-              { label: 'Convert Draft Quotes', badge: 12 },
-              { label: 'Recurring Billings' },
+              { label: t('dashboard.workflow.createNewInvoice') },
+              { label: t('dashboard.workflow.convertDraftQuotes'), badge: 12 },
+              { label: t('dashboard.workflow.recurringBillings') },
             ]}
             stats={[
-              { label: 'Awaiting', value: 24 },
-              { label: 'Overdue', value: 8, type: 'warning' },
+              { label: t('dashboard.status.awaiting'), value: 24 },
+              { label: t('dashboard.status.overdue'), value: 8, type: 'warning' },
             ]}
           />
 
           <WorkflowPanel
-            title="Purchase Order"
+            title={t('dashboard.workflow.purchaseOrder')}
             badge="Paused: 2"
             badgeType="paused"
             actions={[
-              { label: 'Process Batch Bills' },
-              { label: 'Approve POs', badge: 4 },
-              { label: 'Vendor Management' },
+              { label: t('dashboard.workflow.processBatchBills') },
+              { label: t('dashboard.workflow.approvePOs'), badge: 4 },
+              { label: t('dashboard.workflow.vendorManagement') },
             ]}
             stats={[
-              { label: 'Open', value: 15 },
-              { label: 'Upcoming', value: 12 },
+              { label: t('dashboard.status.open'), value: 15 },
+              { label: t('dashboard.status.upcoming'), value: 12 },
             ]}
           />
 
           <WorkflowPanel
-            title="Inventory Control"
+            title={t('dashboard.workflow.inventoryControl')}
             badge="Crit: 1"
             badgeType="crit"
             actions={[
-              { label: 'Stock Reconciliation' },
-              { label: 'Price Adjustment Log' },
-              { label: 'Replenishment Audit' },
+              { label: t('dashboard.workflow.stockReconciliation') },
+              { label: t('dashboard.workflow.priceAdjustmentLog') },
+              { label: t('dashboard.workflow.replenishmentAudit') },
             ]}
             stats={[
-              { label: 'Out Stock', value: 3, type: 'warning' },
-              { label: 'Valuation', value: '$1.2M' },
+              { label: t('dashboard.status.outStock'), value: 3, type: 'warning' },
+              { label: t('dashboard.status.valuation'), value: '$1.2M' },
             ]}
           />
 
           <WorkflowPanel
-            title="Treasury Ops"
+            title={t('dashboard.workflow.treasuryOps')}
             badge="Online"
             badgeType="online"
             actions={[
-              { label: 'Reconcile Bank Feed', badge: 114 },
-              { label: 'Inter-Account Transfer' },
-              { label: 'Forex Exposure Report' },
+              { label: t('dashboard.workflow.reconcileBankFeed'), badge: 114 },
+              { label: t('dashboard.workflow.interAccountTransfer') },
+              { label: t('dashboard.workflow.forexExposureReport') },
             ]}
             stats={[
-              { label: 'Balances', value: 6 },
-              { label: 'Last Sync', value: '2m ago' },
+              { label: t('dashboard.status.balances'), value: 6 },
+              { label: t('dashboard.status.lastSync'), value: '2m ago' },
             ]}
           />
         </section>
@@ -189,16 +191,16 @@ export function NewTabContent() {
         {/* Action Buttons */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
           <ActionCard
-            title="Sales Invoice"
-            description="Create a new sales invoice"
+            title={t('dashboard.actions.salesInvoice')}
+            description={t('dashboard.actions.salesInvoiceDesc')}
             icon="receipt"
-            onClick={() => handleActionClick('sales-invoice', 'Sales Invoice')}
+            onClick={() => handleActionClick('sales-invoice', t('dashboard.actions.salesInvoice'))}
           />
           <ActionCard
-            title="Purchase Invoice"
-            description="Create a new purchase invoice"
+            title={t('dashboard.actions.purchaseInvoice')}
+            description={t('dashboard.actions.purchaseInvoiceDesc')}
             icon="shopping_cart"
-            onClick={() => handleActionClick('purchase-invoice', 'Purchase Invoice')}
+            onClick={() => handleActionClick('purchase-invoice', t('dashboard.actions.purchaseInvoice'))}
           />
         </section>
       </div>
