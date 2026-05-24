@@ -10,7 +10,6 @@ import {
   TitleBarAppName,
   TitleBarTabTitle,
 } from './TitleBarContent'
-import { LinuxTitleBar } from './LinuxTitleBar'
 
 interface TitleBarProps {
   className?: string
@@ -26,8 +25,7 @@ interface TitleBarProps {
  *
  * Renders platform-specific title bars:
  * - **macOS**: Custom title bar with traffic lights on LEFT
- * - **Windows**: Custom title bar with controls on RIGHT
- * - **Linux**: Toolbar only (native decorations provide window controls)
+ * - **Windows/Linux**: Custom title bar with controls on RIGHT
  *
  * Use `forcePlatform` prop in development to test other platform layouts.
  */
@@ -42,10 +40,6 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
 
   const handleDoubleClick = () => {
     getCurrentWindow().toggleMaximize()
-  }
-
-  if (platform === 'linux') {
-    return <LinuxTitleBar className={className} />
   }
 
   return (
@@ -69,7 +63,7 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
       </div>
 
       <div className="flex items-center pr-2">
-        {platform === 'windows' ? (
+        {platform === 'windows' || platform === 'linux' ? (
           <WindowsWindowControls />
         ) : (
           <MacOSWindowControls />

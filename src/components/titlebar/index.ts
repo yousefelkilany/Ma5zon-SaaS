@@ -9,7 +9,6 @@ export {
 } from './TitleBarContent'
 
 // Platform-specific components
-export { LinuxTitleBar } from './LinuxTitleBar'
 export { MacOSWindowControls } from './MacOSWindowControls'
 export { WindowsWindowControls } from './WindowsWindowControls'
 
