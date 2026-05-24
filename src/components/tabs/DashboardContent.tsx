@@ -1,38 +1,46 @@
+import { useTranslation } from 'react-i18next'
+
 export function DashboardContent() {
+  const { t } = useTranslation()
+
   return (
     <div className="px-margin-edge py-6">
       <nav className="flex text-on-surface-variant text-[11px] font-label-caps uppercase tracking-wider mb-6">
-        <a className="hover:text-primary" href="#">Finance</a>
+        <a className="hover:text-primary" href="#">{t('dashboard.breadcrumb.finance')}</a>
         <span className="mx-2">/</span>
-        <span className="text-on-surface font-bold">Executive Overview</span>
+        <span className="text-on-surface font-bold">{t('dashboard.breadcrumb.executiveOverview')}</span>
       </nav>
 
       <div className="max-w-360 mx-auto space-y-gutter">
         {/* KPI Cards */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
           <KpiCard
-            label="Gross Revenue (MTD)"
+            label={t('dashboard.kpi.grossRevenue')}
             value="$2,842,910"
             trend="+12.4%"
             trendType="positive"
+            currency={t('common.currency')}
           />
           <KpiCard
-            label="Total Expenses"
+            label={t('dashboard.kpi.totalExpenses')}
             value="$1,120,405"
             trend="+4.2%"
             trendType="negative"
+            currency={t('common.currency')}
           />
           <KpiCard
-            label="Net Profit"
+            label={t('dashboard.kpi.netProfit')}
             value="$1,722,505"
             trend="+18.1%"
             trendType="positive"
+            currency={t('common.currency')}
           />
           <KpiCard
-            label="Cash Position"
+            label={t('dashboard.kpi.cashPosition')}
             value="$4,290,112"
             trend="Stable"
             trendType="neutral"
+            currency={t('common.currency')}
           />
         </section>
 
@@ -41,9 +49,9 @@ export function DashboardContent() {
           {/* Cash Flow Trends */}
           <div className="bg-surface-container border border-outline-variant rounded p-cozy-padding min-h-[400px] flex flex-col">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-headline-sm text-on-surface">Cash Flow Trends</h3>
+              <h3 className="text-headline-sm text-on-surface">{t('dashboard.chart.cashFlowTrends')}</h3>
               <button className="text-secondary text-label-caps font-label-caps hover:underline">
-                Download Report
+                {t('dashboard.chart.downloadReport')}
               </button>
             </div>
             <div className="flex-1 bg-surface-container-low/50 rounded border border-outline-variant/20 flex items-center justify-center relative overflow-hidden">
@@ -56,7 +64,7 @@ export function DashboardContent() {
                 />
               </div>
               <p className="text-on-surface-variant font-label-caps uppercase tracking-widest z-10">
-                Cash In vs. Cash Out
+                {t('dashboard.chart.cashInVsCashOut')}
               </p>
             </div>
           </div>
@@ -64,7 +72,7 @@ export function DashboardContent() {
           {/* Revenue by Category */}
           <div className="bg-surface-container border border-outline-variant rounded p-cozy-padding min-h-[400px] flex flex-col">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-headline-sm text-on-surface">Revenue by Category</h3>
+              <h3 className="text-headline-sm text-on-surface">{t('dashboard.chart.revenueByCategory')}</h3>
               <div className="flex gap-2">
                 <span className="w-3 h-3 bg-secondary rounded-full" />
                 <span className="w-3 h-3 bg-primary rounded-full" />
@@ -72,7 +80,7 @@ export function DashboardContent() {
             </div>
             <div className="flex-1 flex flex-col justify-end gap-4 px-4">
               <div className="flex items-end gap-gutter h-full">
-                <Bar height="85%" label="Consulting" />
+                <Bar height="85%" label={t('dashboard.chart.consulting')} />
                 <Bar height="60%" />
                 <Bar height="45%" />
                 <Bar height="75%" />
@@ -80,7 +88,7 @@ export function DashboardContent() {
                 <Bar height="30%" />
               </div>
               <div className="border-t border-outline-variant pt-2 flex justify-between text-[9px] font-label-caps text-on-surface-variant uppercase">
-                <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+                <span>{t('dashboard.chart.jan')}</span><span>{t('dashboard.chart.feb')}</span><span>{t('dashboard.chart.mar')}</span><span>{t('dashboard.chart.apr')}</span><span>{t('dashboard.chart.may')}</span><span>{t('dashboard.chart.jun')}</span>
               </div>
             </div>
           </div>
@@ -90,11 +98,12 @@ export function DashboardContent() {
   )
 }
 
-function KpiCard({ label, value, trend, trendType }: {
+function KpiCard({ label, value, trend, trendType, currency }: {
   label: string
   value: string
   trend: string
   trendType: 'positive' | 'negative' | 'neutral'
+  currency: string
 }) {
   const trendColors = {
     positive: 'text-secondary',
@@ -110,7 +119,7 @@ function KpiCard({ label, value, trend, trendType }: {
       </div>
       <div>
         <p className="text-headline-lg font-headline-lg text-on-surface">{value}</p>
-        <p className="text-on-surface-variant text-[12px] font-data-tabular uppercase">USD</p>
+        <p className="text-on-surface-variant text-[12px] font-data-tabular uppercase">{currency}</p>
       </div>
     </div>
   )

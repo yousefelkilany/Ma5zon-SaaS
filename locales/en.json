@@ -163,5 +163,17 @@
   "dashboard.badge.active": "Active",
   "dashboard.badge.paused": "Paused",
   "dashboard.badge.crit": "Crit",
-  "dashboard.badge.online": "Online"
+  "dashboard.badge.online": "Online",
+  "common.currency": "USD",
+  "dashboard.chart.cashFlowTrends": "Cash Flow Trends",
+  "dashboard.chart.downloadReport": "Download Report",
+  "dashboard.chart.revenueByCategory": "Revenue by Category",
+  "dashboard.chart.cashInVsCashOut": "Cash In vs. Cash Out",
+  "dashboard.chart.jan": "Jan",
+  "dashboard.chart.feb": "Feb",
+  "dashboard.chart.mar": "Mar",
+  "dashboard.chart.apr": "Apr",
+  "dashboard.chart.may": "May",
+  "dashboard.chart.jun": "Jun",
+  "dashboard.chart.consulting": "Consulting"
 }
