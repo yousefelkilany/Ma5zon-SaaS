@@ -33,10 +33,18 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
   const detectedPlatform = usePlatform()
   const tabs = useTabStore(state => state.tabs)
   const activeTabId = useTabStore(state => state.activeTabId)
-  const tabTitle = useMemo(() => tabs.find(t => t.id === activeTabId)?.title ?? '', [tabs, activeTabId])
 
   const platform =
     import.meta.env.DEV && forcePlatform ? forcePlatform : detectedPlatform
+
+  const tabTitle = useMemo(
+    () => tabs.find(t => t.id === activeTabId)?.title ?? '',
+    [tabs, activeTabId]
+  )
+
+  // TODO: On Linux with frameless windows, resize cursors don't appear at title bar top edge.
+  // Possible causes: CSS cursor:default global rule, app-region:drag, or Tauri Linux WebView behavior.
+  // Investigate further if resize from title bar edge is needed on Linux.
 
   const handleDoubleClick = async (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -50,9 +58,16 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
   }
 
   const handleMouseDown = async (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget || (e.target as HTMLElement).closest('[data-tauri-drag-region]')) {
-      await getCurrentWindow().startDragging()
-    }
+    const target = e.target as HTMLElement
+    const isInDragRegion =
+      e.target === e.currentTarget || target.closest('[data-tauri-drag-region]')
+
+    if (!isInDragRegion) return
+
+    // Skip second click of double-click (detail=2) to allow dblclick to fire
+    if (e.detail !== 1) return
+
+    await getCurrentWindow().startDragging()
   }
 
   return (
@@ -71,11 +86,17 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
         <TitleBarAppName />
       </div>
 
-      <div className="absolute start-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center" data-tauri-drag-region>
+      <div
+        className="absolute start-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center"
+        data-tauri-drag-region
+      >
         <TitleBarTabTitle title={tabTitle} />
       </div>
 
-      <div className="flex items-center pe-2" onDoubleClick={e => e.stopPropagation()}>
+      <div
+        className="flex items-center pe-2"
+        onDoubleClick={e => e.stopPropagation()}
+      >
         {platform === 'windows' || platform === 'linux' ? (
           <WindowsWindowControls />
         ) : (

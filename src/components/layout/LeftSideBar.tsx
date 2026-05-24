@@ -148,12 +148,12 @@ export function LeftSideBar({ className }: LeftSideBarProps) {
     <div
       className={cn(
         'flex flex-col h-full bg-surface-container border-inline-end border-outline-variant transition-all duration-300 relative z-50',
-        collapsed ? 'w-16' : 'w-64',
+        collapsed ? 'w-16' : 'w-48',
         className
       )}
     >
       {/* Header with toggle */}
-      <div className="px-gutter py-cozy-padding flex items-center justify-end">
+      <div className="px-gutter pt-cozy-padding flex items-center justify-end">
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-1 hover:bg-surface-container-high rounded text-on-surface-variant focus-visible:ring-2 focus-visible:ring-primary"
