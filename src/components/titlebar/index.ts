@@ -3,16 +3,15 @@ export { TitleBar } from './TitleBar'
 
 // Shared content components
 export {
-  TitleBarContent,
-  TitleBarLeftActions,
-  TitleBarRightActions,
-  TitleBarTitle,
+  TitleBarLogo,
+  TitleBarAppName,
+  TitleBarTabTitle,
 } from './TitleBarContent'
 
-// Platform-specific components (generally not needed externally)
+// Platform-specific components
 export { LinuxTitleBar } from './LinuxTitleBar'
 export { MacOSWindowControls } from './MacOSWindowControls'
 export { WindowsWindowControls } from './WindowsWindowControls'
 
-// Icons (for custom title bar implementations)
+// Icons
 export { MacOSIcons, WindowsIcons } from './WindowControlIcons'
