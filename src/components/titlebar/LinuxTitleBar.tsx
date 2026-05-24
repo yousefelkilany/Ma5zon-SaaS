@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { cn } from '@/lib/utils'
 import { useTabStore } from '@/store/tab-store'
+import { WindowsWindowControls } from './WindowsWindowControls'
 import {
   TitleBarLogo,
   TitleBarAppName,
@@ -14,11 +15,9 @@ interface LinuxTitleBarProps {
 /**
  * Linux title bar / toolbar.
  *
- * On Linux, native window decorations are used (decorations: true in config).
- * This component renders the custom titlebar content with Logo, AppName, and TabTitle.
- * The native decorations provide close/minimize/maximize buttons.
- *
- * The toolbar sits below the native title bar.
+ * Since decorations: false is set in tauri.conf.json, we need custom window controls.
+ * This component renders the custom titlebar content with Logo, AppName, TabTitle,
+ * and window controls (minimize/maximize/close).
  */
 export function LinuxTitleBar({ className }: LinuxTitleBarProps) {
   const tabs = useTabStore(state => state.tabs)
@@ -44,8 +43,10 @@ export function LinuxTitleBar({ className }: LinuxTitleBarProps) {
         <TitleBarTabTitle title={tabTitle} />
       </div>
 
-      {/* Right: Empty - native controls handle window actions */}
-      <div className="flex items-center pr-2" />
+      {/* Right: Window Controls */}
+      <div className="flex items-center pr-2">
+        <WindowsWindowControls />
+      </div>
     </div>
   )
 }
