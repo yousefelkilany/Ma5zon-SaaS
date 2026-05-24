@@ -81,9 +81,9 @@ export function WindowsWindowControls() {
     }
   }
 
-  // Base button styles for Windows controls
+  // Base button styles for Windows controls (outline style)
   const buttonClass =
-    'flex h-8 w-12 items-center justify-center transition-colors'
+    'flex h-8 w-12 items-center justify-center transition-opacity duration-150'
 
   return (
     <div className="flex">
@@ -91,7 +91,10 @@ export function WindowsWindowControls() {
       <button
         type="button"
         onClick={handleMinimize}
-        className={cn(buttonClass, 'hover:bg-foreground/10')}
+        className={cn(
+          buttonClass,
+          'opacity-70 hover:opacity-100 hover:drop-shadow-[0_0_4px_var(--foreground)]'
+        )}
         title="Minimize"
         aria-label="Minimize window"
       >
@@ -102,7 +105,10 @@ export function WindowsWindowControls() {
       <button
         type="button"
         onClick={handleMaximizeToggle}
-        className={cn(buttonClass, 'hover:bg-foreground/10')}
+        className={cn(
+          buttonClass,
+          'opacity-70 hover:opacity-100 hover:drop-shadow-[0_0_4px_var(--foreground)]'
+        )}
         title={isMaximized ? 'Restore' : 'Maximize'}
         aria-label={isMaximized ? 'Restore window' : 'Maximize window'}
       >
@@ -115,7 +121,7 @@ export function WindowsWindowControls() {
         onClick={handleClose}
         className={cn(
           buttonClass,
-          'hover:bg-destructive hover:text-destructive-foreground'
+          'opacity-70 hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground hover:drop-shadow-[0_0_4px_var(--destructive)]'
         )}
         title="Close"
         aria-label="Close window"
