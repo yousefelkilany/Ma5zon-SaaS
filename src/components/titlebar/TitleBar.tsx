@@ -38,7 +38,8 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
   const platform =
     import.meta.env.DEV && forcePlatform ? forcePlatform : detectedPlatform
 
-  const handleDoubleClick = async () => {
+  const handleDoubleClick = async (e: React.MouseEvent) => {
+    e.stopPropagation()
     const window = getCurrentWindow()
     const isMaximized = await window.isMaximized()
     if (isMaximized) {
@@ -48,9 +49,15 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
     }
   }
 
+  const handleMouseDown = async (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget || (e.target as HTMLElement).closest('[data-tauri-drag-region]')) {
+      await getCurrentWindow().startDragging()
+    }
+  }
+
   return (
     <div
-      data-tauri-drag-region
+      onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
       className={cn(
         'relative flex h-10 w-full shrink-0 items-center justify-between',
@@ -59,12 +66,12 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
       )}
       dir="ltr"
     >
-      <div className="flex items-center gap-2 ps-2" onDoubleClick={e => e.stopPropagation()}>
+      <div className="flex items-center gap-2 ps-2" data-tauri-drag-region>
         <TitleBarLogo />
         <TitleBarAppName />
       </div>
 
-      <div className="absolute start-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center" onDoubleClick={e => e.stopPropagation()}>
+      <div className="absolute start-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center" data-tauri-drag-region>
         <TitleBarTabTitle title={tabTitle} />
       </div>
 
