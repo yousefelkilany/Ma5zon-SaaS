@@ -64,7 +64,7 @@ export function TitleBarTabTitle({ title }: TitleBarTabTitleProps) { /* renders 
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│ [Logo] AccuLedger           Dashboard                    [─][□][×] │
+│ [Logo] AccuLedger           Dashboard                  [─][□][×] │
 └──────────────────────────────────────────────────────────────────┘
      ←── left ──→            ←──── center ─────→           ← right →
 ```
