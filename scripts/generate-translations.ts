@@ -24,17 +24,31 @@ function isMeaningfulText(value: string): boolean {
   if (trimmed.includes('://')) return false
   if (trimmed.length <= 1) return false
   if (/^[a-z_]+$/.test(trimmed)) return false
+  if (/^[a-z][a-z\-]*[a-z]$/.test(trimmed) && trimmed.includes('-')) return false
   return true
 }
 
-function isLikelyIconName(value: string): boolean {
+function isLikelyIconName(value: string, propertyName?: string): boolean {
+  if (propertyName === 'label' || propertyName === 'title') return false
+  const trimmed = value.trim()
+  if (trimmed.toLowerCase() !== trimmed) return false
+  if (trimmed.includes(' ')) return false
+  if (trimmed.length > 20) return false
   const iconIndicators = [
     /^menu/, /^settings/, /^home/, /^logout/, /^user/, /^search/, /^edit/,
     /^add/, /^delete/, /^close/, /^arrow/, /^chevron/, /^bar/, /^chart/,
     /^list/, /^grid/, /^home/, /^warehouse/, /^inventory/, /^store/, /^shopping/,
     /^cart/, /^receipt/, /^group/, /^analytics/, /^report/, /^account/
   ]
-  return iconIndicators.some(r => r.test(value.toLowerCase()))
+  return iconIndicators.some(r => r.test(trimmed))
+}
+
+function isLikelyCSSClass(value: string): boolean {
+  if (value.includes(' ') && value.includes('-')) return true
+  if (/^[a-z]+(-[a-z]+)+$/.test(value)) return true
+  if (value.includes('[') || value.includes(']')) return true
+  if (value.includes(':') && !value.includes(' ')) return true
+  return false
 }
 
 function extractStringsFromAST(code: string): ExtractedString[] {
@@ -83,6 +97,21 @@ function extractStringsFromAST(code: string): ExtractedString[] {
       extractFromExpression(node.expression, 'jsx-expression')
     }
 
+    if (node.type === 'StringLiteral' && node.value?.trim()) {
+      const value = node.value.trim()
+      if (isMeaningfulText(value) && !isLikelyIconName(value) && !isLikelyCSSClass(value)) {
+        strings.push({ value, key: '', location: 'js-string' })
+      }
+    }
+
+    if (node.type === 'Property' && node.value) {
+      extractFromExpression(node.value, 'js-property')
+    }
+
+    if (node.type === 'VariableDeclarator' && node.init) {
+      extractFromExpression(node.init, 'js-variable')
+    }
+
     for (const key in node) {
       if (SKIP_PROPS.has(key)) continue
       const child = node[key]
@@ -101,7 +130,7 @@ function extractStringsFromAST(code: string): ExtractedString[] {
 
     if (expr.type === 'StringLiteral' && expr.value?.trim()) {
       const value = expr.value.trim()
-      if (isMeaningfulText(value) && !isLikelyIconName(value)) {
+      if (isMeaningfulText(value) && !isLikelyIconName(value) && !isLikelyCSSClass(value)) {
         strings.push({ value, key: '', location })
       }
     }
@@ -124,20 +153,41 @@ function extractStringsFromAST(code: string): ExtractedString[] {
     if (expr.type === 'TemplateLiteral') {
       expr.quasis?.forEach((q: any) => {
         const value = q.value?.cooked?.trim()
-        if (isMeaningfulText(value) && !isLikelyIconName(value)) {
+        if (isMeaningfulText(value) && !isLikelyIconName(value) && !isLikelyCSSClass(value)) {
           strings.push({ value, key: '', location })
         }
       })
     }
 
     if (expr.type === 'ArrayExpression') {
-      expr.elements?.forEach((el: any) => extractFromExpression(el, location))
+      expr.elements?.forEach((el: any) => {
+        if (el) extractFromExpression(el, location)
+      })
     }
 
     if (expr.type === 'ObjectExpression') {
       expr.properties?.forEach((prop: any) => {
-        if (prop.value) extractFromExpression(prop.value, location)
+        if (prop.computed && prop.key) {
+          extractFromExpression(prop.key, location)
+        }
+        if (prop.value) {
+          extractFromExpression(prop.value, location)
+        }
       })
+    }
+
+    if (expr.type === 'TSAsExpression' || expr.type === 'TSTypeAssertion') {
+      if (expr.expression) extractFromExpression(expr.expression, location)
+    }
+
+    for (const key in expr) {
+      if (SKIP_PROPS.has(key)) continue
+      const child = expr[key]
+      if (Array.isArray(child)) {
+        child.forEach((c: any) => c && typeof c === 'object' && extractFromExpression(c, location))
+      } else if (child && typeof child === 'object') {
+        extractFromExpression(child, location)
+      }
     }
   }
 
