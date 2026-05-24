@@ -1,12 +1,10 @@
 import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { usePlatform, type AppPlatform } from '@/hooks/use-platform'
 import { useTabStore } from '@/store/tab-store'
 import { MacOSWindowControls } from './MacOSWindowControls'
 import { WindowsWindowControls } from './WindowsWindowControls'
 import {
-  TitleBarRightActions,
   TitleBarLogo,
   TitleBarAppName,
   TitleBarTabTitle,
@@ -15,7 +13,6 @@ import { LinuxTitleBar } from './LinuxTitleBar'
 
 interface TitleBarProps {
   className?: string
-  title?: string
   /**
    * Force a specific platform for development/testing.
    * Only works in development builds.
@@ -33,9 +30,7 @@ interface TitleBarProps {
  *
  * Use `forcePlatform` prop in development to test other platform layouts.
  */
-export function TitleBar({ className, title, forcePlatform }: TitleBarProps) {
-  const { t } = useTranslation()
-  const displayTitle = title ?? t('titlebar.default')
+export function TitleBar({ className, forcePlatform }: TitleBarProps) {
   const detectedPlatform = usePlatform()
   const tabs = useTabStore(state => state.tabs)
   const activeTabId = useTabStore(state => state.activeTabId)
@@ -45,7 +40,7 @@ export function TitleBar({ className, title, forcePlatform }: TitleBarProps) {
     import.meta.env.DEV && forcePlatform ? forcePlatform : detectedPlatform
 
   if (platform === 'linux') {
-    return <LinuxTitleBar className={className} title={displayTitle} />
+    return <LinuxTitleBar className={className} />
   }
 
   return (
@@ -67,7 +62,6 @@ export function TitleBar({ className, title, forcePlatform }: TitleBarProps) {
       </div>
 
       <div className="flex items-center pr-2">
-        <TitleBarRightActions />
         {platform === 'windows' ? (
           <WindowsWindowControls />
         ) : (
