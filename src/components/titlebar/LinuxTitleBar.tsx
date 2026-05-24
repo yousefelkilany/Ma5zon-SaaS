@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { cn } from '@/lib/utils'
+import { getCurrentWindow } from '@tauri-apps/api/window'
 import { useTabStore } from '@/store/tab-store'
 import { WindowsWindowControls } from './WindowsWindowControls'
 import {
@@ -24,11 +25,17 @@ export function LinuxTitleBar({ className }: LinuxTitleBarProps) {
   const activeTabId = useTabStore(state => state.activeTabId)
   const tabTitle = useMemo(() => tabs.find(t => t.id === activeTabId)?.title ?? '', [tabs, activeTabId])
 
+  const handleDoubleClick = () => {
+    getCurrentWindow().toggleMaximize()
+  }
+
   return (
     <div
+      onDoubleClick={handleDoubleClick}
       className={cn(
         'relative flex h-10 w-full shrink-0 items-center justify-between',
         'bg-surface-container-low border-b border-outline-variant',
+        'cursor-pointer',
         className
       )}
     >

@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { cn } from '@/lib/utils'
+import { getCurrentWindow } from '@tauri-apps/api/window'
 import { usePlatform, type AppPlatform } from '@/hooks/use-platform'
 import { useTabStore } from '@/store/tab-store'
 import { MacOSWindowControls } from './MacOSWindowControls'
@@ -39,6 +40,10 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
   const platform =
     import.meta.env.DEV && forcePlatform ? forcePlatform : detectedPlatform
 
+  const handleDoubleClick = () => {
+    getCurrentWindow().toggleMaximize()
+  }
+
   if (platform === 'linux') {
     return <LinuxTitleBar className={className} />
   }
@@ -46,9 +51,11 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
   return (
     <div
       data-tauri-drag-region
+      onDoubleClick={handleDoubleClick}
       className={cn(
         'relative flex h-10 w-full shrink-0 items-center justify-between',
         'bg-surface-container-low border-b border-outline-variant',
+        'cursor-pointer',
         className
       )}
     >
