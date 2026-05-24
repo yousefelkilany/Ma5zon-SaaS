@@ -49,20 +49,20 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
       className={cn(
         'relative flex h-10 w-full shrink-0 items-center justify-between',
         'bg-surface-container-low border-b border-outline-variant',
-        'cursor-pointer',
         className
       )}
+      dir="ltr"
     >
-      <div className="flex items-center gap-2 pl-2">
+      <div className="flex items-center gap-2 ps-2">
         <TitleBarLogo />
         <TitleBarAppName />
       </div>
 
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
+      <div className="absolute start-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
         <TitleBarTabTitle title={tabTitle} />
       </div>
 
-      <div className="flex items-center pr-2">
+      <div className="flex items-center pe-2">
         {platform === 'windows' || platform === 'linux' ? (
           <WindowsWindowControls />
         ) : (
