@@ -7,7 +7,7 @@ export function DashboardContent() {
         <span className="text-on-surface font-bold">Executive Overview</span>
       </nav>
 
-      <div className="max-w-[1440px] mx-auto space-y-gutter">
+      <div className="max-w-360 mx-auto space-y-gutter">
         {/* KPI Cards */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
           <KpiCard

@@ -11,12 +11,12 @@ const resources = {
 }
 
 // RTL language detection (includes languages not yet in resources for future expansion)
-const rtlLanguages = ['ar', 'he', 'fa', 'ur']
+const rtlLanguages = ['ar']
 
 i18n.use(initReactI18next).init({
   resources,
-  lng: 'en',
-  fallbackLng: 'en',
+  lng: 'ar',
+  fallbackLng: 'ar',
   interpolation: {
     escapeValue: false, // React already escapes
   },
