@@ -2,6 +2,7 @@ import { Navbar } from './Navbar'
 import { TabBar } from './TabBar'
 import { LeftSideBar } from './LeftSideBar'
 import { MainWindowContent } from './MainWindowContent'
+import { TitleBar } from '@/components/titlebar/TitleBar'
 import { CommandPalette } from '@/components/command-palette/CommandPalette'
 import { PreferencesDialog } from '@/components/preferences/PreferencesDialog'
 import { Toaster } from 'sonner'
@@ -19,6 +20,7 @@ export function MainWindow() {
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden  bg-background">
       <header className="flex flex-col shrink-0 z-40">
+        <TitleBar />
         <Navbar />
         <TabBar />
       </header>
