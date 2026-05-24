@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
@@ -82,7 +82,7 @@ function NavSection({
       </p>
       <NavItemsList items={items} collapsed={collapsed} />
       {collapsed && !isLast && (
-        <div className="absolute top-2 inset-inline-start-0 inset-inline-end-0 border-t border-amber-50 transition-all duration-300" />
+        <div className="absolute top-2 inset-inline-start-0 inset-inline-end-0 border-t border-outline-variant transition-all duration-300" />
       )}
     </div>
   )
@@ -108,7 +108,7 @@ export function LeftSideBar({ className }: LeftSideBarProps) {
   const { t } = useTranslation()
   const [collapsed, setCollapsed] = useState(false)
 
-  const NAV_SECTIONS = [
+  const NAV_SECTIONS = useMemo(() => [
     {
       title: t('sidebar.nav.sales'),
       items: [
@@ -144,7 +144,7 @@ export function LeftSideBar({ className }: LeftSideBarProps) {
         { icon: 'settings', label: t('sidebar.nav.settings') },
       ],
     },
-  ] as const
+  ] as const, [t])
 
   return (
     <div
