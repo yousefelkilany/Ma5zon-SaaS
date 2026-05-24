@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
 interface LeftSideBarProps {
@@ -103,46 +104,47 @@ function NavItemsList({
   )
 }
 
-const NAV_SECTIONS = [
-  {
-    title: 'Sales',
-    items: [
-      { icon: 'receipt', label: 'Invoices' },
-      { icon: 'groups', label: 'Customers' },
-    ],
-  },
-  {
-    title: 'Purchases',
-    items: [
-      { icon: 'shopping_cart', label: 'Bills' },
-      { icon: 'store', label: 'Vendors' },
-    ],
-  },
-  {
-    title: 'Inventory',
-    items: [
-      { icon: 'inventory_2', label: 'Stock' },
-      { icon: 'warehouse', label: 'Warehouses' },
-    ],
-  },
-  {
-    title: 'Finance',
-    items: [
-      { icon: 'account_balance_wallet', label: 'Ledgers', active: true },
-      { icon: 'analytics', label: 'P&L Report' },
-    ],
-  },
-  {
-    title: 'System',
-    items: [
-      { icon: 'bar_chart', label: 'Reports' },
-      { icon: 'settings', label: 'Settings' },
-    ],
-  },
-] as const
-
 export function LeftSideBar({ className }: LeftSideBarProps) {
+  const { t } = useTranslation()
   const [collapsed, setCollapsed] = useState(false)
+
+  const NAV_SECTIONS = [
+    {
+      title: t('sidebar.nav.sales'),
+      items: [
+        { icon: 'receipt', label: t('sidebar.nav.invoices') },
+        { icon: 'groups', label: t('sidebar.nav.customers') },
+      ],
+    },
+    {
+      title: t('sidebar.nav.purchases'),
+      items: [
+        { icon: 'shopping_cart', label: t('sidebar.nav.bills') },
+        { icon: 'store', label: t('sidebar.nav.vendors') },
+      ],
+    },
+    {
+      title: t('sidebar.nav.inventory'),
+      items: [
+        { icon: 'inventory_2', label: t('sidebar.nav.stock') },
+        { icon: 'warehouse', label: t('sidebar.nav.warehouses') },
+      ],
+    },
+    {
+      title: t('sidebar.nav.finance'),
+      items: [
+        { icon: 'account_balance_wallet', label: t('sidebar.nav.ledgers'), active: true },
+        { icon: 'analytics', label: t('sidebar.nav.plReport') },
+      ],
+    },
+    {
+      title: t('sidebar.nav.system'),
+      items: [
+        { icon: 'bar_chart', label: t('sidebar.nav.reports') },
+        { icon: 'settings', label: t('sidebar.nav.settings') },
+      ],
+    },
+  ] as const
 
   return (
     <div
@@ -157,7 +159,7 @@ export function LeftSideBar({ className }: LeftSideBarProps) {
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-1 hover:bg-surface-container-high rounded text-on-surface-variant focus-visible:ring-2 focus-visible:ring-primary"
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={collapsed ? t('titlebar.expandSidebar') : t('titlebar.collapseSidebar')}
         >
           <span className="material-symbols-outlined text-[20px]">
             {collapsed ? 'menu' : 'menu_open'}
@@ -180,7 +182,7 @@ export function LeftSideBar({ className }: LeftSideBarProps) {
       {/* Footer */}
       <div className="px-4 pb-6 mt-auto">
         <div className="border-t border-outline-variant mb-4" />
-        <NavItem icon="logout" label="Logout" collapsed={collapsed} />
+        <NavItem icon="logout" label={t('sidebar.actions.logout')} collapsed={collapsed} />
       </div>
     </div>
   )
