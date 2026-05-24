@@ -38,8 +38,14 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
   const platform =
     import.meta.env.DEV && forcePlatform ? forcePlatform : detectedPlatform
 
-  const handleDoubleClick = () => {
-    getCurrentWindow().maximize()
+  const handleDoubleClick = async () => {
+    const window = getCurrentWindow()
+    const isMaximized = await window.isMaximized()
+    if (isMaximized) {
+      await window.unmaximize()
+    } else {
+      await window.maximize()
+    }
   }
 
   return (
