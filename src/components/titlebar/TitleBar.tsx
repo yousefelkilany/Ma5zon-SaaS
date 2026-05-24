@@ -59,16 +59,16 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
       )}
       dir="ltr"
     >
-      <div className="flex items-center gap-2 ps-2">
+      <div className="flex items-center gap-2 ps-2" onDoubleClick={e => e.stopPropagation()}>
         <TitleBarLogo />
         <TitleBarAppName />
       </div>
 
-      <div className="absolute start-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
+      <div className="absolute start-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center" onDoubleClick={e => e.stopPropagation()}>
         <TitleBarTabTitle title={tabTitle} />
       </div>
 
-      <div className="flex items-center pe-2">
+      <div className="flex items-center pe-2" onDoubleClick={e => e.stopPropagation()}>
         {platform === 'windows' || platform === 'linux' ? (
           <WindowsWindowControls />
         ) : (
