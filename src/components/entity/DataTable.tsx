@@ -100,6 +100,7 @@ export function DataTable({
         header: col.label,
         size: col.width,
         enableSorting: col.sortable,
+        enableResizing: true,
         cell: ({ getValue }: { getValue: () => unknown }) => (
           <DataCell column={col} value={getValue()} />
         ),
@@ -131,6 +132,7 @@ export function DataTable({
     manualFiltering: true,
     manualPagination: true,
     enableRowSelection: true,
+    enableColumnResizing: true,
     onRowSelectionChange: set => {
       const newSelection = typeof set === 'function'
         ? set(Object.fromEntries([...selectedIds].map(id => [id, true])))
@@ -207,60 +209,73 @@ export function DataTable({
 
   return (
     <div className="flex-1 overflow-auto border border-outline-variant rounded-lg bg-surface-container-lowest">
-      <table className="w-full border-collapse text-body-sm">
-        <thead className="sticky top-0 z-10 bg-surface-container-high border-b border-outline-variant shadow-sm">
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <th
-                  key={header.id}
-                  className="px-compact-padding py-2.5 text-left font-bold text-on-surface"
-                  style={{ width: header.getSize() }}
-                >
-                  {header.isPlaceholder ? null : (
-                    <div className="flex items-center justify-between">
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.columnDef.enableSorting && (
-                        <button
-                          className="p-1 hover:bg-surface-bright rounded transition-colors focus-visible:ring-2 focus-visible:ring-secondary"
-                          onClick={() => handleSortChange(header.id)}
-                        >
-                          <span className="material-symbols-outlined text-[16px] text-on-surface-variant">
-                            {sort?.columnId === header.id
-                              ? sort.direction === 'asc'
-                                ? 'expand_less'
-                                : 'expand_more'
-                              : 'unfold_more'}
-                          </span>
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody className="divide-y divide-outline-variant">
-          {table.getRowModel().rows.map(row => (
-            <tr
-              key={row.id}
-              className="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30 cursor-pointer"
-              onClick={() => onRowClick(row.original.id, row.original)}
-            >
-              {row.getVisibleCells().map(cell => (
-                <td
-                  key={cell.id}
-                  className="px-compact-padding py-2 text-on-surface"
-                  style={{ width: cell.column.getSize() }}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="min-w-0">
+        <table className="w-full border-collapse text-body-sm">
+          <thead className="sticky top-0 z-10 bg-surface-container-high border-b border-outline-variant shadow-sm">
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th
+                    key={header.id}
+                    className="px-compact-padding py-2.5 text-left font-bold text-on-surface relative select-none"
+                    style={{ width: header.getSize() }}
+                  >
+                    {header.isPlaceholder ? null : (
+                      <div className="flex items-center justify-between">
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.column.columnDef.enableSorting && (
+                          <button
+                            className="p-1 hover:bg-surface-bright rounded transition-colors focus-visible:ring-2 focus-visible:ring-secondary"
+                            onClick={() => handleSortChange(header.id)}
+                          >
+                            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">
+                              {sort?.columnId === header.id
+                                ? sort.direction === 'asc'
+                                  ? 'expand_less'
+                                  : 'expand_more'
+                                : 'unfold_more'}
+                            </span>
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    {header.column.getCanResize() && (
+                      <div
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        className={`absolute end-0 top-0 h-full w-1 cursor-col-resize touch-none ${header.column.getIsResizing() ? 'bg-secondary' : 'hover:bg-secondary/50'}`}
+                      />
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody className="divide-y divide-outline-variant">
+            {table.getRowModel().rows.map(row => (
+              <tr
+                key={row.id}
+                className="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+              >
+                {row.getVisibleCells().map(cell => {
+                  const columnDef = columns.find(c => c.id === cell.column.id)
+                  const isNameCol = columnDef?.isNameColumn
+                  return (
+                    <td
+                      key={cell.id}
+                      className={`px-compact-padding py-2 text-on-surface ${isNameCol ? 'cursor-pointer hover:bg-surface-container-highest' : ''}`}
+                      style={{ width: cell.column.getSize() }}
+                      onClick={isNameCol ? () => onRowClick(row.original.id, row.original) : undefined}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

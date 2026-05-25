@@ -80,7 +80,7 @@ export function DataTableShell({
   }, [onSaveColumnPrefs])
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-hidden">
       <Toolbar
         searchValue={searchValue}
         onSearchChange={setSearchValue}
@@ -92,17 +92,21 @@ export function DataTableShell({
         onBulkAction={handleBulkAction}
         onExport={onExport}
       />
-      <DataTable
-        entityType={entityType}
-        columns={columns}
-        data={data}
-        sort={sort}
-        isLoading={isLoading}
-        selectedIds={selectedIds}
-        onSort={handleSort}
-        onRowSelect={handleRowSelect}
-        onRowClick={handleRowClick}
-      />
+      <div className="flex-1 overflow-hidden px-6 py-4">
+        <div className="h-full flex flex-col">
+          <DataTable
+            entityType={entityType}
+            columns={columns}
+            data={data}
+            sort={sort}
+            isLoading={isLoading}
+            selectedIds={selectedIds}
+            onSort={handleSort}
+            onRowSelect={handleRowSelect}
+            onRowClick={handleRowClick}
+          />
+        </div>
+      </div>
       <PaginationFooter
         pagination={paginationState}
         onPageChange={handlePageChange}

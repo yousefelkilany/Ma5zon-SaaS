@@ -26,12 +26,13 @@ export function PaginationFooter({
         <div className="flex items-center gap-2">
           <span className="text-on-surface-variant text-body-sm">Rows per page</span>
           <select
-            className="bg-surface-bright border border-outline-variant rounded px-2 py-1 text-on-surface text-body-sm"
+            className="bg-surface-container border border-outline-variant rounded px-2 py-1 text-on-surface text-body-sm"
             value={pageSize}
             onChange={handlePageSizeChange}
             disabled={isLoading}
             aria-label="Rows per page"
           >
+            <option value={10}>10</option>
             <option value={25}>25</option>
             <option value={50}>50</option>
             <option value={100}>100</option>
