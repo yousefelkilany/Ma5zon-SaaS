@@ -18,12 +18,21 @@ export function MainWindowContent() {
     const activeTab = tabs.find(t => t.id === activeTabId)
 
     // Active tab changed → update URL to match
-    if (activeTab && location.pathname !== `/${activeTab.type}`) {
-      isNavigatingRef.current = true
-      try {
-        flushSync(() => navigate(`/${activeTab.type}`, { replace: true }))
-      } finally {
-        isNavigatingRef.current = false
+    if (activeTab) {
+      let targetPath = ''
+      if (activeTab.type === 'entity' && activeTab.entityType) {
+        targetPath = `/entity/${activeTab.entityType}`
+      } else {
+        targetPath = `/${activeTab.type}`
+      }
+
+      if (location.pathname !== targetPath) {
+        isNavigatingRef.current = true
+        try {
+          flushSync(() => navigate(targetPath, { replace: true }))
+        } finally {
+          isNavigatingRef.current = false
+        }
       }
     }
   }, [location.pathname, activeTabId, tabs, navigate])
