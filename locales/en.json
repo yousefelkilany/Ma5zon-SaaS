@@ -1,5 +1,5 @@
 {
-  "app.name": "Tauri Template",
+  "app.name": "Ma5zon",
 
   "menu.about": "About {{appName}}",
   "menu.checkForUpdates": "Check for Updates...",
@@ -97,8 +97,8 @@
   "commandPalette.noResults": "No results found.",
 
   "titlebar.default": "Tauri App",
-  "titlebar.logo": "AccuLedger Logo",
-  "titlebar.appName": "AccuLedger",
+  "titlebar.logo": "Ma5zon Logo",
+  "titlebar.appName": "Ma5zon",
   "titlebar.showLeftSidebar": "Show Left Sidebar",
   "titlebar.hideLeftSidebar": "Hide Left Sidebar",
   "titlebar.showRightSidebar": "Show Right Sidebar",
@@ -123,7 +123,7 @@
   "titlebar.expandSidebar": "Expand sidebar",
   "titlebar.collapseSidebar": "Collapse sidebar",
 
-  "nav.appName": "AccuLedger",
+  "nav.appName": "Ma5zon",
   "nav.appTagline": "Enterprise Finance",
   "nav.globalSearchPlaceholder": "Global Search (Records, Invoices, Customers)...",
   "nav.userName": "Alex Sterling",

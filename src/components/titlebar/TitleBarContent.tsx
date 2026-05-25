@@ -22,7 +22,6 @@ export function TitleBarLogo() {
 
 /**
  * App name displayed after the logo.
- * Fixed text "AccuLedger".
  */
 export function TitleBarAppName() {
   const { t } = useTranslation()

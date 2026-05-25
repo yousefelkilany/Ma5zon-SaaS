@@ -1,0 +1,11 @@
+{
+  "Application crashed": "common.applicationCrashed",
+  "No stack trace available": "common.noStackTraceAvailable",
+  "Failed to save crash data": "common.failedToSaveCrashData",
+  "mb-6": "common.mb6",
+  "currentColor": "common.currentcolor",
+  "Something went wrong": "common.somethingWentWrong",
+  "The application encountered an unexpected error. Your data has\n                been saved automatically.": "common.theApplicationEncounteredAnUnexpectedError.YourDataHasBeenSavedAutomatically.",
+  "Reload Application": "common.reloadApplication",
+  "Try Again": "common.tryAgain"
+}

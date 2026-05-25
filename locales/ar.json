@@ -1,5 +1,5 @@
 {
-  "app.name": "قالب تاوري",
+  "app.name": "مخزون",
 
   "menu.about": "حول {{appName}}",
   "menu.checkForUpdates": "التحقق من التحديثات...",
@@ -97,8 +97,8 @@
   "commandPalette.noResults": "لم يتم العثور على نتائج.",
 
   "titlebar.default": "تطبيق تاوري",
-  "titlebar.logo": "شعار AccuLedger",
-  "titlebar.appName": "AccuLedger",
+  "titlebar.logo": "شعار مخزون",
+  "titlebar.appName": "مخزون",
   "titlebar.showLeftSidebar": "إظهار الشريط الجانبي الأيسر",
   "titlebar.hideLeftSidebar": "إخفاء الشريط الجانبي الأيسر",
   "titlebar.showRightSidebar": "إظهار الشريط الجانبي الأيمن",
@@ -123,7 +123,7 @@
   "titlebar.expandSidebar": "توسيع الشريط الجانبي",
   "titlebar.collapseSidebar": "طي الشريط الجانبي",
 
-  "nav.appName": "AccuLedger",
+  "nav.appName": "مخزون",
   "nav.appTagline": "المالية للمؤسسات",
   "nav.globalSearchPlaceholder": "البحث العالمي (السجلات، الفواتير، العملاء)...",
   "nav.userName": "أليكس ستيرلينغ",

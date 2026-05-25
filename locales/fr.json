@@ -1,5 +1,5 @@
 {
-  "app.name": "Tauri Template",
+  "app.name": "Ma5zon",
 
   "menu.about": "À propos de {{appName}}",
   "menu.checkForUpdates": "Vérifier les mises à jour...",

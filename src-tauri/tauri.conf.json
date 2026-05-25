@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "tauri-app",
+  "productName": "Ma5zon",
   "version": "0.1.0",
-  "identifier": "com.tauri-app.app",
+  "identifier": "com.ma5zon.app",
   "build": {
     "removeUnusedCommands": true,
     "beforeDevCommand": "npm run dev",
@@ -13,8 +13,8 @@
   "app": {
     "windows": [
       {
-        "label": "AccuLedger-Finance",
-        "title": "AccuLedger | Enterpreise Finance",
+        "label": "Ma5zon-Finance",
+        "title": "Ma5zon | Enterprise Finance",
         "width": 1250,
         "height": 950,
         "minWidth": 1250,

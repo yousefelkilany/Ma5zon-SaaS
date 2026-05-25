@@ -8,7 +8,7 @@ describe('App', () => {
   it('renders main window layout', () => {
     render(<App />)
     expect(
-      screen.getByRole('heading', { name: /AccuLedger/i })
+      screen.getByRole('heading', { name: /Ma5zon/i })
     ).toBeInTheDocument()
   })
 

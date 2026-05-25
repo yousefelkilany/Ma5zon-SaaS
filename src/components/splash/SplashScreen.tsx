@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Banknote, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Spinner } from '@/components/ui/spinner'
+import { useTranslation } from 'react-i18next'
 
 interface SplashScreenProps {
   isReady: boolean
@@ -9,6 +10,7 @@ interface SplashScreenProps {
 }
 
 function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
+  const { t } = useTranslation()
   const [visible, setVisible] = useState(true)
   const [logoError, setLogoError] = useState(false)
 
@@ -42,7 +44,7 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
           {!logoError ? (
             <img
               src={new URL('@/assets/logo.png', import.meta.url).href}
-              alt="AccuLedger Logo"
+              alt={t('titlebar.logo')}
               className="h-full w-full object-contain"
               onError={() => setLogoError(true)}
             />
@@ -53,7 +55,7 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
 
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-            AccuLedger
+{t('titlebar.appName')}
           </h1>
           <p className="text-base text-muted-foreground opacity-70">
             Precision in every transaction.
@@ -67,7 +69,7 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
 
       <footer className="flex w-full justify-center pb-10">
         <p className="text-sm text-muted-foreground opacity-50">
-          © 2026 AccuLedger v0.1.0
+          © 2026 {t('titlebar.appName')} v0.1.0
         </p>
       </footer>
     </div>
