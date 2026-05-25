@@ -1,3 +1,60 @@
 export interface EntityWorkspaceProps {
   entityType: string
 }
+
+export interface ColumnDef {
+  id: string
+  label: string
+  type: 'text' | 'currency' | 'number' | 'date' | 'status' | 'actions'
+  width: number
+  sortable: boolean
+  filterable: boolean
+  visible: boolean
+  order: number
+}
+
+export interface EntityRow {
+  id: string
+  [key: string]: unknown
+}
+
+export interface PaginationState {
+  page: number
+  pageSize: number
+  totalRows: number
+  totalPages: number
+}
+
+export interface SortState {
+  columnId: string
+  direction: 'asc' | 'desc'
+}
+
+export interface FilterState {
+  columnId: string
+  operator: 'eq' | 'neq' | 'contains' | 'gt' | 'lt' | 'gte' | 'lte' | 'between'
+  value: string | number | [number, number]
+}
+
+export interface DataTableProps {
+  entityType: string
+  columns: ColumnDef[]
+  data: EntityRow[]
+  pagination: PaginationState
+  sort: SortState | null
+  filters: FilterState[]
+  isLoading: boolean
+  selectedIds: Set<string>
+  onSort: (sort: SortState | null) => void
+  onFilter: (filters: FilterState[]) => void
+  onPageChange: (page: number, pageSize: number) => void
+  onRowSelect: (ids: Set<string>) => void
+  onRowClick: (id: string, row: EntityRow) => void
+  onSaveColumnPrefs: (columns: ColumnDef[]) => void
+}
+
+export interface PaginationFooterProps {
+  pagination: PaginationState
+  onPageChange: (page: number, pageSize: number) => void
+  isLoading: boolean
+}
