@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next'
 import { useTabStore } from '@/store/tab-store'
 import { cn } from '@/lib/utils'
 
 export function TabBar() {
+  const { t } = useTranslation()
   const { tabs, activeTabId, setActiveTab, addTab, removeTab } = useTabStore()
 
   const handleTabClick = (tabId: string) => {
@@ -11,7 +13,7 @@ export function TabBar() {
 
   const handleAddTab = () => {
     addTab({
-      title: 'New Tab',
+      title: t('nav.newTab'),
       type: 'new-tab',
       closable: true,
     })

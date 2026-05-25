@@ -113,6 +113,13 @@
   "titlebar.expandSidebar": "توسيع الشريط الجانبي",
   "titlebar.collapseSidebar": "طي الشريط الجانبي",
 
+  "nav.appName": "AccuLedger",
+  "nav.appTagline": "المالية للمؤسسات",
+  "nav.globalSearchPlaceholder": "البحث العالمي (السجلات، الفواتير، العملاء)...",
+  "nav.userName": "أليكس ستيرلينغ",
+  "nav.userRole": "محلل أول",
+  "nav.newTab": "علامة جديدة",
+
   "toast.success.preferencesSaved": "تم حفظ التفضيلات",
   "toast.success.testToast": "إشعار اختباري",
   "toast.success.testToastDescription": "هذا إشعار اختباري",

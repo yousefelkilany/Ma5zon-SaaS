@@ -113,6 +113,13 @@
   "titlebar.expandSidebar": "Expand sidebar",
   "titlebar.collapseSidebar": "Collapse sidebar",
 
+  "nav.appName": "AccuLedger",
+  "nav.appTagline": "Enterprise Finance",
+  "nav.globalSearchPlaceholder": "Global Search (Records, Invoices, Customers)...",
+  "nav.userName": "Alex Sterling",
+  "nav.userRole": "Senior Analyst",
+  "nav.newTab": "New Tab",
+
   "toast.success.preferencesSaved": "Preferences saved",
   "toast.success.testToast": "Test Toast",
   "toast.success.testToastDescription": "This is a test notification",

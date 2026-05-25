@@ -1,4 +1,8 @@
+import { useTranslation } from 'react-i18next'
+
 export function Navbar() {
+  const { t } = useTranslation()
+
   return (
     <header className="flex items-center h-16 px-gutter bg-surface-container-low border-b border-outline-variant shrink-0">
       {/* Left: Logo */}
@@ -10,10 +14,10 @@ export function Navbar() {
         />
         <div className="flex flex-col">
           <span className="font-headline-sm text-headline-sm font-bold text-on-surface">
-            AccuLedger
+            {t('nav.appName')}
           </span>
           <span className="font-label-caps text-[9px] text-on-surface-variant">
-            Enterprise Finance
+            {t('nav.appTagline')}
           </span>
         </div>
       </div>
@@ -26,7 +30,7 @@ export function Navbar() {
           </span>
           <input
             className="bg-surface-container-high border border-outline-variant/30 rounded-lg pl-10 pr-4 py-2 text-body-sm font-body-sm text-on-surface focus:ring-1 focus:ring-primary w-full transition-all"
-            placeholder="Global Search (Records, Invoices, Customers)..."
+            placeholder={t('nav.globalSearchPlaceholder')}
             type="text"
           />
         </div>
@@ -45,10 +49,10 @@ export function Navbar() {
           />
           <div className="hidden lg:block leading-tight">
             <p className="font-body-sm text-body-sm font-bold text-primary">
-              Alex Sterling
+              {t('nav.userName')}
             </p>
             <p className="font-label-caps text-[9px] text-on-surface-variant uppercase">
-              Senior Analyst
+              {t('nav.userRole')}
             </p>
           </div>
         </div>
