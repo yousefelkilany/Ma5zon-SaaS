@@ -25,11 +25,11 @@ export function Navbar() {
       {/* Center: Global Search */}
       <div className="flex-1 flex items-center justify-center max-w-xl mx-auto">
         <div className="relative w-full">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">
+          <span className="material-symbols-outlined absolute inset-s-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">
             search
           </span>
           <input
-            className="bg-surface-container-high border border-outline-variant/30 rounded-lg pl-10 pr-4 py-2 text-body-sm font-body-sm text-on-surface focus:ring-1 focus:ring-primary w-full transition-all"
+            className="bg-surface-container-high border border-outline-variant/30 rounded-lg ps-10 pe-4 py-2 text-body-sm font-body-sm text-on-surface focus:ring-1 focus:ring-primary w-full transition-all"
             placeholder={t('nav.globalSearchPlaceholder')}
             type="text"
           />

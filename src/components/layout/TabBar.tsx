@@ -49,7 +49,7 @@ export function TabBar() {
             {tab.closable && (
               <span
                 onClick={(e) => handleCloseTab(e, tab.id)}
-                className="material-symbols-outlined text-[14px] ml-2 hover:text-error"
+                className="material-symbols-outlined text-[14px] ms-2 hover:text-error"
               >
                 close
               </span>

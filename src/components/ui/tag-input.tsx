@@ -117,7 +117,7 @@ const TagInput = React.forwardRef<HTMLDivElement, TagInputProps>(
                     e.stopPropagation()
                     removeTag(tag.id)
                   }}
-                  className="ml-1 hover:bg-destructive/20 rounded-sm p-0.5 transition-colors"
+                  className="ms-1 hover:bg-destructive/20 rounded-sm p-0.5 transition-colors"
                   aria-label={`Remove ${tag.text} tag`}
                 >
                   <X className="size-3" />
@@ -133,7 +133,7 @@ const TagInput = React.forwardRef<HTMLDivElement, TagInputProps>(
             onKeyDown={handleKeyDown}
             placeholder={tags.length === 0 ? placeholder : ''}
             disabled={disabled}
-            className="flex-1 min-w-[120px] bg-transparent border-0 outline-none placeholder:text-muted-foreground text-foreground disabled:cursor-not-allowed"
+            className="flex-1 min-w-30 bg-transparent border-0 outline-none placeholder:text-muted-foreground text-foreground disabled:cursor-not-allowed"
           />
         </div>
       </div>
