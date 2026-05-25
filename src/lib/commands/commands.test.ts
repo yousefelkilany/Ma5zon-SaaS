@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, afterEach, vi } from 'vitest'
 import type { TFunction } from 'i18next'
 import type { CommandContext, AppCommand } from './types'
 
@@ -16,31 +16,21 @@ vi.mock('@/store/ui-store', () => ({
 
 const { registerCommands, getAllCommands, executeCommand } =
   await import('./registry')
-const { navigationCommands } = await import('./navigation-commands')
+const { windowCommands, notificationCommands } = await import('./index')
 
 const createMockContext = (): CommandContext => ({
-  openPreferences: vi.fn(),
   showToast: vi.fn(),
 })
 
-const mockT = ((key: string): string => {
-  const translations: Record<string, string> = {
-    'commands.showSidebar.label': 'Show Sidebar',
-    'commands.showSidebar.description': 'Show the sidebar',
-    'commands.hideSidebar.label': 'Hide Sidebar',
-    'commands.hideSidebar.description': 'Hide the sidebar',
-    'commands.openPreferences.label': 'Open Preferences',
-    'commands.openPreferences.description': 'Open the application preferences',
-  }
-  return translations[key] || key
-}) as TFunction
+const mockT = ((key: string): string => key) as TFunction
 
-describe('Simplified Command System', () => {
+describe('Command System', () => {
   let mockContext: CommandContext
 
   beforeEach(() => {
     mockContext = createMockContext()
-    registerCommands(navigationCommands)
+    registerCommands(windowCommands)
+    registerCommands(notificationCommands)
   })
 
   afterEach(() => {
@@ -51,76 +41,10 @@ describe('Simplified Command System', () => {
     it('registers commands correctly', () => {
       const commands = getAllCommands(mockContext)
       expect(commands.length).toBeGreaterThan(0)
-
-      const sidebarCommand = commands.find(
-        cmd => cmd.id === 'show-sidebar' || cmd.id === 'hide-sidebar'
-      )
-      expect(sidebarCommand).toBeDefined()
-      expect(mockT(sidebarCommand?.labelKey ?? '')).toContain('Sidebar')
-    })
-
-    it('filters commands by availability', () => {
-      mockUIStore.getState.mockReturnValue({
-        sidebarVisible: false,
-        commandPaletteOpen: false,
-        setSidebarVisible: vi.fn(),
-      })
-
-      const availableCommands = getAllCommands(mockContext)
-      const showSidebarCommand = availableCommands.find(
-        cmd => cmd.id === 'show-sidebar'
-      )
-      const hideSidebarCommand = availableCommands.find(
-        cmd => cmd.id === 'hide-sidebar'
-      )
-
-      expect(showSidebarCommand).toBeDefined()
-      expect(hideSidebarCommand).toBeUndefined()
-    })
-
-    it('filters commands by search term using translations', () => {
-      const searchResults = getAllCommands(mockContext, 'sidebar', mockT)
-
-      expect(searchResults.length).toBeGreaterThan(0)
-      searchResults.forEach(cmd => {
-        const label = mockT(cmd.labelKey).toLowerCase()
-        const description = cmd.descriptionKey
-          ? mockT(cmd.descriptionKey).toLowerCase()
-          : ''
-        const matchesSearch =
-          label.includes('sidebar') || description.includes('sidebar')
-
-        expect(matchesSearch).toBe(true)
-      })
     })
   })
 
   describe('Command Execution', () => {
-    it('executes show-sidebar command correctly', async () => {
-      mockUIStore.getState.mockReturnValue({
-        sidebarVisible: false,
-        commandPaletteOpen: false,
-        setSidebarVisible: vi.fn(),
-      })
-
-      const result = await executeCommand('show-sidebar', mockContext)
-
-      expect(result.success).toBe(true)
-    })
-
-    it('fails to execute unavailable command', async () => {
-      mockUIStore.getState.mockReturnValue({
-        sidebarVisible: true,
-        commandPaletteOpen: false,
-        setSidebarVisible: vi.fn(),
-      })
-
-      const result = await executeCommand('show-sidebar', mockContext)
-
-      expect(result.success).toBe(false)
-      expect(result.error).toContain('not available')
-    })
-
     it('handles non-existent command', async () => {
       const result = await executeCommand('non-existent-command', mockContext)
 
