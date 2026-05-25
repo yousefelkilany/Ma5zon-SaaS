@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { flushSync } from 'react-dom'
 import { useTabStore } from '@/store/tab-store'
 import { DashboardContent, NewTabContent } from '@/components/tabs'
+import { EntityWorkspace } from '@/components/entity'
 
 export function MainWindowContent() {
   const navigate = useNavigate()
@@ -34,6 +35,7 @@ export function MainWindowContent() {
         <Route path="/new-tab" element={<NewTabContent />} />
         <Route path="/sales-invoice" element={<NewTabContent />} />
         <Route path="/purchase-invoice" element={<NewTabContent />} />
+        <Route path="/entity/:entityType" element={<EntityWorkspace />} />
         <Route path="*" element={<DashboardContent />} />
       </Routes>
     </div>
