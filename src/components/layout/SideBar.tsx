@@ -1,6 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
+import { useTabStore } from '@/store/tab-store'
 
 interface SideBarProps {
   children?: React.ReactNode
@@ -13,6 +15,7 @@ interface NavItemProps {
   href?: string
   active?: boolean
   collapsed: boolean
+  onClick?: () => void
 }
 
 function NavItem({
@@ -21,6 +24,7 @@ function NavItem({
   href = '#',
   active = false,
   collapsed,
+  onClick,
 }: NavItemProps) {
   return (
     <a
@@ -31,6 +35,7 @@ function NavItem({
           : 'text-on-surface-variant hover:bg-surface-container-high'
       )}
       href={href}
+      onClick={onClick}
     >
       <span className="material-symbols-outlined text-[20px] shrink-0">
         {icon}
@@ -57,6 +62,7 @@ interface NavSectionProps {
     label: string
     href?: string
     active?: boolean
+    onClick?: () => void
   }[]
   collapsed: boolean
   isLast?: boolean
@@ -98,7 +104,7 @@ function NavItemsList({
   return (
     <div className="space-y-1">
       {items.map(item => (
-        <NavItem key={item.label} {...item} collapsed={collapsed} />
+        <NavItem key={item.label} {...item} collapsed={collapsed} onClick={item.onClick} />
       ))}
     </div>
   )
@@ -107,44 +113,57 @@ function NavItemsList({
 export function SideBar({ className }: SideBarProps) {
   const { t } = useTranslation()
   const [collapsed, setCollapsed] = useState(false)
+  const navigate = useNavigate()
+  const { addTab, tabs, setActiveTab } = useTabStore()
+
+  const handleEntityClick = useCallback((entityType: string, title: string) => {
+    const existingTab = tabs.find(t => t.entityType === entityType)
+
+    if (existingTab) {
+      setActiveTab(existingTab.id)
+    } else {
+      const newTabId = addTab({
+        title,
+        type: 'entity',
+        closable: true,
+        entityType,
+      })
+      setActiveTab(newTabId)
+    }
+
+    navigate(`/entity/${entityType}`)
+  }, [tabs, addTab, setActiveTab, navigate])
 
   const NAV_SECTIONS = useMemo(() => [
     {
       title: t('sidebar.nav.sales'),
       items: [
-        { icon: 'receipt', label: t('sidebar.nav.invoices') },
-        { icon: 'groups', label: t('sidebar.nav.customers') },
+        { icon: 'receipt', label: t('sidebar.nav.invoices'), entityType: 'invoices', onClick: () => handleEntityClick('invoices', t('sidebar.nav.invoices')) },
+        { icon: 'groups', label: t('sidebar.nav.customers'), entityType: 'customers', onClick: () => handleEntityClick('customers', t('sidebar.nav.customers')) },
       ],
     },
     {
       title: t('sidebar.nav.purchases'),
       items: [
-        { icon: 'shopping_cart', label: t('sidebar.nav.bills') },
-        { icon: 'store', label: t('sidebar.nav.vendors') },
+        { icon: 'shopping_cart', label: t('sidebar.nav.bills'), entityType: 'bills', onClick: () => handleEntityClick('bills', t('sidebar.nav.bills')) },
+        { icon: 'store', label: t('sidebar.nav.vendors'), entityType: 'vendors', onClick: () => handleEntityClick('vendors', t('sidebar.nav.vendors')) },
       ],
     },
     {
       title: t('sidebar.nav.inventory'),
       items: [
-        { icon: 'inventory_2', label: t('sidebar.nav.stock') },
-        { icon: 'warehouse', label: t('sidebar.nav.warehouses') },
+        { icon: 'inventory_2', label: t('sidebar.nav.stock'), entityType: 'stock', onClick: () => handleEntityClick('stock', t('sidebar.nav.stock')) },
+        { icon: 'warehouse', label: t('sidebar.nav.warehouses'), entityType: 'warehouses', onClick: () => handleEntityClick('warehouses', t('sidebar.nav.warehouses')) },
       ],
     },
-    // {
-    //   title: t('sidebar.nav.finance'),
-    //   items: [
-    //     { icon: 'account_balance_wallet', label: t('sidebar.nav.ledgers'), active: true },
-    //     { icon: 'analytics', label: t('sidebar.nav.plReport') },
-    //   ],
-    // },
     {
       title: t('sidebar.nav.system'),
       items: [
-        { icon: 'bar_chart', label: t('sidebar.nav.reports') },
-        { icon: 'settings', label: t('sidebar.nav.settings') },
+        { icon: 'bar_chart', label: t('sidebar.nav.reports'), entityType: 'reports', onClick: () => handleEntityClick('reports', t('sidebar.nav.reports')) },
+        { icon: 'settings', label: t('sidebar.nav.settings'), entityType: 'settings', onClick: () => handleEntityClick('settings', t('sidebar.nav.settings')) },
       ],
     },
-  ] as const, [t])
+  ] as const, [t, handleEntityClick])
 
   return (
     <div
