@@ -80,9 +80,9 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         data={mockEntityRows}
         pagination={mockPagination}
         isLoading={false}
-        onSaveColumnPrefs={(cols) => console.log('Save prefs:', cols)}
-        onFiltersApply={(filters) => console.log('Apply filters:', filters)}
-        onExport={() => console.log('Export clicked')}
+        onSaveColumnPrefs={() => {}}
+        onFiltersApply={() => {}}
+        onExport={() => {}}
       />
     </div>
   )
