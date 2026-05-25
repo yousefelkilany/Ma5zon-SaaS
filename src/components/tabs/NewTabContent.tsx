@@ -3,7 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { useTabStore } from '@/store/tab-store'
 import type { TabType } from '@/lib/utils'
 
-function KpiCard({ label, value, trend, trendType }: {
+function KpiCard({
+  label,
+  value,
+  trend,
+  trendType,
+}: {
   label: string
   value: string
   trend: string
@@ -18,12 +23,22 @@ function KpiCard({ label, value, trend, trendType }: {
   return (
     <div className="bg-surface-container p-cozy-padding border border-outline-variant rounded hover:border-secondary/30 transition-all flex flex-col justify-between h-32 relative overflow-hidden group">
       <div className="flex justify-between items-start">
-        <span className="text-label-caps font-label-caps text-on-surface-variant">{label}</span>
-        <span className={`text-body-sm font-data-tabular ${trendColors[trendType]}`}>{trend}</span>
+        <span className="text-label-caps font-label-caps text-on-surface-variant">
+          {label}
+        </span>
+        <span
+          className={`text-body-sm font-data-tabular ${trendColors[trendType]}`}
+        >
+          {trend}
+        </span>
       </div>
       <div className="flex items-baseline gap-2">
-        <span className="text-headline-md font-headline-md text-on-surface">{value}</span>
-        <span className="text-on-surface-variant text-[12px] font-data-tabular">USD</span>
+        <span className="text-headline-md font-headline-md text-on-surface">
+          {value}
+        </span>
+        <span className="text-on-surface-variant text-[12px] font-data-tabular">
+          USD
+        </span>
       </div>
     </div>
   )
@@ -57,22 +72,43 @@ interface WorkflowPanelProps {
   badge?: string
   badgeType?: 'active' | 'paused' | 'crit' | 'online'
   actions: { label: string; badge?: string | number }[]
-  stats?: { label: string; value: string | number; type?: 'default' | 'warning' }[]
+  stats?: {
+    label: string
+    value: string | number
+    type?: 'default' | 'warning'
+  }[]
 }
 
-function WorkflowPanel({ title, badge, badgeType = 'active', actions, stats }: WorkflowPanelProps) {
+function WorkflowPanel({
+  title,
+  badge,
+  badgeType = 'active',
+  actions,
+  stats,
+}: WorkflowPanelProps) {
   const badgeStyles = {
-    active: 'bg-secondary-container/20 text-secondary border border-secondary/20',
-    paused: 'bg-surface-container-highest text-on-surface-variant border border-outline-variant',
+    active:
+      'bg-secondary-container/20 text-secondary border border-secondary/20',
+    paused:
+      'bg-surface-container-highest text-on-surface-variant border border-outline-variant',
     crit: 'bg-tertiary-container text-tertiary border border-tertiary/20',
-    online: 'bg-secondary-container/20 text-secondary border border-secondary/20',
+    online:
+      'bg-secondary-container/20 text-secondary border border-secondary/20',
   }
 
   return (
     <div className="bg-surface-container-high border border-outline-variant rounded overflow-hidden">
       <div className="bg-surface-container-highest px-compact-padding py-3 flex justify-between items-center">
-        <h3 className="text-label-caps font-label-caps text-secondary">{title}</h3>
-        {badge && <span className={`${badgeStyles[badgeType]} text-[10px] px-2 py-0.5 rounded`}>{badge}</span>}
+        <h3 className="text-label-caps font-label-caps text-secondary">
+          {title}
+        </h3>
+        {badge && (
+          <span
+            className={`${badgeStyles[badgeType]} text-[10px] px-2 py-0.5 rounded`}
+          >
+            {badge}
+          </span>
+        )}
       </div>
       <div className="p-compact-padding space-y-2">
         {actions.map((action, i) => (
@@ -81,9 +117,16 @@ function WorkflowPanel({ title, badge, badgeType = 'active', actions, stats }: W
         {stats && (
           <div className="mt-4 pt-4 border-t border-outline-variant/30 flex justify-between">
             {stats.map((stat, i) => (
-              <div key={i} className={`text-center flex-1 ${i > 0 ? '' : 'border-r border-outline-variant/30'}`}>
-                <p className="text-[10px] text-on-surface-variant label-caps uppercase mb-1">{stat.label}</p>
-                <p className={`text-body-md font-data-tabular ${stat.type === 'warning' ? 'text-on-tertiary-container' : ''}`}>
+              <div
+                key={i}
+                className={`text-center flex-1 ${i > 0 ? '' : 'border-r border-outline-variant/30'}`}
+              >
+                <p className="text-[10px] text-on-surface-variant label-caps uppercase mb-1">
+                  {stat.label}
+                </p>
+                <p
+                  className={`text-body-md font-data-tabular ${stat.type === 'warning' ? 'text-on-tertiary-container' : ''}`}
+                >
                   {stat.value}
                 </p>
               </div>
@@ -112,18 +155,38 @@ export function NewTabContent() {
   return (
     <div className="px-margin-edge py-6">
       <nav className="flex text-on-surface-variant text-[11px] font-label-caps uppercase tracking-wider mb-6">
-        <a className="hover:text-primary" href="#">{t('dashboard.breadcrumb.finance')}</a>
-        <span className="mx-2">/</span>
-        <span className="text-on-surface font-bold">{t('dashboard.breadcrumb.executiveOverview')}</span>
+        <a className="hover:text-primary" href="#">
+          {t('nav.appName')}
+        </a>
       </nav>
 
-      <div className="max-w-[1440px] mx-auto space-y-gutter">
+      <div className="max-w-360 mx-auto space-y-gutter">
         {/* KPI Cards */}
         <section className="grid grid-cols-1 md:grid-cols-4 gap-gutter">
-          <KpiCard label={t('dashboard.kpi.grossRevenue')} value="$2,842,910" trend="+12.4%" trendType="positive" />
-          <KpiCard label={t('dashboard.kpi.totalExpenses')} value="$1,120,405" trend="+4.2%" trendType="negative" />
-          <KpiCard label={t('dashboard.kpi.netProfit')} value="$1,722,505" trend="+18.1%" trendType="positive" />
-          <KpiCard label={t('dashboard.kpi.cashPosition')} value="$4,290,112" trend="Stable" trendType="neutral" />
+          <KpiCard
+            label={t('dashboard.kpi.grossRevenue')}
+            value="$2,842,910"
+            trend="+12.4%"
+            trendType="positive"
+          />
+          <KpiCard
+            label={t('dashboard.kpi.totalExpenses')}
+            value="$1,120,405"
+            trend="+4.2%"
+            trendType="negative"
+          />
+          <KpiCard
+            label={t('dashboard.kpi.netProfit')}
+            value="$1,722,505"
+            trend="+18.1%"
+            trendType="positive"
+          />
+          <KpiCard
+            label={t('dashboard.kpi.cashPosition')}
+            value="$4,290,112"
+            trend="Stable"
+            trendType="neutral"
+          />
         </section>
 
         {/* Workflow Panels */}
@@ -138,7 +201,11 @@ export function NewTabContent() {
             ]}
             stats={[
               { label: t('dashboard.status.awaiting'), value: 24 },
-              { label: t('dashboard.status.overdue'), value: 8, type: 'warning' },
+              {
+                label: t('dashboard.status.overdue'),
+                value: 8,
+                type: 'warning',
+              },
             ]}
           />
 
@@ -167,7 +234,11 @@ export function NewTabContent() {
               { label: t('dashboard.workflow.replenishmentAudit') },
             ]}
             stats={[
-              { label: t('dashboard.status.outStock'), value: 3, type: 'warning' },
+              {
+                label: t('dashboard.status.outStock'),
+                value: 3,
+                type: 'warning',
+              },
               { label: t('dashboard.status.valuation'), value: '$1.2M' },
             ]}
           />
@@ -194,13 +265,23 @@ export function NewTabContent() {
             title={t('dashboard.actions.salesInvoice')}
             description={t('dashboard.actions.salesInvoiceDesc')}
             icon="receipt"
-            onClick={() => handleActionClick('sales-invoice', t('dashboard.actions.salesInvoice'))}
+            onClick={() =>
+              handleActionClick(
+                'sales-invoice',
+                t('dashboard.actions.salesInvoice')
+              )
+            }
           />
           <ActionCard
             title={t('dashboard.actions.purchaseInvoice')}
             description={t('dashboard.actions.purchaseInvoiceDesc')}
             icon="shopping_cart"
-            onClick={() => handleActionClick('purchase-invoice', t('dashboard.actions.purchaseInvoice'))}
+            onClick={() =>
+              handleActionClick(
+                'purchase-invoice',
+                t('dashboard.actions.purchaseInvoice')
+              )
+            }
           />
         </section>
       </div>
@@ -208,7 +289,12 @@ export function NewTabContent() {
   )
 }
 
-function ActionCard({ title, description, icon, onClick }: {
+function ActionCard({
+  title,
+  description,
+  icon,
+  onClick,
+}: {
   title: string
   description: string
   icon: string
@@ -219,9 +305,13 @@ function ActionCard({ title, description, icon, onClick }: {
       onClick={onClick}
       className="bg-surface-container border border-outline-variant rounded p-cozy-padding flex items-center gap-4 hover:border-secondary/30 transition-all text-left"
     >
-      <span className="material-symbols-outlined text-[32px] text-secondary">{icon}</span>
+      <span className="material-symbols-outlined text-[32px] text-secondary">
+        {icon}
+      </span>
       <div>
-        <h4 className="text-body-md font-body-md font-medium text-on-surface">{title}</h4>
+        <h4 className="text-body-md font-body-md font-medium text-on-surface">
+          {title}
+        </h4>
         <p className="text-body-sm text-on-surface-variant">{description}</p>
       </div>
     </button>

@@ -193,5 +193,20 @@
   "dashboard.chart.apr": "Apr",
   "dashboard.chart.may": "May",
   "dashboard.chart.jun": "Jun",
-  "dashboard.chart.consulting": "Consulting"
+  "dashboard.chart.consulting": "Consulting",
+
+  "entity.workspace.section.sales": "SALES",
+  "entity.workspace.section.partners": "PARTNERS",
+  "entity.workspace.section.purchases": "PURCHASES",
+  "entity.workspace.section.inventory": "INVENTORY",
+  "entity.workspace.section.system": "SYSTEM",
+  "entity.workspace.addNew": "ADD NEW {{entity}}",
+  "entity.workspace.rowsPerPage": "ROWS PER PAGE:",
+  "entity.workspace.showing": "SHOWING {{start}} - {{end}} OF {{total}} RECORDS",
+  "entity.workspace.toolbar.search": "Global search entities...",
+  "entity.workspace.toolbar.status": "STATUS:",
+  "entity.workspace.toolbar.category": "CATEGORY:",
+  "entity.workspace.toolbar.all": "All",
+  "entity.workspace.toolbar.export": "Export Data",
+  "entity.workspace.toolbar.print": "Print View"
 }

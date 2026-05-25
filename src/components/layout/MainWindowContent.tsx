@@ -1,14 +1,23 @@
 import { useEffect, useRef } from 'react'
-import { Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom'
-import { flushSync } from 'react-dom'
+import {
+  Routes,
+  Route,
+  useNavigate,
+  useLocation,
+  useParams,
+} from 'react-router-dom'
 import { useTabStore } from '@/store/tab-store'
 import { DashboardContent, NewTabContent } from '@/components/tabs'
 import { EntityWorkspace } from '@/components/entity'
 
+function EntityRoute() {
+  const params = useParams()
+  return <EntityWorkspace entityType={params['entityType'] ?? ''} />
+}
+
 export function MainWindowContent() {
   const navigate = useNavigate()
   const location = useLocation()
-  const params = useParams()
   const { tabs, activeTabId, setActiveTab: _setActiveTab } = useTabStore()
   const isNavigatingRef = useRef(false)
 
@@ -29,11 +38,8 @@ export function MainWindowContent() {
 
       if (location.pathname !== targetPath) {
         isNavigatingRef.current = true
-        try {
-          flushSync(() => navigate(targetPath, { replace: true }))
-        } finally {
-          isNavigatingRef.current = false
-        }
+        navigate(targetPath, { replace: true })
+        isNavigatingRef.current = false
       }
     }
   }, [location.pathname, activeTabId, tabs, navigate])
@@ -45,8 +51,7 @@ export function MainWindowContent() {
         <Route path="/new-tab" element={<NewTabContent />} />
         <Route path="/sales-invoice" element={<NewTabContent />} />
         <Route path="/purchase-invoice" element={<NewTabContent />} />
-        {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-        <Route path="/entity/:entityType" element={<EntityWorkspace entityType={params.entityType!} />} />
+        <Route path="/entity/:entityType" element={<EntityRoute />} />
         <Route path="*" element={<DashboardContent />} />
       </Routes>
     </div>

@@ -193,5 +193,20 @@
   "dashboard.chart.apr": "أبريل",
   "dashboard.chart.may": "مايو",
   "dashboard.chart.jun": "يونيو",
-  "dashboard.chart.consulting": "الاستشارات"
+  "dashboard.chart.consulting": "الاستشارات",
+
+  "entity.workspace.section.sales": "المبيعات",
+  "entity.workspace.section.partners": "الشركاء",
+  "entity.workspace.section.purchases": "المشتريات",
+  "entity.workspace.section.inventory": "المخزون",
+  "entity.workspace.section.system": "النظام",
+  "entity.workspace.addNew": "إضافة {{entity}} جديد",
+  "entity.workspace.rowsPerPage": "صفوف لكل صفحة:",
+  "entity.workspace.showing": "عرض {{start}} - {{end}} من {{total}} سجل",
+  "entity.workspace.toolbar.search": "البحث العالمي في الكيانات...",
+  "entity.workspace.toolbar.status": "الحالة:",
+  "entity.workspace.toolbar.category": "الفئة:",
+  "entity.workspace.toolbar.all": "الكل",
+  "entity.workspace.toolbar.export": "تصدير البيانات",
+  "entity.workspace.toolbar.print": "عرض الطباعة"
 }
