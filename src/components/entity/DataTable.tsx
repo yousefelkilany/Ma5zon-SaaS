@@ -4,7 +4,6 @@ import {
   getCoreRowModel,
   flexRender,
   type ColumnDef as TanstackColumnDef,
-  type Row,
 } from '@tanstack/react-table'
 import type {
   ColumnDef,
@@ -59,7 +58,6 @@ function DataCell({
 }
 
 export function DataTable({
-  entityType,
   columns,
   data,
   pagination,
@@ -88,6 +86,7 @@ export function DataTable({
           <input
             type="checkbox"
             className="w-4 h-4"
+            aria-label="Select all"
             checked={table.getIsAllRowsSelected()}
             onChange={table.getToggleAllRowsSelectedHandler()}
           />
@@ -96,6 +95,7 @@ export function DataTable({
           <input
             type="checkbox"
             className="w-4 h-4"
+            aria-label="Select row"
             checked={row.getIsSelected()}
             onChange={row.getToggleSelectedHandler()}
             onClick={e => e.stopPropagation()}
@@ -140,11 +140,11 @@ export function DataTable({
     manualPagination: true,
     enableRowSelection: true,
     onRowSelectionChange: set => {
-      const newSelection = set(selectedIds, {} as Row<EntityRow>)
-      const ids = new Set(
-        Object.keys(newSelection).filter(k => newSelection[k])
-      )
-      onRowSelect(ids)
+      const newSelection = typeof set === 'function'
+        ? set(Object.fromEntries([...selectedIds].map(id => [id, true])))
+        : set
+      const ids = Object.keys(newSelection).filter(k => newSelection[k])
+      onRowSelect(new Set(ids))
     },
     state: {
       sort: sort ? [{ id: sort.columnId, desc: sort.direction === 'desc' }] : [],
@@ -230,7 +230,7 @@ export function DataTable({
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.columnDef.enableSorting && (
                         <button
-                          className="p-1 hover:bg-surface-bright rounded transition-colors"
+                          className="p-1 hover:bg-surface-bright rounded transition-colors focus-visible:ring-2 focus-visible:ring-secondary"
                           onClick={() => handleSortChange(header.id)}
                         >
                           <span className="material-symbols-outlined text-[16px] text-on-surface-variant">
