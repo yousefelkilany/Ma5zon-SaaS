@@ -161,7 +161,7 @@ export function LeftSideBar({ className }: LeftSideBarProps) {
           className="p-1 hover:bg-surface-container-high rounded text-on-surface-variant focus-visible:ring-2 focus-visible:ring-primary"
           aria-label={collapsed ? t('titlebar.expandSidebar') : t('titlebar.collapseSidebar')}
         >
-          <span className="material-symbols-outlined text-[20px]">
+          <span className="material-symbols-outlined text-[20px] icon-directional">
             {collapsed ? 'menu' : 'menu_open'}
           </span>
         </button>

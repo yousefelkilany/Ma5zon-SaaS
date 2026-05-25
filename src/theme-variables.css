@@ -112,6 +112,7 @@
   --font-body-sm: 'Inter', sans-serif;
   --font-label-caps: 'Inter', sans-serif;
   --font-data-tabular: 'Inter', sans-serif;
+  --font-sans: 'Inter', sans-serif;
 }
 
 :root {
@@ -147,6 +148,14 @@
   --sidebar-accent-foreground: #d3e4fe;
   --sidebar-border: #45464d;
   --sidebar-ring: #4edea3;
+}
+
+[dir="rtl"] .icon-directional {
+  transform: scaleX(-1);
+}
+
+html[dir="rtl"] *:not(.material-symbols-outlined) {
+  font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif !important;
 }
 
 .dark {

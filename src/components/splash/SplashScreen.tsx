@@ -43,7 +43,7 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
         <div className="h-[120px] w-[120px] flex items-center justify-center">
           {!logoError ? (
             <img
-              src={new URL('@/assets/logo.png', import.meta.url).href}
+              src={new URL('@/assets/logo.svg', import.meta.url).href}
               alt={t('titlebar.logo')}
               className="h-full w-full object-contain"
               onError={() => setLogoError(true)}
