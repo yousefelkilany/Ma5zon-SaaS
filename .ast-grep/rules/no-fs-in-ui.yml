@@ -1,0 +1,8 @@
+id: no-fs-in-ui
+language: TypeScript
+message: 'Direct filesystem access is prohibited in the UI. Please move this logic to a Rust command.'
+severity: error
+rule:
+  any:
+    - pattern: import { $IMPORT } from '@tauri-apps/api/fs'
+    - pattern: import * as fs from '@tauri-apps/api/fs'

@@ -1,0 +1,19 @@
+id: no-sql-in-ui
+language: TypeScript
+message: |
+  Direct SQL access detected in the UI layer. 
+  Architecture violation: Database operations must reside in the Rust backend.
+  Please move this logic to a Tauri command in src-tauri/src/ and call it via the type-safe binding.
+severity: error
+rule:
+  any:
+    # Ban the official Tauri SQL plugin
+    - pattern: import { $$$ } from '@tauri-apps/plugin-sql'
+    - pattern: import $IMPORT from '@tauri-apps/plugin-sql'
+    
+    # Ban common WASM-based SQL libraries
+    - pattern: import { $$$ } from 'sql.js'
+    - pattern: import $IMPORT from 'sql.js'
+    
+    # Ban any other custom database driver you might be using
+    - pattern: import { $$$ } from 'better-sqlite3'

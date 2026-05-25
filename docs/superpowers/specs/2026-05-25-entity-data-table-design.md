@@ -8,29 +8,29 @@ The Entity Data Table replaces the skeleton placeholder UI in `EntityWorkspace` 
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                        FRONTEND (React)                            │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌────────────────┐ │
-│  │ EntityWorkspace │───▶│  TanStack Query │───▶│  DataTable     │ │
-│  │                 │    │  Manages fetch  │    │  Pure Display │ │
-│  │                 │    │  + Caching     │    │               │ │
-│  └─────────────────┘    └─────────────────┘    └────────────────┘ │
-│         │                       │                       │          │
-│         │              ┌────────┴────────┐              │          │
-│         │              │ Column Prefs   │              │          │
-│         │              │ (localStorage)  │              │          │
-│         │              └────────────────┘              │          │
-└─────────┼───────────────────────┼─────────────────────┼──────────┘
-          │                       │                     │
-          ▼                       ▼                     ▼
+│                        FRONTEND (React)                             │
+│  ┌─────────────────┐    ┌─────────────────┐    ┌────────────────┐   │
+│  │ EntityWorkspace │    │  TanStack Query │    │   DataTable    │   │
+│  │                 │───▶│  Manages fetch  │───▶│  Pure Display  │   │
+│  │                 │    │    + Caching    │    │                │   │
+│  └─────────────────┘    └─────────────────┘    └────────────────┘   │
+│         │                       │                       │           │
+│         │              ┌────────┴────────┐              │           │
+│         │              │ Column Prefs    │              │           │
+│         │              │ (localStorage)  │              │           │
+│         │              └─────────────────┘              │           │
+└─────────┼───────────────────────┼───────────────────────┼───────────┘
+          │                       │                       │
+          ▼                       ▼                       ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                    BRIDGE (tauri-specta)                           │
-│          Type-safe commands auto-generated from Rust               │
+│                    BRIDGE (tauri-specta)                            │
+│          Type-safe commands auto-generated from Rust                │
 └───────────────────────────────┬─────────────────────────────────────┘
                                 │
                                 ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                    BACKEND (Rust + SQLite)                         │
-│           Commands handle all data operations                      │
+│                    BACKEND (Rust + SQLite)                          │
+│           Commands handle all data operations                       │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
