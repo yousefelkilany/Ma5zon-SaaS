@@ -58,3 +58,14 @@ export interface PaginationFooterProps {
   onPageChange: (page: number, pageSize: number) => void
   isLoading: boolean
 }
+
+export interface ToolbarProps {
+  searchValue: string
+  onSearchChange: (value: string) => void
+  onFiltersClick: () => void
+  onColumnsClick: () => void
+  hasSelection: boolean
+  selectedCount: number
+  onBulkAction: (action: string) => void
+  onExport: () => void
+}
