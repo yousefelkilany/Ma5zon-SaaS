@@ -43,13 +43,13 @@ export function DataTableShell({
 }: DataTableShellProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sort, setSort] = useState<SortState | null>(null)
-  const [filters, setFilters] = useState<FilterState[]>([])
+  const [filters] = useState<FilterState[]>([])
   const [searchValue, setSearchValue] = useState('')
   const [paginationState, setPaginationState] = useState<PaginationState>(
     pagination || defaultPagination
   )
   const [detailModalOpen, setDetailModalOpen] = useState(false)
-  const [detailEntityId, setDetailEntityId] = useState<string | null>(null)
+  const [, setDetailEntityId] = useState<string | null>(null)
   const [filterDialogOpen, setFilterDialogOpen] = useState(false)
   const [columnDialogOpen, setColumnDialogOpen] = useState(false)
 
@@ -70,7 +70,7 @@ export function DataTableShell({
     setDetailModalOpen(true)
   }, [])
 
-  const handleBulkAction = useCallback((action: string) => {
+  const handleBulkAction = useCallback((_action: string) => {
     setSelectedIds(new Set())
   }, [])
 
@@ -96,16 +96,12 @@ export function DataTableShell({
         entityType={entityType}
         columns={columns}
         data={data}
-        pagination={paginationState}
         sort={sort}
-        filters={filters}
         isLoading={isLoading}
         selectedIds={selectedIds}
         onSort={handleSort}
-        onPageChange={handlePageChange}
         onRowSelect={handleRowSelect}
         onRowClick={handleRowClick}
-        onSaveColumnPrefs={onSaveColumnPrefs}
       />
       <PaginationFooter
         pagination={paginationState}
@@ -115,8 +111,6 @@ export function DataTableShell({
       <EntityDetailModal
         open={detailModalOpen}
         onOpenChange={setDetailModalOpen}
-        entityType={entityType}
-        entityId={detailEntityId}
       />
       <FilterDialog
         open={filterDialogOpen}

@@ -8,9 +8,6 @@ import {
 import type {
   ColumnDef,
   EntityRow,
-  PaginationState,
-  SortState,
-  FilterState,
   DataTableProps,
 } from '@/lib/types/entity'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -60,17 +57,12 @@ function DataCell({
 export function DataTable({
   columns,
   data,
-  pagination,
   sort,
-  filters,
   isLoading,
   selectedIds,
   onSort,
-  onFilter,
-  onPageChange,
   onRowSelect,
   onRowClick,
-  onSaveColumnPrefs,
 }: DataTableProps) {
   const visibleColumns = useMemo(
     () => columns.filter(col => col.visible).sort((a, b) => a.order - b.order),
@@ -108,7 +100,7 @@ export function DataTable({
         header: col.label,
         size: col.width,
         enableSorting: col.sortable,
-        cell: ({ getValue }) => (
+        cell: ({ getValue }: { getValue: () => unknown }) => (
           <DataCell column={col} value={getValue()} />
         ),
       })),
@@ -147,7 +139,7 @@ export function DataTable({
       onRowSelect(new Set(ids))
     },
     state: {
-      sort: sort ? [{ id: sort.columnId, desc: sort.direction === 'desc' }] : [],
+      sorting: sort ? [{ id: sort.columnId, desc: sort.direction === 'desc' }] : [],
       rowSelection: Object.fromEntries([...selectedIds].map(id => [id, true])),
     },
   })

@@ -19,11 +19,20 @@ export function FilterDialog({
   filters,
   onApply,
 }: FilterDialogProps) {
-  const [localFilters, setLocalFilters] = useState<Record<string, string | string[]>>({})
+  const [localFilters, setLocalFilters] = useState<Record<string, string | string[] | { min?: string; max?: string }>>({})
 
-  const getFilterValue = (columnId: string) => localFilters[columnId] ?? ''
-  const getNumberFilter = (columnId: string) => localFilters[columnId] as { min?: string; max?: string } || {}
-  const getStatusFilter = (columnId: string) => (localFilters[columnId] as string[]) ?? []
+  const getFilterValue = (columnId: string) => {
+    const val = localFilters[columnId]
+    return typeof val === 'string' ? val : ''
+  }
+  const getNumberFilter = (columnId: string) => {
+    const val = localFilters[columnId]
+    return typeof val === 'object' && val !== null && !Array.isArray(val) ? val : {}
+  }
+  const getStatusFilter = (columnId: string) => {
+    const val = localFilters[columnId]
+    return Array.isArray(val) ? val : []
+  }
 
   const filterableColumns = columns.filter(col => col.filterable && col.visible)
 

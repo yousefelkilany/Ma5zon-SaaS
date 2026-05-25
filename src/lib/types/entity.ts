@@ -40,17 +40,12 @@ export interface DataTableProps {
   entityType: string
   columns: ColumnDef[]
   data: EntityRow[]
-  pagination: PaginationState
   sort: SortState | null
-  filters: FilterState[]
   isLoading: boolean
   selectedIds: Set<string>
   onSort: (sort: SortState | null) => void
-  onFilter: (filters: FilterState[]) => void
-  onPageChange: (page: number, pageSize: number) => void
   onRowSelect: (ids: Set<string>) => void
   onRowClick: (id: string, row: EntityRow) => void
-  onSaveColumnPrefs: (columns: ColumnDef[]) => void
 }
 
 export interface PaginationFooterProps {
