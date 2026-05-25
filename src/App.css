@@ -149,8 +149,8 @@
 
 /* Custom spacing utilities */
 .p-margin-edge {
-  padding-left: 2rem;
-  padding-right: 2rem;
+  padding-inline-start: 2rem;
+  padding-inline-end: 2rem;
 }
 
 .p-cozy-padding {
@@ -174,8 +174,8 @@
 }
 
 .px-gutter {
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-inline-start: 1rem;
+  padding-inline-end: 1rem;
 }
 
 .py-cozy-padding {

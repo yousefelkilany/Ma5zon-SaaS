@@ -9,7 +9,7 @@ interface SplashScreenProps {
   minDuration?: number
 }
 
-function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
+function SplashScreen({ isReady, minDuration = 1000 }: SplashScreenProps) {
   const { t } = useTranslation()
   const [visible, setVisible] = useState(true)
   const [logoError, setLogoError] = useState(false)
@@ -35,12 +35,12 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
   return (
     <div
       className={cn(
-        'fixed inset-0 z-50 flex flex-col items-center justify-center bg-background transition-opacity duration-500 ease-out',
+        'fixed inset-0 z-100 flex flex-col items-center justify-center bg-background transition-opacity duration-500 ease-out',
         !visible && 'opacity-0 pointer-events-none'
       )}
     >
       <main className="flex flex-1 flex-col items-center justify-center space-y-8">
-        <div className="h-[120px] w-[120px] flex items-center justify-center">
+        <div className="h-30 w-30 flex items-center justify-center">
           {!logoError ? (
             <img
               src={new URL('@/assets/logo.svg', import.meta.url).href}
@@ -49,13 +49,13 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
               onError={() => setLogoError(true)}
             />
           ) : (
-            <LogoIcon className="h-[120px] w-[120px] text-secondary" />
+            <LogoIcon className="h-30 w-30 text-secondary" />
           )}
         </div>
 
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-{t('titlebar.appName')}
+            {t('titlebar.appName')}
           </h1>
           <p className="text-base text-muted-foreground opacity-70">
             Precision in every transaction.
