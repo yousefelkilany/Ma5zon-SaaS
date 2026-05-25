@@ -52,6 +52,14 @@
   "common.disabled": "Désactivé",
   "common.reset": "Réinitialiser",
 
+  "common.applicationCrashed": "L'application a planté",
+  "common.noStackTraceAvailable": "Aucune trace de pile disponible",
+  "common.failedToSaveCrashData": "Échec de l'enregistrement des données de plantage",
+  "common.somethingWentWrong": "Une erreur s'est produite",
+  "common.theApplicationEncounteredAnUnexpectedError": "L'application a rencontré une erreur inattendue. Vos données ont été enregistrées automatiquement.",
+  "common.reloadApplication": "Recharger l'application",
+  "common.tryAgain": "Réessayer",
+
   "commands.group.navigation": "Navigation",
   "commands.group.settings": "Paramètres",
   "commands.group.window": "Fenêtre",

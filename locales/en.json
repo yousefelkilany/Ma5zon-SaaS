@@ -52,6 +52,14 @@
   "common.disabled": "Disabled",
   "common.reset": "Reset",
 
+  "common.applicationCrashed": "Application crashed",
+  "common.noStackTraceAvailable": "No stack trace available",
+  "common.failedToSaveCrashData": "Failed to save crash data",
+  "common.somethingWentWrong": "Something went wrong",
+  "common.theApplicationEncounteredAnUnexpectedError": "The application encountered an unexpected error. Your data has been saved automatically.",
+  "common.reloadApplication": "Reload Application",
+  "common.tryAgain": "Try Again",
+
   "commands.group.navigation": "Navigation",
   "commands.group.settings": "Settings",
   "commands.group.window": "Window",

@@ -52,6 +52,14 @@
   "common.disabled": "معطّل",
   "common.reset": "إعادة تعيين",
 
+  "common.applicationCrashed": "تعطّل التطبيق",
+  "common.noStackTraceAvailable": "لا تتوفر معلومات تفصيلية للخطأ",
+  "common.failedToSaveCrashData": "فشل في حفظ بيانات التعطّل",
+  "common.somethingWentWrong": "حدث خطأ ما",
+  "common.theApplicationEncounteredAnUnexpectedError": "واجه التطبيق خطأً غير متوقع. تم حفظ بياناتك تلقائيًا.",
+  "common.reloadApplication": "إعادة تحميل التطبيق",
+  "common.tryAgain": "حاول مرة أخرى",
+
   "commands.group.navigation": "التنقل",
   "commands.group.settings": "الإعدادات",
   "commands.group.window": "النافذة",
