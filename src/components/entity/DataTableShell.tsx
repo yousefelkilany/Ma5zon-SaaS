@@ -71,9 +71,8 @@ export function DataTableShell({
   }, [])
 
   const handleBulkAction = useCallback((action: string) => {
-    console.log('Bulk action:', action, Array.from(selectedIds))
     setSelectedIds(new Set())
-  }, [selectedIds])
+  }, [])
 
   const handleColumnSave = useCallback((newColumns: ColumnDef[]) => {
     onSaveColumnPrefs(newColumns)
@@ -103,7 +102,6 @@ export function DataTableShell({
         isLoading={isLoading}
         selectedIds={selectedIds}
         onSort={handleSort}
-        onFilter={setFilters}
         onPageChange={handlePageChange}
         onRowSelect={handleRowSelect}
         onRowClick={handleRowClick}
