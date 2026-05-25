@@ -114,10 +114,10 @@ export function SideBar({ className }: SideBarProps) {
   const { t } = useTranslation()
   const [collapsed, setCollapsed] = useState(false)
   const navigate = useNavigate()
-  const { addTab, tabs, setActiveTab } = useTabStore()
+  const { addTab, setActiveTab } = useTabStore()
 
   const handleEntityClick = useCallback((entityType: string, title: string) => {
-    const existingTab = tabs.find(t => t.entityType === entityType)
+    const existingTab = useTabStore.getState().getTabByEntityType(entityType)
 
     if (existingTab) {
       setActiveTab(existingTab.id)
@@ -132,7 +132,7 @@ export function SideBar({ className }: SideBarProps) {
     }
 
     navigate(`/entity/${entityType}`)
-  }, [tabs, addTab, setActiveTab, navigate])
+  }, [addTab, setActiveTab, navigate])
 
   const NAV_SECTIONS = useMemo(() => [
     {
