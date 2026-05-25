@@ -68,4 +68,5 @@ export interface ToolbarProps {
   selectedCount: number
   onBulkAction: (action: string) => void
   onExport: () => void
+  activeFilterCount?: number
 }
