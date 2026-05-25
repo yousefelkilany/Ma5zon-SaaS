@@ -1,6 +1,6 @@
 import { Navbar } from './Navbar'
 import { TabBar } from './TabBar'
-import { LeftSideBar } from './LeftSideBar'
+import { SideBar } from './SideBar'
 import { MainWindowContent } from './MainWindowContent'
 import { TitleBar } from '@/components/titlebar/TitleBar'
 import { CommandPalette } from '@/components/command-palette/CommandPalette'
@@ -11,7 +11,7 @@ import { useMainWindowEventListeners } from '@/hooks/useMainWindowEventListeners
 
 export function MainWindow() {
   const { theme } = useTheme()
-  const leftSidebarVisible = useUIStore(state => state.leftSidebarVisible)
+  const sidebarVisible = useUIStore(state => state.sidebarVisible)
 
   // Set up global event listeners (keyboard shortcuts, etc.)
   useMainWindowEventListeners()
@@ -25,7 +25,7 @@ export function MainWindow() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {leftSidebarVisible && <LeftSideBar />}
+        {sidebarVisible && <SideBar />}
         <MainWindowContent />
       </div>
 

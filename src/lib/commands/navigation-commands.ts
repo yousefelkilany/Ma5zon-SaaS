@@ -1,70 +1,38 @@
-import { Sidebar, PanelRight, Settings } from 'lucide-react'
+import { Sidebar, Settings } from 'lucide-react'
 import { useUIStore } from '@/store/ui-store'
 import type { AppCommand } from './types'
 
 export const navigationCommands: AppCommand[] = [
   {
-    id: 'show-left-sidebar',
-    labelKey: 'commands.showLeftSidebar.label',
-    descriptionKey: 'commands.showLeftSidebar.description',
+    id: 'show-sidebar',
+    labelKey: 'commands.showSidebar.label',
+    descriptionKey: 'commands.showSidebar.description',
     icon: Sidebar,
     group: 'navigation',
     shortcut: '⌘+1',
-    keywords: ['sidebar', 'left', 'panel', 'show'],
+    keywords: ['sidebar', 'panel', 'show'],
 
     execute: () => {
-      useUIStore.getState().setLeftSidebarVisible(true)
+      useUIStore.getState().setSidebarVisible(true)
     },
 
-    isAvailable: () => !useUIStore.getState().leftSidebarVisible,
+    isAvailable: () => !useUIStore.getState().sidebarVisible,
   },
 
   {
-    id: 'hide-left-sidebar',
-    labelKey: 'commands.hideLeftSidebar.label',
-    descriptionKey: 'commands.hideLeftSidebar.description',
+    id: 'hide-sidebar',
+    labelKey: 'commands.hideSidebar.label',
+    descriptionKey: 'commands.hideSidebar.description',
     icon: Sidebar,
     group: 'navigation',
     shortcut: '⌘+1',
-    keywords: ['sidebar', 'left', 'panel', 'hide'],
+    keywords: ['sidebar', 'panel', 'hide'],
 
     execute: () => {
-      useUIStore.getState().setLeftSidebarVisible(false)
+      useUIStore.getState().setSidebarVisible(false)
     },
 
-    isAvailable: () => useUIStore.getState().leftSidebarVisible,
-  },
-
-  {
-    id: 'show-right-sidebar',
-    labelKey: 'commands.showRightSidebar.label',
-    descriptionKey: 'commands.showRightSidebar.description',
-    icon: PanelRight,
-    group: 'navigation',
-    shortcut: '⌘+2',
-    keywords: ['sidebar', 'right', 'panel', 'show'],
-
-    execute: () => {
-      useUIStore.getState().setRightSidebarVisible(true)
-    },
-
-    isAvailable: () => !useUIStore.getState().rightSidebarVisible,
-  },
-
-  {
-    id: 'hide-right-sidebar',
-    labelKey: 'commands.hideRightSidebar.label',
-    descriptionKey: 'commands.hideRightSidebar.description',
-    icon: PanelRight,
-    group: 'navigation',
-    shortcut: '⌘+2',
-    keywords: ['sidebar', 'right', 'panel', 'hide'],
-
-    execute: () => {
-      useUIStore.getState().setRightSidebarVisible(false)
-    },
-
-    isAvailable: () => useUIStore.getState().rightSidebarVisible,
+    isAvailable: () => useUIStore.getState().sidebarVisible,
   },
 
   {

@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
-interface LeftSideBarProps {
+interface SideBarProps {
   children?: React.ReactNode
   className?: string
 }
@@ -104,7 +104,7 @@ function NavItemsList({
   )
 }
 
-export function LeftSideBar({ className }: LeftSideBarProps) {
+export function SideBar({ className }: SideBarProps) {
   const { t } = useTranslation()
   const [collapsed, setCollapsed] = useState(false)
 

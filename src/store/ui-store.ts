@@ -2,16 +2,13 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
 interface UIState {
-  leftSidebarVisible: boolean
-  rightSidebarVisible: boolean
+  sidebarVisible: boolean
   commandPaletteOpen: boolean
   preferencesOpen: boolean
   lastQuickPaneEntry: string | null
 
-  toggleLeftSidebar: () => void
-  setLeftSidebarVisible: (visible: boolean) => void
-  toggleRightSidebar: () => void
-  setRightSidebarVisible: (visible: boolean) => void
+  toggleSidebar: () => void
+  setSidebarVisible: (visible: boolean) => void
   toggleCommandPalette: () => void
   setCommandPaletteOpen: (open: boolean) => void
   togglePreferences: () => void
@@ -23,38 +20,23 @@ interface UIState {
 export const useUIStore = create<UIState>()(
   devtools(
     set => ({
-      leftSidebarVisible: true,
-      rightSidebarVisible: true,
+      sidebarVisible: true,
       commandPaletteOpen: false,
       preferencesOpen: false,
       lastQuickPaneEntry: null,
 
-      toggleLeftSidebar: () =>
+      toggleSidebar: () =>
         set(
-          state => ({ leftSidebarVisible: !state.leftSidebarVisible }),
+          state => ({ sidebarVisible: !state.sidebarVisible }),
           undefined,
-          'toggleLeftSidebar'
+          'toggleSidebar'
         ),
 
-      setLeftSidebarVisible: visible =>
+      setSidebarVisible: visible =>
         set(
-          { leftSidebarVisible: visible },
+          { sidebarVisible: visible },
           undefined,
-          'setLeftSidebarVisible'
-        ),
-
-      toggleRightSidebar: () =>
-        set(
-          state => ({ rightSidebarVisible: !state.rightSidebarVisible }),
-          undefined,
-          'toggleRightSidebar'
-        ),
-
-      setRightSidebarVisible: visible =>
-        set(
-          { rightSidebarVisible: visible },
-          undefined,
-          'setRightSidebarVisible'
+          'setSidebarVisible'
         ),
 
       toggleCommandPalette: () =>

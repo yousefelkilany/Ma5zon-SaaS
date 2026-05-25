@@ -22,16 +22,13 @@ export function useKeyboardShortcuts(commandContext: CommandContext) {
           }
           case '1': {
             e.preventDefault()
-            const { leftSidebarVisible, setLeftSidebarVisible } =
+            const { sidebarVisible, setSidebarVisible } =
               useUIStore.getState()
-            setLeftSidebarVisible(!leftSidebarVisible)
+            setSidebarVisible(!sidebarVisible)
             break
           }
           case '2': {
             e.preventDefault()
-            const { rightSidebarVisible, setRightSidebarVisible } =
-              useUIStore.getState()
-            setRightSidebarVisible(!rightSidebarVisible)
             break
           }
         }
