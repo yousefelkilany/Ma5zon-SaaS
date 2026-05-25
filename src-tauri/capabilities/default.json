@@ -2,7 +2,9 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["Ma5zon-Finance"],
+  "windows": [
+    "Ma5zon-Finance"
+  ],
   "permissions": [
     "core:default",
     "core:window:allow-minimize",
@@ -22,6 +24,10 @@
     "clipboard-manager:default",
     "dialog:default",
     "fs:default",
+    "fs:allow-app-write",
+    "fs:allow-app-write-recursive",
+    "fs:allow-appcache-write",
+    "fs:allow-appcache-write-recursive",
     "log:default",
     "notification:default",
     "process:default",

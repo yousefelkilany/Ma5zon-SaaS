@@ -8,6 +8,14 @@
 
 
 export const commands = {
+async exportFile(filePath: string, content: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("export_file", { filePath, content }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 /**
  * Simple greeting command for demonstration purposes.
  */

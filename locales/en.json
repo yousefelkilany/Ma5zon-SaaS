@@ -214,5 +214,21 @@
   "entity.workspace.toolbar.category": "CATEGORY:",
   "entity.workspace.toolbar.all": "All",
   "entity.workspace.toolbar.export": "Export Data",
-  "entity.workspace.toolbar.print": "Print View"
+  "entity.workspace.toolbar.print": "Print View",
+  "entity.workspace.columns.entity": "Name",
+  "entity.workspace.columns.doc": "Document #",
+  "entity.workspace.columns.qty": "Quantity",
+  "entity.workspace.columns.price": "Unit Price",
+  "entity.workspace.columns.total": "Total Amount",
+  "entity.workspace.columns.status": "Status",
+  "entity.workspace.columns.actions": "Actions",
+  "entity.workspace.columns.manage": "Manage Columns",
+  "entity.workspace.columns.saveChanges": "Save Changes",
+  "entity.workspace.columns.toggleVisibility": "Toggle {{column}} visibility",
+  "entity.workspace.edit": "Edit",
+  "entity.workspace.delete": "Delete",
+  "entity.workspace.page": "Page",
+  "entity.workspace.of": "of {{total}}",
+  "entity.workspace.selectAll": "Select all",
+  "entity.workspace.selectRow": "Select row"
 }

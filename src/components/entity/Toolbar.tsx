@@ -1,4 +1,5 @@
 import type { ToolbarProps } from '@/lib/types/entity'
+import { useTranslation } from 'react-i18next'
 
 export function Toolbar({
   searchValue,
@@ -10,6 +11,8 @@ export function Toolbar({
   onBulkAction,
   onExport,
 }: ToolbarProps) {
+  const { t } = useTranslation()
+
   return (
     <section className="px-6 py-3 border-y border-outline-variant bg-surface-container flex items-center justify-between shrink-0">
       <div className="flex items-center gap-3 flex-1">
@@ -31,7 +34,9 @@ export function Toolbar({
           className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded border border-outline-variant text-body-sm"
           onClick={onFiltersClick}
         >
-          <span className="material-symbols-outlined text-[18px]">filter_list</span>
+          <span className="material-symbols-outlined text-[18px]">
+            filter_list
+          </span>
           Filters
         </button>
         <button
@@ -39,7 +44,9 @@ export function Toolbar({
           className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded border border-outline-variant text-body-sm"
           onClick={onColumnsClick}
         >
-          <span className="material-symbols-outlined text-[18px]">view_column</span>
+          <span className="material-symbols-outlined text-[18px]">
+            view_column
+          </span>
           Columns
         </button>
       </div>
@@ -54,7 +61,9 @@ export function Toolbar({
               className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded text-body-sm"
               onClick={() => onBulkAction('delete')}
             >
-              <span className="material-symbols-outlined text-[18px]">delete</span>
+              <span className="material-symbols-outlined text-[18px]">
+                delete
+              </span>
               Delete
             </button>
           </div>
@@ -65,8 +74,10 @@ export function Toolbar({
           className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded text-body-sm"
           onClick={onExport}
         >
-          <span className="material-symbols-outlined text-[18px]">file_download</span>
-          Export
+          <span className="material-symbols-outlined text-[18px]">
+            file_download
+          </span>
+          {t('entity.workspace.toolbar.export')}
         </button>
       </div>
     </section>

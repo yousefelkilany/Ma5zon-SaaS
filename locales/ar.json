@@ -214,5 +214,21 @@
   "entity.workspace.toolbar.category": "الفئة:",
   "entity.workspace.toolbar.all": "الكل",
   "entity.workspace.toolbar.export": "تصدير البيانات",
-  "entity.workspace.toolbar.print": "عرض الطباعة"
+  "entity.workspace.toolbar.print": "عرض الطباعة",
+  "entity.workspace.columns.entity": "الاسم",
+  "entity.workspace.columns.doc": "رقم المستند",
+  "entity.workspace.columns.qty": "الكمية",
+  "entity.workspace.columns.price": "سعر الوحدة",
+  "entity.workspace.columns.total": "المبلغ الإجمالي",
+  "entity.workspace.columns.status": "الحالة",
+  "entity.workspace.columns.actions": "إجراءات",
+  "entity.workspace.columns.manage": "إدارة الأعمدة",
+  "entity.workspace.columns.saveChanges": "حفظ التغييرات",
+  "entity.workspace.columns.toggleVisibility": "تبديل رؤية {{column}}",
+  "entity.workspace.edit": "تعديل",
+  "entity.workspace.delete": "حذف",
+  "entity.workspace.page": "صفحة",
+  "entity.workspace.of": "من {{total}}",
+  "entity.workspace.selectAll": "تحديد الكل",
+  "entity.workspace.selectRow": "تحديد الصف"
 }

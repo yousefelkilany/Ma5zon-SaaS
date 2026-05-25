@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { ColumnDef } from '@/lib/types/entity'
 import {
   Dialog,
@@ -23,11 +24,14 @@ export function ColumnVisibilityDialog({
   columns,
   onSave,
 }: ColumnVisibilityDialogProps) {
+  const { t } = useTranslation()
   const [localColumns, setLocalColumns] = useState<ColumnDef[]>(columns)
 
   useEffect(() => {
-    setLocalColumns(columns)
-  }, [columns])
+    if (open) {
+      setLocalColumns(columns)
+    }
+  }, [open, columns])
 
   const toggleColumn = (id: string) => {
     setLocalColumns(cols =>
@@ -45,7 +49,7 @@ export function ColumnVisibilityDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Manage Columns</DialogTitle>
+          <DialogTitle>{t('entity.workspace.columns.manage')}</DialogTitle>
         </DialogHeader>
         <div className="space-y-2 py-4 max-h-80 overflow-auto">
           {localColumns
@@ -61,7 +65,7 @@ export function ColumnVisibilityDialog({
                   type="checkbox"
                   checked={col.visible}
                   onChange={() => toggleColumn(col.id)}
-                  aria-label={`Toggle ${col.label} visibility`}
+                  aria-label={t('entity.workspace.columns.toggleVisibility', { column: col.label })}
                   className="w-4 h-4"
                 />
                 <span className="flex-1 text-on-surface text-body-sm">{col.label}</span>
@@ -73,9 +77,9 @@ export function ColumnVisibilityDialog({
         </div>
         <DialogFooter className="flex justify-end gap-2">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('common.cancel')}
           </Button>
-          <Button onClick={handleSave}>Save Changes</Button>
+          <Button onClick={handleSave}>{t('entity.workspace.columns.saveChanges')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

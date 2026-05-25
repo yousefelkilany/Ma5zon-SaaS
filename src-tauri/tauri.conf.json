@@ -17,12 +17,12 @@
         "title": "Ma5zon | Enterprise Finance",
         "width": 1250,
         "height": 950,
-        "minWidth": 1250,
-        "minHeight": 950,
+        "minWidth": 1850,
+        "minHeight": 1150,
         "resizable": true,
+        "center": true,
         "fullscreen": false,
         "maximized": false,
-        "center": true,
         "decorations": false,
         "alwaysOnTop": false,
         "transparent": false,
@@ -31,7 +31,21 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' tauri: ipc: http://ipc.localhost"
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' tauri: ipc: http://ipc.localhost",
+      "capabilities": [
+        {
+          "identifier": "allow-export-to-custom-folder",
+          "permissions": [
+            "core:default",
+            {
+              "identifier": "fs:allow-write-text-file",
+              "allow": [
+                "$HOME/*"
+              ]
+            }
+          ]
+        }
+      ]
     },
     "macOSPrivateApi": true
   },

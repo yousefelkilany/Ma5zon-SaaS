@@ -1,10 +1,12 @@
 import type { PaginationFooterProps } from '@/lib/types/entity'
+import { useTranslation } from 'react-i18next'
 
 export function PaginationFooter({
   pagination,
   onPageChange,
   isLoading,
 }: PaginationFooterProps) {
+  const { t } = useTranslation()
   const { page, pageSize, totalRows, totalPages } = pagination
   const start = (page - 1) * pageSize + 1
   const end = Math.min(page * pageSize, totalRows)
@@ -24,7 +26,9 @@ export function PaginationFooter({
     <footer className="h-12 bg-surface-container-low border-t border-outline-variant px-6 flex items-center justify-between shrink-0">
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2">
-          <span className="text-on-surface-variant text-body-sm">Rows per page</span>
+          <span className="text-on-surface-variant text-body-sm">
+            {t('entity.workspace.rowsPerPage')}
+          </span>
           <select
             className="bg-surface-container border border-outline-variant rounded px-2 py-1 text-on-surface text-body-sm"
             value={pageSize}
@@ -39,7 +43,11 @@ export function PaginationFooter({
           </select>
         </div>
         <span className="text-on-surface-variant text-body-sm">
-          Showing {start}-{end} of {totalRows.toLocaleString()}
+          {t('entity.workspace.showing', {
+            start,
+            end,
+            total: totalRows.toLocaleString(),
+          })}
         </span>
       </div>
       <div className="flex items-center gap-1">
@@ -50,7 +58,7 @@ export function PaginationFooter({
           title="First page"
           aria-label="First page"
         >
-          <span className="material-symbols-outlined text-on-surface-variant text-[18px]">
+          <span className="material-symbols-outlined text-on-surface-variant text-[18px] icon-directional">
             first_page
           </span>
         </button>
@@ -61,12 +69,12 @@ export function PaginationFooter({
           title="Previous page"
           aria-label="Previous page"
         >
-          <span className="material-symbols-outlined text-on-surface-variant text-[18px]">
+          <span className="material-symbols-outlined text-on-surface-variant text-[18px] icon-directional">
             chevron_left
           </span>
         </button>
         <div className="flex items-center gap-1 mx-2">
-          <span className="text-on-surface-variant text-body-sm">Page</span>
+          <span className="text-on-surface-variant text-body-sm">{t('entity.workspace.page')}</span>
           <input
             type="number"
             min={1}
@@ -77,7 +85,9 @@ export function PaginationFooter({
             disabled={isLoading}
             aria-label="Go to page"
           />
-          <span className="text-on-surface-variant text-body-sm">of {totalPages}</span>
+          <span className="text-on-surface-variant text-body-sm">
+            {t('entity.workspace.of', { total: totalPages })}
+          </span>
         </div>
         <button
           className="p-1 rounded hover:bg-surface-bright transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -86,7 +96,7 @@ export function PaginationFooter({
           title="Next page"
           aria-label="Next page"
         >
-          <span className="material-symbols-outlined text-on-surface-variant text-[18px]">
+          <span className="material-symbols-outlined text-on-surface-variant text-[18px] icon-directional">
             chevron_right
           </span>
         </button>
@@ -97,7 +107,7 @@ export function PaginationFooter({
           title="Last page"
           aria-label="Last page"
         >
-          <span className="material-symbols-outlined text-on-surface-variant text-[18px]">
+          <span className="material-symbols-outlined text-on-surface-variant text-[18px] icon-directional">
             last_page
           </span>
         </button>

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import type { EntityWorkspaceProps } from '@/lib/types/entity'
+import { invoke } from '@tauri-apps/api/core'
+import type { EntityWorkspaceProps, ColumnDef } from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
 
 function EntityHeader({ entityType }: { entityType: string }) {
@@ -18,7 +19,9 @@ function EntityHeader({ entityType }: { entityType: string }) {
 
   const section = sections[entityType] ?? ''
   const label = t(`sidebar.nav.${entityType}`, { defaultValue: entityType })
-  const singularLabel = t(`sidebar.nav.singular.${entityType}`, { defaultValue: label })
+  const singularLabel = t(`sidebar.nav.singular.${entityType}`, {
+    defaultValue: label,
+  })
   const addNewLabel = t('entity.workspace.addNew', { entity: singularLabel })
 
   return (
@@ -47,34 +50,169 @@ function EntityHeader({ entityType }: { entityType: string }) {
   )
 }
 
-const mockColumns = [
-  { id: 'entity', label: 'Name', type: 'text' as const, width: 180, sortable: true, filterable: true, visible: true, order: 1, isNameColumn: true },
-  { id: 'doc', label: 'Document #', type: 'text' as const, width: 140, sortable: true, filterable: true, visible: true, order: 2 },
-  { id: 'qty', label: 'Quantity', type: 'number' as const, width: 100, sortable: true, filterable: false, visible: true, order: 3 },
-  { id: 'price', label: 'Unit Price', type: 'currency' as const, width: 100, sortable: true, filterable: false, visible: true, order: 4 },
-  { id: 'total', label: 'Total Amount', type: 'currency' as const, width: 120, sortable: true, filterable: false, visible: true, order: 5 },
-  { id: 'status', label: 'Status', type: 'status' as const, width: 100, sortable: true, filterable: true, visible: true, order: 6 },
-]
-
 const mockEntityRows = [
-  { id: '1', entity: 'Technovate Systems Inc.', doc: 'INV-2024-00124', qty: 1250, price: 45, total: 56250, status: 'Paid' },
-  { id: '2', entity: 'Global Logistics Corp', doc: 'INV-2024-00132', qty: 480, price: 120, total: 57600, status: 'Overdue' },
-  { id: '3', entity: 'Apex Manufacturing', doc: 'PO-88219-B', qty: 22000, price: 1.15, total: 25300, status: 'Draft' },
-  { id: '4', entity: 'Zync Media Partners', doc: 'INV-2024-00145', qty: 1, price: 12400, total: 12400, status: 'Paid' },
-  { id: '5', entity: 'Skyline Prop', doc: 'INV-2024-1000', qty: 1379, price: 8.16, total: 65633, status: 'Overdue' },
-  { id: '6', entity: 'Quantum Innovations Ltd.', doc: 'INV-2024-00156', qty: 850, price: 75, total: 63750, status: 'Paid' },
-  { id: '7', entity: 'Stellar Dynamics LLC', doc: 'INV-2024-00178', qty: 3200, price: 2.5, total: 8000, status: 'Draft' },
-  { id: '8', entity: 'Horizon Tech Solutions', doc: 'PO-99341-A', qty: 500, price: 95, total: 47500, status: 'Overdue' },
-  { id: '9', entity: 'Nexus Digital Services', doc: 'INV-2024-00201', qty: 1, price: 25000, total: 25000, status: 'Paid' },
-  { id: '10', entity: 'Pioneer Systems Group', doc: 'INV-2024-00215', qty: 7500, price: 0.85, total: 6375, status: 'Overdue' },
-  { id: '11', entity: 'Atlas Cloud Services', doc: 'INV-2024-00234', qty: 200, price: 450, total: 90000, status: 'Paid' },
-  { id: '12', entity: 'Vertex Analytics Inc.', doc: 'PO-77321-C', qty: 10000, price: 0.45, total: 4500, status: 'Draft' },
-  { id: '13', entity: 'Cobalt Networks Ltd.', doc: 'INV-2024-00267', qty: 50, price: 1200, total: 60000, status: 'Paid' },
-  { id: '14', entity: 'Fusion Data Systems', doc: 'INV-2024-00289', qty: 4500, price: 3.25, total: 14625, status: 'Overdue' },
-  { id: '15', entity: 'Summit Software Corp', doc: 'INV-2024-00312', qty: 1, price: 45000, total: 45000, status: 'Paid' },
-  { id: '16', entity: 'Prism Hardware Solutions', doc: 'PO-66543-B', qty: 15000, price: 0.65, total: 9750, status: 'Draft' },
-  { id: '17', entity: 'Echo Communications', doc: 'INV-2024-00345', qty: 300, price: 180, total: 54000, status: 'Paid' },
-  { id: '18', entity: 'Nova Tech Ventures', doc: 'INV-2024-00378', qty: 2500, price: 5.5, total: 13750, status: 'Overdue' },
+  {
+    id: '1',
+    entity: 'Technovate Systems Inc.',
+    doc: 'INV-2024-00124',
+    qty: 1250,
+    price: 45,
+    total: 56250,
+    status: 'Paid',
+  },
+  {
+    id: '2',
+    entity: 'Global Logistics Corp',
+    doc: 'INV-2024-00132',
+    qty: 480,
+    price: 120,
+    total: 57600,
+    status: 'Overdue',
+  },
+  {
+    id: '3',
+    entity: 'Apex Manufacturing',
+    doc: 'PO-88219-B',
+    qty: 22000,
+    price: 1.15,
+    total: 25300,
+    status: 'Draft',
+  },
+  {
+    id: '4',
+    entity: 'Zync Media Partners',
+    doc: 'INV-2024-00145',
+    qty: 1,
+    price: 12400,
+    total: 12400,
+    status: 'Paid',
+  },
+  {
+    id: '5',
+    entity: 'Skyline Prop',
+    doc: 'INV-2024-1000',
+    qty: 1379,
+    price: 8.16,
+    total: 65633,
+    status: 'Overdue',
+  },
+  {
+    id: '6',
+    entity: 'Quantum Innovations Ltd.',
+    doc: 'INV-2024-00156',
+    qty: 850,
+    price: 75,
+    total: 63750,
+    status: 'Paid',
+  },
+  {
+    id: '7',
+    entity: 'Stellar Dynamics LLC',
+    doc: 'INV-2024-00178',
+    qty: 3200,
+    price: 2.5,
+    total: 8000,
+    status: 'Draft',
+  },
+  {
+    id: '8',
+    entity: 'Horizon Tech Solutions',
+    doc: 'PO-99341-A',
+    qty: 500,
+    price: 95,
+    total: 47500,
+    status: 'Overdue',
+  },
+  {
+    id: '9',
+    entity: 'Nexus Digital Services',
+    doc: 'INV-2024-00201',
+    qty: 1,
+    price: 25000,
+    total: 25000,
+    status: 'Paid',
+  },
+  {
+    id: '10',
+    entity: 'Pioneer Systems Group',
+    doc: 'INV-2024-00215',
+    qty: 7500,
+    price: 0.85,
+    total: 6375,
+    status: 'Overdue',
+  },
+  {
+    id: '11',
+    entity: 'Atlas Cloud Services',
+    doc: 'INV-2024-00234',
+    qty: 200,
+    price: 450,
+    total: 90000,
+    status: 'Paid',
+  },
+  {
+    id: '12',
+    entity: 'Vertex Analytics Inc.',
+    doc: 'PO-77321-C',
+    qty: 10000,
+    price: 0.45,
+    total: 4500,
+    status: 'Draft',
+  },
+  {
+    id: '13',
+    entity: 'Cobalt Networks Ltd.',
+    doc: 'INV-2024-00267',
+    qty: 50,
+    price: 1200,
+    total: 60000,
+    status: 'Paid',
+  },
+  {
+    id: '14',
+    entity: 'Fusion Data Systems',
+    doc: 'INV-2024-00289',
+    qty: 4500,
+    price: 3.25,
+    total: 14625,
+    status: 'Overdue',
+  },
+  {
+    id: '15',
+    entity: 'Summit Software Corp',
+    doc: 'INV-2024-00312',
+    qty: 1,
+    price: 45000,
+    total: 45000,
+    status: 'Paid',
+  },
+  {
+    id: '16',
+    entity: 'Prism Hardware Solutions',
+    doc: 'PO-66543-B',
+    qty: 15000,
+    price: 0.65,
+    total: 9750,
+    status: 'Draft',
+  },
+  {
+    id: '17',
+    entity: 'Echo Communications',
+    doc: 'INV-2024-00345',
+    qty: 300,
+    price: 180,
+    total: 54000,
+    status: 'Paid',
+  },
+  {
+    id: '18',
+    entity: 'Nova Tech Ventures',
+    doc: 'INV-2024-00378',
+    qty: 2500,
+    price: 5.5,
+    total: 13750,
+    status: 'Overdue',
+  },
 ]
 
 const mockPagination = {
@@ -84,32 +222,109 @@ const mockPagination = {
   totalPages: 2,
 }
 
-function exportToCSV(columns: typeof mockColumns, data: typeof mockEntityRows) {
-  const headers = columns.filter(c => c.visible).map(c => c.label).join(',')
+function getColumns(t: (key: string) => string): ColumnDef[] {
+  return [
+    {
+      id: 'entity',
+      label: t('entity.workspace.columns.entity'),
+      type: 'text',
+      width: 180,
+      sortable: true,
+      filterable: true,
+      visible: true,
+      order: 1,
+      isNameColumn: true,
+    },
+    {
+      id: 'doc',
+      label: t('entity.workspace.columns.doc'),
+      type: 'text',
+      width: 140,
+      sortable: true,
+      filterable: true,
+      visible: true,
+      order: 2,
+    },
+    {
+      id: 'qty',
+      label: t('entity.workspace.columns.qty'),
+      type: 'number',
+      width: 100,
+      sortable: true,
+      filterable: false,
+      visible: true,
+      order: 3,
+    },
+    {
+      id: 'price',
+      label: t('entity.workspace.columns.price'),
+      type: 'currency',
+      width: 100,
+      sortable: true,
+      filterable: false,
+      visible: true,
+      order: 4,
+    },
+    {
+      id: 'total',
+      label: t('entity.workspace.columns.total'),
+      type: 'currency',
+      width: 120,
+      sortable: true,
+      filterable: false,
+      visible: true,
+      order: 5,
+    },
+    {
+      id: 'status',
+      label: t('entity.workspace.columns.status'),
+      type: 'status',
+      width: 100,
+      sortable: true,
+      filterable: true,
+      visible: true,
+      order: 6,
+    },
+  ]
+}
+
+async function exportToCSV(columns: ColumnDef[], data: typeof mockEntityRows) {
+  const headers = columns
+    .filter(c => c.visible)
+    .map(c => c.label)
+    .join(',')
   const rows = data.map(row =>
-    columns.filter(c => c.visible).map(c => {
-      const value = (row as Record<string, unknown>)[c.id]
-      if (typeof value === 'string' && value.includes(',')) {
-        return `"${value}"`
-      }
-      return String(value ?? '')
-    }).join(',')
+    columns
+      .filter(c => c.visible)
+      .map(c => {
+        const value = (row as Record<string, unknown>)[c.id]
+        if (typeof value === 'string' && value.includes(',')) {
+          return `"${value}"`
+        }
+        return String(value ?? '')
+      })
+      .join(',')
   )
-  const csv = [headers, ...rows].join('\n')
-  const blob = new Blob([csv], { type: 'text/csv' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `export-${Date.now()}.csv`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+
+  const csvFile = '\ufeff' + [headers, ...rows].join('\n')
+  const filePath = `ma5zon-export-${Date.now()}.csv`
+
+  try {
+    await invoke('export_file', {
+      filePath,
+      content: csvFile,
+    })
+    console.error(`rust invoke export success!`)
+  } catch (err) {
+    console.error(`rust invoke export err: ${err}`)
+  }
 }
 
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
-  const handleExport = () => {
-    exportToCSV(mockColumns, mockEntityRows)
+  const { t } = useTranslation()
+  const columns = getColumns(t)
+  const handleExport = async () => {
+    await exportToCSV(columns, mockEntityRows)
   }
 
   return (
@@ -117,12 +332,12 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
       <EntityHeader entityType={entityType} />
       <DataTableShell
         entityType={entityType}
-        columns={mockColumns}
+        columns={columns}
         data={mockEntityRows}
         pagination={mockPagination}
         isLoading={false}
-        onSaveColumnPrefs={() => {}}
-        onFiltersApply={() => {}}
+        onSaveColumnPrefs={x => x}
+        onFiltersApply={x => x}
         onExport={handleExport}
       />
     </div>

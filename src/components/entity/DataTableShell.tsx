@@ -74,10 +74,13 @@ export function DataTableShell({
     setSelectedIds(new Set())
   }, [])
 
-  const handleColumnSave = useCallback((newColumns: ColumnDef[]) => {
-    onSaveColumnPrefs(newColumns)
-    setColumnDialogOpen(false)
-  }, [onSaveColumnPrefs])
+  const handleColumnSave = useCallback(
+    (newColumns: ColumnDef[]) => {
+      onSaveColumnPrefs(newColumns)
+      setColumnDialogOpen(false)
+    },
+    [onSaveColumnPrefs]
+  )
 
   return (
     <div className="flex flex-col h-full overflow-hidden">

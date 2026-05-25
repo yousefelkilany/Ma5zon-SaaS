@@ -1,16 +1,14 @@
 import { useMemo, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   useReactTable,
   getCoreRowModel,
   flexRender,
   type ColumnDef as TanstackColumnDef,
 } from '@tanstack/react-table'
-import type {
-  ColumnDef,
-  EntityRow,
-  DataTableProps,
-} from '@/lib/types/entity'
+import type { ColumnDef, EntityRow, DataTableProps } from '@/lib/types/entity'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useIsRTL } from '@/hooks/user-is-rtl'
 
 function StatusBadge({ status }: { status: string }) {
   const badgeClass =
@@ -21,26 +19,25 @@ function StatusBadge({ status }: { status: string }) {
         : 'bg-tertiary-fixed-dim/15 text-tertiary'
 
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full ${badgeClass} text-[11px] font-bold`}>
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded-full ${badgeClass} text-[11px] font-bold`}
+    >
       {status}
     </span>
   )
 }
 
-function DataCell({
-  column,
-  value,
-}: {
-  column: ColumnDef
-  value: unknown
-}) {
+function DataCell({ column, value }: { column: ColumnDef; value: unknown }) {
   if (column.type === 'status') {
     return <StatusBadge status={String(value)} />
   }
   if (column.type === 'currency') {
     return (
       <span className="font-data-tabular tabular-nums">
-        $ {(Number(value) || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+        ${' '}
+        {(Number(value) || 0).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+        })}
       </span>
     )
   }
@@ -64,21 +61,25 @@ export function DataTable({
   onRowSelect,
   onRowClick,
 }: DataTableProps) {
+  const { t } = useTranslation()
   const visibleColumns = useMemo(
     () => columns.filter(col => col.visible).sort((a, b) => a.order - b.order),
     [columns]
   )
+
+  const isRTLlayout = useIsRTL()
 
   const tableColumns = useMemo<TanstackColumnDef<EntityRow>[]>(
     () => [
       {
         id: 'select',
         size: 40,
+        enableResizing: false,
         header: ({ table }) => (
           <input
             type="checkbox"
             className="w-4 h-4"
-            aria-label="Select all"
+            aria-label={t('entity.workspace.selectAll')}
             checked={table.getIsAllRowsSelected()}
             onChange={table.getToggleAllRowsSelectedHandler()}
           />
@@ -87,7 +88,7 @@ export function DataTable({
           <input
             type="checkbox"
             className="w-4 h-4"
-            aria-label="Select row"
+            aria-label={t('entity.workspace.selectRow')}
             checked={row.getIsSelected()}
             onChange={row.getToggleSelectedHandler()}
             onClick={e => e.stopPropagation()}
@@ -108,14 +109,37 @@ export function DataTable({
       {
         id: 'actions',
         size: 100,
-        header: () => <span className="text-center">Actions</span>,
+        enableResizing: false,
+        header: () => (
+          <span className="text-center">
+            {t('entity.workspace.columns.actions')}
+          </span>
+        ),
         cell: () => (
           <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button className="p-1 text-on-surface-variant hover:text-primary" title="Edit">
-              <span className="material-symbols-outlined text-[18px]">edit</span>
+            <button
+              className="p-1 text-on-surface-variant hover:text-primary"
+              title={t('entity.workspace.edit')}
+              aria-label={t('entity.workspace.edit')}
+            >
+              <span
+                className="material-symbols-outlined text-[18px]"
+                aria-hidden="true"
+              >
+                edit
+              </span>
             </button>
-            <button className="p-1 text-on-surface-variant hover:text-error" title="Delete">
-              <span className="material-symbols-outlined text-[18px]">delete</span>
+            <button
+              className="p-1 text-on-surface-variant hover:text-error"
+              title={t('entity.workspace.delete')}
+              aria-label={t('entity.workspace.delete')}
+            >
+              <span
+                className="material-symbols-outlined text-[18px]"
+                aria-hidden="true"
+              >
+                delete
+              </span>
             </button>
           </div>
         ),
@@ -133,15 +157,25 @@ export function DataTable({
     manualPagination: true,
     enableRowSelection: true,
     enableColumnResizing: true,
+    columnResizeDirection: isRTLlayout ? 'rtl' : 'ltr',
+    columnResizeMode: 'onChange',
+    defaultColumn: {
+      minSize: 50,
+      maxSize: 200,
+    },
+
     onRowSelectionChange: set => {
-      const newSelection = typeof set === 'function'
-        ? set(Object.fromEntries([...selectedIds].map(id => [id, true])))
-        : set
+      const newSelection =
+        typeof set === 'function'
+          ? set(Object.fromEntries([...selectedIds].map(id => [id, true])))
+          : set
       const ids = Object.keys(newSelection).filter(k => newSelection[k])
       onRowSelect(new Set(ids))
     },
     state: {
-      sorting: sort ? [{ id: sort.columnId, desc: sort.direction === 'desc' }] : [],
+      sorting: sort
+        ? [{ id: sort.columnId, desc: sort.direction === 'desc' }]
+        : [],
       rowSelection: Object.fromEntries([...selectedIds].map(id => [id, true])),
     },
   })
@@ -177,7 +211,7 @@ export function DataTable({
                   key={col.id}
                   className="px-3 py-3 font-medium border-r border-outline-variant"
                 >
-                  <Skeleton className="h-4 w-full max-w-[120px]" />
+                  <Skeleton className="h-4 w-full max-w-30" />
                 </th>
               ))}
               <th className="px-3 py-3 font-medium text-center">
@@ -210,46 +244,66 @@ export function DataTable({
   return (
     <div className="flex-1 overflow-auto border border-outline-variant rounded-lg bg-surface-container-lowest">
       <div className="min-w-0">
-        <table className="w-full border-collapse text-body-sm">
+        <table
+          className="w-full border-collapse text-body-sm"
+          style={{ tableLayout: 'fixed' }}
+        >
           <thead className="sticky top-0 z-10 bg-surface-container-high border-b border-outline-variant shadow-sm">
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th
-                    key={header.id}
-                    className="px-compact-padding py-2.5 text-left font-bold text-on-surface relative select-none"
-                    style={{ width: header.getSize() }}
-                  >
-                    {header.isPlaceholder ? null : (
-                      <div className="flex items-center justify-between">
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {header.column.columnDef.enableSorting && (
-                          <button
-                            className="p-1 hover:bg-surface-bright rounded transition-colors focus-visible:ring-2 focus-visible:ring-secondary"
-                            onClick={() => handleSortChange(header.id)}
+            {table.getHeaderGroups().map(headerGroup => {
+              const headers = headerGroup.headers
+              return (
+                <tr key={headerGroup.id}>
+                  {headers.map((header, _index) => {
+                    const canResize = header.column.getCanResize()
+
+                    return (
+                      <th
+                        key={header.id}
+                        className="px-compact-padding py-2.5 text-left font-bold text-on-surface relative select-none"
+                        style={{ width: header.getSize() }}
+                      >
+                        {canResize && (
+                          <div
+                            onMouseDown={header.getResizeHandler()}
+                            onTouchStart={header.getResizeHandler()}
+                            onClick={e => e.stopPropagation()}
+                            className={`absolute top-0 h-full w-4 cursor-col-resize touch-none flex items-center justify-center 
+                              ${isRTLlayout ? 'inset-e-0' : 'inset-s-0'}
+                            `}
                           >
-                            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">
-                              {sort?.columnId === header.id
-                                ? sort.direction === 'asc'
-                                  ? 'expand_less'
-                                  : 'expand_more'
-                                : 'unfold_more'}
-                            </span>
-                          </button>
+                            <div
+                              className={`h-full w-0.5 transition-colors  ${header.column.getIsResizing() ? 'bg-secondary' : 'bg-outline-variant hover:bg-secondary'}`}
+                            />
+                          </div>
                         )}
-                      </div>
-                    )}
-                    {header.column.getCanResize() && (
-                      <div
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                        className={`absolute end-0 top-0 h-full w-1 cursor-col-resize touch-none ${header.column.getIsResizing() ? 'bg-secondary' : 'hover:bg-secondary/50'}`}
-                      />
-                    )}
-                  </th>
-                ))}
-              </tr>
-            ))}
+                        {header.isPlaceholder ? null : (
+                          <div className="flex items-center justify-between">
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                            {header.column.columnDef.enableSorting && (
+                              <button
+                                className="p-1 hover:bg-surface-bright rounded transition-colors focus-visible:ring-2 focus-visible:ring-secondary"
+                                onClick={() => handleSortChange(header.id)}
+                              >
+                                <span className="material-symbols-outlined text-[16px] text-on-surface-variant">
+                                  {sort?.columnId === header.id
+                                    ? sort.direction === 'asc'
+                                      ? 'expand_less'
+                                      : 'expand_more'
+                                    : 'unfold_more'}
+                                </span>
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </th>
+                    )
+                  })}
+                </tr>
+              )
+            })}
           </thead>
           <tbody className="divide-y divide-outline-variant">
             {table.getRowModel().rows.map(row => (
@@ -265,9 +319,16 @@ export function DataTable({
                       key={cell.id}
                       className={`px-compact-padding py-2 text-on-surface ${isNameCol ? 'cursor-pointer hover:bg-surface-container-highest' : ''}`}
                       style={{ width: cell.column.getSize() }}
-                      onClick={isNameCol ? () => onRowClick(row.original.id, row.original) : undefined}
+                      onClick={
+                        isNameCol
+                          ? () => onRowClick(row.original.id, row.original)
+                          : undefined
+                      }
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </td>
                   )
                 })}
