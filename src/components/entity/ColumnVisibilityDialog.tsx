@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { ColumnDef } from '@/lib/types/entity'
 import {
   Dialog,
@@ -24,6 +24,10 @@ export function ColumnVisibilityDialog({
   onSave,
 }: ColumnVisibilityDialogProps) {
   const [localColumns, setLocalColumns] = useState<ColumnDef[]>(columns)
+
+  useEffect(() => {
+    setLocalColumns(columns)
+  }, [columns])
 
   const toggleColumn = (id: string) => {
     setLocalColumns(cols =>
@@ -52,11 +56,12 @@ export function ColumnVisibilityDialog({
                 key={col.id}
                 className="flex items-center gap-3 p-2 rounded hover:bg-surface-container-low"
               >
-                <GripVertical className="text-on-surface-variant cursor-grab" size={16} />
+                <GripVertical aria-hidden="true" className="text-on-surface-variant cursor-grab" size={16} />
                 <input
                   type="checkbox"
                   checked={col.visible}
                   onChange={() => toggleColumn(col.id)}
+                  aria-label={`Toggle ${col.label} visibility`}
                   className="w-4 h-4"
                 />
                 <span className="flex-1 text-on-surface text-body-sm">{col.label}</span>
