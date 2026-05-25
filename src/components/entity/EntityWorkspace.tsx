@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { Skeleton } from '@/components/ui/skeleton'
-import type { EntityWorkspaceProps } from '@/lib/types'
+import type { EntityWorkspaceProps } from '@/lib/types/entity'
+import { DataTableShell } from './DataTableShell'
 
 function EntityHeader({ entityType }: { entityType: string }) {
   const { t } = useTranslation()
@@ -46,94 +46,44 @@ function EntityHeader({ entityType }: { entityType: string }) {
   )
 }
 
-function ToolbarSkeleton() {
-  return (
-    <section className="px-6 py-3 border-y border-outline-variant bg-surface-container-low flex items-center justify-between shrink-0">
-      <div className="flex items-center gap-4 flex-1">
-        <Skeleton className="h-8 w-full max-w-sm rounded" />
-        <Skeleton className="h-8 w-24 rounded" />
-        <Skeleton className="h-8 w-24 rounded" />
-      </div>
-      <div className="flex items-center gap-2">
-        <Skeleton className="h-8 w-8 rounded" />
-        <Skeleton className="h-8 w-8 rounded" />
-      </div>
-    </section>
-  )
-}
+const mockColumns = [
+  { id: 'entity', label: 'Entity', type: 'text' as const, width: 180, sortable: true, filterable: true, visible: true, order: 1 },
+  { id: 'doc', label: 'Document #', type: 'text' as const, width: 140, sortable: true, filterable: true, visible: true, order: 2 },
+  { id: 'qty', label: 'Quantity', type: 'number' as const, width: 100, sortable: true, filterable: false, visible: true, order: 3 },
+  { id: 'price', label: 'Unit Price', type: 'currency' as const, width: 100, sortable: true, filterable: false, visible: true, order: 4 },
+  { id: 'total', label: 'Total Amount', type: 'currency' as const, width: 120, sortable: true, filterable: false, visible: true, order: 5 },
+  { id: 'status', label: 'Status', type: 'status' as const, width: 100, sortable: true, filterable: true, visible: true, order: 6 },
+]
 
-function ContentSkeleton() {
-  const columns = [
-    'checkbox',
-    'entity',
-    'doc',
-    'date',
-    'status',
-    'qty',
-    'price',
-    'total',
-    'actions',
-  ]
+const mockEntityRows = [
+  { id: '1', entity: 'Technovate Systems Inc.', doc: 'INV-2024-00124', qty: 1250, price: 45, total: 56250, status: 'Paid' },
+  { id: '2', entity: 'Global Logistics Corp', doc: 'INV-2024-00132', qty: 480, price: 120, total: 57600, status: 'Overdue' },
+  { id: '3', entity: 'Apex Manufacturing', doc: 'PO-88219-B', qty: 22000, price: 1.15, total: 25300, status: 'Draft' },
+  { id: '4', entity: 'Zync Media Partners', doc: 'INV-2024-00145', qty: 1, price: 12400, total: 12400, status: 'Paid' },
+  { id: '5', entity: 'Skyline Prop', doc: 'INV-2024-1000', qty: 1379, price: 8.16, total: 65633, status: 'Overdue' },
+]
 
-  return (
-    <main className="flex-1 overflow-auto no-scrollbar bg-surface-container-lowest">
-      <table className="w-full text-left border-collapse">
-        <thead className="sticky top-0 bg-surface-container-high z-10 border-b border-outline">
-          <tr className="font-label-caps text-label-caps text-on-surface-variant">
-            {columns.map(col => (
-              <th
-                key={col}
-                className="px-3 py-3 font-medium border-r border-outline-variant"
-              >
-                {col.toUpperCase()}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="font-body-sm text-body-sm">
-          {Array.from({ length: 8 }).map((_, rowIndex) => (
-            <tr key={rowIndex} className="border-b border-outline-variant/30">
-              {columns.map(col => (
-                <td key={col} className="px-3 py-2">
-                  <Skeleton className="h-5 w-full" />
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </main>
-  )
-}
-
-function FooterSkeleton() {
-  return (
-    <footer className="h-12 bg-surface-container-low border-t border-outline-variant px-6 flex items-center justify-between shrink-0">
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-28" />
-          <Skeleton className="h-6 w-12" />
-        </div>
-        <Skeleton className="h-4 w-40" />
-      </div>
-      <div className="flex items-center gap-1">
-        <Skeleton className="h-6 w-6 rounded" />
-        <Skeleton className="h-6 w-6 rounded" />
-        <Skeleton className="h-6 w-12 mx-2" />
-        <Skeleton className="h-6 w-6 rounded" />
-        <Skeleton className="h-6 w-6 rounded" />
-      </div>
-    </footer>
-  )
+const mockPagination = {
+  page: 1,
+  pageSize: 50,
+  totalRows: 5,
+  totalPages: 1,
 }
 
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   return (
     <div className="flex flex-col h-full bg-background">
       <EntityHeader entityType={entityType} />
-      <ToolbarSkeleton />
-      <ContentSkeleton />
-      <FooterSkeleton />
+      <DataTableShell
+        entityType={entityType}
+        columns={mockColumns}
+        data={mockEntityRows}
+        pagination={mockPagination}
+        isLoading={false}
+        onSaveColumnPrefs={(cols) => console.log('Save prefs:', cols)}
+        onFiltersApply={(filters) => console.log('Apply filters:', filters)}
+        onExport={() => console.log('Export clicked')}
+      />
     </div>
   )
 }
