@@ -27,6 +27,7 @@ export function Toolbar({
         </div>
         <div className="h-6 w-px bg-outline-variant" />
         <button
+          type="button"
           className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded border border-outline-variant text-body-sm"
           onClick={onFiltersClick}
         >
@@ -34,6 +35,7 @@ export function Toolbar({
           Filters
         </button>
         <button
+          type="button"
           className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded border border-outline-variant text-body-sm"
           onClick={onColumnsClick}
         >
@@ -48,6 +50,7 @@ export function Toolbar({
               {selectedCount} selected
             </span>
             <button
+              type="button"
               className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded text-body-sm"
               onClick={() => onBulkAction('delete')}
             >
@@ -58,6 +61,7 @@ export function Toolbar({
         )}
         {hasSelection && <div className="h-6 w-px bg-outline-variant" />}
         <button
+          type="button"
           className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded text-body-sm"
           onClick={onExport}
         >
