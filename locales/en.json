@@ -89,6 +89,8 @@
   "commandPalette.noResults": "No results found.",
 
   "titlebar.default": "Tauri App",
+  "titlebar.logo": "AccuLedger Logo",
+  "titlebar.appName": "AccuLedger",
   "titlebar.showLeftSidebar": "Show Left Sidebar",
   "titlebar.hideLeftSidebar": "Hide Left Sidebar",
   "titlebar.showRightSidebar": "Show Right Sidebar",

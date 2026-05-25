@@ -89,6 +89,8 @@
   "commandPalette.noResults": "لم يتم العثور على نتائج.",
 
   "titlebar.default": "تطبيق تاوري",
+  "titlebar.logo": "شعار AccuLedger",
+  "titlebar.appName": "AccuLedger",
   "titlebar.showLeftSidebar": "إظهار الشريط الجانبي الأيسر",
   "titlebar.hideLeftSidebar": "إخفاء الشريط الجانبي الأيسر",
   "titlebar.showRightSidebar": "إظهار الشريط الجانبي الأيمن",
