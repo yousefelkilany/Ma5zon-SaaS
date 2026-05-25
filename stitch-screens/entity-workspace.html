@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>AccuLedger - Entity Workspace</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary": "#003824",
+              "tertiary-container": "#39000a",
+              "surface-container": "#102034",
+              error: "#ffb4ab",
+              "on-tertiary-fixed": "#40000c",
+              "primary-fixed-dim": "#bec6e0",
+              "on-tertiary": "#68001a",
+              "on-surface-variant": "#c6c6cd",
+              "on-tertiary-container": "#f42f54",
+              "on-primary-fixed": "#131b2e",
+              "primary-fixed": "#dae2fd",
+              tertiary: "#ffb3b6",
+              "surface-container-lowest": "#000f21",
+              "surface-bright": "#2a3a4f",
+              "outline-variant": "#45464d",
+              "tertiary-fixed-dim": "#ffb3b6",
+              "inverse-on-surface": "#213145",
+              "surface-tint": "#bec6e0",
+              "tertiary-fixed": "#ffdada",
+              "on-error": "#690005",
+              "surface-variant": "#26364a",
+              "surface-container-low": "#0b1c30",
+              "on-surface": "#d3e4fe",
+              "on-primary-container": "#798098",
+              "inverse-primary": "#565e74",
+              "secondary-fixed": "#6ffbbe",
+              "secondary-container": "#00a572",
+              "on-secondary-fixed": "#002113",
+              "on-primary": "#283044",
+              "surface-container-highest": "#26364a",
+              surface: "#031427",
+              "secondary-fixed-dim": "#4edea3",
+              "primary-container": "#0f172a",
+              "on-error-container": "#ffdad6",
+              background: "#031427",
+              "on-tertiary-fixed-variant": "#920028",
+              "surface-container-high": "#1b2b3f",
+              "on-background": "#d3e4fe",
+              outline: "#909097",
+              secondary: "#4edea3",
+              primary: "#bec6e0",
+              "on-secondary-container": "#00311f",
+              "error-container": "#93000a",
+              "on-secondary-fixed-variant": "#005236",
+              "inverse-surface": "#d3e4fe",
+              "surface-dim": "#031427",
+              "on-primary-fixed-variant": "#3f465c",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "compact-padding": "0.75rem",
+              "cozy-gap": "1rem",
+              "compact-gap": "0.5rem",
+              gutter: "1rem",
+              "cozy-padding": "1.5rem",
+              "margin-edge": "2rem",
+            },
+            fontFamily: {
+              "label-caps": ["Inter"],
+              "body-md": ["Inter"],
+              "headline-sm": ["Inter"],
+              "headline-md": ["Inter"],
+              "data-tabular": ["JetBrains Mono", "monospace"],
+              "body-lg": ["Inter"],
+              "headline-lg": ["Inter"],
+              "body-sm": ["Inter"],
+            },
+            fontSize: {
+              "label-caps": [
+                "11px",
+                { lineHeight: "1", letterSpacing: "0.05em", fontWeight: "700" },
+              ],
+              "body-md": ["14px", { lineHeight: "1.5", fontWeight: "400" }],
+              "headline-sm": ["20px", { lineHeight: "1.4", fontWeight: "500" }],
+              "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+              "data-tabular": ["13px", { lineHeight: "1", fontWeight: "500" }],
+              "body-lg": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+              "headline-lg": [
+                "32px",
+                {
+                  lineHeight: "1.2",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "600",
+                },
+              ],
+              "body-sm": ["13px", { lineHeight: "1.5", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #031427;
+        color: #d3e4fe;
+        -webkit-font-smoothing: antialiased;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+        vertical-align: middle;
+        font-size: 18px;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #0b1c30;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #45464d;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #909097;
+      }
+      .zebra-table tr:nth-child(even) {
+        background-color: rgba(16, 32, 52, 0.5);
+      }
+      .zebra-table tr:hover {
+        background-color: rgba(42, 58, 79, 0.4);
+      }
+      input::placeholder {
+        color: #909097;
+      }
+      .focus-ring:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(190, 198, 224, 0.2);
+        border-color: #bec6e0;
+      }
+    </style>
+  </head>
+  <body class="h-screen overflow-hidden flex flex-col">
+    <!-- Top Header Section -->
+    <header
+      class="flex flex-col gap-2 px-6 pt-6 pb-4 bg-surface shadow-sm shrink-0"
+    >
+      <div class="flex items-center justify-between">
+        <div class="flex flex-col">
+          <nav class="flex items-center space-x-2 text-on-surface-variant mb-1">
+            <span
+              class="font-label-caps text-label-caps cursor-pointer hover:text-primary"
+              >DASHBOARD</span
+            >
+            <span class="material-symbols-outlined text-sm">chevron_right</span>
+            <span
+              class="font-label-caps text-label-caps cursor-pointer hover:text-primary"
+              >PARTNERS</span
+            >
+          </nav>
+          <h1 class="font-headline-md text-headline-md text-on-surface">
+            Customers
+          </h1>
+        </div>
+        <button
+          class="bg-secondary text-on-secondary px-4 py-2 rounded shadow-sm hover:opacity-90 active:scale-95 transition-all font-label-caps text-label-caps flex items-center gap-2"
+        >
+          <span class="material-symbols-outlined">add</span>
+          ADD NEW CUSTOMER
+        </button>
+      </div>
+    </header>
+    <!-- Action Toolbar Section -->
+    <section
+      class="px-6 py-3 border-y border-outline-variant bg-surface-container-low flex items-center justify-between shrink-0"
+    >
+      <div class="flex items-center gap-4 flex-1">
+        <div class="relative w-full max-w-sm">
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+            >search</span
+          >
+          <input
+            class="w-full bg-surface-container-lowest border border-outline-variant rounded pl-10 pr-3 py-1.5 font-body-sm text-body-sm text-on-surface focus-ring"
+            placeholder="Global search entities..."
+            type="text"
+          />
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="font-label-caps text-label-caps text-on-surface-variant"
+            >STATUS:</label
+          >
+          <select
+            class="bg-surface-container-lowest border border-outline-variant rounded px-3 py-1.5 font-body-sm text-body-sm text-on-surface focus-ring appearance-none cursor-pointer pr-8 relative"
+          >
+            <option>All</option>
+            <option>Active</option>
+            <option>Inactive</option>
+            <option>Overdue</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="font-label-caps text-label-caps text-on-surface-variant"
+            >CATEGORY:</label
+          >
+          <select
+            class="bg-surface-container-lowest border border-outline-variant rounded px-3 py-1.5 font-body-sm text-body-sm text-on-surface focus-ring appearance-none cursor-pointer pr-8"
+          >
+            <option>All</option>
+            <option>Enterprise</option>
+            <option>SMB</option>
+            <option>Individual</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded transition-colors"
+          title="Export Data"
+        >
+          <span class="material-symbols-outlined">ios_share</span>
+        </button>
+        <button
+          class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded transition-colors"
+          title="Print View"
+        >
+          <span class="material-symbols-outlined">print</span>
+        </button>
+      </div>
+    </section>
+    <!-- Main Content Area: High-Density Table -->
+    <main
+      class="flex-1 overflow-auto custom-scrollbar bg-surface-container-lowest"
+    >
+      <table class="w-full text-left zebra-table border-collapse">
+        <thead
+          class="sticky top-0 bg-surface-container-high z-10 border-b border-outline"
+        >
+          <tr class="font-label-caps text-label-caps text-on-surface-variant">
+            <th class="px-3 py-3 w-10">
+              <input
+                class="w-4 h-4 rounded border-outline bg-surface-container-lowest text-secondary focus:ring-secondary"
+                type="checkbox"
+              />
+            </th>
+            <th class="px-3 py-3 font-medium border-r border-outline-variant">
+              ENTITY NAME
+            </th>
+            <th class="px-3 py-3 font-medium border-r border-outline-variant">
+              DOCUMENT #
+            </th>
+            <th class="px-3 py-3 font-medium border-r border-outline-variant">
+              DATE
+            </th>
+            <th class="px-3 py-3 font-medium border-r border-outline-variant">
+              STATUS
+            </th>
+            <th
+              class="px-3 py-3 font-medium text-right border-r border-outline-variant"
+            >
+              QUANTITY
+            </th>
+            <th
+              class="px-3 py-3 font-medium text-right border-r border-outline-variant"
+            >
+              UNIT PRICE
+            </th>
+            <th
+              class="px-3 py-3 font-medium text-right border-r border-outline-variant"
+            >
+              TOTAL
+            </th>
+            <th class="px-3 py-3 font-medium text-center">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody
+          class="font-body-sm text-body-sm divide-y divide-outline-variant/30"
+        >
+          <!-- Row 1 -->
+          <tr>
+            <td class="px-3 py-2">
+              <input
+                class="w-4 h-4 rounded border-outline-variant bg-transparent text-secondary"
+                type="checkbox"
+              />
+            </td>
+            <td class="px-3 py-2 text-on-surface font-medium">
+              Aether Dynamics Corp
+            </td>
+            <td class="px-3 py-2 text-on-surface-variant">INV-2023-9021</td>
+            <td class="px-3 py-2">Oct 12, 2023</td>
+            <td class="px-3 py-2">
+              <span
+                class="bg-[#00a572]/15 text-secondary px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase"
+                >Paid</span
+              >
+            </td>
+            <td class="px-3 py-2 font-data-tabular text-right">1,240.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right">45.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right text-primary">
+              55,800.00
+            </td>
+            <td class="px-3 py-2 text-center">
+              <div class="flex items-center justify-center gap-3">
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors"
+                  >edit</span
+                >
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-error transition-colors"
+                  >delete</span
+                >
+              </div>
+            </td>
+          </tr>
+          <!-- Row 2 -->
+          <tr>
+            <td class="px-3 py-2">
+              <input
+                class="w-4 h-4 rounded border-outline-variant bg-transparent text-secondary"
+                type="checkbox"
+              />
+            </td>
+            <td class="px-3 py-2 text-on-surface font-medium">
+              Blue Horizon Logistics
+            </td>
+            <td class="px-3 py-2 text-on-surface-variant">INV-2023-8843</td>
+            <td class="px-3 py-2">Oct 11, 2023</td>
+            <td class="px-3 py-2">
+              <span
+                class="bg-[#93000a]/15 text-error px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase"
+                >Overdue</span
+              >
+            </td>
+            <td class="px-3 py-2 font-data-tabular text-right">300.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right">120.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right text-primary">
+              36,000.00
+            </td>
+            <td class="px-3 py-2 text-center">
+              <div class="flex items-center justify-center gap-3">
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors"
+                  >edit</span
+                >
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-error transition-colors"
+                  >delete</span
+                >
+              </div>
+            </td>
+          </tr>
+          <!-- Row 3 -->
+          <tr>
+            <td class="px-3 py-2">
+              <input
+                class="w-4 h-4 rounded border-outline-variant bg-transparent text-secondary"
+                type="checkbox"
+              />
+            </td>
+            <td class="px-3 py-2 text-on-surface font-medium">
+              Capital Ventures Group
+            </td>
+            <td class="px-3 py-2 text-on-surface-variant">INV-2023-7721</td>
+            <td class="px-3 py-2">Oct 10, 2023</td>
+            <td class="px-3 py-2">
+              <span
+                class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase"
+                >Draft</span
+              >
+            </td>
+            <td class="px-3 py-2 font-data-tabular text-right">15.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right">1,200.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right text-primary">
+              18,000.00
+            </td>
+            <td class="px-3 py-2 text-center">
+              <div class="flex items-center justify-center gap-3">
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors"
+                  >edit</span
+                >
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-error transition-colors"
+                  >delete</span
+                >
+              </div>
+            </td>
+          </tr>
+          <!-- Row 4 -->
+          <tr>
+            <td class="px-3 py-2">
+              <input
+                class="w-4 h-4 rounded border-outline-variant bg-transparent text-secondary"
+                type="checkbox"
+              />
+            </td>
+            <td class="px-3 py-2 text-on-surface font-medium">
+              DataStream Global LLC
+            </td>
+            <td class="px-3 py-2 text-on-surface-variant">INV-2023-6623</td>
+            <td class="px-3 py-2">Oct 09, 2023</td>
+            <td class="px-3 py-2">
+              <span
+                class="bg-blue-500/15 text-blue-400 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase"
+                >Pending</span
+              >
+            </td>
+            <td class="px-3 py-2 font-data-tabular text-right">5,000.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right">2.50</td>
+            <td class="px-3 py-2 font-data-tabular text-right text-primary">
+              12,500.00
+            </td>
+            <td class="px-3 py-2 text-center">
+              <div class="flex items-center justify-center gap-3">
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors"
+                  >edit</span
+                >
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-error transition-colors"
+                  >delete</span
+                >
+              </div>
+            </td>
+          </tr>
+          <!-- Row 5 -->
+          <tr>
+            <td class="px-3 py-2">
+              <input
+                class="w-4 h-4 rounded border-outline-variant bg-transparent text-secondary"
+                type="checkbox"
+              />
+            </td>
+            <td class="px-3 py-2 text-on-surface font-medium">
+              Epsilon Energy Inc
+            </td>
+            <td class="px-3 py-2 text-on-surface-variant">INV-2023-5510</td>
+            <td class="px-3 py-2">Oct 08, 2023</td>
+            <td class="px-3 py-2">
+              <span
+                class="bg-[#00a572]/15 text-secondary px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase"
+                >Paid</span
+              >
+            </td>
+            <td class="px-3 py-2 font-data-tabular text-right">82.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right">410.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right text-primary">
+              33,620.00
+            </td>
+            <td class="px-3 py-2 text-center">
+              <div class="flex items-center justify-center gap-3">
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors"
+                  >edit</span
+                >
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-error transition-colors"
+                  >delete</span
+                >
+              </div>
+            </td>
+          </tr>
+          <!-- Repeat pattern for more items to show depth -->
+          <tr>
+            <td class="px-3 py-2">
+              <input
+                class="w-4 h-4 rounded border-outline-variant bg-transparent text-secondary"
+                type="checkbox"
+              />
+            </td>
+            <td class="px-3 py-2 text-on-surface font-medium">
+              Focal Point Systems
+            </td>
+            <td class="px-3 py-2 text-on-surface-variant">INV-2023-4402</td>
+            <td class="px-3 py-2">Oct 07, 2023</td>
+            <td class="px-3 py-2">
+              <span
+                class="bg-[#00a572]/15 text-secondary px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase"
+                >Paid</span
+              >
+            </td>
+            <td class="px-3 py-2 font-data-tabular text-right">200.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right">45.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right text-primary">
+              9,000.00
+            </td>
+            <td class="px-3 py-2 text-center">
+              <div class="flex items-center justify-center gap-3">
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors"
+                  >edit</span
+                >
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-error transition-colors"
+                  >delete</span
+                >
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-3 py-2">
+              <input
+                class="w-4 h-4 rounded border-outline-variant bg-transparent text-secondary"
+                type="checkbox"
+              />
+            </td>
+            <td class="px-3 py-2 text-on-surface font-medium">
+              Grid-Link Solutions
+            </td>
+            <td class="px-3 py-2 text-on-surface-variant">INV-2023-3391</td>
+            <td class="px-3 py-2">Oct 06, 2023</td>
+            <td class="px-3 py-2">
+              <span
+                class="bg-[#93000a]/15 text-error px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase"
+                >Overdue</span
+              >
+            </td>
+            <td class="px-3 py-2 font-data-tabular text-right">45.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right">215.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right text-primary">
+              9,675.00
+            </td>
+            <td class="px-3 py-2 text-center">
+              <div class="flex items-center justify-center gap-3">
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors"
+                  >edit</span
+                >
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-error transition-colors"
+                  >delete</span
+                >
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-3 py-2">
+              <input
+                class="w-4 h-4 rounded border-outline-variant bg-transparent text-secondary"
+                type="checkbox"
+              />
+            </td>
+            <td class="px-3 py-2 text-on-surface font-medium">
+              Hyperion Tech Group
+            </td>
+            <td class="px-3 py-2 text-on-surface-variant">INV-2023-2280</td>
+            <td class="px-3 py-2">Oct 05, 2023</td>
+            <td class="px-3 py-2">
+              <span
+                class="bg-blue-500/15 text-blue-400 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase"
+                >Pending</span
+              >
+            </td>
+            <td class="px-3 py-2 font-data-tabular text-right">1,000.00</td>
+            <td class="px-3 py-2 font-data-tabular text-right">12.75</td>
+            <td class="px-3 py-2 font-data-tabular text-right text-primary">
+              12,750.00
+            </td>
+            <td class="px-3 py-2 text-center">
+              <div class="flex items-center justify-center gap-3">
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors"
+                  >edit</span
+                >
+                <span
+                  class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-error transition-colors"
+                  >delete</span
+                >
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+    <!-- Footer: Pagination Bar -->
+    <footer
+      class="h-12 bg-surface-container-low border-t border-outline-variant px-6 flex items-center justify-between shrink-0"
+    >
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-2">
+          <span class="font-label-caps text-label-caps text-on-surface-variant"
+            >ROWS PER PAGE:</span
+          >
+          <select
+            class="bg-transparent border-none font-body-sm text-body-sm text-on-surface cursor-pointer focus:ring-0"
+          >
+            <option>50</option>
+            <option>100</option>
+            <option>200</option>
+          </select>
+        </div>
+        <span
+          class="font-label-caps text-label-caps text-on-surface-variant border-l border-outline-variant pl-6"
+        >
+          SHOWING 1 - 50 OF 1,284 RECORDS
+        </span>
+      </div>
+      <div class="flex items-center gap-1">
+        <button
+          class="p-1 text-on-surface-variant hover:text-primary disabled:opacity-30"
+          disabled=""
+        >
+          <span class="material-symbols-outlined">first_page</span>
+        </button>
+        <button
+          class="p-1 text-on-surface-variant hover:text-primary disabled:opacity-30"
+          disabled=""
+        >
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <div class="flex items-center px-4 gap-2">
+          <span class="font-body-sm text-body-sm text-on-surface font-bold"
+            >1</span
+          >
+          <span class="font-body-sm text-body-sm text-on-surface-variant"
+            >/</span
+          >
+          <span class="font-body-sm text-body-sm text-on-surface-variant"
+            >26</span
+          >
+        </div>
+        <button class="p-1 text-on-surface-variant hover:text-primary">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+        <button class="p-1 text-on-surface-variant hover:text-primary">
+          <span class="material-symbols-outlined">last_page</span>
+        </button>
+      </div>
+    </footer>
+    <script>
+      // Simple row selection interaction
+      document
+        .querySelectorAll('input[type="checkbox"]')
+        .forEach((checkbox) => {
+          checkbox.addEventListener("change", function () {
+            const row = this.closest("tr");
+            if (row && row.tagName === "TR") {
+              if (this.checked) {
+                row.style.backgroundColor = "rgba(190, 198, 224, 0.08)";
+              } else {
+                row.style.backgroundColor = "";
+              }
+            }
+          });
+        });
+
+      // Toggle focus state for table rows (accessible high density UI pattern)
+      document.querySelectorAll("tbody tr").forEach((row) => {
+        row.addEventListener("click", (e) => {
+          if (e.target.tagName !== "INPUT" && e.target.tagName !== "SPAN") {
+            const checkbox = row.querySelector('input[type="checkbox"]');
+            if (checkbox) checkbox.click();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

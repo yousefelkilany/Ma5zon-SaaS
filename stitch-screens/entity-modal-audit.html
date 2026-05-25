@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Audit Log - Aether Dynamics Corp</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface-variant": "#c6c6cd",
+              "on-error": "#690005",
+              "surface-dim": "#031427",
+              "primary-fixed-dim": "#bec6e0",
+              primary: "#bec6e0",
+              "tertiary-container": "#39000a",
+              "on-secondary-fixed-variant": "#005236",
+              "secondary-fixed": "#6ffbbe",
+              "surface-tint": "#bec6e0",
+              "inverse-on-surface": "#213145",
+              "surface-container-lowest": "#000f21",
+              "surface-container-low": "#0b1c30",
+              "on-surface": "#d3e4fe",
+              "on-secondary": "#003824",
+              error: "#ffb4ab",
+              "outline-variant": "#45464d",
+              "on-secondary-container": "#00311f",
+              "secondary-container": "#00a572",
+              "on-primary": "#283044",
+              "on-tertiary-fixed-variant": "#920028",
+              background: "#031427",
+              "surface-variant": "#26364a",
+              surface: "#031427",
+              "surface-container": "#102034",
+              "tertiary-fixed": "#ffdada",
+              "surface-bright": "#2a3a4f",
+              secondary: "#4edea3",
+              "on-tertiary-fixed": "#40000c",
+              "on-tertiary-container": "#f42f54",
+              "on-error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#ffb3b6",
+              "primary-container": "#0f172a",
+              "on-secondary-fixed": "#002113",
+              tertiary: "#ffb3b6",
+              outline: "#909097",
+              "surface-container-highest": "#26364a",
+              "primary-fixed": "#dae2fd",
+              "on-primary-container": "#798098",
+              "inverse-surface": "#d3e4fe",
+              "inverse-primary": "#565e74",
+              "on-background": "#d3e4fe",
+              "secondary-fixed-dim": "#4edea3",
+              "on-tertiary": "#68001a",
+              "on-primary-fixed": "#131b2e",
+              "surface-container-high": "#1b2b3f",
+              "on-primary-fixed-variant": "#3f465c",
+              "error-container": "#93000a",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "margin-edge": "2rem",
+              gutter: "1rem",
+              "compact-gap": "0.5rem",
+              "cozy-padding": "1.5rem",
+              "compact-padding": "0.75rem",
+              "cozy-gap": "1rem",
+            },
+            fontFamily: {
+              "headline-md": ["Inter"],
+              "body-sm": ["Inter"],
+              "label-caps": ["Inter"],
+              "headline-sm": ["Inter"],
+              "headline-lg": ["Inter"],
+              "data-tabular": ["Inter"],
+              "body-lg": ["Inter"],
+              "body-md": ["Inter"],
+            },
+            fontSize: {
+              "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+              "body-sm": ["13px", { lineHeight: "1.5", fontWeight: "400" }],
+              "label-caps": [
+                "11px",
+                { lineHeight: "1", letterSpacing: "0.05em", fontWeight: "700" },
+              ],
+              "headline-sm": ["20px", { lineHeight: "1.4", fontWeight: "500" }],
+              "headline-lg": [
+                "32px",
+                {
+                  lineHeight: "1.2",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "600",
+                },
+              ],
+              "data-tabular": ["14px", { lineHeight: "1", fontWeight: "500" }],
+              "body-lg": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+              "body-md": ["14px", { lineHeight: "1.5", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #031427;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+        vertical-align: middle;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #45464d;
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #909097;
+      }
+    </style>
+  </head>
+  <body
+    class="flex items-center justify-center min-h-screen p-margin-edge overflow-hidden"
+  >
+    <!-- Background Overlay -->
+    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-0"></div>
+    <!-- Main Modal Container -->
+    <div
+      class="relative z-10 w-[70%] h-[80%] bg-surface-container-lowest flex flex-col shadow-2xl overflow-hidden rounded-lg border border-outline-variant"
+    >
+      <!-- Modal Header -->
+      <header
+        class="sticky top-0 z-20 flex items-center justify-between px-cozy-padding py-compact-padding bg-surface-container-high border-b border-outline-variant"
+      >
+        <div class="flex items-center gap-compact-gap">
+          <h1 class="font-headline-sm text-headline-sm text-on-surface">
+            Edit Customer:
+            <span class="text-primary">Aether Dynamics Corp</span>
+          </h1>
+          <span
+            class="ml-gutter px-2 py-0.5 bg-secondary-container/20 text-secondary font-label-caps text-label-caps border border-secondary/30 rounded"
+            >CUSTOMER</span
+          >
+        </div>
+        <button
+          class="p-2 hover:bg-surface-variant transition-colors rounded-full text-on-surface-variant"
+        >
+          <span class="material-symbols-outlined" data-icon="close">close</span>
+        </button>
+      </header>
+      <!-- Tab Strip -->
+      <nav
+        class="sticky top-[60px] z-10 flex bg-surface-container-low border-b border-outline-variant px-cozy-padding"
+      >
+        <button
+          class="px-cozy-padding py-3 font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-all border-b-2 border-transparent"
+        >
+          Details
+        </button>
+        <button
+          class="px-cozy-padding py-3 font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-all border-b-2 border-transparent"
+        >
+          Analytics
+        </button>
+        <button
+          class="px-cozy-padding py-3 font-body-md text-body-md text-primary font-bold border-b-2 border-primary"
+        >
+          Audit Log
+        </button>
+      </nav>
+      <!-- Content Area: Scrollable Audit Log -->
+      <main
+        class="flex-1 overflow-y-auto custom-scrollbar p-cozy-padding bg-surface"
+      >
+        <div class="max-w-4xl mx-auto space-y-compact-gap">
+          <!-- Date Group Header -->
+          <div class="flex items-center gap-gutter py-compact-padding">
+            <span
+              class="font-label-caps text-label-caps text-on-surface-variant"
+              >OCTOBER 24, 2023</span
+            >
+            <div class="h-[1px] flex-1 bg-outline-variant"></div>
+          </div>
+          <!-- Audit Entries -->
+          <!-- Entry 1 -->
+          <div
+            class="group flex gap-cozy-gap p-compact-padding hover:bg-surface-container transition-colors rounded"
+          >
+            <div class="flex-shrink-0">
+              <img
+                alt="User Avatar"
+                class="w-10 h-10 rounded bg-surface-variant border border-outline-variant"
+                data-alt="A professional headshot avatar of a male executive with short dark hair, wearing a navy blue suit and a crisp white shirt, isolated against a soft gray studio background. The lighting is clean and cinematic, reflecting a high-end corporate ERP environment with a professional and calm mood."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDv8jyGb_YAVmJD18GgCslEWl7184dDGj8X74FGRF3ef0Q70ZL4AYe3iqXG88KoyDdwYtLsrjWX6lNSvxeYOkL4ipqRDSIqXge-h5_ZfIEaib_R7iY3tO8J890QirVD051tkVsAnxN3VeBJlaARiZjDaJZkvxjIh8f5cRMTY9yyByVzH_CYXJIn6tJLm9-SAFQe233h4gnLnvsnZeoaCnqEkg8qFxop_q4j0Qy92RlcrZ_czEsKUt2ccfjL0peSkkyMbELSY9RN13Y"
+              />
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span
+                    class="font-body-md text-body-md text-on-surface font-semibold"
+                    >Marcus Sterling</span
+                  >
+                  <span class="mx-1 text-on-surface-variant">•</span>
+                  <span class="font-body-md text-body-md text-secondary"
+                    >Updated Credit Limit</span
+                  >
+                </div>
+                <span
+                  class="font-data-tabular text-body-sm text-on-surface-variant"
+                  >14:22 PM</span
+                >
+              </div>
+              <div
+                class="mt-1 flex items-center gap-compact-gap font-data-tabular text-body-sm bg-surface-container-low p-2 rounded border border-outline-variant/50"
+              >
+                <span class="text-on-error bg-error-container/20 px-1 rounded"
+                  >From $50,000</span
+                >
+                <span
+                  class="material-symbols-outlined text-on-surface-variant text-[16px]"
+                  data-icon="arrow_forward"
+                  >arrow_forward</span
+                >
+                <span
+                  class="text-on-secondary bg-secondary-container/20 px-1 rounded"
+                  >To $75,000</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Entry 2 -->
+          <div
+            class="group flex gap-cozy-gap p-compact-padding hover:bg-surface-container transition-colors rounded"
+          >
+            <div class="flex-shrink-0">
+              <img
+                alt="User Avatar"
+                class="w-10 h-10 rounded bg-surface-variant border border-outline-variant"
+                data-alt="A professional headshot avatar of a female accountant with glasses and light brown hair tied back, wearing a professional gray blazer, isolated against a minimalist dark blue professional background. The style is consistent with high-focus corporate interfaces, emphasizing precision and trust."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZjoGPJSCDNDO_4Nomzh-MA7bXWGdF_fmNxNyRmfEnNDFB5esKGSVCF8UMYBx9_Q6JzHJi60MgmEXNwjdzDnCjDZx29lWVRYDWa44-mnCw7f8WcqL-NcYFBQP4KhKNB1i1AWXtYDxtRzaKgpBa7BdeQaGj9pCreEWysrd2-N43TEajMZFgFg_fOzjtVJUXFo8u8y6cjkGWMFJUMmr1hujc-CgYYC8c2AidTkrWy-TADHcPnsZaoylhARhZEtD5UTekL73cbWIYNrQ"
+              />
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span
+                    class="font-body-md text-body-md text-on-surface font-semibold"
+                    >Sarah Jenkins</span
+                  >
+                  <span class="mx-1 text-on-surface-variant">•</span>
+                  <span
+                    class="font-body-md text-body-md text-on-surface-variant"
+                    >Changed Account Manager</span
+                  >
+                </div>
+                <span
+                  class="font-data-tabular text-body-sm text-on-surface-variant"
+                  >11:05 AM</span
+                >
+              </div>
+              <div
+                class="mt-1 font-data-tabular text-body-sm text-on-surface-variant"
+              >
+                Assigned to
+                <span class="text-primary">Robert Chen</span> (previously
+                Unassigned)
+              </div>
+            </div>
+          </div>
+          <!-- Date Group Header -->
+          <div
+            class="flex items-center gap-gutter py-compact-padding mt-gutter"
+          >
+            <span
+              class="font-label-caps text-label-caps text-on-surface-variant"
+              >OCTOBER 23, 2023</span
+            >
+            <div class="h-[1px] flex-1 bg-outline-variant"></div>
+          </div>
+          <!-- Entry 3 -->
+          <div
+            class="group flex gap-cozy-gap p-compact-padding hover:bg-surface-container transition-colors rounded"
+          >
+            <div class="flex-shrink-0">
+              <img
+                alt="System Icon"
+                class="w-10 h-10 rounded bg-primary-container flex items-center justify-center border border-outline-variant"
+                data-alt="A stylized technical illustration of a system automation icon, featuring interlocking gears and a pulsing data node. The color palette is composed of deep navies and electric cyans, reflecting a highly advanced ERP system performing background processes in a modern, dark-themed corporate digital environment."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_1gTkDvUoylXN6EfIkHyn86kSMw_z4l7BPTmmv1btJ4dFP6eodYu5lhb_mhrsaDvyIQDVmhQ1hIm3UB92dreBIhwvLJqlaq7hW-95r5PAZIDJWFEHipIqKglJ5sG3SUd9LrObJbv0TQBNzSq7Yv2TfjBgQ3b4AAeovkWC4Wv9_0gGFiO882VugDdCyspiJab515mEhgOIn-eaARGRLHBiP1CGn1sUmjQDzrPEY99RTY9kbL0s0Rw11ITSNDQ3iYwHPCKPvhwQHy0"
+              />
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span
+                    class="font-body-md text-body-md text-on-surface font-semibold"
+                    >System Bot</span
+                  >
+                  <span class="mx-1 text-on-surface-variant">•</span>
+                  <span
+                    class="font-body-md text-body-md text-on-surface-variant"
+                    >Automated Credit Re-evaluation</span
+                  >
+                </div>
+                <span
+                  class="font-data-tabular text-body-sm text-on-surface-variant"
+                  >18:00 PM</span
+                >
+              </div>
+              <p
+                class="mt-1 font-body-sm text-body-sm text-on-surface-variant leading-relaxed"
+              >
+                Scheduled quarterly review triggered. No changes required based
+                on current cash flow and payment history metrics.
+              </p>
+            </div>
+          </div>
+          <!-- Entry 4 -->
+          <div
+            class="group flex gap-cozy-gap p-compact-padding hover:bg-surface-container transition-colors rounded"
+          >
+            <div class="flex-shrink-0">
+              <img
+                alt="User Avatar"
+                class="w-10 h-10 rounded bg-surface-variant border border-outline-variant"
+                data-alt="A headshot avatar of a professional woman with a calm expression, wearing a dark professional sweater and a silver necklace, set against a clean and professional corporate gradient background. The lighting is soft and high-focus, designed for a financial management software interface."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0lYgOZdavAvqwDdknPIoCEsFu0-Fy0g10t44lRYdIENrzIADDrW0CZXrROw-BcvxR2C0LsQXYVuHj7VqHc9MfeSWjG3InCxoYaMtsUtb6bJJNHDz6KUEx7S3CHsl1HodaQZr7kwY4LTDInHDZMIdrvMr2HOkBvMZXWrrkjFDOrFSNG1hVN6NM2UiXctPfdOJ8p-ViZyHDddo50bsbwTZdwucDpm0GuzqZV8RPh83OHXapo92Kbn92hjs5kTfAqcRvlQ09gDzZkAA"
+              />
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span
+                    class="font-body-md text-body-md text-on-surface font-semibold"
+                    >Elena Rodriguez</span
+                  >
+                  <span class="mx-1 text-on-surface-variant">•</span>
+                  <span
+                    class="font-body-md text-body-md text-on-surface-variant"
+                    >Uploaded Document</span
+                  >
+                </div>
+                <span
+                  class="font-data-tabular text-body-sm text-on-surface-variant"
+                  >15:45 PM</span
+                >
+              </div>
+              <div
+                class="mt-2 flex items-center gap-compact-gap p-2 bg-surface-container-high rounded border border-outline-variant cursor-pointer hover:border-primary transition-colors w-fit"
+              >
+                <span
+                  class="material-symbols-outlined text-primary"
+                  data-icon="description"
+                  >description</span
+                >
+                <span class="font-data-tabular text-body-sm text-on-surface"
+                  >Tax_Exemption_Certificate_2024.pdf</span
+                >
+                <span
+                  class="font-label-caps text-[10px] text-on-surface-variant px-1 border border-outline-variant rounded"
+                  >4.2 MB</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Entry 5 -->
+          <div
+            class="group flex gap-cozy-gap p-compact-padding hover:bg-surface-container transition-colors rounded"
+          >
+            <div class="flex-shrink-0">
+              <img
+                alt="User Avatar"
+                class="w-10 h-10 rounded bg-surface-variant border border-outline-variant"
+                data-alt="A professional headshot avatar of a male executive with short dark hair, wearing a navy blue suit and a crisp white shirt. The lighting is clean and cinematic, reflecting a high-end corporate ERP environment with a professional and calm mood."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdiGsTZKzSIWVIpjK8xt04OzbpRCBJ1ZNlRmYuGPVVhh2-kU7P6TtJHAfBNtkX6FBYQ6ejizugvRfdivFlhsNDSDa78CO8dzdgU-yaGGtxCV5m8qKeFsEZumBurmcBeCPNWZDUIp2yQ0udWdU7ibviDv_jsGZ8AwjLBcpF9UNN-DeL-mT1NQeNeq5GvAZTSiOb1KLf-YJbHqj0XV72IlHABjP1eQxO_xhRrUKnen95jJjHjX2RhastL6W9xYSJQrpO7dPxG6jSiqo"
+              />
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span
+                    class="font-body-md text-body-md text-on-surface font-semibold"
+                    >Marcus Sterling</span
+                  >
+                  <span class="mx-1 text-on-surface-variant">•</span>
+                  <span
+                    class="font-body-md text-body-md text-on-surface-variant"
+                    >Updated Shipping Address</span
+                  >
+                </div>
+                <span
+                  class="font-data-tabular text-body-sm text-on-surface-variant"
+                  >09:12 AM</span
+                >
+              </div>
+              <div
+                class="mt-1 font-data-tabular text-body-sm text-on-surface-variant grid grid-cols-2 gap-gutter"
+              >
+                <div class="p-2 border-r border-outline-variant">
+                  <p class="font-label-caps mb-1 opacity-50">OLD ADDRESS</p>
+                  892 Silicon Valley Blvd, CA 94043
+                </div>
+                <div class="p-2">
+                  <p class="font-label-caps mb-1 text-secondary opacity-80">
+                    NEW ADDRESS
+                  </p>
+                  1200 Innovation Way, Austin, TX 78701
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <!-- Fixed Footer -->
+      <footer
+        class="sticky bottom-0 z-20 flex items-center justify-between px-cozy-padding py-compact-padding bg-surface-container-high border-t border-outline-variant"
+      >
+        <button
+          class="flex items-center gap-compact-gap text-error hover:bg-error-container/10 px-compact-padding py-2 rounded transition-colors font-body-md text-body-md"
+        >
+          <span class="material-symbols-outlined" data-icon="delete"
+            >delete</span
+          >
+          Delete
+        </button>
+        <div class="flex items-center gap-gutter">
+          <button
+            class="px-cozy-padding py-2 text-on-surface-variant hover:text-on-surface transition-colors font-body-md text-body-md"
+          >
+            Cancel
+          </button>
+          <button
+            class="px-cozy-padding py-2 bg-primary text-on-primary hover:opacity-90 transition-all rounded shadow-md font-body-md text-body-md font-semibold"
+          >
+            Save Changes
+          </button>
+        </div>
+      </footer>
+    </div>
+    <!-- Micro-interaction Script -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Simple hover effect for audit entries
+        const entries = document.querySelectorAll(".group");
+        entries.forEach((entry) => {
+          entry.addEventListener("mouseenter", () => {
+            entry.style.transform = "translateX(4px)";
+          });
+          entry.addEventListener("mouseleave", () => {
+            entry.style.transform = "translateX(0px)";
+          });
+        });
+
+        // Close modal simulation
+        const closeBtn = document.querySelector(
+          '[data-icon="close"]',
+        ).parentElement;
+        closeBtn.addEventListener("click", () => {
+          document.body.style.opacity = "0";
+          document.body.style.transition = "opacity 0.3s ease";
+          setTimeout(() => {
+            alert("Modal Closed (Demo Interaction)");
+            document.body.style.opacity = "1";
+          }, 300);
+        });
+      });
+    </script>
+  </body>
+</html>

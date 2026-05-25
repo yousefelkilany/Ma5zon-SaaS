@@ -1,0 +1,1751 @@
+<!doctype html>
+<html class="dark" lang="en" style="">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>AccuLedger ERP - General Ledger</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+      }
+      /* Custom scrollbar for high-density tables */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #45464d;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #909097;
+      }
+    </style>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'tertiary-container': '#39000a',
+              surface: '#031427',
+              'surface-tint': '#bec6e0',
+              'secondary-fixed-dim': '#4edea3',
+              'on-secondary-fixed-variant': '#005236',
+              'surface-container': '#102034',
+              'primary-fixed': '#dae2fd',
+              'on-surface': '#d3e4fe',
+              error: '#ffb4ab',
+              'on-error-container': '#ffdad6',
+              'surface-container-low': '#0b1c30',
+              'on-primary': '#283044',
+              outline: '#909097',
+              'surface-dim': '#031427',
+              'on-tertiary': '#68001a',
+              'on-secondary-fixed': '#002113',
+              'on-error': '#690005',
+              'tertiary-fixed-dim': '#ffb3b6',
+              'on-primary-container': '#798098',
+              'secondary-fixed': '#6ffbbe',
+              'primary-container': '#0f172a',
+              'on-secondary-container': '#00311f',
+              'on-primary-fixed': '#131b2e',
+              'on-tertiary-fixed': '#40000c',
+              'surface-container-highest': '#26364a',
+              'surface-container-high': '#1b2b3f',
+              'on-tertiary-fixed-variant': '#920028',
+              primary: '#bec6e0',
+              tertiary: '#ffb3b6',
+              'on-surface-variant': '#c6c6cd',
+              'inverse-surface': '#d3e4fe',
+              'surface-bright': '#2a3a4f',
+              'inverse-primary': '#565e74',
+              'on-background': '#d3e4fe',
+              'surface-container-lowest': '#000f21',
+              'on-primary-fixed-variant': '#3f465c',
+              'inverse-on-surface': '#213145',
+              'surface-variant': '#26364a',
+              'outline-variant': '#45464d',
+              'primary-fixed-dim': '#bec6e0',
+              'on-secondary': '#003824',
+              'error-container': '#93000a',
+              'secondary-container': '#00a572',
+              background: '#031427',
+              secondary: '#4edea3',
+              'tertiary-fixed': '#ffdada',
+              'on-tertiary-container': '#f42f54',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              'compact-padding': '0.75rem',
+              gutter: '1rem',
+              'cozy-gap': '1rem',
+              'margin-edge': '2rem',
+              'compact-gap': '0.5rem',
+              'cozy-padding': '1.5rem',
+            },
+            fontFamily: {
+              'body-md': ['Inter'],
+              'body-sm': ['Inter'],
+              'label-caps': ['Inter'],
+              'data-tabular': ['Inter'],
+              'headline-md': ['Inter'],
+              'headline-sm': ['Inter'],
+              'body-lg': ['Inter'],
+              'headline-lg': ['Inter'],
+            },
+            fontSize: {
+              'body-md': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
+              'body-sm': ['13px', { lineHeight: '1.5', fontWeight: '400' }],
+              'label-caps': [
+                '11px',
+                { lineHeight: '1', letterSpacing: '0.05em', fontWeight: '700' },
+              ],
+              'data-tabular': ['14px', { lineHeight: '1', fontWeight: '500' }],
+              'headline-md': ['24px', { lineHeight: '1.3', fontWeight: '600' }],
+              'headline-sm': ['20px', { lineHeight: '1.4', fontWeight: '500' }],
+              'body-lg': ['16px', { lineHeight: '1.6', fontWeight: '400' }],
+              'headline-lg': [
+                '32px',
+                {
+                  lineHeight: '1.2',
+                  letterSpacing: '-0.02em',
+                  fontWeight: '600',
+                },
+              ],
+            },
+          },
+        },
+      }
+    </script>
+  </head>
+  <body
+    class="bg-background text-on-surface font-body-md selection:bg-secondary-container selection:text-on-secondary-container"
+  >
+    <div class="flex h-screen overflow-hidden">
+      <!-- SideNavBar -->
+
+      <!-- Main Content Canvas -->
+      <div class="flex-1 flex flex-col min-w-0">
+        <!-- TopNavBar -->
+
+        <!-- Table Area -->
+        <main
+          class="flex-1 flex flex-col overflow-hidden bg-surface-container-low p-gutter"
+        >
+          <!-- Toolbar -->
+          <div
+            class="flex flex-col md:flex-row md:items-center justify-between gap-compact-gap mb-4 bg-surface-container p-3 border border-outline-variant rounded-lg"
+          >
+            <div class="flex items-center gap-3">
+              <button
+                class="flex items-center gap-2 px-3 py-1.5 bg-secondary text-on-secondary rounded hover:bg-secondary-fixed transition-colors text-body-sm font-bold shadow-sm"
+              >
+                <span
+                  class="material-symbols-outlined text-sm"
+                  style="font-variation-settings: 'FILL' 1"
+                  >add</span
+                >
+                New Entry
+              </button>
+              <div class="h-6 w-px bg-outline-variant"></div>
+              <button
+                class="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded border border-outline-variant text-body-sm"
+              >
+                <span class="material-symbols-outlined text-[18px]"
+                  >filter_list</span
+                >
+                Filters
+              </button>
+              <button
+                class="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded border border-outline-variant text-body-sm"
+              >
+                <span class="material-symbols-outlined text-[18px]"
+                  >view_column</span
+                >
+                Columns
+              </button>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                class="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded text-body-sm"
+              >
+                <span class="material-symbols-outlined text-[18px]"
+                  >more_horiz</span
+                >
+                Bulk Actions
+              </button>
+              <div class="h-6 w-px bg-outline-variant"></div>
+              <button
+                class="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded text-body-sm"
+              >
+                <span class="material-symbols-outlined text-[18px]"
+                  >file_download</span
+                >
+                Export
+              </button>
+            </div>
+          </div>
+          <!-- High Density Data Table -->
+          <div
+            class="flex-1 overflow-auto border border-outline-variant rounded-lg bg-surface-container-lowest"
+          >
+            <table class="w-full border-collapse text-body-sm">
+              <thead
+                class="sticky top-0 z-10 bg-surface-container-high border-b border-outline-variant shadow-sm"
+              >
+                <tr>
+                  <th class="w-10 px-compact-padding py-2.5 text-left">
+                    <input
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                      type="checkbox"
+                    />
+                  </th>
+                  <th
+                    class="px-compact-padding py-2.5 text-left font-bold text-on-surface cursor-pointer hover:bg-surface-bright transition-colors group"
+                  >
+                    <div class="flex items-center justify-between">
+                      Entity
+                      <span
+                        class="material-symbols-outlined text-[16px] text-on-surface-variant opacity-50 group-hover:opacity-100"
+                        >unfold_more</span
+                      >
+                    </div>
+                  </th>
+                  <th
+                    class="px-compact-padding py-2.5 text-left font-bold text-on-surface cursor-pointer hover:bg-surface-bright transition-colors group"
+                  >
+                    <div class="flex items-center justify-between">
+                      Document #
+                      <span
+                        class="material-symbols-outlined text-[16px] text-on-surface-variant opacity-50 group-hover:opacity-100"
+                        >unfold_more</span
+                      >
+                    </div>
+                  </th>
+                  <th
+                    class="px-compact-padding py-2.5 text-right font-bold text-on-surface cursor-pointer hover:bg-surface-bright transition-colors group"
+                  >
+                    <div class="flex items-center justify-end gap-1">
+                      Quantity
+                      <span
+                        class="material-symbols-outlined text-[16px] text-on-surface-variant opacity-50 group-hover:opacity-100"
+                        >unfold_more</span
+                      >
+                    </div>
+                  </th>
+                  <th
+                    class="px-compact-padding py-2.5 text-right font-bold text-on-surface cursor-pointer hover:bg-surface-bright transition-colors group"
+                  >
+                    <div class="flex items-center justify-end gap-1">
+                      Unit Price
+                      <span
+                        class="material-symbols-outlined text-[16px] text-on-surface-variant opacity-50 group-hover:opacity-100"
+                        >unfold_more</span
+                      >
+                    </div>
+                  </th>
+                  <th
+                    class="px-compact-padding py-2.5 text-right font-bold text-on-surface cursor-pointer hover:bg-surface-bright transition-colors group"
+                  >
+                    <div class="flex items-center justify-end gap-1">
+                      Total Amount
+                      <span
+                        class="material-symbols-outlined text-[16px] text-on-surface-variant opacity-50 group-hover:opacity-100"
+                        >unfold_more</span
+                      >
+                    </div>
+                  </th>
+                  <th
+                    class="px-compact-padding py-2.5 text-left font-bold text-on-surface"
+                  >
+                    Status
+                  </th>
+                  <th
+                    class="px-compact-padding py-2.5 text-center font-bold text-on-surface"
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant">
+                <!-- Table Row 1 -->
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                      type="checkbox"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Technovate Systems Inc.
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    INV-2024-00124
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    1,250.00
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 45.00
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 56,250.00
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary/15 text-secondary text-[11px] font-bold"
+                      >Paid</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                        title="Edit"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                        title="Delete"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                        title="Export"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Table Row 2 -->
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                      type="checkbox"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Global Logistics Corp
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    INV-2024-00132
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    480.00
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 120.00
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 57,600.00
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-error/15 text-error text-[11px] font-bold"
+                      >Overdue</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                        title="Edit"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                        title="Delete"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                        title="Export"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Table Row 3 -->
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                      type="checkbox"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Apex Manufacturing
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    PO-88219-B
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    22,000.00
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 1.15
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 25,300.00
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed-dim/15 text-tertiary text-[11px] font-bold"
+                      >Draft</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                        title="Edit"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                        title="Delete"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                        title="Export"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Row 4 -->
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                      type="checkbox"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Zync Media Partners
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    INV-2024-00145
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    1.00
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 12,400.00
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 12,400.00
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary/15 text-secondary text-[11px] font-bold"
+                      >Paid</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                        title="Edit"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                        title="Delete"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                        title="Export"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Repeat for filling space... -->
+                <script>
+                  // Procedurally generate mock rows for high density look
+                  const entities = [
+                    'Skyline Prop',
+                    'Riverbank Tech',
+                    'Harbor Freight',
+                    'Neo-Industrial',
+                    'Vista Energy',
+                  ]
+                  const docTypes = ['INV-2024-', 'PO-99-', 'BILL-']
+                  const statuses = [
+                    { label: 'Paid', class: 'bg-secondary/15 text-secondary' },
+                    { label: 'Overdue', class: 'bg-error/15 text-error' },
+                    {
+                      label: 'Draft',
+                      class: 'bg-tertiary-fixed-dim/15 text-tertiary',
+                    },
+                  ]
+
+                  const tbody = document.querySelector('tbody')
+                  for (let i = 0; i < 15; i++) {
+                    const status =
+                      statuses[Math.floor(Math.random() * statuses.length)]
+                    const row = `
+                                        <tr class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30">
+                                            <td class="px-compact-padding py-2">
+                                                <input type="checkbox" class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all">
+                                            </td>
+                                            <td class="px-compact-padding py-2 text-on-surface font-medium">${entities[i % entities.length]} ${i + 1}</td>
+                                            <td class="px-compact-padding py-2 text-on-surface-variant">${docTypes[i % docTypes.length]}${1000 + i}</td>
+                                            <td class="px-compact-padding py-2 text-right font-data-tabular tabular-nums">${(Math.random() * 5000).toFixed(2)}</td>
+                                            <td class="px-compact-padding py-2 text-right font-data-tabular tabular-nums">$ ${(Math.random() * 200).toFixed(2)}</td>
+                                            <td class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold">$ ${(Math.random() * 90000).toFixed(2)}</td>
+                                            <td class="px-compact-padding py-2">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full ${status.class} text-[11px] font-bold">${status.label}</span>
+                                            </td>
+                                            <td class="px-compact-padding py-2">
+                                                <div class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button class="p-1 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                                                    <button class="p-1 text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                                                    <button class="p-1 text-on-surface-variant hover:text-secondary transition-colors"><span class="material-symbols-outlined text-[18px]">download</span></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `
+                    tbody.insertAdjacentHTML('beforeend', row)
+                  }
+                </script>
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Skyline Prop 1
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    INV-2024-1000
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    1379.12
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 8.16
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 65633.16
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-error/15 text-error text-[11px] font-bold"
+                      >Overdue</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Riverbank Tech 2
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    PO-99-1001
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    1062.43
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 174.45
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 51824.85
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-error/15 text-error text-[11px] font-bold"
+                      >Overdue</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Harbor Freight 3
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    BILL-1002
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    708.71
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 46.42
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 41201.60
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed-dim/15 text-tertiary text-[11px] font-bold"
+                      >Draft</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Neo-Industrial 4
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    INV-2024-1003
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    2023.43
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 142.03
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 68177.76
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed-dim/15 text-tertiary text-[11px] font-bold"
+                      >Draft</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Vista Energy 5
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    PO-99-1004
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    460.44
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 86.22
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 51266.54
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary/15 text-secondary text-[11px] font-bold"
+                      >Paid</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Skyline Prop 6
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    BILL-1005
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    4020.83
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 162.56
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 66133.92
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed-dim/15 text-tertiary text-[11px] font-bold"
+                      >Draft</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Riverbank Tech 7
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    INV-2024-1006
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    200.64
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 92.15
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 65193.38
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed-dim/15 text-tertiary text-[11px] font-bold"
+                      >Draft</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Harbor Freight 8
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    PO-99-1007
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    3321.86
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 16.40
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 4576.60
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-error/15 text-error text-[11px] font-bold"
+                      >Overdue</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Neo-Industrial 9
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    BILL-1008
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    1575.90
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 59.70
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 25398.01
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed-dim/15 text-tertiary text-[11px] font-bold"
+                      >Draft</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Vista Energy 10
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    INV-2024-1009
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    2311.37
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 0.61
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 61598.09
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary/15 text-secondary text-[11px] font-bold"
+                      >Paid</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Skyline Prop 11
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    PO-99-1010
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    3096.54
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 195.31
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 15672.01
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary/15 text-secondary text-[11px] font-bold"
+                      >Paid</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Riverbank Tech 12
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    BILL-1011
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    2999.85
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 7.84
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 52684.49
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed-dim/15 text-tertiary text-[11px] font-bold"
+                      >Draft</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Harbor Freight 13
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    INV-2024-1012
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    3719.73
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 9.50
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 65816.11
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-error/15 text-error text-[11px] font-bold"
+                      >Overdue</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Neo-Industrial 14
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    PO-99-1013
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    2365.83
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 79.66
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 69391.53
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary/15 text-secondary text-[11px] font-bold"
+                      >Paid</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr
+                  class="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  <td class="px-compact-padding py-2">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-outline-variant bg-surface-bright text-secondary focus:ring-secondary transition-all"
+                    />
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-on-surface font-medium"
+                  >
+                    Vista Energy 15
+                  </td>
+                  <td class="px-compact-padding py-2 text-on-surface-variant">
+                    BILL-1014
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    2246.15
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums"
+                  >
+                    $ 31.99
+                  </td>
+                  <td
+                    class="px-compact-padding py-2 text-right font-data-tabular tabular-nums font-bold"
+                  >
+                    $ 66721.96
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <span
+                      class="inline-flex items-center px-2 py-0.5 rounded-full bg-tertiary-fixed-dim/15 text-tertiary text-[11px] font-bold"
+                      >Draft</span
+                    >
+                  </td>
+                  <td class="px-compact-padding py-2">
+                    <div
+                      class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >edit</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-error transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >delete</span
+                        >
+                      </button>
+                      <button
+                        class="p-1 text-on-surface-variant hover:text-secondary transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[18px]"
+                          >download</span
+                        >
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Footer / Pagination -->
+          <footer
+            class="flex items-center justify-between mt-4 text-body-sm text-on-surface-variant"
+          >
+            <div class="flex items-center gap-4">
+              <div class="flex items-center gap-2">
+                <span class="">Rows per page:</span>
+                <select
+                  class="bg-surface-container-high border-outline-variant rounded px-2 py-1 focus:ring-primary focus:border-primary text-body-sm"
+                >
+                  <option>50</option>
+                  <option>100</option>
+                  <option>250</option>
+                </select>
+              </div>
+              <span class="text-on-surface-variant/60"
+                >Showing 1-50 of 1,200 records</span
+              >
+            </div>
+            <div class="flex items-center gap-1">
+              <button
+                class="p-2 hover:bg-surface-container rounded-md disabled:opacity-30"
+                disabled=""
+              >
+                <span class="material-symbols-outlined">first_page</span>
+              </button>
+              <button
+                class="p-2 hover:bg-surface-container rounded-md disabled:opacity-30"
+                disabled=""
+              >
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+              <div class="flex items-center mx-2 gap-1">
+                <button
+                  class="w-8 h-8 rounded bg-primary text-on-primary font-bold"
+                >
+                  1
+                </button>
+                <button
+                  class="w-8 h-8 rounded hover:bg-surface-container text-on-surface"
+                >
+                  2
+                </button>
+                <button
+                  class="w-8 h-8 rounded hover:bg-surface-container text-on-surface"
+                >
+                  3
+                </button>
+                <span class="px-2">...</span>
+                <button
+                  class="w-8 h-8 rounded hover:bg-surface-container text-on-surface"
+                >
+                  24
+                </button>
+              </div>
+              <button class="p-2 hover:bg-surface-container rounded-md">
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
+              <button class="p-2 hover:bg-surface-container rounded-md">
+                <span class="material-symbols-outlined">last_page</span>
+              </button>
+            </div>
+          </footer>
+        </main>
+      </div>
+    </div>
+    <!-- Micro-interactions Script -->
+    <script>
+      // Checkbox "Select All" functionality
+      const headerCheckbox = document.querySelector(
+        'thead input[type="checkbox"]'
+      )
+      const rowCheckboxes = document.querySelectorAll(
+        'tbody input[type="checkbox"]'
+      )
+
+      headerCheckbox.addEventListener('change', e => {
+        rowCheckboxes.forEach(cb => {
+          cb.checked = e.target.checked
+          const row = cb.closest('tr')
+          if (e.target.checked) {
+            row.classList.add('bg-secondary-container/10')
+          } else {
+            row.classList.remove('bg-secondary-container/10')
+          }
+        })
+      })
+
+      rowCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+          const row = cb.closest('tr')
+          if (cb.checked) {
+            row.classList.add('bg-secondary-container/10')
+          } else {
+            row.classList.remove('bg-secondary-container/10')
+          }
+        })
+      })
+
+      // Add sorting visual toggle (mock)
+      document.querySelectorAll('th.cursor-pointer').forEach(th => {
+        th.addEventListener('click', () => {
+          const icon = th.querySelector('.material-symbols-outlined')
+          if (icon.textContent === 'unfold_more') {
+            icon.textContent = 'arrow_upward'
+            icon.classList.add('text-primary')
+            icon.classList.remove('opacity-50')
+          } else if (icon.textContent === 'arrow_upward') {
+            icon.textContent = 'arrow_downward'
+          } else {
+            icon.textContent = 'unfold_more'
+            icon.classList.remove('text-primary')
+            icon.classList.add('opacity-50')
+          }
+        })
+      })
+    </script>
+  </body>
+</html>

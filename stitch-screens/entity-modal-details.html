@@ -1,0 +1,392 @@
+<!doctype html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+      }
+      .mono-field {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      /* Custom scrollbar for high-density data */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #45464d;
+        border-radius: 10px;
+      }
+    </style>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'on-surface-variant': '#c6c6cd',
+              'on-error': '#690005',
+              'surface-dim': '#031427',
+              'primary-fixed-dim': '#bec6e0',
+              primary: '#bec6e0',
+              'tertiary-container': '#39000a',
+              'on-secondary-fixed-variant': '#005236',
+              'secondary-fixed': '#6ffbbe',
+              'surface-tint': '#bec6e0',
+              'inverse-on-surface': '#213145',
+              'surface-container-lowest': '#000f21',
+              'surface-container-low': '#0b1c30',
+              'on-surface': '#d3e4fe',
+              'on-secondary': '#003824',
+              error: '#ffb4ab',
+              'outline-variant': '#45464d',
+              'on-secondary-container': '#00311f',
+              'secondary-container': '#00a572',
+              'on-primary': '#283044',
+              'on-tertiary-fixed-variant': '#920028',
+              background: '#031427',
+              'surface-variant': '#26364a',
+              surface: '#031427',
+              'surface-container': '#102034',
+              'tertiary-fixed': '#ffdada',
+              'surface-bright': '#2a3a4f',
+              secondary: '#4edea3',
+              'on-tertiary-fixed': '#40000c',
+              'on-tertiary-container': '#f42f54',
+              'on-error-container': '#ffdad6',
+              'tertiary-fixed-dim': '#ffb3b6',
+              'primary-container': '#0f172a',
+              'on-secondary-fixed': '#002113',
+              tertiary: '#ffb3b6',
+              outline: '#909097',
+              'surface-container-highest': '#26364a',
+              'primary-fixed': '#dae2fd',
+              'on-primary-container': '#798098',
+              'inverse-surface': '#d3e4fe',
+              'inverse-primary': '#565e74',
+              'on-background': '#d3e4fe',
+              'secondary-fixed-dim': '#4edea3',
+              'on-tertiary': '#68001a',
+              'on-primary-fixed': '#131b2e',
+              'surface-container-high': '#1b2b3f',
+              'on-primary-fixed-variant': '#3f465c',
+              'error-container': '#93000a',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              'margin-edge': '2rem',
+              gutter: '1rem',
+              'compact-gap': '0.5rem',
+              'cozy-padding': '1.5rem',
+              'compact-padding': '0.75rem',
+              'cozy-gap': '1rem',
+            },
+            fontFamily: {
+              'headline-md': ['Inter'],
+              'body-sm': ['Inter'],
+              'label-caps': ['Inter'],
+              'headline-sm': ['Inter'],
+              'headline-lg': ['Inter'],
+              'data-tabular': ['JetBrains Mono'],
+              'body-lg': ['Inter'],
+              'body-md': ['Inter'],
+            },
+            fontSize: {
+              'headline-md': ['24px', { lineHeight: '1.3', fontWeight: '600' }],
+              'body-sm': ['13px', { lineHeight: '1.5', fontWeight: '400' }],
+              'label-caps': [
+                '11px',
+                { lineHeight: '1', letterSpacing: '0.05em', fontWeight: '700' },
+              ],
+              'headline-sm': ['20px', { lineHeight: '1.4', fontWeight: '500' }],
+              'headline-lg': [
+                '32px',
+                {
+                  lineHeight: '1.2',
+                  letterSpacing: '-0.02em',
+                  fontWeight: '600',
+                },
+              ],
+              'data-tabular': ['14px', { lineHeight: '1', fontWeight: '500' }],
+              'body-lg': ['16px', { lineHeight: '1.6', fontWeight: '400' }],
+              'body-md': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
+            },
+          },
+        },
+      }
+    </script>
+  </head>
+  <body
+    class="bg-surface-dim font-body-md text-on-surface flex items-center justify-center h-screen overflow-hidden"
+  >
+    <!-- Modal Overlay -->
+    <div
+      class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-6"
+    >
+      <!-- Main Modal Container -->
+      <section
+        class="w-[70%] h-[80%] bg-white dark:bg-surface-container-high rounded-lg shadow-2xl flex flex-col relative overflow-hidden"
+      >
+        <!-- Sticky Header -->
+        <header
+          class="sticky top-0 z-50 bg-surface-container-high border-b border-outline-variant flex items-center justify-between px-cozy-padding py-compact-padding shrink-0"
+        >
+          <div class="flex items-center gap-compact-gap">
+            <h1 class="font-headline-sm text-headline-sm text-on-surface">
+              Edit Customer: Aether Dynamics Corp
+            </h1>
+            <span
+              class="px-2 py-0.5 rounded bg-secondary-container/20 text-secondary font-label-caps text-label-caps uppercase border border-secondary/30"
+            >
+              Customer
+            </span>
+          </div>
+          <button
+            class="p-1 hover:bg-surface-variant transition-colors rounded-full text-on-surface-variant cursor-pointer active:opacity-80"
+          >
+            <span class="material-symbols-outlined" data-icon="close"
+              >close</span
+            >
+          </button>
+        </header>
+        <!-- Tab Strip -->
+        <nav
+          class="bg-surface-container-high border-b border-outline-variant px-cozy-padding flex items-center gap-cozy-gap shrink-0"
+        >
+          <button
+            class="py-3 px-1 font-body-md text-body-md text-primary border-b-2 border-primary cursor-pointer active:opacity-80"
+          >
+            Details
+          </button>
+          <button
+            class="py-3 px-1 font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer active:opacity-80"
+          >
+            Analytics
+          </button>
+          <button
+            class="py-3 px-1 font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer active:opacity-80"
+          >
+            Audit Log
+          </button>
+        </nav>
+        <!-- Scrollable Content Canvas -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-cozy-padding">
+          <form class="grid grid-cols-2 gap-x-gutter gap-y-cozy-gap">
+            <!-- Left Column -->
+            <div class="space-y-cozy-gap">
+              <div class="flex flex-col gap-1.5">
+                <label
+                  class="font-label-caps text-label-caps text-on-surface-variant uppercase"
+                  >Full Name</label
+                >
+                <input
+                  class="bg-surface-container-low border border-outline-variant text-on-surface rounded px-compact-padding py-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"
+                  type="text"
+                  value="Aether Dynamics Corp"
+                />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label
+                  class="font-label-caps text-label-caps text-on-surface-variant uppercase"
+                  >Email Address</label
+                >
+                <input
+                  class="bg-surface-container-low border border-outline-variant text-on-surface rounded px-compact-padding py-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"
+                  type="email"
+                  value="ops@aetherdynamics.io"
+                />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label
+                  class="font-label-caps text-label-caps text-on-surface-variant uppercase"
+                  >Phone Number</label
+                >
+                <input
+                  class="bg-surface-container-low border border-outline-variant text-on-surface rounded px-compact-padding py-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all mono-field"
+                  type="tel"
+                  value="+1 (555) 902-1134"
+                />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label
+                  class="font-label-caps text-label-caps text-on-surface-variant uppercase"
+                  >Shipping Address</label
+                >
+                <textarea
+                  class="bg-surface-container-low border border-outline-variant text-on-surface rounded px-compact-padding py-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all resize-none"
+                  rows="3"
+                >
+7242 Innovation Way, Suite 400
+Palo Alto, CA 94303
+United States</textarea
+                >
+              </div>
+            </div>
+            <!-- Right Column -->
+            <div class="space-y-cozy-gap">
+              <div class="flex flex-col gap-1.5">
+                <label
+                  class="font-label-caps text-label-caps text-on-surface-variant uppercase"
+                  >Tax Identification Number</label
+                >
+                <input
+                  class="bg-surface-container-low border border-outline-variant text-on-surface rounded px-compact-padding py-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all mono-field"
+                  type="text"
+                  value="TX-990-221-AD"
+                />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label
+                  class="font-label-caps text-label-caps text-on-surface-variant uppercase"
+                  >Credit Limit (USD)</label
+                >
+                <div class="relative">
+                  <span
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+                    >$</span
+                  >
+                  <input
+                    class="w-full bg-surface-container-low border border-outline-variant text-on-surface rounded pl-8 pr-compact-padding py-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all mono-field"
+                    type="number"
+                    value="250000.00"
+                  />
+                </div>
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label
+                  class="font-label-caps text-label-caps text-on-surface-variant uppercase"
+                  >Payment Terms</label
+                >
+                <select
+                  class="bg-surface-container-low border border-outline-variant text-on-surface rounded px-compact-padding py-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all appearance-none cursor-pointer"
+                >
+                  <option selected="" value="net-30">Net 30 Days</option>
+                  <option value="net-60">Net 60 Days</option>
+                  <option value="due-receipt">Due on Receipt</option>
+                  <option value="quarterly">Quarterly Installments</option>
+                </select>
+              </div>
+              <div
+                class="p-cozy-padding border border-outline-variant bg-surface-container-low rounded flex items-center justify-between"
+              >
+                <div class="flex flex-col gap-1">
+                  <span class="font-body-md text-on-surface"
+                    >Active Account Status</span
+                  >
+                  <span class="text-body-sm text-on-surface-variant"
+                    >Enable customer for invoicing and procurement</span
+                  >
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input checked="" class="sr-only peer" type="checkbox" />
+                  <div
+                    class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"
+                  ></div>
+                </label>
+              </div>
+            </div>
+            <!-- Visual Accent Card -->
+            <div
+              class="col-span-2 mt-cozy-gap p-cozy-padding bg-primary-container rounded border border-outline-variant flex items-center gap-cozy-gap"
+            >
+              <div
+                class="h-12 w-12 rounded bg-surface-container-highest flex items-center justify-center text-primary"
+              >
+                <span
+                  class="material-symbols-outlined text-4xl"
+                  data-icon="corporate_fare"
+                  >corporate_fare</span
+                >
+              </div>
+              <div>
+                <p class="font-headline-sm text-on-surface">
+                  Corporate Account Entity
+                </p>
+                <p class="text-body-sm text-on-primary-container">
+                  This entity is classified as a Tier 1 Platinum Partner. High
+                  priority support and automated ledger reconciliation enabled.
+                </p>
+              </div>
+            </div>
+          </form>
+        </div>
+        <!-- Fixed Footer -->
+        <footer
+          class="sticky bottom-0 bg-surface-container-low border-t border-outline-variant px-cozy-padding py-compact-padding flex items-center justify-between shrink-0"
+        >
+          <button
+            class="flex items-center gap-1 text-on-error hover:bg-error-container/20 px-compact-padding py-2 rounded transition-colors font-body-md cursor-pointer active:opacity-80"
+          >
+            <span class="material-symbols-outlined" data-icon="delete"
+              >delete</span
+            >
+            Delete Account
+          </button>
+          <div class="flex items-center gap-cozy-gap">
+            <button
+              class="px-cozy-padding py-2 text-on-surface-variant hover:text-on-surface transition-colors font-body-md cursor-pointer active:opacity-80"
+            >
+              Cancel
+            </button>
+            <button
+              class="bg-primary text-on-primary px-cozy-padding py-2 rounded font-body-md font-bold shadow-sm hover:opacity-90 transition-opacity cursor-pointer active:scale-[0.98]"
+            >
+              Save Changes
+            </button>
+          </div>
+        </footer>
+      </section>
+    </div>
+    <!-- Background Decoration (Blurred Abstract Shapes) -->
+    <div
+      class="fixed -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none"
+    ></div>
+    <div
+      class="fixed -bottom-24 -right-24 w-96 h-96 bg-secondary/10 rounded-full blur-[100px] pointer-events-none"
+    ></div>
+    <script>
+      // Simple Interaction: Close modal if clicking outside (on overlay)
+      document
+        .querySelector('.fixed.inset-0')
+        .addEventListener('click', function (e) {
+          if (e.target === this) {
+            console.log('Close request triggered from overlay click')
+            // Normally would close the UI state here
+          }
+        })
+
+      // Toggle logic visual for checkbox
+      const checkbox = document.querySelector('input[type="checkbox"]')
+      checkbox.addEventListener('change', e => {
+        const statusLabel = e.target.checked ? 'Active' : 'Inactive'
+        console.log(`Account status changed to: ${statusLabel}`)
+      })
+    </script>
+  </body>
+</html>
