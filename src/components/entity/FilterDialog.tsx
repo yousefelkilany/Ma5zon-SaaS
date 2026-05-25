@@ -1,7 +1,7 @@
 import type { ColumnDef, FilterState } from '@/lib/types/entity'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+
 
 interface FilterDialogProps {
   open: boolean
@@ -45,6 +45,7 @@ export function FilterDialog({
               {col.type === 'text' && (
                 <input
                   type="text"
+                  aria-label={`Filter ${col.label}`}
                   placeholder={`Filter ${col.label}...`}
                   className="w-full bg-surface-bright border border-outline-variant rounded px-3 py-1.5 text-on-surface text-body-sm"
                 />
@@ -53,11 +54,13 @@ export function FilterDialog({
                 <div className="flex gap-2">
                   <input
                     type="number"
+                    aria-label={`${col.label} minimum`}
                     placeholder="Min"
                     className="flex-1 bg-surface-bright border border-outline-variant rounded px-3 py-1.5 text-on-surface text-body-sm"
                   />
                   <input
                     type="number"
+                    aria-label={`${col.label} maximum`}
                     placeholder="Max"
                     className="flex-1 bg-surface-bright border border-outline-variant rounded px-3 py-1.5 text-on-surface text-body-sm"
                   />
@@ -67,7 +70,11 @@ export function FilterDialog({
                 <div className="flex gap-2">
                   {['Paid', 'Overdue', 'Draft'].map(status => (
                     <label key={status} className="flex items-center gap-2">
-                      <input type="checkbox" className="w-4 h-4" />
+                      <input
+                        type="checkbox"
+                        id={`${col.id}-${status}`}
+                        className="w-4 h-4"
+                      />
                       <span className="text-body-sm text-on-surface">{status}</span>
                     </label>
                   ))}
@@ -76,15 +83,13 @@ export function FilterDialog({
               {col.type === 'date' && (
                 <input
                   type="date"
+                  aria-label={`Filter ${col.label}`}
                   className="w-full bg-surface-bright border border-outline-variant rounded px-3 py-1.5 text-on-surface text-body-sm"
                 />
               )}
             </div>
           ))}
-          {/* Placeholder for future filter rows */}
-          <div className="text-center text-on-surface-variant text-body-sm py-4">
-            <Skeleton className="h-4 w-48 mx-auto" />
-          </div>
+          
         </div>
         <DialogFooter className="flex justify-between">
           <Button variant="ghost" onClick={handleClearAll}>
