@@ -22,6 +22,7 @@ interface TabState {
   setActiveTab: (tabId: string) => void
   getActiveTab: () => Tab | undefined
   getTabByType: (type: TabType) => Tab | undefined
+  getTabByEntityType: (entityType: string) => Tab | undefined
 }
 
 export const useTabStore = create<TabState>()(
@@ -74,6 +75,11 @@ export const useTabStore = create<TabState>()(
       getTabByType: (type) => {
         const { tabs } = get()
         return tabs.find(t => t.type === type)
+      },
+
+      getTabByEntityType: (entityType) => {
+        const { tabs } = get()
+        return tabs.find(t => t.entityType === entityType)
       },
     }),
     { name: 'tab-store' }
