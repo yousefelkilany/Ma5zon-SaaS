@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { cn } from '@/lib/utils'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { usePlatform, type AppPlatform } from '@/hooks/use-platform'
@@ -10,6 +10,7 @@ import {
   TitleBarAppName,
   TitleBarTabTitle,
 } from './TitleBarContent'
+import { t } from 'i18next'
 
 interface TitleBarProps {
   className?: string
@@ -41,6 +42,14 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
     () => tabs.find(t => t.id === activeTabId)?.title ?? '',
     [tabs, activeTabId]
   )
+
+  useEffect(() => {
+    const appName = t('titlebar.appName')
+    document.title = tabTitle ? `${appName} - ${tabTitle}` : appName
+    getCurrentWindow()
+      .setTitle(document.title)
+      .catch(e => console.warn('Failed to set window title:', e))
+  }, [tabTitle])
 
   // TODO: On Linux with frameless windows, resize cursors don't appear at title bar top edge.
   // Possible causes: CSS cursor:default global rule, app-region:drag, or Tauri Linux WebView behavior.

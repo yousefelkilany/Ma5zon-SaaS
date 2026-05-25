@@ -130,13 +130,13 @@ export function LeftSideBar({ className }: LeftSideBarProps) {
         { icon: 'warehouse', label: t('sidebar.nav.warehouses') },
       ],
     },
-    {
-      title: t('sidebar.nav.finance'),
-      items: [
-        { icon: 'account_balance_wallet', label: t('sidebar.nav.ledgers'), active: true },
-        { icon: 'analytics', label: t('sidebar.nav.plReport') },
-      ],
-    },
+    // {
+    //   title: t('sidebar.nav.finance'),
+    //   items: [
+    //     { icon: 'account_balance_wallet', label: t('sidebar.nav.ledgers'), active: true },
+    //     { icon: 'analytics', label: t('sidebar.nav.plReport') },
+    //   ],
+    // },
     {
       title: t('sidebar.nav.system'),
       items: [
