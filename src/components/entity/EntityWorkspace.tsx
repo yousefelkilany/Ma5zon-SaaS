@@ -1,8 +1,5 @@
 import { Skeleton } from '@/components/ui/skeleton'
-
-interface EntityWorkspaceProps {
-  entityType: string
-}
+import type { EntityWorkspaceProps } from '@/lib/types'
 
 function EntityHeader({ entityType }: { entityType: string }) {
   const entityNames: Record<string, { label: string; section: string }> = {
@@ -58,7 +55,7 @@ function ContentSkeleton() {
   const columns = ['checkbox', 'entity', 'doc', 'date', 'status', 'qty', 'price', 'total', 'actions']
 
   return (
-    <main className="flex-1 overflow-auto custom-scrollbar bg-surface-container-lowest">
+    <main className="flex-1 overflow-auto no-scrollbar bg-surface-container-lowest">
       <table className="w-full text-left border-collapse">
         <thead className="sticky top-0 bg-surface-container-high z-10 border-b border-outline">
           <tr className="font-label-caps text-label-caps text-on-surface-variant">
