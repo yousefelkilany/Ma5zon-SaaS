@@ -80,6 +80,19 @@ impl std::fmt::Display for RecoveryError {
 }
 
 // ============================================================================
+// User
+// ============================================================================
+
+/// User data stored in SQLite
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct User {
+    pub id: String,
+    pub name: String,
+    pub role: String,
+    pub avatar_url: Option<String>,
+}
+
+// ============================================================================
 // Validation Functions
 // ============================================================================
 

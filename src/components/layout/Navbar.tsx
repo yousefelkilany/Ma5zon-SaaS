@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { ProfileSection } from '@/components/auth'
 
 export function Navbar() {
   const { t } = useTranslation()
@@ -46,21 +47,7 @@ export function Navbar() {
             settings
           </span>
         </button>
-        <div className="flex items-center gap-compact-gap cursor-pointer hover:bg-surface-container-high p-1 px-3 rounded-full transition-colors">
-          <img
-            alt="User Profile"
-            className="w-9 h-9 rounded-full border border-secondary"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUBAQM9pd0d2Y8CyJX6QTiPWqXNZTzy2Dvsz_OYI_RhgqqQBO7jfH7iXr3tiD5m58oLfeYLboKxEeJ6qRvPmL8wgFw2mJV51DGt9FMuZQ0dntsReqcm4VhWQPJwNU8efHXGmD-wxzLibbyzc2khT29AKRbbhOivAOxGwe6H69jXIJIHK5699KvwRPkaSdrstAeU3WY2_A9cWK1lGotJwgcZtxQwXxWXeUt-9iDBQH5Udos-CZmoHXZIZLI-cP9eXuaw6LFlHbu96k"
-          />
-          <div className="hidden lg:block leading-tight">
-            <p className="font-body-sm text-body-lg font-bold text-primary">
-              {t('nav.userName')}
-            </p>
-            <p className="font-label-caps text-[12px] text-on-surface-variant uppercase">
-              {t('nav.userRole')}
-            </p>
-          </div>
-        </div>
+        <ProfileSection />
       </div>
     </header>
   )

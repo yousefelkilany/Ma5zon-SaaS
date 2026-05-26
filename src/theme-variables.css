@@ -1,5 +1,5 @@
 /*
- * Theme Variables (AccuLedger Dark Theme)
+ * Theme Variables (Ma5zon Dark Theme)
  *
  * Custom dark theme based on reference screens
  */
@@ -47,7 +47,7 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
 
-  /* Custom AccuLedger colors */
+  /* Custom Ma5zon colors */
   --color-primary: #bec6e0;
   --color-on-primary: #283044;
   --color-primary-container: #0f172a;
@@ -152,6 +152,24 @@
 
 [dir="rtl"] .icon-directional {
   transform: scaleX(-1);
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.2s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  border-color: var(--color-error);
 }
 
 html[dir="rtl"] *:not(.material-symbols-outlined) {

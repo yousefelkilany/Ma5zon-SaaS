@@ -136,6 +136,18 @@
   "nav.userName": "Alex Sterling",
   "nav.userRole": "Senior Analyst",
   "nav.newTab": "New Tab",
+  "nav.login": "Login",
+  "nav.logout": "Logout",
+
+  "auth.signIn": "Sign In",
+  "auth.signInToMa5zon": "Sign In to Ma5zon",
+  "auth.enterpriseFinancial": "Enterprise Financial Management System",
+  "auth.username": "Username",
+  "auth.password": "Password",
+  "auth.rememberMe": "Remember me",
+  "auth.forgot": "Forgot?",
+  "auth.invalidCredentials": "Invalid credentials. Please try again.",
+  "auth.authenticating": "Authenticating...",
 
   "toast.success.preferencesSaved": "Preferences saved",
   "toast.success.testToast": "Test Toast",
