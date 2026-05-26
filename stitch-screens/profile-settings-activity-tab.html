@@ -1,0 +1,601 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'primary-fixed-dim': '#bec6e0',
+              'tertiary-fixed-dim': '#ffb3b6',
+              'surface-container-high': '#1b2b3f',
+              'primary-fixed': '#dae2fd',
+              outline: '#909097',
+              error: '#ffb4ab',
+              'inverse-on-surface': '#213145',
+              'inverse-surface': '#d3e4fe',
+              'tertiary-fixed': '#ffdada',
+              surface: '#031427',
+              'inverse-primary': '#565e74',
+              'secondary-fixed-dim': '#4edea3',
+              'secondary-fixed': '#6ffbbe',
+              'on-error': '#690005',
+              'surface-tint': '#bec6e0',
+              'on-secondary-fixed-variant': '#005236',
+              'surface-container-lowest': '#000f21',
+              'on-secondary-fixed': '#002113',
+              'tertiary-container': '#39000a',
+              'surface-bright': '#2a3a4f',
+              'on-primary': '#283044',
+              background: '#031427',
+              'on-surface': '#d3e4fe',
+              primary: '#bec6e0',
+              'on-primary-fixed-variant': '#3f465c',
+              'secondary-container': '#00a572',
+              'surface-variant': '#26364a',
+              'on-secondary-container': '#00311f',
+              'on-primary-fixed': '#131b2e',
+              'primary-container': '#0f172a',
+              tertiary: '#ffb3b6',
+              secondary: '#4edea3',
+              'on-error-container': '#ffdad6',
+              'surface-container': '#102034',
+              'on-tertiary': '#68001a',
+              'surface-dim': '#031427',
+              'on-surface-variant': '#c6c6cd',
+              'surface-container-highest': '#26364a',
+              'on-secondary': '#003824',
+              'on-tertiary-container': '#f42f54',
+              'error-container': '#93000a',
+              'outline-variant': '#45464d',
+              'on-tertiary-fixed': '#40000c',
+              'surface-container-low': '#0b1c30',
+              'on-background': '#d3e4fe',
+              'on-primary-container': '#798098',
+              'on-tertiary-fixed-variant': '#920028',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              'margin-edge': '2rem',
+              gutter: '1rem',
+              'cozy-padding': '1.5rem',
+              'cozy-gap': '1rem',
+              'compact-padding': '0.75rem',
+              'compact-gap': '0.5rem',
+            },
+            fontFamily: {
+              'label-caps': ['Inter'],
+              'body-sm': ['Inter'],
+              'headline-lg': ['Inter'],
+              'body-md': ['Inter'],
+              'data-tabular': ['JetBrains Mono', 'monospace'],
+              'body-lg': ['Inter'],
+              'headline-sm': ['Inter'],
+              'headline-md': ['Inter'],
+            },
+            fontSize: {
+              'label-caps': [
+                '11px',
+                { lineHeight: '1', letterSpacing: '0.05em', fontWeight: '700' },
+              ],
+              'body-sm': ['13px', { lineHeight: '1.5', fontWeight: '400' }],
+              'headline-lg': [
+                '32px',
+                {
+                  lineHeight: '1.2',
+                  letterSpacing: '-0.02em',
+                  fontWeight: '600',
+                },
+              ],
+              'body-md': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
+              'data-tabular': ['13px', { lineHeight: '1', fontWeight: '500' }],
+              'body-lg': ['16px', { lineHeight: '1.6', fontWeight: '400' }],
+              'headline-sm': ['20px', { lineHeight: '1.4', fontWeight: '500' }],
+              'headline-md': ['24px', { lineHeight: '1.3', fontWeight: '600' }],
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        vertical-align: middle;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #45464d;
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #909097;
+      }
+      /* Zebra-striping for compact ERP view */
+      .zebra-table tr:nth-child(even) {
+        background-color: rgba(255, 255, 255, 0.02);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-surface-dim text-on-surface font-body-md min-h-screen selection:bg-secondary-container selection:text-on-secondary-container"
+  >
+    <!-- Main Workspace Container -->
+    <main class="max-w-7xl mx-auto px-margin-edge py-12">
+      <!-- Header Section -->
+      <header
+        class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-gutter"
+      >
+        <div>
+          <nav
+            class="mb-4 flex items-center gap-2 text-on-surface-variant font-label-caps uppercase tracking-wider"
+          >
+            <span>Workspace</span>
+            <span class="material-symbols-outlined text-[14px]"
+              >chevron_right</span
+            >
+            <span class="text-primary">Settings</span>
+          </nav>
+          <h1
+            class="font-headline-lg text-headline-lg text-on-surface tracking-tight"
+          >
+            User Profile &amp; Security
+          </h1>
+          <p class="text-on-surface-variant mt-2 font-body-md max-w-2xl">
+            Manage your administrative access, monitor security events, and
+            audit account activities across the AccuLedger network.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button
+            class="px-4 py-2 bg-surface-container-highest hover:bg-surface-bright text-on-surface rounded-lg transition-colors border border-outline-variant flex items-center gap-2 font-body-sm"
+          >
+            <span class="material-symbols-outlined text-[18px]">download</span>
+            Export Log
+          </button>
+        </div>
+      </header>
+      <!-- Tab Navigation -->
+      <div class="border-b border-outline-variant mb-6">
+        <div class="flex gap-8">
+          <button
+            class="pb-3 px-1 text-on-surface-variant hover:text-on-surface transition-colors font-body-md relative group"
+          >
+            Account
+          </button>
+          <button
+            class="pb-3 px-1 text-on-surface-variant hover:text-on-surface transition-colors font-body-md relative group"
+          >
+            Security
+          </button>
+          <button
+            class="pb-3 px-1 text-primary font-bold font-body-md relative"
+          >
+            Activity Logs
+            <div
+              class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+            ></div>
+          </button>
+        </div>
+      </div>
+      <!-- Content Area (Activity Logs Tab) -->
+      <div
+        class="bg-surface-container rounded-xl border border-outline-variant overflow-hidden shadow-2xl shadow-black/20"
+      >
+        <!-- Filter Bar (High Density Utility) -->
+        <div
+          class="p-compact-padding border-b border-outline-variant bg-surface-container-low flex flex-wrap items-center justify-between gap-compact-gap"
+        >
+          <div class="flex items-center gap-compact-gap">
+            <div class="relative">
+              <span
+                class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]"
+                >search</span
+              >
+              <input
+                class="bg-surface-container-lowest border border-outline-variant text-on-surface text-body-sm pl-9 pr-4 py-1.5 rounded w-64 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"
+                placeholder="Filter actions..."
+                type="text"
+              />
+            </div>
+            <select
+              class="bg-surface-container-lowest border border-outline-variant text-on-surface text-body-sm px-3 py-1.5 rounded focus:ring-1 focus:ring-primary focus:border-primary outline-none cursor-pointer"
+            >
+              <option>All Actions</option>
+              <option>Authentication</option>
+              <option>Data Export</option>
+              <option>System Change</option>
+            </select>
+          </div>
+          <div class="text-on-surface-variant text-body-sm font-label-caps">
+            Showing 1-15 of 1,284 entries
+          </div>
+        </div>
+        <!-- Data Table (Compact ERP Aesthetic) -->
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left border-collapse zebra-table">
+            <thead>
+              <tr
+                class="bg-surface-container-high border-b border-outline-variant"
+              >
+                <th
+                  class="px-compact-padding py-3 font-label-caps text-on-surface-variant tracking-wider"
+                >
+                  Timestamp
+                </th>
+                <th
+                  class="px-compact-padding py-3 font-label-caps text-on-surface-variant tracking-wider"
+                >
+                  Action Type
+                </th>
+                <th
+                  class="px-compact-padding py-3 font-label-caps text-on-surface-variant tracking-wider"
+                >
+                  Reference ID
+                </th>
+                <th
+                  class="px-compact-padding py-3 font-label-caps text-on-surface-variant tracking-wider text-right"
+                >
+                  IP/Device
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/30">
+              <!-- Row 1 -->
+              <tr class="hover:bg-surface-bright transition-colors group">
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface"
+                >
+                  2023-10-24 14:22:01
+                </td>
+                <td class="px-compact-padding py-2.5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                    <span class="text-body-sm text-on-surface"
+                      >Login Success</span
+                    >
+                  </div>
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant group-hover:text-primary transition-colors"
+                >
+                  AUTH_9921_X
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant text-right"
+                >
+                  192.168.1.14 (macOS)
+                </td>
+              </tr>
+              <!-- Row 2 -->
+              <tr class="hover:bg-surface-bright transition-colors group">
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface"
+                >
+                  2023-10-24 14:15:55
+                </td>
+                <td class="px-compact-padding py-2.5">
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="w-2 h-2 rounded-full bg-primary-fixed-dim"
+                    ></span>
+                    <span class="text-body-sm text-on-surface"
+                      >Invoice Exported</span
+                    >
+                  </div>
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant group-hover:text-primary transition-colors"
+                >
+                  INV-2023-004
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant text-right"
+                >
+                  192.168.1.14 (macOS)
+                </td>
+              </tr>
+              <!-- Row 3 -->
+              <tr class="hover:bg-surface-bright transition-colors group">
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface"
+                >
+                  2023-10-24 12:01:10
+                </td>
+                <td class="px-compact-padding py-2.5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-error"></span>
+                    <span class="text-body-sm text-on-surface"
+                      >Failed Login Attempt</span
+                    >
+                  </div>
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant group-hover:text-primary transition-colors"
+                >
+                  AUTH_ERR_01
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant text-right"
+                >
+                  45.22.112.5 (Windows)
+                </td>
+              </tr>
+              <!-- Row 4 -->
+              <tr class="hover:bg-surface-bright transition-colors group">
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface"
+                >
+                  2023-10-24 10:45:22
+                </td>
+                <td class="px-compact-padding py-2.5">
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="w-2 h-2 rounded-full bg-secondary-fixed"
+                    ></span>
+                    <span class="text-body-sm text-on-surface"
+                      >Ledger Reconciled</span
+                    >
+                  </div>
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant group-hover:text-primary transition-colors"
+                >
+                  REC-Q3-BATCH
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant text-right"
+                >
+                  192.168.1.14 (macOS)
+                </td>
+              </tr>
+              <!-- Row 5 -->
+              <tr class="hover:bg-surface-bright transition-colors group">
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface"
+                >
+                  2023-10-23 18:30:45
+                </td>
+                <td class="px-compact-padding py-2.5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-outline"></span>
+                    <span class="text-body-sm text-on-surface"
+                      >Password Changed</span
+                    >
+                  </div>
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant group-hover:text-primary transition-colors"
+                >
+                  SEC_PWD_UPD
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant text-right"
+                >
+                  192.168.1.14 (macOS)
+                </td>
+              </tr>
+              <!-- Row 6 -->
+              <tr class="hover:bg-surface-bright transition-colors group">
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface"
+                >
+                  2023-10-23 16:12:00
+                </td>
+                <td class="px-compact-padding py-2.5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-primary"></span>
+                    <span class="text-body-sm text-on-surface"
+                      >New Device Authorized</span
+                    >
+                  </div>
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant group-hover:text-primary transition-colors"
+                >
+                  DEV_AUTH_77
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant text-right"
+                >
+                  10.0.0.52 (iOS Mobile)
+                </td>
+              </tr>
+              <!-- Row 7 -->
+              <tr class="hover:bg-surface-bright transition-colors group">
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface"
+                >
+                  2023-10-23 11:05:30
+                </td>
+                <td class="px-compact-padding py-2.5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                    <span class="text-body-sm text-on-surface"
+                      >Report Generated</span
+                    >
+                  </div>
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant group-hover:text-primary transition-colors"
+                >
+                  REP-ANNUAL-23
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant text-right"
+                >
+                  192.168.1.14 (macOS)
+                </td>
+              </tr>
+              <!-- Row 8 -->
+              <tr class="hover:bg-surface-bright transition-colors group">
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface"
+                >
+                  2023-10-22 09:15:00
+                </td>
+                <td class="px-compact-padding py-2.5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                    <span class="text-body-sm text-on-surface"
+                      >API Key Created</span
+                    >
+                  </div>
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant group-hover:text-primary transition-colors"
+                >
+                  AK_PRODUCTION_M1
+                </td>
+                <td
+                  class="px-compact-padding py-2.5 font-data-tabular text-on-surface-variant text-right"
+                >
+                  192.168.1.14 (macOS)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination Footer -->
+        <footer
+          class="p-compact-padding border-t border-outline-variant bg-surface-container-high flex items-center justify-between"
+        >
+          <div class="flex items-center gap-2">
+            <button
+              class="px-3 py-1.5 rounded bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-all flex items-center gap-1 group"
+            >
+              <span
+                class="material-symbols-outlined text-[18px] group-active:-translate-x-1 transition-transform"
+                >chevron_left</span
+              >
+              <span class="font-body-sm">Previous</span>
+            </button>
+            <button
+              class="px-3 py-1.5 rounded bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-all flex items-center gap-1 group"
+            >
+              <span class="font-body-sm">Next</span>
+              <span
+                class="material-symbols-outlined text-[18px] group-active:translate-x-1 transition-transform"
+                >chevron_right</span
+              >
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              class="w-8 h-8 rounded flex items-center justify-center bg-secondary-container text-on-secondary-container font-bold text-body-sm"
+            >
+              1
+            </button>
+            <button
+              class="w-8 h-8 rounded flex items-center justify-center hover:bg-surface-bright text-on-surface-variant text-body-sm"
+            >
+              2
+            </button>
+            <button
+              class="w-8 h-8 rounded flex items-center justify-center hover:bg-surface-bright text-on-surface-variant text-body-sm"
+            >
+              3
+            </button>
+            <span class="text-on-surface-variant px-1">...</span>
+            <button
+              class="w-8 h-8 rounded flex items-center justify-center hover:bg-surface-bright text-on-surface-variant text-body-sm"
+            >
+              86
+            </button>
+          </div>
+        </footer>
+      </div>
+      <!-- Security Insights (Bento-lite for context) -->
+      <section class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div
+          class="p-cozy-padding bg-surface-container border border-outline-variant rounded-xl flex items-start gap-4"
+        >
+          <div class="p-2 bg-secondary/10 text-secondary rounded">
+            <span class="material-symbols-outlined">shield_with_heart</span>
+          </div>
+          <div>
+            <h4 class="text-on-surface font-bold text-body-md mb-1">
+              Security Score
+            </h4>
+            <p class="text-on-surface-variant text-body-sm">
+              Your account security is optimal. 2FA is active.
+            </p>
+          </div>
+        </div>
+        <div
+          class="p-cozy-padding bg-surface-container border border-outline-variant rounded-xl flex items-start gap-4"
+        >
+          <div class="p-2 bg-error/10 text-error rounded">
+            <span class="material-symbols-outlined">gpp_maybe</span>
+          </div>
+          <div>
+            <h4 class="text-on-surface font-bold text-body-md mb-1">
+              Recent Alerts
+            </h4>
+            <p class="text-on-surface-variant text-body-sm">
+              1 failed login attempt detected from new IP.
+            </p>
+          </div>
+        </div>
+        <div
+          class="p-cozy-padding bg-surface-container border border-outline-variant rounded-xl flex items-start gap-4"
+        >
+          <div class="p-2 bg-primary/10 text-primary rounded">
+            <span class="material-symbols-outlined">devices_other</span>
+          </div>
+          <div>
+            <h4 class="text-on-surface font-bold text-body-md mb-1">
+              Active Sessions
+            </h4>
+            <p class="text-on-surface-variant text-body-sm">
+              2 active sessions on Desktop and Mobile.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script>
+      // Simple row highlight effect or pagination logic could be added here
+      document.querySelectorAll('tbody tr').forEach(row => {
+        row.addEventListener('click', () => {
+          // Flash effect to simulate interaction
+          row.classList.add('bg-primary-container')
+          setTimeout(() => {
+            row.classList.remove('bg-primary-container')
+          }, 400)
+        })
+      })
+    </script>
+  </body>
+</html>

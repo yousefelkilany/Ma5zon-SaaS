@@ -1,0 +1,395 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>AccuLedger - Profile Settings</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'primary-fixed-dim': '#bec6e0',
+              'tertiary-fixed-dim': '#ffb3b6',
+              'surface-container-high': '#1b2b3f',
+              'primary-fixed': '#dae2fd',
+              outline: '#909097',
+              error: '#ffb4ab',
+              'inverse-on-surface': '#213145',
+              'inverse-surface': '#d3e4fe',
+              'tertiary-fixed': '#ffdada',
+              surface: '#031427',
+              'inverse-primary': '#565e74',
+              'secondary-fixed-dim': '#4edea3',
+              'secondary-fixed': '#6ffbbe',
+              'on-error': '#690005',
+              'surface-tint': '#bec6e0',
+              'on-secondary-fixed-variant': '#005236',
+              'surface-container-lowest': '#000f21',
+              'on-secondary-fixed': '#002113',
+              'tertiary-container': '#39000a',
+              'surface-bright': '#2a3a4f',
+              'on-primary': '#283044',
+              background: '#031427',
+              'on-surface': '#d3e4fe',
+              primary: '#bec6e0',
+              'on-primary-fixed-variant': '#3f465c',
+              'secondary-container': '#00a572',
+              'surface-variant': '#26364a',
+              'on-secondary-container': '#00311f',
+              'on-primary-fixed': '#131b2e',
+              'primary-container': '#0f172a',
+              tertiary: '#ffb3b6',
+              secondary: '#4edea3',
+              'on-error-container': '#ffdad6',
+              'surface-container': '#102034',
+              'on-tertiary': '#68001a',
+              'surface-dim': '#031427',
+              'on-surface-variant': '#c6c6cd',
+              'surface-container-highest': '#26364a',
+              'on-secondary': '#003824',
+              'on-tertiary-container': '#f42f54',
+              'error-container': '#93000a',
+              'outline-variant': '#45464d',
+              'on-tertiary-fixed': '#40000c',
+              'surface-container-low': '#0b1c30',
+              'on-background': '#d3e4fe',
+              'on-primary-container': '#798098',
+              'on-tertiary-fixed-variant': '#920028',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              'margin-edge': '2rem',
+              gutter: '1rem',
+              'cozy-padding': '1.5rem',
+              'cozy-gap': '1rem',
+              'compact-padding': '0.75rem',
+              'compact-gap': '0.5rem',
+            },
+            fontFamily: {
+              'label-caps': ['Inter'],
+              'body-sm': ['Inter'],
+              'headline-lg': ['Inter'],
+              'body-md': ['Inter'],
+              'data-tabular': ['Inter'],
+              'body-lg': ['Inter'],
+              'headline-sm': ['Inter'],
+              'headline-md': ['Inter'],
+            },
+            fontSize: {
+              'label-caps': [
+                '11px',
+                { lineHeight: '1', letterSpacing: '0.05em', fontWeight: '700' },
+              ],
+              'body-sm': ['13px', { lineHeight: '1.5', fontWeight: '400' }],
+              'headline-lg': [
+                '32px',
+                {
+                  lineHeight: '1.2',
+                  letterSpacing: '-0.02em',
+                  fontWeight: '600',
+                },
+              ],
+              'body-md': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
+              'data-tabular': ['14px', { lineHeight: '1', fontWeight: '500' }],
+              'body-lg': ['16px', { lineHeight: '1.6', fontWeight: '400' }],
+              'headline-sm': ['20px', { lineHeight: '1.4', fontWeight: '500' }],
+              'headline-md': ['24px', { lineHeight: '1.3', fontWeight: '600' }],
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+      }
+      body {
+        background-color: #031427; /* Matching surface-dim for consistency */
+        scrollbar-width: thin;
+        scrollbar-color: #45464d transparent;
+      }
+    </style>
+  </head>
+  <body class="flex items-center justify-center min-h-screen p-margin-edge">
+    <!-- Standalone Workspace Container -->
+    <main
+      class="w-full max-w-4xl bg-surface-container border border-outline-variant overflow-hidden"
+    >
+      <!-- Header -->
+      <header
+        class="px-cozy-padding pt-cozy-padding pb-gutter bg-surface-container-high"
+      >
+        <h1 class="font-headline-md text-headline-md text-on-surface">
+          User Profile &amp; Security
+        </h1>
+        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+          Manage your enterprise account settings and security preferences.
+        </p>
+      </header>
+      <!-- Tab Navigation -->
+      <nav
+        class="flex px-cozy-padding bg-surface-container-high border-b border-outline-variant"
+      >
+        <button
+          class="font-label-caps text-label-caps py-compact-padding px-gutter border-b-2 border-secondary text-secondary cursor-pointer transition-colors"
+        >
+          Account
+        </button>
+        <button
+          class="font-label-caps text-label-caps py-compact-padding px-gutter border-b-2 border-transparent text-on-surface-variant hover:text-on-surface cursor-pointer transition-colors"
+        >
+          Security
+        </button>
+        <button
+          class="font-label-caps text-label-caps py-compact-padding px-gutter border-b-2 border-transparent text-on-surface-variant hover:text-on-surface cursor-pointer transition-colors"
+        >
+          Activity Logs
+        </button>
+      </nav>
+      <!-- Content Area: Account Tab -->
+      <div
+        class="p-cozy-padding bg-surface-container grid grid-cols-1 md:grid-cols-12 gap-cozy-gap"
+      >
+        <!-- Avatar Section (Left Column on Desktop) -->
+        <aside
+          class="md:col-span-4 flex flex-col items-center justify-start space-y-gutter border-r border-outline-variant/30 pr-cozy-padding"
+        >
+          <div class="relative group">
+            <div
+              class="w-32 h-32 rounded-full overflow-hidden border-2 border-outline-variant bg-surface-container-highest"
+            >
+              <img
+                alt="User profile"
+                class="w-full h-full object-cover"
+                data-alt="A high-definition, professional headshot of a mature corporate executive with a clean-shaven face and confident expression. He is wearing a dark, tailored suit against a muted blue studio background. The lighting is soft and directional, emphasizing the modern corporate aesthetic of the ERP system, maintaining a palette of deep blues and professional grays."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAu9GCmLiME_Pgtg4sY2-pSAhqOqgh0klh8kOvqkYJf5bYyAfnUXIS6HJBF3lCL4Fov4zXfUZU1AVJCuKAuBPy9MWmA67TF7ogjN6b-TQGA-4a-nPClBmFcOOAyKN5tbZU4mj_ND_ZHy_01UzGlV_CeB_Uxi3stJdkMWz5yHZxvLopUZomPmFNp6wOfarYO2aP-rnl7UkLVM5Yy_64gj7bC2A3CqZUQVyFgbTz6gsaODs0UNt8pKJASw2db9c7AS82pz3W55hrC7Eg"
+              />
+            </div>
+            <button
+              class="absolute bottom-0 right-0 p-2 bg-secondary text-on-secondary rounded-full shadow-lg hover:bg-secondary-fixed transition-transform active:scale-95 flex items-center justify-center"
+            >
+              <span class="material-symbols-outlined text-sm" data-icon="edit"
+                >edit</span
+              >
+            </button>
+          </div>
+          <div class="text-center">
+            <h3 class="font-headline-sm text-headline-sm text-on-surface">
+              Alex Thompson
+            </h3>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">
+              Senior Financial Analyst
+            </p>
+          </div>
+          <div class="w-full pt-gutter">
+            <div
+              class="p-compact-padding bg-surface-container-low border border-outline-variant text-center"
+            >
+              <span
+                class="font-label-caps text-label-caps text-on-surface-variant"
+                >Last Login: 2 hours ago</span
+              >
+            </div>
+          </div>
+        </aside>
+        <!-- Form Section (Right Column on Desktop) -->
+        <section class="md:col-span-8 flex flex-col space-y-gutter">
+          <form class="space-y-compact-gap" onsubmit="return false">
+            <!-- Full Name -->
+            <div class="flex flex-col space-y-1">
+              <label
+                class="font-label-caps text-label-caps text-on-surface-variant px-1"
+                for="fullName"
+                >Full Name</label
+              >
+              <input
+                class="w-full bg-surface-container-highest border border-outline-variant text-on-surface font-body-md text-body-md px-gutter py-compact-padding focus:border-secondary focus:ring-1 focus:ring-secondary transition-all outline-none"
+                id="fullName"
+                type="text"
+                value="Alex Thompson"
+              />
+            </div>
+            <!-- Email -->
+            <div class="flex flex-col space-y-1">
+              <label
+                class="font-label-caps text-label-caps text-on-surface-variant px-1"
+                for="email"
+                >Email Address</label
+              >
+              <input
+                class="w-full bg-surface-container-highest border border-outline-variant text-on-surface font-body-md text-body-md px-gutter py-compact-padding focus:border-secondary focus:ring-1 focus:ring-secondary transition-all outline-none"
+                id="email"
+                type="email"
+                value="a.thompson@acculedger.erp"
+              />
+            </div>
+            <!-- Role (Disabled/Read-Only) -->
+            <div class="flex flex-col space-y-1">
+              <label
+                class="font-label-caps text-label-caps text-on-surface-variant px-1"
+                for="role"
+                >Enterprise Role</label
+              >
+              <div class="relative">
+                <input
+                  class="w-full bg-surface-container-low border border-outline-variant text-on-surface-variant font-body-md text-body-md px-gutter py-compact-padding cursor-not-allowed opacity-75"
+                  disabled=""
+                  id="role"
+                  type="text"
+                  value="Senior Financial Analyst"
+                />
+                <span
+                  class="absolute right-gutter top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant"
+                  data-icon="lock"
+                  >lock</span
+                >
+              </div>
+              <p
+                class="font-body-sm text-body-sm text-on-surface-variant italic mt-1"
+              >
+                Roles can only be modified by the System Administrator.
+              </p>
+            </div>
+            <!-- Organization Info (Contextual Addition for ERP Feel) -->
+            <div class="grid grid-cols-2 gap-gutter pt-gutter">
+              <div class="flex flex-col space-y-1">
+                <label
+                  class="font-label-caps text-label-caps text-on-surface-variant px-1"
+                  >Department</label
+                >
+                <input
+                  class="w-full bg-surface-container-low border border-outline-variant text-on-surface-variant font-body-md text-body-md px-gutter py-compact-padding cursor-not-allowed opacity-75"
+                  disabled=""
+                  type="text"
+                  value="Treasury &amp; Risk"
+                />
+              </div>
+              <div class="flex flex-col space-y-1">
+                <label
+                  class="font-label-caps text-label-caps text-on-surface-variant px-1"
+                  >Location</label
+                >
+                <input
+                  class="w-full bg-surface-container-low border border-outline-variant text-on-surface-variant font-body-md text-body-md px-gutter py-compact-padding cursor-not-allowed opacity-75"
+                  disabled=""
+                  type="text"
+                  value="London HQ (Zone A)"
+                />
+              </div>
+            </div>
+            <!-- Actions -->
+            <div
+              class="pt-cozy-padding flex items-center justify-end space-x-gutter"
+            >
+              <button
+                class="font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface px-gutter py-compact-padding transition-colors"
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                class="bg-secondary text-on-secondary font-label-caps text-label-caps px-cozy-padding py-compact-padding hover:bg-secondary-fixed transition-all active:scale-95 flex items-center space-x-2"
+                type="button"
+              >
+                <span class="material-symbols-outlined text-sm" data-icon="save"
+                  >save</span
+                >
+                <span>Save Changes</span>
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+      <!-- Footer / Status Bar -->
+      <footer
+        class="px-cozy-padding py-compact-padding bg-surface-container-low border-t border-outline-variant flex justify-between items-center"
+      >
+        <div class="flex items-center space-x-2">
+          <div class="w-2 h-2 rounded-full bg-secondary"></div>
+          <span class="font-body-sm text-body-sm text-on-surface-variant"
+            >System Online: v2.4.12-Enterprise</span
+          >
+        </div>
+        <span
+          class="font-data-tabular text-data-tabular text-on-surface-variant"
+          >UTC +00:00</span
+        >
+      </footer>
+    </main>
+    <script>
+      // Micro-interaction for the "Save Changes" button
+      document
+        .querySelector('button[data-icon="save"]')
+        .parentElement.addEventListener('click', function () {
+          const btn = this
+          const originalContent = btn.innerHTML
+
+          btn.innerHTML = `
+                <span class="material-symbols-outlined text-sm animate-spin" data-icon="sync">sync</span>
+                <span>Processing...</span>
+            `
+          btn.classList.add('opacity-80', 'cursor-wait')
+
+          setTimeout(() => {
+            btn.innerHTML = `
+                    <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                    <span>Saved Successfully</span>
+                `
+            btn.classList.remove('bg-secondary', 'cursor-wait')
+            btn.classList.add(
+              'bg-secondary-container',
+              'text-on-secondary-container'
+            )
+
+            setTimeout(() => {
+              btn.innerHTML = originalContent
+              btn.classList.remove(
+                'bg-secondary-container',
+                'text-on-secondary-container',
+                'opacity-80'
+              )
+              btn.classList.add('bg-secondary')
+            }, 2000)
+          }, 1200)
+        })
+
+      // Tab Switching Simulation
+      const tabs = document.querySelectorAll('nav button')
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => {
+            t.classList.remove('border-secondary', 'text-secondary')
+            t.classList.add('border-transparent', 'text-on-surface-variant')
+          })
+          tab.classList.add('border-secondary', 'text-secondary')
+          tab.classList.remove('border-transparent', 'text-on-surface-variant')
+        })
+      })
+    </script>
+  </body>
+</html>
