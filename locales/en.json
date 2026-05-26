@@ -144,7 +144,6 @@
   "auth.enterpriseFinancial": "Enterprise Financial Management System",
   "auth.username": "Username",
   "auth.password": "Password",
-  "auth.rememberMe": "Remember me",
   "auth.forgot": "Forgot?",
   "auth.invalidCredentials": "Invalid credentials. Please try again.",
   "auth.authenticating": "Authenticating...",

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useTabStore } from '@/store/tab-store'
+import { useAuth } from '@/hooks/useAuth'
 
 interface SideBarProps {
   children?: React.ReactNode
@@ -115,6 +116,7 @@ export function SideBar({ className }: SideBarProps) {
   const [collapsed, setCollapsed] = useState(false)
   const navigate = useNavigate()
   const { addTab, setActiveTab } = useTabStore()
+  const { isLoggedIn, logout } = useAuth()
 
   const handleEntityClick = useCallback((entityType: string, title: string) => {
     const existingTab = useTabStore.getState().getTabByEntityType(entityType)
@@ -201,7 +203,9 @@ export function SideBar({ className }: SideBarProps) {
       {/* Footer */}
       <div className="px-4 pb-6 mt-auto">
         <div className="border-t border-outline-variant mb-4" />
-        <NavItem icon="logout" label={t('sidebar.actions.logout')} collapsed={collapsed} />
+        {isLoggedIn && (
+          <NavItem icon="logout" label={t('sidebar.actions.logout')} collapsed={collapsed} onClick={logout} />
+        )}
       </div>
     </div>
   )

@@ -8,8 +8,6 @@ interface LoginModalProps {
   onLoginSuccess: (userId: string) => void
 }
 
-// const REMEMBER_ME_KEY = 'login_remember_me'
-
 export function LoginModal({
   open,
   onOpenChange,
@@ -17,23 +15,30 @@ export function LoginModal({
 }: LoginModalProps) {
   const { t } = useTranslation()
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [formState, setFormState] = useState({
+    username: '',
+    password: '',
+    showPassword: false,
+    error: '',
+    isLoading: false,
+  })
   const [shake, setShake] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
 
+  const { username, password, showPassword, error, isLoading } = formState
+
   useEffect(() => {
     if (!open) {
-      setUsername('')
-      setPassword('')
-      setError('')
-      setIsLoading(false)
+      setFormState({
+        username: '',
+        password: '',
+        showPassword: false,
+        error: '',
+        isLoading: false,
+      })
       setShake(false)
     }
-  }, [open])
+  }, [open, t])
 
   const triggerShake = () => {
     setShake(true)
@@ -42,20 +47,22 @@ export function LoginModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
-    setIsLoading(true)
+    setFormState(prev => ({ ...prev, error: '', isLoading: true }))
 
     await new Promise(resolve => setTimeout(resolve, 1200))
 
     if (!username.trim() || !password.trim()) {
-      setError(t('auth.invalidCredentials'))
+      setFormState(prev => ({
+        ...prev,
+        error: t('auth.invalidCredentials'),
+        isLoading: false,
+      }))
       triggerShake()
-      setIsLoading(false)
       return
     }
 
     const mockUserId = `user_${username.toLowerCase().replace(/\s+/g, '_')}`
-    setIsLoading(false)
+    setFormState(prev => ({ ...prev, isLoading: false }))
     onLoginSuccess(mockUserId)
     onOpenChange(false)
   }
@@ -88,7 +95,7 @@ export function LoginModal({
             <img
               alt="Ma5zon Logo"
               className="h-16 w-16 object-contain"
-              src=""
+              src={new URL('@/assets/logo.svg', import.meta.url).href}
             />
           </div>
           <h1 className="font-headline-sm text-headline-sm text-on-surface">
@@ -117,7 +124,12 @@ export function LoginModal({
                   required
                   type="text"
                   value={username}
-                  onChange={e => setUsername(e.target.value)}
+                  onChange={e =>
+                    setFormState(prev => ({
+                      ...prev,
+                      username: e.target.value,
+                    }))
+                  }
                   disabled={isLoading}
                 />
               </div>
@@ -139,14 +151,24 @@ export function LoginModal({
                   required
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={e =>
+                    setFormState(prev => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
                   disabled={isLoading}
                 />
                 <button
                   aria-label="Toggle password visibility"
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-secondary transition-colors disabled:opacity-50"
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() =>
+                    setFormState(prev => ({
+                      ...prev,
+                      showPassword: !prev.showPassword,
+                    }))
+                  }
                   disabled={isLoading}
                 >
                   <span className="material-symbols-outlined">

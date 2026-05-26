@@ -1,5 +1,5 @@
 {
-  "app.name": "مخزون",
+  "app.name": "Ma5zon",
 
   "menu.about": "حول {{appName}}",
   "menu.checkForUpdates": "التحقق من التحديثات...",
@@ -98,7 +98,7 @@
 
   "titlebar.default": "تطبيق تاوري",
   "titlebar.logo": "شعار مخزون",
-  "titlebar.appName": "مخزون",
+  "titlebar.appName": "Ma5zon",
   "titlebar.showLeftSidebar": "إظهار الشريط الجانبي الأيسر",
   "titlebar.hideLeftSidebar": "إخفاء الشريط الجانبي الأيسر",
   "titlebar.showRightSidebar": "إظهار الشريط الجانبي الأيمن",
@@ -130,7 +130,7 @@
   "titlebar.expandSidebar": "توسيع الشريط الجانبي",
   "titlebar.collapseSidebar": "طي الشريط الجانبي",
 
-  "nav.appName": "مخزون",
+  "nav.appName": "Ma5zon",
   "nav.appTagline": "المالية للمؤسسات",
   "nav.globalSearchPlaceholder": "البحث العالمي (السجلات، الفواتير، العملاء)...",
   "nav.userName": "أليكس ستيرلينغ",
@@ -143,7 +143,6 @@
   "auth.enterpriseFinancial": "نظام إدارة المالية للمؤسسات",
   "auth.username": "اسم المستخدم",
   "auth.password": "كلمة المرور",
-  "auth.rememberMe": "تذكرني",
   "auth.forgot": "نسيت؟",
   "auth.invalidCredentials": "بيانات الاعتماد غير صالحة. يرجى المحاولة مرة أخرى.",
   "auth.authenticating": "جاري المصادقة...",

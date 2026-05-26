@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { commands } from '@/lib/bindings'
 import { LoginModal } from './LoginModal'
 
-const DEFAULT_AVATAR = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUBAQM9pd0d2Y8CyJX6QTiPWqXNZTzy2Dvsz_OYI_RhgqqQBO7jfH7iXr3tiD5m58oLfeYLboKxEeJ6qRvPmL8wgFw2mJV51DGt9FMuZQ0dntsReqcm4VhWQPJwNU8efHXGmD-wxzLibbyzc2khT29AKRbbhOivAOxGwe6H69jXIJIHK5699KvwRPkaSdrstAeU3WY2_A9cWK1lGotJwgcZtxQwXxWXeUt-9iDBQH5Udos-CZmoHXZIZLI-cP9eXuaw6LFlHbu96k'
+const DEFAULT_AVATAR = new URL('@/assets/profile.svg', import.meta.url).href
 
 interface ProfileSectionProps {
   className?: string
