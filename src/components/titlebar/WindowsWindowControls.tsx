@@ -6,6 +6,18 @@ import { getCurrentWindow } from '@tauri-apps/api/window'
 import { WindowsIcons } from './WindowControlIcons'
 
 /**
+ * Get the current Tauri window, or null if not in a Tauri environment.
+ */
+function tryGetWindow(): ReturnType<typeof getCurrentWindow> | null {
+  try {
+    const win = getCurrentWindow()
+    return win ?? null
+  } catch {
+    return null
+  }
+}
+
+/**
  * Windows-style window control buttons (minimize, maximize/restore, close).
  * Positioned on the RIGHT side of the title bar, following Windows conventions.
  */
@@ -15,7 +27,8 @@ export function WindowsWindowControls() {
 
   // Initialize and sync maximized state with actual window state
   useEffect(() => {
-    const appWindow = getCurrentWindow()
+    const appWindow = tryGetWindow()
+    if (!appWindow) return
 
     // Query initial state
     appWindow
@@ -67,7 +80,8 @@ export function WindowsWindowControls() {
 
   const handleMaximizeToggle = async () => {
     try {
-      const appWindow = getCurrentWindow()
+      const appWindow = tryGetWindow()
+      if (!appWindow) return
       const maximized = await appWindow.isMaximized()
       if (maximized) {
         await appWindow.unmaximize()

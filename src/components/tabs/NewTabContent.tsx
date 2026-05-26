@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useTabStore } from '@/store/tab-store'
+import { useAuth } from '@/hooks/useAuth'
+import { requestLogin } from '@/hooks/useAuth'
 import type { TabType } from '@/lib/utils'
 
 function KpiCard({
@@ -142,8 +144,13 @@ export function NewTabContent() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { addTab } = useTabStore()
+  const { isLoggedIn } = useAuth()
 
   const handleActionClick = (type: TabType, title: string) => {
+    if (!isLoggedIn) {
+      requestLogin()
+      return
+    }
     addTab({
       title,
       type,

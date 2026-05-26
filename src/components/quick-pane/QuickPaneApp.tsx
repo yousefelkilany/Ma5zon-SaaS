@@ -59,6 +59,7 @@ export default function QuickPaneApp() {
   // Focus input when window becomes visible, hide on blur
   useEffect(() => {
     const currentWindow = getCurrentWindow()
+    if (!currentWindow) return
     const unlisten = currentWindow.onFocusChanged(
       async ({ payload: focused }) => {
         if (focused) {
@@ -107,7 +108,7 @@ export default function QuickPaneApp() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex h-screen w-screen items-center rounded-[var(--app-corner-radius)] border border-border bg-background px-5 shadow-lg"
+      className="flex h-screen w-screen items-center rounded-(--app-corner-radius) border border-border bg-background px-5 shadow-lg"
     >
       <input
         ref={inputRef}

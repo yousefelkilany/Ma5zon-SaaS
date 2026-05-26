@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/hooks/useAuth'
 import { commands } from '@/lib/bindings'
@@ -12,28 +12,36 @@ interface ProfileSectionProps {
 
 export function ProfileSection({ className }: ProfileSectionProps) {
   const { t } = useTranslation()
-  const { isLoggedIn, user, login, logout } = useAuth()
+  const { isLoggedIn, user, login } = useAuth()
   const [loginModalOpen, setLoginModalOpen] = useState(false)
 
-  useEffect(() => {
-    if (isLoggedIn && user) {
-      commands.saveUser({
-        id: user.id,
-        name: user.name,
-        role: user.role,
-        avatar_url: user.avatar_url,
-      })
-    }
-  }, [isLoggedIn, user])
+  // Remove the useEffect that causes extra saveUser calls - handled in handleLoginSuccess
+  // The backend sync on login is already done in handleLoginSuccess
 
   const handleLoginSuccess = async (userId: string) => {
-    await commands.saveUser({
+    console.log('[ProfileSection] handleLoginSuccess called with:', userId)
+    // Create user object from mock login
+    const userData = {
       id: userId,
       name: 'Guest User',
       role: 'User',
       avatar_url: null,
-    })
-    login(userId)
+    }
+    
+    // Try to save to backend (may fail in dev without Tauri)
+    try {
+      const result = await commands.saveUser(userData)
+      console.log('[ProfileSection] saveUser result:', result)
+    } catch (e) {
+      console.warn('[ProfileSection] saveUser failed (expected in dev):', e)
+    }
+    
+    // Store in localStorage as fallback
+    localStorage.setItem(`user_${userId}`, JSON.stringify(userData))
+    
+    // Call login with user data to set state immediately
+    login(userId, userData)
+    console.log('[ProfileSection] login called')
   }
 
   if (!isLoggedIn) {
@@ -62,7 +70,6 @@ export function ProfileSection({ className }: ProfileSectionProps) {
   return (
     <div className={`flex items-center gap-compact-gap ${className ?? ''}`}>
       <button
-        onClick={logout}
         className="flex items-center gap-2 px-3 py-1 rounded-full hover:bg-surface-container-high"
       >
         <img

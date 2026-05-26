@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { commands } from '@/lib/bindings';
 
 const AUTH_USER_ID_KEY = 'auth_user_id';
+const REQUEST_LOGIN_EVENT = 'auth:request-login';
 
 export function getAuthUserId(): string | null {
   if (typeof window === 'undefined') return null;
@@ -16,16 +18,54 @@ function setAuthUserId(userId: string | null): void {
   }
 }
 
+export function requestLogin() {
+  window.dispatchEvent(new CustomEvent(REQUEST_LOGIN_EVENT));
+}
+
 export function useAuth() {
   const queryClient = useQueryClient();
-  const userId = getAuthUserId();
+  // Use useState to make userId reactive so UI updates when it changes
+  const [userId, setUserId] = useState<string | null>(() => getAuthUserId());
+
+  // Sync with localStorage on mount and when storage changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedUserId = getAuthUserId();
+      if (storedUserId !== userId) {
+        setUserId(storedUserId);
+      }
+    };
+    
+    // Listen for storage events (from same tab or other tabs)
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also poll for changes since storage event doesn't fire in same tab
+    const interval = setInterval(handleStorageChange, 100);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [userId]);
 
   const userQuery = useQuery({
     queryKey: ['user', userId],
     queryFn: async () => {
       if (!userId) return null;
       const result = await commands.loadUser(userId);
-      if (result.status === 'error') return null;
+      if (result.status === 'error') {
+        console.warn('[useAuth] loadUser failed, checking localStorage fallback');
+        // Fallback: try to get user data from localStorage if backend fails
+        const storedUser = localStorage.getItem(`user_${userId}`);
+        if (storedUser) {
+          try {
+            return JSON.parse(storedUser) as User;
+          } catch {
+            return null;
+          }
+        }
+        return null;
+      }
       return result.data;
     },
     enabled: userId !== null,
@@ -33,15 +73,34 @@ export function useAuth() {
     gcTime: Infinity,
   });
 
-  const login = (userId: string) => {
-    setAuthUserId(userId);
-    queryClient.invalidateQueries({ queryKey: ['user', userId] });
+  const login = (newUserId: string, userData?: User) => {
+    console.log('[useAuth] login called with:', newUserId, userData);
+    setAuthUserId(newUserId);
+    setUserId(newUserId); // Update reactive state so UI updates immediately
+    // If userData is provided (e.g., from mock login), store it directly
+    if (userData) {
+      localStorage.setItem(`user_${newUserId}`, JSON.stringify(userData));
+      // Also set the query data directly to avoid async loading issues
+      queryClient.setQueryData(['user', newUserId], userData);
+    }
+    queryClient.invalidateQueries({ queryKey: ['user', newUserId] });
   };
 
   const logout = () => {
     const currentUserId = getAuthUserId();
+    console.log('[useAuth] logout called, currentUserId:', currentUserId);
+    
+    // Clear auth ID
     setAuthUserId(null);
-    queryClient.removeQueries({ queryKey: ['user', currentUserId] });
+    setUserId(null); // Update reactive state so UI updates immediately
+    
+    // Clear user data from localStorage
+    if (currentUserId) {
+      localStorage.removeItem(`user_${currentUserId}`);
+    }
+    
+    // Clear query cache completely
+    queryClient.clear();
   };
 
   return {

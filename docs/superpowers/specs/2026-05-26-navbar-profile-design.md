@@ -47,7 +47,7 @@ pub struct User {
 
 ### SQLite Integration
 
-- **Database path**: `{app_data_dir}/app.db`
+- **Database path**: `{app_data_dir}/ma5zon.db`
 - **Table**: `users`
   ```sql
   CREATE TABLE IF NOT EXISTS users (

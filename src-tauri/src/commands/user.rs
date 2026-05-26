@@ -16,7 +16,7 @@ fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
     std::fs::create_dir_all(&app_data_dir)
         .map_err(|e| format!("Failed to create app data directory: {e}"))?;
 
-    Ok(app_data_dir.join("app.db"))
+    Ok(app_data_dir.join("ma5zon.db"))
 }
 
 /// Initializes the SQLite database and creates tables if needed.

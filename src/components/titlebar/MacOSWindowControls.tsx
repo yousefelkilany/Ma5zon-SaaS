@@ -5,6 +5,18 @@ import { useCommandContext } from '@/hooks/use-command-context'
 import { executeCommand } from '@/lib/commands'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 
+/**
+ * Get the current Tauri window, or null if not in a Tauri environment.
+ */
+function tryGetWindow(): ReturnType<typeof getCurrentWindow> | null {
+  try {
+    const win = getCurrentWindow()
+    return win ?? null
+  } catch {
+    return null
+  }
+}
+
 interface MacOSWindowControlsProps extends HTMLProps<HTMLDivElement> {
   className?: string
 }
@@ -58,7 +70,8 @@ export function MacOSWindowControls({
     // Also listen for Tauri window focus events if available
     const setupTauriFocusListener = async () => {
       try {
-        const appWindow = getCurrentWindow()
+        const appWindow = tryGetWindow()
+        if (!appWindow) return null
         const unlistenFocus = await appWindow.onFocusChanged(
           ({ payload: focused }) => {
             setIsWindowFocused(focused)
@@ -98,7 +111,8 @@ export function MacOSWindowControls({
 
   const handleMaximizeOrFullscreen = async () => {
     try {
-      const appWindow = getCurrentWindow()
+      const appWindow = tryGetWindow()
+      if (!appWindow) return
       const isFullscreen = await appWindow.isFullscreen()
 
       if (isFullscreen) {

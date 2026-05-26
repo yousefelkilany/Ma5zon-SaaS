@@ -240,7 +240,7 @@ pub fn get_items(db: State<DbConnection>) -> Result<Vec<Item>, String> {
 Initialize in `src-tauri/src/lib.rs`:
 
 ```rust
-let db_path = app.path().app_data_dir()?.join("app.db");
+let db_path = app.path().app_data_dir()?.join("ma5zon.db");
 let conn = Connection::open(&db_path)?;
 
 // Run migrations

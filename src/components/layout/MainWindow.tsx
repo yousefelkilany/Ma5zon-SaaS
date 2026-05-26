@@ -8,6 +8,7 @@ import { Toaster } from 'sonner'
 import { useTheme } from '@/hooks/use-theme'
 import { useUIStore } from '@/store/ui-store'
 import { useMainWindowEventListeners } from '@/hooks/useMainWindowEventListeners'
+import { AuthGuard } from '@/components/auth/AuthGuard'
 
 export function MainWindow() {
   const { theme } = useTheme()
@@ -27,7 +28,9 @@ export function MainWindow() {
       <div className="flex flex-1 overflow-hidden">
         {sidebarVisible && <SideBar />}
         <div className="flex-1">
-          <MainWindowContent />
+          <AuthGuard>
+            <MainWindowContent />
+          </AuthGuard>
         </div>
       </div>
 

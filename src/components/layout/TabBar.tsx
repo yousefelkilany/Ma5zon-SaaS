@@ -1,17 +1,23 @@
 import { useTranslation } from 'react-i18next'
 import { useTabStore } from '@/store/tab-store'
+import { useAuth } from '@/hooks/useAuth'
+import { requestLogin } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 
 export function TabBar() {
   const { t } = useTranslation()
   const { tabs, activeTabId, setActiveTab, addTab, removeTab } = useTabStore()
+  const { isLoggedIn } = useAuth()
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId)
-    // Let MainWindowContent effect handle URL sync after state updates
   }
 
   const handleAddTab = () => {
+    if (!isLoggedIn) {
+      requestLogin()
+      return
+    }
     addTab({
       title: t('nav.newTab'),
       type: 'new-tab',

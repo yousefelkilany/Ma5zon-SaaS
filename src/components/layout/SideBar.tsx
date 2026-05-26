@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useTabStore } from '@/store/tab-store'
 import { useAuth } from '@/hooks/useAuth'
+import { requestLogin } from '@/hooks/useAuth'
 
 interface SideBarProps {
   children?: React.ReactNode
@@ -119,6 +120,10 @@ export function SideBar({ className }: SideBarProps) {
   const { isLoggedIn, logout } = useAuth()
 
   const handleEntityClick = useCallback((entityType: string, title: string) => {
+    if (!isLoggedIn) {
+      requestLogin()
+      return
+    }
     const existingTab = useTabStore.getState().getTabByEntityType(entityType)
 
     if (existingTab) {

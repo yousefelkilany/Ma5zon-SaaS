@@ -12,6 +12,19 @@ import {
 } from './TitleBarContent'
 import { t } from 'i18next'
 
+/**
+ * Get the current Tauri window, or null if not in a Tauri environment.
+ * This guards against the API returning undefined in non-Tauri contexts.
+ */
+function tryGetWindow(): ReturnType<typeof getCurrentWindow> | null {
+  try {
+    const win = getCurrentWindow()
+    return win ?? null
+  } catch {
+    return null
+  }
+}
+
 interface TitleBarProps {
   className?: string
   /**
@@ -46,9 +59,10 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
   useEffect(() => {
     const appName = t('titlebar.appName')
     document.title = tabTitle ? `${appName} - ${tabTitle}` : appName
-    getCurrentWindow()
-      .setTitle(document.title)
-      .catch(e => console.warn('Failed to set window title:', e))
+    const win = tryGetWindow()
+    if (win) {
+      win.setTitle(document.title).catch(e => console.warn('Failed to set window title:', e))
+    }
   }, [tabTitle])
 
   // TODO: On Linux with frameless windows, resize cursors don't appear at title bar top edge.
@@ -57,12 +71,13 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
 
   const handleDoubleClick = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    const window = getCurrentWindow()
-    const isMaximized = await window.isMaximized()
+    const win = tryGetWindow()
+    if (!win) return
+    const isMaximized = await win.isMaximized()
     if (isMaximized) {
-      await window.unmaximize()
+      await win.unmaximize()
     } else {
-      await window.maximize()
+      await win.maximize()
     }
   }
 
@@ -76,7 +91,7 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
     // Skip second click of double-click (detail=2) to allow dblclick to fire
     if (e.detail !== 1) return
 
-    await getCurrentWindow().startDragging()
+    tryGetWindow()?.startDragging()
   }
 
   return (
