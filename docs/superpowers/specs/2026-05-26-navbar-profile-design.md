@@ -170,7 +170,7 @@ Add to `locales/en.json`:
 "nav.login": "Login",
 "nav.logout": "Logout",
 "auth.signIn": "Sign In",
-"auth.signInToAccuLedger": "Sign In to AccuLedger",
+"auth.signInToMa5zon": "Sign In to Ma5zon",
 "auth.enterpriseFinancial": "Enterprise Financial Management System",
 "auth.username": "Username",
 "auth.password": "Password",

@@ -46,7 +46,7 @@ interface TitleBarLogoProps {}
 export function TitleBarLogo() { /* renders logo image */ }
 
 interface TitleBarAppNameProps {}
-export function TitleBarAppName() { /* renders "AccuLedger" text */ }
+export function TitleBarAppName() { /* renders "Ma5zon" text */ }
 
 interface TitleBarTabTitleProps { title: string }
 export function TitleBarTabTitle({ title }: TitleBarTabTitleProps) { /* renders dynamic tab title */ }
@@ -64,7 +64,7 @@ export function TitleBarTabTitle({ title }: TitleBarTabTitleProps) { /* renders 
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│ [Logo] AccuLedger           Dashboard                  [─][□][×] │
+│ [Logo] Ma5zon           Dashboard                  [─][□][×] │
 └──────────────────────────────────────────────────────────────────┘
      ←── left ──→            ←──── center ─────→           ← right →
 ```
@@ -73,7 +73,7 @@ export function TitleBarTabTitle({ title }: TitleBarTabTitleProps) { /* renders 
 - TitleBarLogo (logo image, h-6 w-6)
 
 **Center section (absolute, -translate-x-1/2, flex, items-center, gap-4):**
-- TitleBarAppName (fixed text "AccuLedger")
+- TitleBarAppName (fixed text "Ma5zon")
 - TitleBarTabTitle (dynamic, reads from tab store)
 
 **Right section (flex items-center, pr-2):**
@@ -212,7 +212,7 @@ Platform detection via existing `usePlatform()` hook.
 ## 9. Acceptance Criteria
 
 1. Titlebar renders at top of app with 40px height
-2. Logo appears on left, app name "AccuLedger" next to it
+2. Logo appears on left, app name "Ma5zon" next to it
 3. Active tab name displays in center, updates when tabs change
 4. Window controls (minimize, maximize/restore, close) on right
 5. Maximize icon reflects current state (maximized vs not)

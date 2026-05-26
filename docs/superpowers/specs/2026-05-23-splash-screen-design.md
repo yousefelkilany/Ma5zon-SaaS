@@ -23,7 +23,7 @@ Replace the inline loading state in MainWindow with a branded splash screen that
 - Uses Lucide icon as fallback (e.g., `Banknote` or similar finance-related icon)
 
 **Brand Identity**
-- Brand name: "AccuLedger"
+- Brand name: "Ma5zon"
 - Headline style: `headline-lg` with tight tracking
 - Tagline: "Precision in every transaction."
 - Tagline uses muted color with 70% opacity
@@ -34,7 +34,7 @@ Replace the inline loading state in MainWindow with a branded splash screen that
 - Replaces progress bar (progress bar was removed because initialization time is unknown)
 
 **Footer**
-- Copyright notice: "© 2026 AccuLedger v0.1.0"
+- Copyright notice: "© 2026 Ma5zon v0.1.0"
 - Uses `body-sm` styling with 50% opacity
 - Fixed at bottom with padding
 

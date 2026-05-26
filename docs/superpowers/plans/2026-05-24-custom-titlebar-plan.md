@@ -28,7 +28,7 @@ export function TitleBarLogo() {
   return (
     <img
       src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiZVh33XK4sg0Cf0Pm2N5FrKbpAMT8lNGK97INqjoemoBZsqlzyY7NiAgGS3jiGjEPzRX6s5XJyPyyEixFtC4Vj_hvysR6CBiupoA-ceSylGa8Dy44bMRlPcrGzA1WYFEJT-HR4cXIEJ2PUFTlS2QdTf5AjhxMrOmkibHJVWkrHMx6bzFoXPqCkiP2vlxvuyDbwHrlWKWaYlW8EV3M6ocVQ5ds4g6WyTZnIWhEHMvf2OV0ztC5yFT_0sF1Q4d-rcpdwYtHWMm6Azo"
-      alt="AccuLedger Logo"
+      alt="Ma5zon Logo"
       className="h-6 w-6 shrink-0"
     />
   )
@@ -36,12 +36,12 @@ export function TitleBarLogo() {
 
 /**
  * App name displayed after the logo.
- * Fixed text "AccuLedger".
+ * Fixed text "Ma5zon".
  */
 export function TitleBarAppName() {
   return (
     <span className="text-sm font-medium text-foreground/80">
-      AccuLedger
+      Ma5zon
     </span>
   )
 }
@@ -418,7 +418,7 @@ Expected: No errors
 Check each acceptance criteria from the spec:
 
 1. ✅ Titlebar renders at top of app with 40px height — `h-10` in TitleBar.tsx
-2. ✅ Logo appears on left, app name "AccuLedger" next to it — TitleBarLogo + TitleBarAppName in left section
+2. ✅ Logo appears on left, app name "Ma5zon" next to it — TitleBarLogo + TitleBarAppName in left section
 3. ✅ Active tab name displays in center, updates when tabs change — TitleBarTabTitle reads from useTabStore
 4. ✅ Window controls (minimize, maximize/restore, close) on right — Right section in TitleBar.tsx
 5. ✅ Maximize icon reflects current state — WindowsWindowControls already has isMaximized state logic

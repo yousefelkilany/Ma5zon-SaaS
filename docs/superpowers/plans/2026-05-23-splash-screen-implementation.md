@@ -61,7 +61,7 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
 
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-            AccuLedger
+            Ma5zon
           </h1>
           <p className="text-base text-muted-foreground opacity-70">
             Precision in every transaction.
@@ -75,7 +75,7 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
 
       <footer className="flex w-full justify-center pb-10">
         <p className="text-sm text-muted-foreground opacity-50">
-          © 2026 AccuLedger v0.1.0
+          © 2026 Ma5zon v0.1.0
         </p>
       </footer>
     </div>
@@ -157,7 +157,7 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
           {!logoError ? (
             <img
               src={logoUrl}
-              alt="AccuLedger Logo"
+              alt="Ma5zon Logo"
               className="h-full w-full object-contain"
               onError={() => setLogoError(true)}
             />
@@ -168,7 +168,7 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
 
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-            AccuLedger
+            Ma5zon
           </h1>
           <p className="text-base text-muted-foreground opacity-70">
             Precision in every transaction.
@@ -182,7 +182,7 @@ function SplashScreen({ isReady, minDuration = 3000 }: SplashScreenProps) {
 
       <footer className="flex w-full justify-center pb-10">
         <p className="text-sm text-muted-foreground opacity-50">
-          © 2026 AccuLedger v0.1.0
+          © 2026 Ma5zon v0.1.0
         </p>
       </footer>
     </div>
@@ -379,7 +379,7 @@ Expected: App window opens showing splash screen for minimum 3 seconds, then tra
 
 - [ ] **Step 2: Verify splash screen displays correctly**
 - Logo (or fallback icon) visible
-- "AccuLedger" brand name visible
+- "Ma5zon" brand name visible
 - "Precision in every transaction." tagline visible
 - Spinner animating
 - Copyright footer visible
@@ -395,7 +395,7 @@ Expected: App window opens showing splash screen for minimum 3 seconds, then tra
 | Spec Requirement | Task |
 |------------------|------|
 | Logo from src/assets/logo.png with fallback | Task 2 |
-| AccuLedger brand name | Task 1 |
+| Ma5zon brand name | Task 1 |
 | Spinner instead of progress bar | Task 1 |
 | Minimum 3 second display | Task 1 (minDuration prop) |
 | Disappears after initialization | Task 3 (isReady state) |

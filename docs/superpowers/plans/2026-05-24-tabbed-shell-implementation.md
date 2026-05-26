@@ -272,13 +272,13 @@ export function Navbar() {
       {/* Left: Logo */}
       <div className="flex items-center gap-compact-gap">
         <img
-          alt="AccuLedger Logo"
+          alt="Ma5zon Logo"
           className="w-8 h-8 shrink-0"
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiZVh33XK4sg0Cf0Pm2N5FrKbpAMT8lNGK97INqjoemoBZsqlzyY7NiAgGS3jiGjEPzRX6s5XJyPyyEixFtC4Vj_hvysR6CBiupoA-ceSylGa8Dy44bMRlPcrGzA1WYFEJT-HR4cXIEJ2PUFTlS2QdTf5AjhxMrOmkibHJVWkrHMx6bzFoXPqCkiP2vlxvuyDbwHrlWKWaYlW8EV3M6ocVQ5ds4g6WyTZnIWhEHMvf2OV0ztC5yFT_0sF1Q4d-rcpdwYtHWMm6Azo"
         />
         <div className="flex flex-col">
           <span className="font-headline-sm text-headline-sm font-bold text-on-surface">
-            AccuLedger
+            Ma5zon
           </span>
           <span className="font-label-caps text-[9px] text-on-surface-variant">
             Enterprise Finance
@@ -498,13 +498,13 @@ export function LeftSideBar({ children, className }: LeftSideBarProps) {
         {!collapsed && (
           <div className="flex items-center gap-compact-gap">
             <img
-              alt="AccuLedger Logo"
+              alt="Ma5zon Logo"
               className="w-8 h-8 shrink-0"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiZVh33XK4sg0Cf0Pm2N5FrKbpAMT8lNGK97INqjoemoBZsqlzyY7NiAgGS3jiGjEPzRX6s5XJyPyyEixFtC4Vj_hvysR6CBiupoA-ceSylGa8Dy44bMRlPcrGzA1WYFEJT-HR4cXIEJ2PUFTlS2QdTf5AjhxMrOmkibHJVWkrHMx6bzFoXPqCkiP2vlxvuyDbwHrlWKWaYlW8EV3M6ocVQ5ds4g6WyTZnIWhEHMvf2OV0ztC5yFT_0sF1Q4d-rcpdwYtHWMm6Azo"
             />
             <div className="flex flex-col">
               <span className="font-headline-sm text-headline-sm font-bold text-on-surface">
-                AccuLedger
+                Ma5zon
               </span>
               <span className="font-label-caps text-[9px] text-on-surface-variant">
                 Enterprise Finance

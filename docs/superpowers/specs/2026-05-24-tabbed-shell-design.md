@@ -92,7 +92,7 @@ interface TabState {
 
 ### 4.1 Navbar (`Navbar.tsx`)
 
-- **Left:** AccuLedger logo (image) + company name
+- **Left:** Ma5zon logo (image) + company name
 - **Center:** Global search input with search icon
 - **Right:** Quick Add button (green), notifications icon, settings icon, user profile (avatar + name + role)
 
@@ -110,7 +110,7 @@ interface TabState {
 
 ### 4.3 Sidebar (`LeftSideBar.tsx` - existing, enhanced)
 
-- **Header:** Logo + "AccuLedger" text + collapse/expand toggle button
+- **Header:** Logo + "Ma5zon" text + collapse/expand toggle button
 - **Categories:** Sales, Purchases, Inventory, Finance, System
 - Each category has label + list of nav items (icon + text)
 - Active nav item has `--color-secondary` background and text

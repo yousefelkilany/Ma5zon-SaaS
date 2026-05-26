@@ -395,7 +395,7 @@ export function LoginModal({ open, onOpenChange, onLoginSuccess }: LoginModalPro
       <DialogContent data-login-modal className="...">
         <DialogHeader>
           {/* Logo */}
-          {/* Title: t('auth.signInToAccuLedger') */}
+          {/* Title: t('auth.signInToMa5zon') */}
           {/* Description: t('auth.enterpriseFinancial') */}
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-gutter">
@@ -531,7 +531,7 @@ Add to `locales/en.json` after `"nav.userRole"`:
 "nav.login": "Login",
 "nav.logout": "Logout",
 "auth.signIn": "Sign In",
-"auth.signInToAccuLedger": "Sign In to AccuLedger",
+"auth.signInToMa5zon": "Sign In to Ma5zon",
 "auth.enterpriseFinancial": "Enterprise Financial Management System",
 "auth.username": "Username",
 "auth.password": "Password",
