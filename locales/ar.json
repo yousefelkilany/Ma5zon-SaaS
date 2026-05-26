@@ -214,6 +214,9 @@
   "entity.workspace.toolbar.category": "الفئة:",
   "entity.workspace.toolbar.all": "الكل",
   "entity.workspace.toolbar.export": "تصدير البيانات",
+    "entity.workspace.toolbar.filters": "الفلاتر",
+    "entity.workspace.toolbar.columns": "الأعمدة",
+    "entity.workspace.toolbar.searchPlaceholder": "بحث...",
   "entity.workspace.toolbar.print": "عرض الطباعة",
   "entity.workspace.columns.entity": "الاسم",
   "entity.workspace.columns.doc": "رقم المستند",
@@ -230,5 +233,6 @@
   "entity.workspace.page": "صفحة",
   "entity.workspace.of": "من {{total}}",
   "entity.workspace.selectAll": "تحديد الكل",
-  "entity.workspace.selectRow": "تحديد الصف"
+  "entity.workspace.selectRow": "تحديد الصف",
+    "entity.workspace.selected": "تم تحديد {{count}}"
 }

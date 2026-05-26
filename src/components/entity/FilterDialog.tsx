@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { ColumnDef, FilterState } from '@/lib/types/entity'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -19,6 +20,7 @@ export function FilterDialog({
   filters,
   onApply,
 }: FilterDialogProps) {
+  const { t } = useTranslation()
   const [localFilters, setLocalFilters] = useState<Record<string, string | string[] | { min?: string; max?: string }>>({})
 
   const getFilterValue = (columnId: string) => {
@@ -50,7 +52,7 @@ export function FilterDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Filters</DialogTitle>
+          <DialogTitle>{t('entity.workspace.toolbar.filters')}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           {filterableColumns.map(col => (

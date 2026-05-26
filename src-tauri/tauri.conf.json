@@ -15,8 +15,8 @@
       {
         "label": "Ma5zon-Finance",
         "title": "Ma5zon | Enterprise Finance",
-        "width": 1250,
-        "height": 950,
+        "width": 1850,
+        "height": 1150,
         "minWidth": 1850,
         "minHeight": 1150,
         "resizable": true,
@@ -33,6 +33,7 @@
     "security": {
       "csp": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' tauri: ipc: http://ipc.localhost",
       "capabilities": [
+        "default",
         {
           "identifier": "allow-export-to-custom-folder",
           "permissions": [

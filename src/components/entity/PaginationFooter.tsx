@@ -30,7 +30,7 @@ export function PaginationFooter({
             {t('entity.workspace.rowsPerPage')}
           </span>
           <select
-            className="bg-surface-container border border-outline-variant rounded px-2 py-1 text-on-surface text-body-sm"
+            className="bg-surface-bright border border-outline-variant rounded w-12 px-2 py-1 text-on-surface text-center text-body-sm appearance-none"
             value={pageSize}
             onChange={handlePageSizeChange}
             disabled={isLoading}
@@ -74,14 +74,16 @@ export function PaginationFooter({
           </span>
         </button>
         <div className="flex items-center gap-1 mx-2">
-          <span className="text-on-surface-variant text-body-sm">{t('entity.workspace.page')}</span>
+          <span className="text-on-surface-variant text-body-sm">
+            {t('entity.workspace.page')}
+          </span>
           <input
             type="number"
             min={1}
             max={totalPages}
             value={page}
             onChange={handlePageInputChange}
-            className="w-12 bg-surface-bright border border-outline-variant rounded px-2 py-1 text-center text-on-surface text-body-sm"
+            className="w-12 bg-surface-bright border border-outline-variant rounded px-2 py-1 text-center text-on-surface text-body-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             disabled={isLoading}
             aria-label="Go to page"
           />

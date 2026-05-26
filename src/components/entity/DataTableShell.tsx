@@ -95,7 +95,7 @@ export function DataTableShell({
         onBulkAction={handleBulkAction}
         onExport={onExport}
       />
-      <div className="flex-1 overflow-hidden px-6 py-4">
+      <div className="flex-1 overflow-hidden">
         <div className="h-full flex flex-col">
           <DataTable
             entityType={entityType}

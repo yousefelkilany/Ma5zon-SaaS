@@ -19,7 +19,7 @@ export function Toolbar({
         <div className="relative max-w-sm">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder={t('entity.workspace.toolbar.searchPlaceholder')}
             value={searchValue}
             onChange={e => onSearchChange(e.target.value)}
             className="w-full bg-surface-bright border border-outline-variant rounded px-3 py-1.5 text-on-surface text-body-sm placeholder:text-on-surface-variant/50"
@@ -37,7 +37,7 @@ export function Toolbar({
           <span className="material-symbols-outlined text-[18px]">
             filter_list
           </span>
-          Filters
+          {t('entity.workspace.toolbar.filters')}
         </button>
         <button
           type="button"
@@ -47,14 +47,14 @@ export function Toolbar({
           <span className="material-symbols-outlined text-[18px]">
             view_column
           </span>
-          Columns
+          {t('entity.workspace.toolbar.columns')}
         </button>
       </div>
       <div className="flex items-center gap-3">
         {hasSelection && (
           <div className="flex items-center gap-2">
             <span className="text-on-surface-variant text-body-sm">
-              {selectedCount} selected
+              {t('entity.workspace.selected', { count: selectedCount })}
             </span>
             <button
               type="button"
@@ -64,7 +64,7 @@ export function Toolbar({
               <span className="material-symbols-outlined text-[18px]">
                 delete
               </span>
-              Delete
+              {t('entity.workspace.delete')}
             </button>
           </div>
         )}

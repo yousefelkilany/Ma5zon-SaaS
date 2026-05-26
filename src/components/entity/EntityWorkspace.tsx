@@ -25,7 +25,7 @@ function EntityHeader({ entityType }: { entityType: string }) {
   const addNewLabel = t('entity.workspace.addNew', { entity: singularLabel })
 
   return (
-    <header className="flex flex-col gap-2 px-6 pt-6 pb-4 bg-surface shadow-sm shrink-0">
+    <header className="flex flex-col gap-2 px-margin-edge pb-6 bg-surface shadow-sm shrink-0">
       <div className="flex items-center justify-between">
         <div className="flex flex-col">
           <nav className="flex items-center space-x-2 text-on-surface-variant mb-1">
@@ -328,7 +328,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="px-margin-edge flex flex-col h-full bg-background py-6">
       <EntityHeader entityType={entityType} />
       <DataTableShell
         entityType={entityType}

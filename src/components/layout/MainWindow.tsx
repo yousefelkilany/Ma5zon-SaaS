@@ -26,7 +26,9 @@ export function MainWindow() {
 
       <div className="flex flex-1 overflow-hidden">
         {sidebarVisible && <SideBar />}
-        <MainWindowContent />
+        <div className="flex-1">
+          <MainWindowContent />
+        </div>
       </div>
 
       {/* Global UI Components (hidden until triggered) */}

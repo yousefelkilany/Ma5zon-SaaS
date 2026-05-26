@@ -4,7 +4,7 @@ export function DashboardContent() {
   const { t } = useTranslation()
 
   return (
-    <div className="px-margin-edge py-6">
+    <div className="px-margin-edge flex flex-col h-full bg-background py-6">
       <nav className="flex text-on-surface-variant text-[11px] font-label-caps uppercase tracking-wider mb-6">
         <a className="hover:text-primary" href="#">
           {t('dashboard.breadcrumb.finance')}
@@ -15,7 +15,7 @@ export function DashboardContent() {
         </span>
       </nav>
 
-      <div className="max-w-360 mx-auto space-y-gutter">
+      <div className="space-y-gutter">
         {/* KPI Cards */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
           <KpiCard
