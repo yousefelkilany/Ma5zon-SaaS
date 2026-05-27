@@ -108,6 +108,7 @@ pub async fn authenticate(
     username: &str,
     password: &str,
 ) -> Result<Option<(User, String)>, String> {
+    log::info!("[authenticate] Attempting login for username: {}", username);
     let conn = init_db(&app)?;
     seed_default_admin(&conn)?;
 
@@ -127,8 +128,10 @@ pub async fn authenticate(
 
     match user_result {
         Ok(user) => {
+            log::info!("[authenticate] User found: {}, attempting password verify", user.name);
             if let Some(ref hash) = user.password_hash {
                 if verify_password(password, hash)? {
+                    log::info!("[authenticate] Password verified, creating session");
                     let session_token = uuid::Uuid::new_v4().to_string();
                     let created_at = chrono::Utc::now().to_rfc3339();
 
@@ -137,24 +140,30 @@ pub async fn authenticate(
                         params![user.id, session_token, created_at],
                     ).map_err(|e| format!("Failed to create session: {e}"))?;
 
-                    Ok(Some((
-                        User {
-                            id: user.id,
-                            name: user.name,
-                            role: user.role,
-                            avatar_url: user.avatar_url,
-                        },
-                        session_token,
-                    )))
+                    log::info!("[authenticate] Success, returning user and token");
+                    Ok(Some((User {
+                        id: user.id,
+                        name: user.name,
+                        role: user.role,
+                        avatar_url: user.avatar_url,
+                    }, session_token)))
                 } else {
+                    log::info!("[authenticate] Password verification failed");
                     Ok(None)
                 }
             } else {
+                log::info!("[authenticate] No password hash for user");
                 Ok(None)
             }
         }
-        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
-        Err(e) => Err(format!("Database error: {e}")),
+        Err(rusqlite::Error::QueryReturnedNoRows) => {
+            log::info!("[authenticate] User not found: {}", username);
+            Ok(None)
+        }
+        Err(e) => {
+            log::error!("[authenticate] Database error: {}", e);
+            Err(format!("Database error: {e}"))
+        }
     }
 }
 
