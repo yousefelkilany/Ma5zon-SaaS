@@ -51,6 +51,15 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
   })
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
   const [passwordUpdateError, setPasswordUpdateError] = useState('')
+  const [passwordPolicy, setPasswordPolicy] = useState({
+    length: false,
+    uppercase: false,
+    numeric: false,
+    special: false,
+    match: false,
+  })
+  const [isNewPasswordDirty, setIsNewPasswordDirty] = useState(false)
+  const [isConfirmPasswordDirty, setIsConfirmPasswordDirty] = useState(false)
 
   useEffect(() => {
     if (open && user) {
@@ -70,6 +79,15 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
       setPasswordForm({ current: '', new: '', confirm: '' })
       setPasswordErrors({ current: '', new: '', confirm: '' })
       setPasswordUpdateError('')
+      setPasswordPolicy({
+        length: false,
+        uppercase: false,
+        numeric: false,
+        special: false,
+        match: false,
+      })
+      setIsNewPasswordDirty(false)
+      setIsConfirmPasswordDirty(false)
     }
   }, [open])
 
@@ -96,8 +114,8 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
     if (!passwordForm.new) {
       errors.new = 'New password is required'
       valid = false
-    } else if (passwordForm.new.length < 12) {
-      errors.new = 'Password must be at least 12 characters'
+    } else if (passwordForm.new.length < 8) {
+      errors.new = 'Password must be at least 8 characters'
       valid = false
     } else if (!/[A-Z]/.test(passwordForm.new)) {
       errors.new = 'Password must contain at least one uppercase letter'
@@ -118,6 +136,23 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
 
     setPasswordErrors(errors)
     return valid
+  }
+
+  const evaluatePasswordPolicy = (password: string) => {
+    setPasswordPolicy(prev => ({
+      ...prev,
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      numeric: /[0-9]/.test(password),
+      special: /[!@#$]/.test(password),
+    }))
+  }
+
+  const evaluatePasswordMatch = (newPwd: string, confirmPwd: string) => {
+    setPasswordPolicy(prev => ({
+      ...prev,
+      match: confirmPwd.length > 0 && newPwd === confirmPwd,
+    }))
   }
 
   const handlePasswordUpdate = async () => {
@@ -142,6 +177,15 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
 
     // Success - clear form
     setPasswordForm({ current: '', new: '', confirm: '' })
+    setPasswordPolicy({
+      length: false,
+      uppercase: false,
+      numeric: false,
+      special: false,
+      match: false,
+    })
+    setIsNewPasswordDirty(false)
+    setIsConfirmPasswordDirty(false)
     setActiveTab('account')
   }
 
@@ -149,6 +193,15 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
     setPasswordForm({ current: '', new: '', confirm: '' })
     setPasswordErrors({ current: '', new: '', confirm: '' })
     setPasswordUpdateError('')
+    setPasswordPolicy({
+      length: false,
+      uppercase: false,
+      numeric: false,
+      special: false,
+      match: false,
+    })
+    setIsNewPasswordDirty(false)
+    setIsConfirmPasswordDirty(false)
   }
 
   const handleSave = async () => {
@@ -449,28 +502,76 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                     </h3>
                     <ul className="space-y-3 font-body-sm text-body-sm text-on-surface-variant">
                       <li className="flex items-start gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px]">
-                          check_circle
-                        </span>
-                        Minimum 12 characters
+                        {isNewPasswordDirty ? (
+                          <span
+                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.length ? 'text-secondary' : 'text-error'}`}
+                          >
+                            {passwordPolicy.length ? 'check_circle' : 'cancel'}
+                          </span>
+                        ) : (
+                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
+                            circle
+                          </span>
+                        )}
+                        Minimum 8 characters
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px]">
-                          check_circle
-                        </span>
+                        {isNewPasswordDirty ? (
+                          <span
+                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.uppercase ? 'text-secondary' : 'text-error'}`}
+                          >
+                            {passwordPolicy.uppercase
+                              ? 'check_circle'
+                              : 'cancel'}
+                          </span>
+                        ) : (
+                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
+                            circle
+                          </span>
+                        )}
                         One uppercase letter
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px]">
-                          check_circle
-                        </span>
+                        {isNewPasswordDirty ? (
+                          <span
+                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.numeric ? 'text-secondary' : 'text-error'}`}
+                          >
+                            {passwordPolicy.numeric ? 'check_circle' : 'cancel'}
+                          </span>
+                        ) : (
+                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
+                            circle
+                          </span>
+                        )}
                         One numeric digit
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px]">
-                          check_circle
-                        </span>
-                        One special character (@, #, $)
+                        {isNewPasswordDirty ? (
+                          <span
+                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.special ? 'text-secondary' : 'text-error'}`}
+                          >
+                            {passwordPolicy.special ? 'check_circle' : 'cancel'}
+                          </span>
+                        ) : (
+                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
+                            circle
+                          </span>
+                        )}
+                        One special character (!, @, #, $)
+                      </li>
+                      <li className="flex items-start gap-2">
+                        {isNewPasswordDirty || isConfirmPasswordDirty ? (
+                          <span
+                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.match ? 'text-secondary' : 'text-error'}`}
+                          >
+                            {passwordPolicy.match ? 'check_circle' : 'cancel'}
+                          </span>
+                        ) : (
+                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
+                            circle
+                          </span>
+                        )}
+                        Passwords match
                       </li>
                     </ul>
                   </div>
@@ -547,12 +648,18 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                           id="new-password"
                           type={showNewPassword ? 'text' : 'password'}
                           value={passwordForm.new}
-                          onChange={e =>
+                          onChange={e => {
+                            setIsNewPasswordDirty(true)
                             setPasswordForm(prev => ({
                               ...prev,
                               new: e.target.value,
                             }))
-                          }
+                            evaluatePasswordPolicy(e.target.value)
+                            evaluatePasswordMatch(
+                              e.target.value,
+                              passwordForm.confirm
+                            )
+                          }}
                           disabled={isUpdatingPassword}
                         />
                         <button
@@ -586,12 +693,17 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                           id="confirm-password"
                           type={showConfirmPassword ? 'text' : 'password'}
                           value={passwordForm.confirm}
-                          onChange={e =>
+                          onChange={e => {
+                            setIsConfirmPasswordDirty(true)
                             setPasswordForm(prev => ({
                               ...prev,
                               confirm: e.target.value,
                             }))
-                          }
+                            evaluatePasswordMatch(
+                              passwordForm.new,
+                              e.target.value
+                            )
+                          }}
                           disabled={isUpdatingPassword}
                         />
                         <button
