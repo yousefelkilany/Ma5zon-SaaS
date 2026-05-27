@@ -30,11 +30,11 @@ pub async fn variants_get_all(app: AppHandle) -> Result<Vec<Variant>, String> {
     let variants = stmt
         .query_map([], |row| {
             Ok(Variant {
-                id: row.get(0)?,
-                product_id: row.get(1)?,
+                id: row.get::<_, i64>(0)?.to_string(),
+                product_id: row.get::<_, i64>(1)?.to_string(),
                 sku: row.get(2)?,
                 variant_name: row.get(3)?,
-                uom_id: row.get(4)?,
+                uom_id: row.get::<_, i64>(4)?.to_string(),
             })
         })
         .map_err(|e| format!("Failed to query variants: {e}"))?
@@ -46,20 +46,21 @@ pub async fn variants_get_all(app: AppHandle) -> Result<Vec<Variant>, String> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn variants_get_by_product(app: AppHandle, product_id: i64) -> Result<Vec<Variant>, String> {
+pub async fn variants_get_by_product(app: AppHandle, product_id: String) -> Result<Vec<Variant>, String> {
     let conn = get_conn(&app)?;
+    let product_id_i64: i64 = product_id.parse().map_err(|e| format!("Invalid product_id: {e}"))?;
     let mut stmt = conn
         .prepare("SELECT id, product_id, sku, variant_name, uom_id FROM product_variants WHERE product_id = ?1 ORDER BY sku")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let variants = stmt
-        .query_map(params![product_id], |row| {
+        .query_map(params![product_id_i64], |row| {
             Ok(Variant {
-                id: row.get(0)?,
-                product_id: row.get(1)?,
+                id: row.get::<_, i64>(0)?.to_string(),
+                product_id: row.get::<_, i64>(1)?.to_string(),
                 sku: row.get(2)?,
                 variant_name: row.get(3)?,
-                uom_id: row.get(4)?,
+                uom_id: row.get::<_, i64>(4)?.to_string(),
             })
         })
         .map_err(|e| format!("Failed to query variants: {e}"))?
@@ -71,20 +72,21 @@ pub async fn variants_get_by_product(app: AppHandle, product_id: i64) -> Result<
 
 #[tauri::command]
 #[specta::specta]
-pub async fn variants_get_by_id(app: AppHandle, id: i64) -> Result<Option<Variant>, String> {
+pub async fn variants_get_by_id(app: AppHandle, id: String) -> Result<Option<Variant>, String> {
     let conn = get_conn(&app)?;
+    let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let mut stmt = conn
         .prepare("SELECT id, product_id, sku, variant_name, uom_id FROM product_variants WHERE id = ?1")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let variant = stmt
-        .query_row(params![id], |row| {
+        .query_row(params![id_i64], |row| {
             Ok(Variant {
-                id: row.get(0)?,
-                product_id: row.get(1)?,
+                id: row.get::<_, i64>(0)?.to_string(),
+                product_id: row.get::<_, i64>(1)?.to_string(),
                 sku: row.get(2)?,
                 variant_name: row.get(3)?,
-                uom_id: row.get(4)?,
+                uom_id: row.get::<_, i64>(4)?.to_string(),
             })
         })
         .ok();
@@ -102,7 +104,7 @@ pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Vari
     )
     .map_err(|e| format!("Failed to create variant: {e}"))?;
 
-    let id = conn.last_insert_rowid();
+    let id = conn.last_insert_rowid().to_string();
     Ok(Variant {
         id,
         product_id: variant.product_id,
@@ -114,10 +116,11 @@ pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Vari
 
 #[tauri::command]
 #[specta::specta]
-pub async fn variants_update(app: AppHandle, id: i64, variant: UpdateVariant) -> Result<Variant, String> {
+pub async fn variants_update(app: AppHandle, id: String, variant: UpdateVariant) -> Result<Variant, String> {
     let conn = get_conn(&app)?;
+    let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
 
-    let current = variants_get_by_id(app.clone(), id)
+    let current = variants_get_by_id(app.clone(), id.clone())
         .await?
         .ok_or_else(|| "Variant not found".to_string())?;
 
@@ -127,7 +130,7 @@ pub async fn variants_update(app: AppHandle, id: i64, variant: UpdateVariant) ->
 
     conn.execute(
         "UPDATE product_variants SET sku = ?1, variant_name = ?2, uom_id = ?3 WHERE id = ?4",
-        params![new_sku, new_variant_name, new_uom_id, id],
+        params![new_sku, new_variant_name, new_uom_id, id_i64],
     )
     .map_err(|e| format!("Failed to update variant: {e}"))?;
 
@@ -142,9 +145,10 @@ pub async fn variants_update(app: AppHandle, id: i64, variant: UpdateVariant) ->
 
 #[tauri::command]
 #[specta::specta]
-pub async fn variants_delete(app: AppHandle, id: i64) -> Result<(), String> {
+pub async fn variants_delete(app: AppHandle, id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
-    conn.execute("DELETE FROM product_variants WHERE id = ?1", params![id])
+    let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
+    conn.execute("DELETE FROM product_variants WHERE id = ?1", params![id_i64])
         .map_err(|e| format!("Failed to delete variant: {e}"))?;
     Ok(())
 }

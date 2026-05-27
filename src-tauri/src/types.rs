@@ -98,23 +98,23 @@ pub struct User {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct Product {
-    pub id: i64,
+    pub id: String,
     pub name: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct Variant {
-    pub id: i64,
-    pub product_id: i64,
+    pub id: String,
+    pub product_id: String,
     pub sku: String,
     pub variant_name: String,
-    pub uom_id: i64,
+    pub uom_id: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct VariantPrice {
-    pub variant_id: i64,
-    pub price_list_id: i64,
+    pub variant_id: String,
+    pub price_list_id: String,
     pub price: f64,
 }
 
@@ -134,23 +134,23 @@ pub struct ColumnDefRust {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct NewVariant {
-    pub product_id: i64,
+    pub product_id: String,
     pub sku: String,
     pub variant_name: String,
-    pub uom_id: i64,
+    pub uom_id: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct UpdateVariant {
     pub sku: Option<String>,
     pub variant_name: Option<String>,
-    pub uom_id: Option<i64>,
+    pub uom_id: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct NewVariantPrice {
-    pub variant_id: i64,
-    pub price_list_id: i64,
+    pub variant_id: String,
+    pub price_list_id: String,
     pub price: f64,
 }
 

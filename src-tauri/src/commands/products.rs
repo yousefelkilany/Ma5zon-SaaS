@@ -30,7 +30,7 @@ pub async fn get_all(app: AppHandle) -> Result<Vec<Product>, String> {
     let products = stmt
         .query_map([], |row| {
             Ok(Product {
-                id: row.get(0)?,
+                id: row.get::<_, i64>(0)?.to_string(),
                 name: row.get(1)?,
             })
         })
@@ -43,16 +43,17 @@ pub async fn get_all(app: AppHandle) -> Result<Vec<Product>, String> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn get_by_id(app: AppHandle, id: i64) -> Result<Option<Product>, String> {
+pub async fn get_by_id(app: AppHandle, id: String) -> Result<Option<Product>, String> {
     let conn = get_conn(&app)?;
+    let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let mut stmt = conn
         .prepare("SELECT id, name FROM products WHERE id = ?1")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let product = stmt
-        .query_row(params![id], |row| {
+        .query_row(params![id_i64], |row| {
             Ok(Product {
-                id: row.get(0)?,
+                id: row.get::<_, i64>(0)?.to_string(),
                 name: row.get(1)?,
             })
         })
@@ -71,17 +72,18 @@ pub async fn create(app: AppHandle, name: String) -> Result<Product, String> {
     )
     .map_err(|e| format!("Failed to create product: {e}"))?;
 
-    let id = conn.last_insert_rowid();
+    let id = conn.last_insert_rowid().to_string();
     Ok(Product { id, name })
 }
 
 #[tauri::command]
 #[specta::specta]
-pub async fn update(app: AppHandle, id: i64, name: String) -> Result<Product, String> {
+pub async fn update(app: AppHandle, id: String, name: String) -> Result<Product, String> {
     let conn = get_conn(&app)?;
+    let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     conn.execute(
         "UPDATE products SET name = ?1 WHERE id = ?2",
-        params![name, id],
+        params![name, id_i64],
     )
     .map_err(|e| format!("Failed to update product: {e}"))?;
 
@@ -90,9 +92,10 @@ pub async fn update(app: AppHandle, id: i64, name: String) -> Result<Product, St
 
 #[tauri::command]
 #[specta::specta]
-pub async fn delete(app: AppHandle, id: i64) -> Result<(), String> {
+pub async fn delete(app: AppHandle, id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
-    conn.execute("DELETE FROM products WHERE id = ?1", params![id])
+    let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
+    conn.execute("DELETE FROM products WHERE id = ?1", params![id_i64])
         .map_err(|e| format!("Failed to delete product: {e}"))?;
     Ok(())
 }

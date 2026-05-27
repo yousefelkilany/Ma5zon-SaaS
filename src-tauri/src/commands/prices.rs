@@ -30,8 +30,8 @@ pub async fn prices_get_all(app: AppHandle) -> Result<Vec<VariantPrice>, String>
     let prices = stmt
         .query_map([], |row| {
             Ok(VariantPrice {
-                variant_id: row.get(0)?,
-                price_list_id: row.get(1)?,
+                variant_id: row.get::<_, i64>(0)?.to_string(),
+                price_list_id: row.get::<_, i64>(1)?.to_string(),
                 price: row.get(2)?,
             })
         })
@@ -44,17 +44,18 @@ pub async fn prices_get_all(app: AppHandle) -> Result<Vec<VariantPrice>, String>
 
 #[tauri::command]
 #[specta::specta]
-pub async fn prices_get_by_variant(app: AppHandle, variant_id: i64) -> Result<Vec<VariantPrice>, String> {
+pub async fn prices_get_by_variant(app: AppHandle, variant_id: String) -> Result<Vec<VariantPrice>, String> {
     let conn = get_conn(&app)?;
+    let variant_id_i64: i64 = variant_id.parse().map_err(|e| format!("Invalid variant_id: {e}"))?;
     let mut stmt = conn
         .prepare("SELECT variant_id, price_list_id, price FROM variant_prices WHERE variant_id = ?1")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let prices = stmt
-        .query_map(params![variant_id], |row| {
+        .query_map(params![variant_id_i64], |row| {
             Ok(VariantPrice {
-                variant_id: row.get(0)?,
-                price_list_id: row.get(1)?,
+                variant_id: row.get::<_, i64>(0)?.to_string(),
+                price_list_id: row.get::<_, i64>(1)?.to_string(),
                 price: row.get(2)?,
             })
         })
@@ -67,7 +68,7 @@ pub async fn prices_get_by_variant(app: AppHandle, variant_id: i64) -> Result<Ve
 
 #[tauri::command]
 #[specta::specta]
-pub async fn prices_create(app: AppHandle, variant_id: i64, price_list_id: i64, price: f64) -> Result<VariantPrice, String> {
+pub async fn prices_create(app: AppHandle, variant_id: String, price_list_id: String, price: f64) -> Result<VariantPrice, String> {
     let conn = get_conn(&app)?;
     conn.execute(
         "INSERT INTO variant_prices (variant_id, price_list_id, price) VALUES (?1, ?2, ?3)",
@@ -80,7 +81,7 @@ pub async fn prices_create(app: AppHandle, variant_id: i64, price_list_id: i64, 
 
 #[tauri::command]
 #[specta::specta]
-pub async fn prices_update(app: AppHandle, variant_id: i64, price_list_id: i64, price: f64) -> Result<VariantPrice, String> {
+pub async fn prices_update(app: AppHandle, variant_id: String, price_list_id: String, price: f64) -> Result<VariantPrice, String> {
     let conn = get_conn(&app)?;
     conn.execute(
         "INSERT INTO variant_prices (variant_id, price_list_id, price) VALUES (?1, ?2, ?3)
@@ -94,7 +95,7 @@ pub async fn prices_update(app: AppHandle, variant_id: i64, price_list_id: i64, 
 
 #[tauri::command]
 #[specta::specta]
-pub async fn prices_delete(app: AppHandle, variant_id: i64, price_list_id: i64) -> Result<(), String> {
+pub async fn prices_delete(app: AppHandle, variant_id: String, price_list_id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
     conn.execute(
         "DELETE FROM variant_prices WHERE variant_id = ?1 AND price_list_id = ?2",
