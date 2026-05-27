@@ -105,9 +105,9 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
     } else if (!/[0-9]/.test(passwordForm.new)) {
       errors.new = 'Password must contain at least one numeric digit'
       valid = false
-    } else if (!/[@#$]/.test(passwordForm.new)) {
+    } else if (!/[!@#$]/.test(passwordForm.new)) {
       errors.new =
-        'Password must contain at least one special character (@, #, $)'
+        'Password must contain at least one special character (!, @, #, $)'
       valid = false
     }
 
