@@ -300,40 +300,6 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                 aria-labelledby="account-tab"
                 className="p-cozy-padding bg-surface-container grid grid-cols-1 md:grid-cols-12 gap-cozy-gap"
               >
-                <aside className="md:col-span-4 flex flex-col items-center justify-start space-y-gutter border-r border-outline-variant/30 pr-cozy-padding">
-                  <div className="relative group">
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-outline-variant bg-surface-container-highest">
-                      {user?.avatar_url ? (
-                        <img
-                          alt="User profile"
-                          className="w-full h-full object-cover"
-                          src={user.avatar_url}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-surface-container-low">
-                          <span className="material-symbols-outlined text-on-surface-variant text-4xl">
-                            person
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <button className="absolute bottom-0 right-0 p-2 bg-secondary text-on-secondary rounded-full shadow-lg hover:bg-secondary-fixed transition-transform active:scale-95 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-sm">
-                        edit
-                      </span>
-                    </button>
-                  </div>
-
-                  <div className="text-center">
-                    <h3 className="font-headline-sm text-headline-sm text-on-surface">
-                      {user?.name || 'User'}
-                    </h3>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      {user?.role || 'Loading...'}
-                    </p>
-                  </div>
-                </aside>
-
                 <section className="md:col-span-8 flex flex-col space-y-gutter">
                   <div className="space-y-compact-gap">
                     <div className="flex flex-col space-y-1">
@@ -484,6 +450,40 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                     </button>
                   </div>
                 </section>
+
+                <aside className="md:col-span-4 flex flex-col items-center justify-start space-y-gutter border-r border-outline-variant/30 pr-cozy-padding">
+                  <div className="relative group">
+                    <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-outline-variant bg-surface-container-highest">
+                      {user?.avatar_url ? (
+                        <img
+                          alt="User profile"
+                          className="w-full h-full object-cover"
+                          src={user.avatar_url}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-surface-container-low">
+                          <span className="material-symbols-outlined text-on-surface-variant text-4xl">
+                            person
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <button className="absolute bottom-0 right-0 p-2 bg-secondary text-on-secondary rounded-full shadow-lg hover:bg-secondary-fixed transition-transform active:scale-95 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-sm">
+                        edit
+                      </span>
+                    </button>
+                  </div>
+
+                  <div className="text-center">
+                    <h3 className="font-headline-sm text-headline-sm text-on-surface">
+                      {user?.name || 'User'}
+                    </h3>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">
+                      {user?.role || 'Loading...'}
+                    </p>
+                  </div>
+                </aside>
               </div>
             )}
 
@@ -494,89 +494,6 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                 aria-labelledby="security-tab"
                 className="p-cozy-padding bg-surface-container grid grid-cols-1 md:grid-cols-12 gap-cozy-gap"
               >
-                {/* Left Panel - Password Policy & Security Status */}
-                <aside className="md:col-span-4 space-y-cozy-gap">
-                  <div className="p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
-                    <h3 className="font-headline-sm text-headline-sm text-primary mb-cozy-gap">
-                      Password Policy
-                    </h3>
-                    <ul className="space-y-3 font-body-sm text-body-sm text-on-surface-variant">
-                      <li className="flex items-start gap-2">
-                        {isNewPasswordDirty ? (
-                          <span
-                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.length ? 'text-secondary' : 'text-error'}`}
-                          >
-                            {passwordPolicy.length ? 'check_circle' : 'cancel'}
-                          </span>
-                        ) : (
-                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
-                            circle
-                          </span>
-                        )}
-                        Minimum 8 characters
-                      </li>
-                      <li className="flex items-start gap-2">
-                        {isNewPasswordDirty ? (
-                          <span
-                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.uppercase ? 'text-secondary' : 'text-error'}`}
-                          >
-                            {passwordPolicy.uppercase
-                              ? 'check_circle'
-                              : 'cancel'}
-                          </span>
-                        ) : (
-                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
-                            circle
-                          </span>
-                        )}
-                        One uppercase letter
-                      </li>
-                      <li className="flex items-start gap-2">
-                        {isNewPasswordDirty ? (
-                          <span
-                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.numeric ? 'text-secondary' : 'text-error'}`}
-                          >
-                            {passwordPolicy.numeric ? 'check_circle' : 'cancel'}
-                          </span>
-                        ) : (
-                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
-                            circle
-                          </span>
-                        )}
-                        One numeric digit
-                      </li>
-                      <li className="flex items-start gap-2">
-                        {isNewPasswordDirty ? (
-                          <span
-                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.special ? 'text-secondary' : 'text-error'}`}
-                          >
-                            {passwordPolicy.special ? 'check_circle' : 'cancel'}
-                          </span>
-                        ) : (
-                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
-                            circle
-                          </span>
-                        )}
-                        One special character (!, @, #, $)
-                      </li>
-                      <li className="flex items-start gap-2">
-                        {isNewPasswordDirty || isConfirmPasswordDirty ? (
-                          <span
-                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.match ? 'text-secondary' : 'text-error'}`}
-                          >
-                            {passwordPolicy.match ? 'check_circle' : 'cancel'}
-                          </span>
-                        ) : (
-                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
-                            circle
-                          </span>
-                        )}
-                        Passwords match
-                      </li>
-                    </ul>
-                  </div>
-                </aside>
-
                 {/* Right Panel - Password Update Form */}
                 <section className="md:col-span-8 p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
                   <div className="mb-gutter">
@@ -754,6 +671,89 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                     </div>
                   </form>
                 </section>
+
+                {/* Left Panel - Password Policy & Security Status */}
+                <aside className="md:col-span-4 space-y-cozy-gap">
+                  <div className="p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
+                    <h3 className="font-headline-sm text-headline-sm text-primary mb-cozy-gap">
+                      Password Policy
+                    </h3>
+                    <ul className="space-y-3 font-body-sm text-body-sm text-on-surface-variant">
+                      <li className="flex items-start gap-2">
+                        {isNewPasswordDirty ? (
+                          <span
+                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.length ? 'text-secondary' : 'text-error'}`}
+                          >
+                            {passwordPolicy.length ? 'check_circle' : 'cancel'}
+                          </span>
+                        ) : (
+                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
+                            circle
+                          </span>
+                        )}
+                        Minimum 8 characters
+                      </li>
+                      <li className="flex items-start gap-2">
+                        {isNewPasswordDirty ? (
+                          <span
+                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.uppercase ? 'text-secondary' : 'text-error'}`}
+                          >
+                            {passwordPolicy.uppercase
+                              ? 'check_circle'
+                              : 'cancel'}
+                          </span>
+                        ) : (
+                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
+                            circle
+                          </span>
+                        )}
+                        One uppercase letter
+                      </li>
+                      <li className="flex items-start gap-2">
+                        {isNewPasswordDirty ? (
+                          <span
+                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.numeric ? 'text-secondary' : 'text-error'}`}
+                          >
+                            {passwordPolicy.numeric ? 'check_circle' : 'cancel'}
+                          </span>
+                        ) : (
+                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
+                            circle
+                          </span>
+                        )}
+                        One numeric digit
+                      </li>
+                      <li className="flex items-start gap-2">
+                        {isNewPasswordDirty ? (
+                          <span
+                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.special ? 'text-secondary' : 'text-error'}`}
+                          >
+                            {passwordPolicy.special ? 'check_circle' : 'cancel'}
+                          </span>
+                        ) : (
+                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
+                            circle
+                          </span>
+                        )}
+                        One special character (!, @, #, $)
+                      </li>
+                      <li className="flex items-start gap-2">
+                        {isNewPasswordDirty || isConfirmPasswordDirty ? (
+                          <span
+                            className={`material-symbols-outlined text-[18px] ${passwordPolicy.match ? 'text-secondary' : 'text-error'}`}
+                          >
+                            {passwordPolicy.match ? 'check_circle' : 'cancel'}
+                          </span>
+                        ) : (
+                          <span className="material-symbols-outlined text-[18px] text-outline-variant">
+                            circle
+                          </span>
+                        )}
+                        Passwords match
+                      </li>
+                    </ul>
+                  </div>
+                </aside>
               </div>
             )}
 

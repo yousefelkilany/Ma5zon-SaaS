@@ -98,8 +98,8 @@ export function LoginModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        title="login dialog"
-        aria-describedby="login dialog"
+        title={t('auth.login.dialogTitle')}
+        aria-describedby={t('auth.login.dialogDescription')}
         ref={contentRef}
         className="bg-surface-container border-outline-variant rounded-lg shadow-2xl overflow-hidden transition-all duration-300"
         style={{

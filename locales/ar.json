@@ -146,6 +146,8 @@
   "auth.forgot": "نسيت؟",
   "auth.invalidCredentials": "بيانات الاعتماد غير صالحة. يرجى المحاولة مرة أخرى.",
   "auth.authenticating": "جاري المصادقة...",
+  "auth.login.dialogTitle": "نافذة تسجيل الدخول",
+  "auth.login.dialogDescription": "نافذة تسجيل الدخول",
 
   "toast.success.preferencesSaved": "تم حفظ التفضيلات",
   "toast.success.testToast": "إشعار اختباري",

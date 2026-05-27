@@ -147,6 +147,8 @@
   "auth.forgot": "Forgot?",
   "auth.invalidCredentials": "Invalid credentials. Please try again.",
   "auth.authenticating": "Authenticating...",
+  "auth.login.dialogTitle": "login dialog",
+  "auth.login.dialogDescription": "login dialog",
 
   "toast.success.preferencesSaved": "Preferences saved",
   "toast.success.testToast": "Test Toast",
