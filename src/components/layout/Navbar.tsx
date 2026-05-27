@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { ProfileSection } from '@/components/auth'
+import { SettingsPopover } from './SettingsPopover'
 
 export function Navbar() {
   const { t } = useTranslation()
@@ -39,14 +40,7 @@ export function Navbar() {
 
       {/* Right: Settings & Profile */}
       <div className="flex items-center ps-8">
-        <button className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full">
-          <span
-            className="material-symbols-outlined"
-            style={{ fontSize: '1.75em' }}
-          >
-            settings
-          </span>
-        </button>
+        <SettingsPopover />
         <ProfileSection />
       </div>
     </header>
