@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/hooks/useAuth'
+import { commands } from '@/lib/tauri-bindings'
 
 interface ProfileModalProps {
   open: boolean
@@ -64,10 +65,16 @@ export function ProfileModal({
   }
 
   const handleSave = async () => {
+    if (!user) return
     setIsSaving(true)
     setSaveSuccess(false)
 
-    await new Promise(resolve => setTimeout(resolve, 1200))
+    const result = await commands.updateUser(user.id, formData.name, formData.email, user.avatar_url)
+
+    if (result.status === 'error') {
+      setIsSaving(false)
+      return
+    }
 
     setIsSaving(false)
     setSaveSuccess(true)
