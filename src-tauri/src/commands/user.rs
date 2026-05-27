@@ -47,6 +47,17 @@ fn init_db(app: &AppHandle) -> Result<Connection, String> {
     )
     .map_err(|e| format!("Failed to create users table: {e}"))?;
 
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS sessions (
+            user_id TEXT PRIMARY KEY,
+            session_token TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            expires_at TEXT
+        )",
+        [],
+    )
+    .map_err(|e| format!("Failed to create sessions table: {e}"))?;
+
     Ok(conn)
 }
 
