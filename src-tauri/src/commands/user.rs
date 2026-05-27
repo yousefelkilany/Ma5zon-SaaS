@@ -245,6 +245,43 @@ pub async fn invalidate_session(app: AppHandle, user_id: String) -> Result<(), S
 
 #[tauri::command]
 #[specta::specta]
+pub async fn update_password(
+    app: AppHandle,
+    user_id: String,
+    current_password: String,
+    new_password: String,
+) -> Result<(), String> {
+    let conn = init_db(&app)?;
+
+    let mut stmt = conn
+        .prepare("SELECT password_hash FROM users WHERE id = ?1")
+        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
+
+    let password_hash: Option<String> = stmt
+        .query_row(params![user_id], |row| row.get(0))
+        .ok();
+
+    match password_hash {
+        Some(hash) => {
+            if !verify_password(&current_password, &hash)? {
+                return Err("Current password is incorrect".to_string());
+            }
+        }
+        None => return Err("User not found".to_string()),
+    }
+
+    let new_hash = hash_password(&new_password)?;
+    conn.execute(
+        "UPDATE users SET password_hash = ?1 WHERE id = ?2",
+        params![new_hash, user_id],
+    )
+    .map_err(|e| format!("Failed to update password: {e}"))?;
+
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn update_user(
     app: AppHandle,
     _user_id: String,
