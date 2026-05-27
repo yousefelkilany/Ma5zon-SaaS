@@ -1,3 +1,4 @@
+use rand::Rng;
 use rusqlite::Connection;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
@@ -104,6 +105,104 @@ pub async fn init_product_tables(app: AppHandle) -> Result<(), String> {
             .map_err(|e| format!("Failed to seed wholesale: {e}"))?;
         conn.execute("INSERT INTO price_lists (id, name) VALUES (3, 'Distribution')", [])
             .map_err(|e| format!("Failed to seed distribution: {e}"))?;
+    }
+
+    let product_count: i64 = conn
+        .query_row("SELECT COUNT(*) FROM products", [], |row| row.get(0))
+        .map_err(|e| format!("Failed to count products: {e}"))?;
+
+    if product_count == 0 {
+        seed_product_tables(&conn)?;
+    }
+
+    Ok(())
+}
+
+fn seed_product_tables(conn: &Connection) -> Result<(), String> {
+    let mut rng = rand::thread_rng();
+
+    let products = vec![
+        "Industrial Motor Assembly", "Electronic Control Module", "Hydraulic Pump Unit",
+        "Precision Bearing Set", "Stainless Steel Fastener Kit", "LED Display Panel",
+        "Thermal Insulation Sheet", "Carbon Fiber Bracket", "Copper Wiring Harness",
+        "Aluminum Extrusion Profile", "Rubber Gasket Seal", "Plastic Housing Cover",
+        "Glass Lens Assembly", "Brass Fitting Connector", "Titanium Implant Plate",
+        "Ceramic Capacitor Array", "Magnetic Encoder Sensor", "Pneumatic Cylinder",
+        "Solar Panel Junction Box", "Composite Gear Set", "Acoustic Waveguide",
+        "Optical Fiber Bundle", "High-Frequency Transformer", "Emergency Battery Pack",
+        "Servo Drive Controller", "Linear Guide Rail", "Pressure Relief Valve",
+        "Bi-Metal Thermostat", "Anti-Vibration Mount", "RF Antenna Module",
+        "316L Stainless Tubing", "Polycarbonate Housing", "Graphite Heat Sink",
+        "Neodymium Magnet Assembly", "PTFE Liner Bearing", "Epoxy Resin Compound",
+        "Silicone Grommet Set", "Borosilicate Glass Tube", "Rolled Steel Sheet",
+    ];
+
+    let variants_data = vec![
+        (vec!["Standard Grade", "Heavy Duty", "Economy", "Premium"], "Grade"),
+        (vec!["10W", "25W", "50W", "100W"], "Power"),
+        (vec!["120V", "240V", "480V", "Dual Voltage"], "Voltage"),
+        (vec!["Male", "Female", "Barbed", "Compression"], "Connector"),
+        (vec!["1m", "2m", "5m", "10m"], "Length"),
+        (vec!["SS304", "SS316", "SS430", "Galvanized"], "Material"),
+        (vec!["Clear", "Tinted", "Mirrored", "Anti-Glare"], "Finish"),
+        (vec!["M3", "M4", "M5", "M6", "M8"], "Size"),
+        (vec!["Small", "Medium", "Large", "XL"], "Size"),
+        (vec!["2A", "5A", "10A", "20A"], "Rating"),
+    ];
+
+    let uom_names = vec!["pcs", "m", "kg", "L", "box", "roll", "set"];
+    let mut variant_ids: Vec<i64> = Vec::new();
+
+    for (i, product_name) in products.iter().enumerate() {
+        conn.execute(
+            "INSERT INTO products (name) VALUES (?1)",
+            [product_name],
+        )
+        .map_err(|e| format!("Failed to insert product: {e}"))?;
+
+        let product_id = conn.last_insert_rowid();
+        let num_variants = rng.gen_range(2..5);
+        let variant_type = &variants_data[i % variants_data.len()];
+        let options = &variant_type.0;
+
+        for v in 0..num_variants {
+            let variant_name = format!("{} {} {}", product_name, variant_type.1, options[v % options.len()]);
+            let sku = format!(
+                "{}-{:04}-{:02}",
+                &product_name[..3].to_uppercase(),
+                i + 1,
+                v + 1
+            );
+            let uom_id = (rng.gen_range(0..uom_names.len()) + 1) as i64;
+
+            conn.execute(
+                "INSERT INTO product_variants (product_id, sku, variant_name, uom_id) VALUES (?1, ?2, ?3, ?4)",
+                rusqlite::params![product_id, sku, variant_name, uom_id],
+            )
+            .map_err(|e| format!("Failed to insert variant: {e}"))?;
+
+            let variant_id = conn.last_insert_rowid();
+            variant_ids.push(variant_id);
+        }
+    }
+
+    for variant_id in &variant_ids {
+        for price_list_id in 1..=3 {
+            let base_price: f64 = rng.gen_range(5.0..500.0);
+            let multiplier = match price_list_id {
+                1 => 1.0,
+                2 => 0.75,
+                3 => 0.6,
+                _ => 1.0,
+            };
+            let price = (base_price * multiplier * 100.0).round() / 100.0;
+
+            conn.execute(
+                "INSERT INTO variant_prices (variant_id, price_list_id, price) VALUES (?1, ?2, ?3)",
+                rusqlite::params![variant_id, price_list_id, price],
+            )
+            .map_err(|e| format!("Failed to insert price: {e}"))?;
+        }
     }
 
     Ok(())
