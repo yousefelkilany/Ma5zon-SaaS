@@ -2,7 +2,7 @@ use rusqlite::{params, Connection};
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 
-use crate::types::VariantPrice;
+use crate::types::{PriceList, VariantPrice};
 
 fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
     let app_data_dir = app
@@ -29,9 +29,10 @@ pub async fn prices_get_all(app: AppHandle) -> Result<Vec<VariantPrice>, String>
 
     let prices = stmt
         .query_map([], |row| {
+            let price_list_id: i64 = row.get(1)?;
             Ok(VariantPrice {
                 variant_id: row.get::<_, i64>(0)?.to_string(),
-                price_list_id: row.get::<_, i64>(1)?.to_string(),
+                price_list_id: PriceList::from_id(price_list_id).unwrap_or(PriceList::Retail),
                 price: row.get(2)?,
             })
         })
@@ -53,9 +54,10 @@ pub async fn prices_get_by_variant(app: AppHandle, variant_id: String) -> Result
 
     let prices = stmt
         .query_map(params![variant_id_i64], |row| {
+            let price_list_id: i64 = row.get(1)?;
             Ok(VariantPrice {
                 variant_id: row.get::<_, i64>(0)?.to_string(),
-                price_list_id: row.get::<_, i64>(1)?.to_string(),
+                price_list_id: PriceList::from_id(price_list_id).unwrap_or(PriceList::Retail),
                 price: row.get(2)?,
             })
         })
@@ -70,36 +72,39 @@ pub async fn prices_get_by_variant(app: AppHandle, variant_id: String) -> Result
 #[specta::specta]
 pub async fn prices_create(app: AppHandle, variant_id: String, price_list_id: String, price: f64) -> Result<VariantPrice, String> {
     let conn = get_conn(&app)?;
+    let price_list: PriceList = price_list_id.parse().map_err(|_| "Invalid price_list_id")?;
     conn.execute(
         "INSERT INTO variant_prices (variant_id, price_list_id, price) VALUES (?1, ?2, ?3)",
-        params![variant_id, price_list_id, price],
+        params![variant_id, price_list.id(), price],
     )
     .map_err(|e| format!("Failed to create price: {e}"))?;
 
-    Ok(VariantPrice { variant_id, price_list_id, price })
+    Ok(VariantPrice { variant_id, price_list_id: price_list, price })
 }
 
 #[tauri::command]
 #[specta::specta]
 pub async fn prices_update(app: AppHandle, variant_id: String, price_list_id: String, price: f64) -> Result<VariantPrice, String> {
     let conn = get_conn(&app)?;
+    let price_list: PriceList = price_list_id.parse().map_err(|_| "Invalid price_list_id")?;
     conn.execute(
         "INSERT INTO variant_prices (variant_id, price_list_id, price) VALUES (?1, ?2, ?3)
          ON CONFLICT(variant_id, price_list_id) DO UPDATE SET price = ?3",
-        params![variant_id, price_list_id, price],
+        params![variant_id, price_list.id(), price],
     )
     .map_err(|e| format!("Failed to update price: {e}"))?;
 
-    Ok(VariantPrice { variant_id, price_list_id, price })
+    Ok(VariantPrice { variant_id, price_list_id: price_list, price })
 }
 
 #[tauri::command]
 #[specta::specta]
 pub async fn prices_delete(app: AppHandle, variant_id: String, price_list_id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
+    let price_list: PriceList = price_list_id.parse().map_err(|_| "Invalid price_list_id")?;
     conn.execute(
         "DELETE FROM variant_prices WHERE variant_id = ?1 AND price_list_id = ?2",
-        params![variant_id, price_list_id],
+        params![variant_id, price_list.id()],
     )
     .map_err(|e| format!("Failed to delete price: {e}"))?;
     Ok(())

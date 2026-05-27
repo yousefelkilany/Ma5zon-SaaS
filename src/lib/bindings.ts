@@ -373,6 +373,7 @@ language: string | null }
 export type ColumnDefRust = { id: string; name: string; col_type: string; width: number }
 export type JsonValue = null | boolean | number | string | JsonValue[] | Partial<{ [key in string]: JsonValue }>
 export type NewVariant = { product_id: string; sku: string; variant_name: string; uom_id: string }
+export type PriceList = "retail" | "wholesale" | "distribution"
 export type Product = { id: string; name: string }
 /**
  * Error types for recovery operations (typed for frontend matching)
@@ -405,7 +406,7 @@ export type UpdateVariant = { sku: string | null; variant_name: string | null; u
  */
 export type User = { id: string; name: string; role: string; avatar_url: string | null }
 export type Variant = { id: string; product_id: string; sku: string; variant_name: string; uom_id: string }
-export type VariantPrice = { variant_id: string; price_list_id: string; price: number }
+export type VariantPrice = { variant_id: string; price_list_id: PriceList; price: number }
 
 /** tauri-specta globals **/
 

@@ -3,6 +3,7 @@
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use specta::Type;
+use std::str::FromStr;
 use std::sync::LazyLock;
 
 /// Default shortcut for the quick pane
@@ -114,7 +115,7 @@ pub struct Variant {
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct VariantPrice {
     pub variant_id: String,
-    pub price_list_id: String,
+    pub price_list_id: PriceList,
     pub price: f64,
 }
 
@@ -147,10 +148,50 @@ pub struct UpdateVariant {
     pub uom_id: Option<String>,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Type)]
+#[serde(rename_all = "lowercase")]
+pub enum PriceList {
+    Retail,
+    Wholesale,
+    Distribution,
+}
+
+impl PriceList {
+    pub fn from_id(id: i64) -> Option<Self> {
+        match id {
+            1 => Some(PriceList::Retail),
+            2 => Some(PriceList::Wholesale),
+            3 => Some(PriceList::Distribution),
+            _ => None,
+        }
+    }
+
+    pub fn id(&self) -> i64 {
+        match self {
+            PriceList::Retail => 1,
+            PriceList::Wholesale => 2,
+            PriceList::Distribution => 3,
+        }
+    }
+}
+
+impl FromStr for PriceList {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "retail" => Ok(PriceList::Retail),
+            "wholesale" => Ok(PriceList::Wholesale),
+            "distribution" => Ok(PriceList::Distribution),
+            _ => Err(format!("Unknown price list: {}", s)),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct NewVariantPrice {
     pub variant_id: String,
-    pub price_list_id: String,
+    pub price_list_id: PriceList,
     pub price: f64,
 }
 
