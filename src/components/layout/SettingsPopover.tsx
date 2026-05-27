@@ -108,7 +108,7 @@ export function SettingsPopover() {
               }`}
             >
               <span className="text-2xl">🇸🇦</span>
-              <span className="text-xs">عربي</span>
+              <span className="text-xs">{t('settingsPopover.language.arabic')}</span>
             </button>
             <button
               onClick={() => handleLanguageChange('en')}
@@ -119,7 +119,7 @@ export function SettingsPopover() {
               }`}
             >
               <span className="text-2xl">🇺🇸</span>
-              <span className="text-xs">EN</span>
+              <span className="text-xs">{t('settingsPopover.language.english')}</span>
             </button>
             <button
               onClick={() => handleLanguageChange('system')}
