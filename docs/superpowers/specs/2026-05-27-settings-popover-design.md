@@ -41,8 +41,8 @@ A lightweight settings popover attached to the gear icon in the Navbar, providin
 - 💻 System (`system` mode — follows device preference)
 
 **Language toggles:**
+- AR Arabic (العربية) — first, since it's the default
 - EN English
-- AR Arabic (العربية)
 - 💻 System (follows device locale)
 
 ### Behavior
