@@ -55,18 +55,27 @@ export function useAuth() {
   useEffect(() => {
     let aborted = false;
     const storedUserId = getAuthUserId();
+    const storedToken = localStorage.getItem('session_token');
+    console.log('[useAuth] Validating session on mount, userId:', storedUserId, 'token:', storedToken);
     if (storedUserId) {
-      commands.validateSession(storedUserId).then(result => {
+      commands.validateSession(storedUserId, storedToken).then(result => {
         if (aborted) return;
+        console.log('[useAuth] validateSession result:', result);
         if (result.status === 'error' || result.data === false) {
+          console.log('[useAuth] Session invalid, clearing auth state');
           setAuthUserId(null);
           setUserId(null);
           localStorage.removeItem(`user_${storedUserId}`);
+          localStorage.removeItem('session_token');
+        } else {
+          console.log('[useAuth] Session valid, keeping logged in');
         }
-      }).catch(() => {
+      }).catch((err) => {
         if (aborted) return;
+        console.log('[useAuth] validateSession error:', err);
         setAuthUserId(null);
         setUserId(null);
+        localStorage.removeItem('session_token');
       });
     }
     return () => { aborted = true; };
@@ -76,8 +85,14 @@ export function useAuth() {
   useEffect(() => {
     const handleBeforeUnload = () => {
       const currentUserId = getAuthUserId();
+      const currentToken = localStorage.getItem('session_token');
+      console.log('[useAuth] beforeunload - userId:', currentUserId, 'token:', currentToken);
       if (currentUserId) {
-        commands.invalidateSession(currentUserId).catch(() => {});
+        commands.invalidateSession(currentUserId).then(result => {
+          console.log('[useAuth] invalidateSession result:', result);
+        }).catch((err) => {
+          console.log('[useAuth] invalidateSession error:', err);
+        });
       }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);

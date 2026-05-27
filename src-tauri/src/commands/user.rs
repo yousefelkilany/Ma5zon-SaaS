@@ -207,7 +207,8 @@ pub async fn delete_user(app: AppHandle, user_id: &str) -> Result<(), String> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn validate_session(app: AppHandle, user_id: String) -> Result<bool, String> {
+pub async fn validate_session(app: AppHandle, user_id: String, client_token: Option<String>) -> Result<bool, String> {
+    log::info!("[validate_session] Called with user_id: {}, client_token: {:?}", user_id, client_token);
     let conn = init_db(&app)?;
 
     let mut stmt = conn
@@ -219,17 +220,31 @@ pub async fn validate_session(app: AppHandle, user_id: String) -> Result<bool, S
     });
 
     match session_result {
-        Ok((_token, expires_at)) => {
+        Ok((db_token, expires_at)) => {
+            log::info!("[validate_session] Found session in DB, token: {}, expires_at: {:?}", db_token, expires_at);
+            // If client_token was provided, verify it matches the DB token
+            if let Some(ref client_t) = client_token {
+                log::info!("[validate_session] Comparing client_token: {} vs db_token: {}", client_t, db_token);
+                if client_t != &db_token {
+                    log::info!("[validate_session] Token mismatch - session is invalid!");
+                    return Ok(false);
+                }
+            }
             if let Some(expires) = expires_at {
                 let expiry = chrono::DateTime::parse_from_rfc3339(&expires)
                     .map_err(|e| format!("Invalid expiry date: {e}"))?;
                 if chrono::Utc::now() > expiry {
+                    log::info!("[validate_session] Session expired!");
                     return Ok(false);
                 }
             }
+            log::info!("[validate_session] Session is valid!");
             Ok(true)
         }
-        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(false),
+        Err(rusqlite::Error::QueryReturnedNoRows) => {
+            log::info!("[validate_session] No session found in DB for user_id: {}", user_id);
+            Ok(false)
+        }
         Err(e) => Err(format!("Database error: {e}")),
     }
 }
@@ -237,9 +252,11 @@ pub async fn validate_session(app: AppHandle, user_id: String) -> Result<bool, S
 #[tauri::command]
 #[specta::specta]
 pub async fn invalidate_session(app: AppHandle, user_id: String) -> Result<(), String> {
+    log::info!("[invalidate_session] Called with user_id: {}", user_id);
     let conn = init_db(&app)?;
-    conn.execute("DELETE FROM sessions WHERE user_id = ?1", params![user_id])
+    let deleted = conn.execute("DELETE FROM sessions WHERE user_id = ?1", params![user_id])
         .map_err(|e| format!("Failed to delete session: {e}"))?;
+    log::info!("[invalidate_session] Deleted {} rows", deleted);
     Ok(())
 }
 
