@@ -48,6 +48,35 @@ export function useAuth() {
     };
   }, [userId]);
 
+  // Session validation on mount - clear stale credentials
+  useEffect(() => {
+    const storedUserId = getAuthUserId();
+    if (storedUserId) {
+      commands.validateSession(storedUserId).then(result => {
+        if (result.status === 'error' || result.data === false) {
+          setAuthUserId(null);
+          setUserId(null);
+          localStorage.removeItem(`user_${storedUserId}`);
+        }
+      }).catch(() => {
+        setAuthUserId(null);
+        setUserId(null);
+      });
+    }
+  }, []);
+
+  // Session invalidation on unload
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const currentUserId = getAuthUserId();
+      if (currentUserId) {
+        commands.invalidateSession().catch(() => {});
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
   const userQuery = useQuery({
     queryKey: ['user', userId],
     queryFn: async () => {
