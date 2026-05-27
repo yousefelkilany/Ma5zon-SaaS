@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/hooks/useAuth'
+import { useQueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 
 interface ProfileModalProps {
@@ -22,11 +23,9 @@ const tabs: { id: TabId; label: string }[] = [
   { id: 'activity', label: 'Activity Logs' },
 ]
 
-export function ProfileModal({
-  open,
-  onOpenChange,
-}: ProfileModalProps) {
+export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
   const { user } = useAuth()
+  const queryClient = useQueryClient()
 
   const [activeTab, setActiveTab] = useState<TabId>('account')
   const [isSaving, setIsSaving] = useState(false)
@@ -64,7 +63,7 @@ export function ProfileModal({
     }
   }
 
-  const handleSave = async () => {
+const handleSave = async () => {
     if (!user) return
     setIsSaving(true)
     setSaveSuccess(false)
@@ -74,6 +73,14 @@ export function ProfileModal({
     if (result.status === 'error') {
       setIsSaving(false)
       return
+    }
+
+    // Update the query cache directly with the returned user data
+    queryClient.setQueryData(['user', user.id], result.data)
+
+    // Also update localStorage for persistence
+    if (result.data) {
+      localStorage.setItem(`user_${user.id}`, JSON.stringify(result.data))
     }
 
     setIsSaving(false)
@@ -87,7 +94,21 @@ export function ProfileModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 m-0 max-w-5xl w-[calc(100%-2rem)] max-h-[85vh] overflow-auto z-[51] bg-surface-container border-outline-variant rounded-lg shadow-2xl overflow-hidden"
+        className="bg-surface-container border-outline-variant rounded-lg shadow-2xl overflow-hidden transition-all duration-300"
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          margin: 0,
+          maxWidth: '48rem',
+          width: 'calc(100% - 2rem)',
+          maxHeight: '85vh',
+          overflow: 'auto',
+          zIndex: 51,
+        }}
+        title='Profile'
+        aria-description='Profile Dialog'
       >
         <div className="flex flex-col h-full">
           <header className="px-cozy-padding pt-cozy-padding pb-gutter bg-surface-container-high">
@@ -190,7 +211,10 @@ export function ProfileModal({
                         type="text"
                         value={formData.name}
                         onChange={e =>
-                          setFormData(prev => ({ ...prev, name: e.target.value }))
+                          setFormData(prev => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
                         }
                         disabled={isSaving}
                       />
@@ -209,7 +233,10 @@ export function ProfileModal({
                         type="email"
                         value={formData.email}
                         onChange={e =>
-                          setFormData(prev => ({ ...prev, email: e.target.value }))
+                          setFormData(prev => ({
+                            ...prev,
+                            email: e.target.value,
+                          }))
                         }
                         disabled={isSaving}
                       />
@@ -364,21 +391,8 @@ export function ProfileModal({
               </div>
             )}
           </div>
-
-          <footer className="px-cozy-padding py-compact-padding bg-surface-container-low border-t border-outline-variant flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 rounded-full bg-secondary"></div>
-              <span className="font-body-sm text-body-sm text-on-surface-variant">
-                System Online: v2.4.12-Enterprise
-              </span>
-            </div>
-            <span className="font-data-tabular text-data-tabular text-on-surface-variant">
-              UTC +00:00
-            </span>
-          </footer>
         </div>
       </DialogContent>
     </Dialog>
   )
 }
-

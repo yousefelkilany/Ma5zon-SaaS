@@ -220,7 +220,7 @@ pub async fn update_user(
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let user = stmt
-        .query_row(params![user_id], |row| {
+        .query_row(params![_user_id], |row| {
             Ok(User {
                 id: row.get(0)?,
                 name: row.get(1)?,
