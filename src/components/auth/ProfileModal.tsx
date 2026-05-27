@@ -367,9 +367,14 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                           type="text"
                           value={user?.role || ''}
                         />
-                        <span className="absolute top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant inset-s-2">
-                          lock
-                        </span>
+                        <button
+                          type="button"
+                          className="absolute inset-e-10 top-1/2 -translate-y-1/2"
+                        >
+                          <span className="absolute top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant inset-e-2">
+                            lock
+                          </span>
+                        </button>
                       </div>
                       <p className="font-body-sm text-body-sm text-on-surface-variant italic mt-1">
                         {t('profile.account.roleAdminNote')}
@@ -388,9 +393,14 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                             type="text"
                             value={t('profile.account.department')}
                           />
-                          <span className="absolute top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant inset-s-2">
-                            lock
-                          </span>
+                          <button
+                            type="button"
+                            className="absolute inset-e-10 top-1/2 -translate-y-1/2"
+                          >
+                            <span className="absolute top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant inset-e-2">
+                              lock
+                            </span>
+                          </button>
                         </div>
                       </div>
                       <div className="flex flex-col space-y-1">
@@ -404,9 +414,14 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                             type="text"
                             value={t('profile.account.location')}
                           />
-                          <span className="absolute top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant inset-s-2">
-                            lock
-                          </span>
+                          <button
+                            type="button"
+                            className="absolute inset-e-10 top-1/2 -translate-y-1/2"
+                          >
+                            <span className="absolute top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant inset-e-2">
+                              lock
+                            </span>
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -474,7 +489,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         </div>
                       )}
                     </div>
-                    <button className="absolute bottom-0 end-0 p-2 bg-secondary text-on-secondary rounded-full shadow-lg hover:bg-secondary-fixed transition-transform active:scale-95 flex items-center justify-center">
+                    <button className="absolute bottom-0 inset-e-0 p-2 bg-secondary text-on-secondary rounded-full shadow-lg hover:bg-secondary-fixed transition-transform active:scale-95 flex items-center justify-center">
                       <span className="material-symbols-outlined text-sm">
                         edit
                       </span>
@@ -587,7 +602,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         />
                         <button
                           type="button"
-                          className="absolute end-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                          className="absolute inset-e-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
                           onClick={() => setShowNewPassword(!showNewPassword)}
                         >
                           <span className="material-symbols-outlined">
