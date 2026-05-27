@@ -5,6 +5,7 @@ import type {
   PaginationState,
   SortState,
   FilterState,
+  VariantRow,
 } from '@/lib/types/entity'
 import { Toolbar } from './Toolbar'
 import { DataTable } from './DataTable'
@@ -22,6 +23,10 @@ interface DataTableShellProps {
   onSaveColumnPrefs: (columns: ColumnDef[]) => void
   onFiltersApply: (filters: FilterState[]) => void
   onExport: () => void
+  expandedRowIds?: Set<string>
+  variantsCache?: Map<string, VariantRow[]>
+  onRowToggleExpand?: (id: string) => void
+  isLoadingVariants?: (id: string) => boolean
 }
 
 const defaultPagination: PaginationState = {
@@ -40,6 +45,10 @@ export function DataTableShell({
   onSaveColumnPrefs,
   onFiltersApply,
   onExport,
+  expandedRowIds,
+  variantsCache,
+  onRowToggleExpand,
+  isLoadingVariants,
 }: DataTableShellProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sort, setSort] = useState<SortState | null>(null)
@@ -107,6 +116,10 @@ export function DataTableShell({
             onSort={handleSort}
             onRowSelect={handleRowSelect}
             onRowClick={handleRowClick}
+            expandedRowIds={expandedRowIds}
+            variantsCache={variantsCache}
+            onRowToggleExpand={onRowToggleExpand}
+            isLoadingVariants={isLoadingVariants}
           />
         </div>
       </div>
