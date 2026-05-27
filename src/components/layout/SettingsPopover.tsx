@@ -34,6 +34,8 @@ export function SettingsPopover() {
     }
   }
 
+  const isSystemLanguage = preferences?.language === null
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -111,7 +113,7 @@ export function SettingsPopover() {
             <button
               onClick={() => handleLanguageChange('en')}
               className={`flex-1 flex flex-col items-center gap-1 p-3 rounded-lg transition-all ${
-                i18n.language === 'en'
+                i18n.language === 'en' && !isSystemLanguage
                   ? 'bg-secondary text-on-secondary ring-2 ring-secondary'
                   : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
               }`}
@@ -122,7 +124,7 @@ export function SettingsPopover() {
             <button
               onClick={() => handleLanguageChange('system')}
               className={`flex-1 flex flex-col items-center gap-1 p-3 rounded-lg transition-all ${
-                i18n.language === 'system'
+                isSystemLanguage
                   ? 'bg-secondary text-on-secondary ring-2 ring-secondary'
                   : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
               }`}
