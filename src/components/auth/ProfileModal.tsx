@@ -35,6 +35,15 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
     email: '',
   })
 
+  // Password form state
+  const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' })
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [passwordErrors, setPasswordErrors] = useState({ current: '', new: '', confirm: '' })
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
+  const [passwordUpdateError, setPasswordUpdateError] = useState('')
+
   useEffect(() => {
     if (open && user) {
       setFormData({
@@ -49,6 +58,10 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
       setActiveTab('account')
       setIsSaving(false)
       setSaveSuccess(false)
+      // Also reset password form when modal closes
+      setPasswordForm({ current: '', new: '', confirm: '' })
+      setPasswordErrors({ current: '', new: '', confirm: '' })
+      setPasswordUpdateError('')
     }
   }, [open])
 
@@ -62,6 +75,68 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
       if (prevTab) setActiveTab(prevTab.id)
     }
   }
+
+const validatePassword = (): boolean => {
+  const errors = { current: '', new: '', confirm: '' }
+  let valid = true
+
+  if (!passwordForm.current) {
+    errors.current = 'Current password is required'
+    valid = false
+  }
+
+  if (!passwordForm.new) {
+    errors.new = 'New password is required'
+    valid = false
+  } else if (passwordForm.new.length < 12) {
+    errors.new = 'Password must be at least 12 characters'
+    valid = false
+  } else if (!/[A-Z]/.test(passwordForm.new)) {
+    errors.new = 'Password must contain at least one uppercase letter'
+    valid = false
+  } else if (!/[0-9]/.test(passwordForm.new)) {
+    errors.new = 'Password must contain at least one numeric digit'
+    valid = false
+  } else if (!/[@#$]/.test(passwordForm.new)) {
+    errors.new = 'Password must contain at least one special character (@, #, $)'
+    valid = false
+  }
+
+  if (passwordForm.new !== passwordForm.confirm) {
+    errors.confirm = 'Passwords do not match'
+    valid = false
+  }
+
+  setPasswordErrors(errors)
+  return valid
+}
+
+const handlePasswordUpdate = async () => {
+  if (!user) return
+  if (!validatePassword()) return
+
+  setIsUpdatingPassword(true)
+  setPasswordUpdateError('')
+
+  const result = await commands.updatePassword(user.id, passwordForm.current, passwordForm.new)
+
+  setIsUpdatingPassword(false)
+
+  if (result.status === 'error') {
+    setPasswordUpdateError(result.error || 'Failed to update password')
+    return
+  }
+
+  // Success - clear form
+  setPasswordForm({ current: '', new: '', confirm: '' })
+  setActiveTab('account')
+}
+
+const handleCancelPassword = () => {
+  setPasswordForm({ current: '', new: '', confirm: '' })
+  setPasswordErrors({ current: '', new: '', confirm: '' })
+  setPasswordUpdateError('')
+}
 
 const handleSave = async () => {
     if (!user) return
@@ -354,19 +429,156 @@ const handleSave = async () => {
                 id="security-panel"
                 role="tabpanel"
                 aria-labelledby="security-tab"
-                className="p-cozy-padding"
+                className="p-cozy-padding bg-surface-container grid grid-cols-1 md:grid-cols-12 gap-cozy-gap"
               >
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <div key={i} className="space-y-1">
-                        <Skeleton className="h-3 w-20" />
-                        <Skeleton className="h-5 w-full" />
-                      </div>
-                    ))}
+                {/* Left Panel - Password Policy & Security Status */}
+                <aside className="md:col-span-4 space-y-cozy-gap">
+                  <div className="p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
+                    <h3 className="font-headline-sm text-headline-sm text-primary mb-cozy-gap">
+                      Password Policy
+                    </h3>
+                    <ul className="space-y-3 font-body-sm text-body-sm text-on-surface-variant">
+                      <li className="flex items-start gap-2">
+                        <span className="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+                        Minimum 12 characters
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+                        One uppercase letter
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+                        One numeric digit
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+                        One special character (@, #, $)
+                      </li>
+                    </ul>
                   </div>
-                  <Skeleton className="h-24 w-full rounded-lg" />
-                </div>
+                  <div className="p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant text-center">
+                    <span className="font-label-caps text-label-caps text-on-surface-variant">Last Login: Just now</span>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">IP: 192.168.1.1</p>
+                  </div>
+                </aside>
+
+                {/* Right Panel - Password Update Form */}
+                <section className="md:col-span-8 p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
+                  <div className="mb-gutter">
+                    <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">
+                      Update Password
+                    </h2>
+                    <p className="font-body-md text-body-md text-on-surface-variant">
+                      Changing your password will log you out of all other active sessions.
+                    </p>
+                  </div>
+                  <form className="space-y-gutter" onSubmit={(e) => { e.preventDefault(); handlePasswordUpdate(); }}>
+                    {/* Current Password */}
+                    <div className="space-y-2">
+                      <label className="block font-label-caps text-label-caps text-on-surface-variant" htmlFor="current-password">
+                        Current Password
+                      </label>
+                      <div className="relative group">
+                        <input
+                          className="w-full bg-surface-container-high border border-outline-variant rounded-lg px-cozy-padding py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none pr-12"
+                          id="current-password"
+                          type={showCurrentPassword ? 'text' : 'password'}
+                          value={passwordForm.current}
+                          onChange={(e) => setPasswordForm(prev => ({ ...prev, current: e.target.value }))}
+                          disabled={isUpdatingPassword}
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                        >
+                          <span className="material-symbols-outlined">{showCurrentPassword ? 'visibility_off' : 'visibility'}</span>
+                        </button>
+                      </div>
+                      {passwordErrors.current && (
+                        <p className="font-body-sm text-error">{passwordErrors.current}</p>
+                      )}
+                    </div>
+
+                    {/* New Password */}
+                    <div className="space-y-2">
+                      <label className="block font-label-caps text-label-caps text-on-surface-variant" htmlFor="new-password">
+                        New Password
+                      </label>
+                      <div className="relative group">
+                        <input
+                          className={`w-full bg-surface-container-high border rounded-lg px-cozy-padding py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none pr-12 ${passwordErrors.new ? 'border-error' : 'border-outline-variant'}`}
+                          id="new-password"
+                          type={showNewPassword ? 'text' : 'password'}
+                          value={passwordForm.new}
+                          onChange={(e) => setPasswordForm(prev => ({ ...prev, new: e.target.value }))}
+                          disabled={isUpdatingPassword}
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                        >
+                          <span className="material-symbols-outlined">{showNewPassword ? 'visibility_off' : 'visibility'}</span>
+                        </button>
+                      </div>
+                      {passwordErrors.new && (
+                        <p className="font-body-sm text-error">{passwordErrors.new}</p>
+                      )}
+                    </div>
+
+                    {/* Confirm Password */}
+                    <div className="space-y-2">
+                      <label className="block font-label-caps text-label-caps text-on-surface-variant" htmlFor="confirm-password">
+                        Confirm New Password
+                      </label>
+                      <div className="relative group">
+                        <input
+                          className={`w-full bg-surface-container-high border rounded-lg px-cozy-padding py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none pr-12 ${passwordErrors.confirm ? 'border-error' : 'border-outline-variant'}`}
+                          id="confirm-password"
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          value={passwordForm.confirm}
+                          onChange={(e) => setPasswordForm(prev => ({ ...prev, confirm: e.target.value }))}
+                          disabled={isUpdatingPassword}
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        >
+                          <span className="material-symbols-outlined">{showConfirmPassword ? 'visibility_off' : 'visibility'}</span>
+                        </button>
+                      </div>
+                      {passwordErrors.confirm && (
+                        <p className="font-body-sm text-error">{passwordErrors.confirm}</p>
+                      )}
+                    </div>
+
+                    {passwordUpdateError && (
+                      <div className="p-compact-padding bg-error-container rounded-lg border border-error">
+                        <p className="font-body-sm text-on-error-container">{passwordUpdateError}</p>
+                      </div>
+                    )}
+
+                    <div className="pt-cozy-padding flex flex-col sm:flex-row items-center gap-gutter border-t border-outline-variant">
+                      <button
+                        className="w-full sm:w-auto px-10 py-3 bg-primary text-on-primary font-label-caps text-label-caps rounded-lg hover:bg-primary-fixed-dim active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                        type="submit"
+                        disabled={isUpdatingPassword}
+                      >
+                        {isUpdatingPassword ? 'Updating...' : 'Update Password'}
+                      </button>
+                      <button
+                        className="w-full sm:w-auto text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface transition-colors disabled:opacity-50"
+                        type="button"
+                        onClick={handleCancelPassword}
+                        disabled={isUpdatingPassword}
+                      >
+                        Cancel Changes
+                      </button>
+                    </div>
+                  </form>
+                </section>
               </div>
             )}
 
