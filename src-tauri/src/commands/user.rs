@@ -202,16 +202,16 @@ pub async fn validate_session(_app: AppHandle, user_id: String) -> Result<bool, 
 #[specta::specta]
 pub async fn update_user(
     app: AppHandle,
-    user_id: String,
+    _user_id: String,
     name: String,
-    email: String,
+    _email: String,
     avatar_url: Option<String>,
 ) -> Result<User, String> {
     let conn = init_db(&app)?;
 
     conn.execute(
         "UPDATE users SET name = ?1, avatar_url = ?2 WHERE id = ?3",
-        params![name, avatar_url, user_id],
+        params![name, avatar_url, _user_id],
     )
     .map_err(|e| format!("Failed to update user: {e}"))?;
 

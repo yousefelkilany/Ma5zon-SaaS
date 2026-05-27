@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { listen } from '@tauri-apps/api/event'
-import { useCommandContext } from './use-command-context'
 import { useKeyboardShortcuts } from './use-keyboard-shortcuts'
 import { useUIStore } from '@/store/ui-store'
 import { logger } from '@/lib/logger'
@@ -13,9 +12,7 @@ import { logger } from '@/lib/logger'
  * - Quick pane submit listener: Cross-window communication from quick pane
  */
 export function useMainWindowEventListeners() {
-  const commandContext = useCommandContext()
-
-  useKeyboardShortcuts(commandContext)
+  useKeyboardShortcuts()
 
   // Listen for quick pane submissions (cross-window event)
   useEffect(() => {

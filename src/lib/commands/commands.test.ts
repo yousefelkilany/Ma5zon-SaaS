@@ -1,5 +1,11 @@
-import { describe, it, expect, afterEach, vi } from 'vitest'
-import type { TFunction } from 'i18next'
+import {
+  describe,
+  it,
+  expect,
+  afterEach,
+  beforeEach,
+  vi,
+} from 'vitest'
 import type { CommandContext, AppCommand } from './types'
 
 const mockUIStore = {
@@ -22,15 +28,13 @@ const createMockContext = (): CommandContext => ({
   showToast: vi.fn(),
 })
 
-const mockT = ((key: string): string => key) as TFunction
-
 describe('Command System', () => {
   let mockContext: CommandContext
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockContext = createMockContext()
-    registerCommands(windowCommands)
-    registerCommands(notificationCommands)
+    await registerCommands(windowCommands)
+    await registerCommands(notificationCommands)
   })
 
   afterEach(() => {
