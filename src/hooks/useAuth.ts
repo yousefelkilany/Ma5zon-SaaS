@@ -69,7 +69,10 @@ export function useAuth() {
   // Invalidate session on app start - force re-login
   const cleanupRanRef = useRef(false);
   useEffect(() => {
-    if (cleanupRanRef.current) return;
+    if (cleanupRanRef.current) {
+      console.log('[useAuth] Skipping cleanup - already ran');
+      return;
+    }
     cleanupRanRef.current = true;
     console.log('[useAuth] App starting - invalidating any existing session');
     clearSessionData();
@@ -102,7 +105,9 @@ export function useAuth() {
   });
 
   const login = (newUserId: string, userData?: User, sessionToken?: string) => {
-    console.log('[useAuth] login called with:', newUserId, userData);
+    console.log('[useAuth] login called with:', newUserId, 'sessionToken:', sessionToken ? 'present' : 'none');
+    // Clear any existing session data first
+    clearSessionData();
     setAuthUserId(newUserId);
     setUserId(newUserId); // Update reactive state so UI updates immediately
 
@@ -118,6 +123,7 @@ export function useAuth() {
       queryClient.setQueryData(['user', newUserId], userData);
     }
     queryClient.invalidateQueries({ queryKey: ['user', newUserId] });
+    console.log('[useAuth] login complete, userId set to:', newUserId);
   };
 
   const logout = () => {
