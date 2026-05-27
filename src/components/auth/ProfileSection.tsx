@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/hooks/useAuth'
 import { LoginModal } from './LoginModal'
+import { ProfileModal } from './ProfileModal'
 
 const DEFAULT_AVATAR = new URL('@/assets/profile.png', import.meta.url).href
 
@@ -13,6 +14,7 @@ export function ProfileSection({ className }: ProfileSectionProps) {
   const { t } = useTranslation()
   const { isLoggedIn, user, login } = useAuth()
   const [loginModalOpen, setLoginModalOpen] = useState(false)
+  const [profileModalOpen, setProfileModalOpen] = useState(false)
 
   // Remove the useEffect that causes extra saveUser calls - handled in handleLoginSuccess
   // The backend sync on login is already done in handleLoginSuccess
@@ -47,6 +49,7 @@ export function ProfileSection({ className }: ProfileSectionProps) {
   return (
     <div className={`flex items-center gap-compact-gap ${className ?? ''}`}>
       <button
+        onClick={() => setProfileModalOpen(true)}
         className="flex items-center gap-2 px-3 py-1 rounded-full hover:bg-surface-container-high"
       >
         <img
@@ -59,6 +62,10 @@ export function ProfileSection({ className }: ProfileSectionProps) {
           <p className="font-label-caps text-[12px] text-on-surface-variant uppercase">{user.role}</p>
         </div>
       </button>
+      <ProfileModal
+        open={profileModalOpen}
+        onOpenChange={setProfileModalOpen}
+      />
     </div>
   )
 }
