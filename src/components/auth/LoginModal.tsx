@@ -80,16 +80,6 @@ if (result.status === 'error') {
 
     console.log(`[LoginModal] Login success for user: ${result.data[0].name}`)
 
-    if (!result.data) {
-      setFormState(prev => ({
-        ...prev,
-        error: t('auth.invalidCredentials'),
-        isLoading: false,
-      }))
-      triggerShake()
-      return
-    }
-
     setFormState(prev => ({ ...prev, isLoading: false }))
     const [user, sessionToken] = result.data
     onLoginSuccess(
