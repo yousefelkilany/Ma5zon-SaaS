@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/hooks/useAuth'
@@ -18,9 +19,9 @@ interface FormData {
 type TabId = 'account' | 'security' | 'activity'
 
 const tabs: { id: TabId; label: string }[] = [
-  { id: 'account', label: 'Account' },
-  { id: 'security', label: 'Security' },
-  { id: 'activity', label: 'Activity Logs' },
+  { id: 'account', label: t('profile.tabs.account') },
+  { id: 'security', label: t('profile.tabs.security') },
+  { id: 'activity', label: t('profile.tabs.activity') },
 ]
 
 export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
@@ -28,6 +29,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
   const queryClient = useQueryClient()
 
   const [activeTab, setActiveTab] = useState<TabId>('account')
+  const { t } = useTranslation()
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [formData, setFormData] = useState<FormData>({
@@ -107,30 +109,29 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
     let valid = true
 
     if (!passwordForm.current) {
-      errors.current = 'Current password is required'
+      errors.current = t('profile.security.validation.currentRequired')
       valid = false
     }
 
     if (!passwordForm.new) {
-      errors.new = 'New password is required'
+      errors.new = t('profile.security.validation.newRequired')
       valid = false
     } else if (passwordForm.new.length < 8) {
-      errors.new = 'Password must be at least 8 characters'
+      errors.new = t('profile.security.validation.minLength')
       valid = false
     } else if (!/[A-Z]/.test(passwordForm.new)) {
-      errors.new = 'Password must contain at least one uppercase letter'
+      errors.new = t('profile.security.validation.uppercase')
       valid = false
     } else if (!/[0-9]/.test(passwordForm.new)) {
-      errors.new = 'Password must contain at least one numeric digit'
+      errors.new = t('profile.security.validation.numeric')
       valid = false
     } else if (!/[!@#$]/.test(passwordForm.new)) {
-      errors.new =
-        'Password must contain at least one special character (!, @, #, $)'
+      errors.new = t('profile.security.validation.special')
       valid = false
     }
 
     if (passwordForm.new !== passwordForm.confirm) {
-      errors.confirm = 'Passwords do not match'
+      errors.confirm = t('profile.security.validation.noMatch')
       valid = false
     }
 
@@ -171,7 +172,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
     setIsUpdatingPassword(false)
 
     if (result.status === 'error') {
-      setPasswordUpdateError(result.error || 'Failed to update password')
+      setPasswordUpdateError(result.error || t('profile.security.validation.updateFailed'))
       return
     }
 
@@ -259,10 +260,10 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
         <div className="flex flex-col h-full">
           <header className="px-cozy-padding pt-cozy-padding pb-gutter bg-surface-container-high">
             <h1 className="font-headline-md text-headline-md text-on-surface">
-              User Profile & Security
+              {t('profile.account.header')}
             </h1>
             <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
-              Manage your enterprise account settings and security preferences.
+              {t('profile.account.description')}
             </p>
           </header>
 
@@ -307,7 +308,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         className="font-label-caps text-label-caps text-on-surface-variant px-1"
                         htmlFor="fullName"
                       >
-                        Full Name
+                        {t('profile.account.fullName')}
                       </label>
                       <input
                         className="w-full bg-surface-container-highest border border-outline-variant text-on-surface font-body-md text-body-md px-gutter py-compact-padding focus:border-secondary focus:ring-1 focus:ring-secondary transition-all outline-none"
@@ -329,7 +330,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         className="font-label-caps text-label-caps text-on-surface-variant px-1"
                         htmlFor="email"
                       >
-                        Email Address
+                        {t('profile.account.email')}
                       </label>
                       <input
                         className="w-full bg-surface-container-highest border border-outline-variant text-on-surface font-body-md text-body-md px-gutter py-compact-padding focus:border-secondary focus:ring-1 focus:ring-secondary transition-all outline-none"
@@ -351,7 +352,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         className="font-label-caps text-label-caps text-on-surface-variant px-1"
                         htmlFor="role"
                       >
-                        Enterprise Role
+                        {t('profile.account.enterpriseRole')}
                       </label>
                       <div className="relative">
                         <input
@@ -366,14 +367,14 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         </span>
                       </div>
                       <p className="font-body-sm text-body-sm text-on-surface-variant italic mt-1">
-                        Roles can only be modified by the System Administrator.
+                        {t('profile.account.roleAdminNote')}
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-gutter pt-gutter">
                       <div className="flex flex-col space-y-1">
                         <label className="font-label-caps text-label-caps text-on-surface-variant px-1">
-                          Department
+                          {t('profile.account.department')}
                         </label>
                         <div className="relative">
                           <input
@@ -389,7 +390,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                       </div>
                       <div className="flex flex-col space-y-1">
                         <label className="font-label-caps text-label-caps text-on-surface-variant px-1">
-                          Location
+                          {t('profile.account.location')}
                         </label>
                         <div className="relative">
                           <input
@@ -413,7 +414,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                       onClick={() => onOpenChange(false)}
                       disabled={isSaving}
                     >
-                      Cancel
+                      {t('profile.account.cancel')}
                     </button>
                     <button
                       className={`font-label-caps text-label-caps px-cozy-padding py-compact-padding transition-all active:scale-95 flex items-center space-x-2 ${
@@ -430,21 +431,21 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                           <span className="material-symbols-outlined text-sm animate-spin">
                             sync
                           </span>
-                          <span>Processing...</span>
+                          <span>{t('profile.account.processing')}</span>
                         </>
                       ) : saveSuccess ? (
                         <>
                           <span className="material-symbols-outlined text-sm">
                             check_circle
                           </span>
-                          <span>Saved Successfully</span>
+                          <span>{t('profile.account.savedSuccessfully')}</span>
                         </>
                       ) : (
                         <>
                           <span className="material-symbols-outlined text-sm">
                             save
                           </span>
-                          <span>Save Changes</span>
+                          <span>{t('profile.account.saveChanges')}</span>
                         </>
                       )}
                     </button>
@@ -477,10 +478,10 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
 
                   <div className="text-center">
                     <h3 className="font-headline-sm text-headline-sm text-on-surface">
-                      {user?.name || 'User'}
+                      {user?.name || t('profile.account.defaultUserName')}
                     </h3>
                     <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      {user?.role || 'Loading...'}
+                      {user?.role || t('profile.account.loading')}
                     </p>
                   </div>
                 </aside>
@@ -497,9 +498,9 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                 {/* Right Panel - Password Update Form */}
                 <section className="md:col-span-8 p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
                   <div className="mb-gutter">
-                    <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">
-                      Update Password
-                    </h2>
+<h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">
+                        {t('profile.security.updatePassword')}
+                      </h2>
                   </div>
                   <form
                     className="space-y-gutter"
@@ -514,7 +515,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         className="block font-label-caps text-label-caps text-on-surface-variant"
                         htmlFor="current-password"
                       >
-                        Current Password
+                        {t('profile.security.currentPassword')}
                       </label>
                       <div className="relative group">
                         <input
@@ -557,7 +558,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         className="block font-label-caps text-label-caps text-on-surface-variant"
                         htmlFor="new-password"
                       >
-                        New Password
+                        {t('profile.security.newPassword')}
                       </label>
                       <div className="relative group">
                         <input
@@ -602,7 +603,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         className="block font-label-caps text-label-caps text-on-surface-variant"
                         htmlFor="confirm-password"
                       >
-                        Confirm New Password
+                        {t('profile.security.confirmPassword')}
                       </label>
                       <div className="relative group">
                         <input
@@ -658,7 +659,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         type="submit"
                         disabled={isUpdatingPassword}
                       >
-                        {isUpdatingPassword ? 'Updating...' : 'Update Password'}
+                        {isUpdatingPassword ? t('profile.security.updating') : t('profile.security.updatePassword')}
                       </button>
                       <button
                         className="w-full sm:w-auto text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface transition-colors disabled:opacity-50"
@@ -666,7 +667,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         onClick={handleCancelPassword}
                         disabled={isUpdatingPassword}
                       >
-                        Cancel Changes
+                        {t('profile.security.cancelChanges')}
                       </button>
                     </div>
                   </form>
@@ -675,9 +676,9 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                 {/* Left Panel - Password Policy & Security Status */}
                 <aside className="md:col-span-4 space-y-cozy-gap">
                   <div className="p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
-                    <h3 className="font-headline-sm text-headline-sm text-primary mb-cozy-gap">
-                      Password Policy
-                    </h3>
+<h3 className="font-headline-sm text-headline-sm text-primary mb-cozy-gap">
+                        {t('profile.security.passwordPolicy')}
+                      </h3>
                     <ul className="space-y-3 font-body-sm text-body-sm text-on-surface-variant">
                       <li className="flex items-start gap-2">
                         {isNewPasswordDirty ? (
@@ -691,7 +692,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                             circle
                           </span>
                         )}
-                        Minimum 8 characters
+                        {t('profile.security.minLength')}
                       </li>
                       <li className="flex items-start gap-2">
                         {isNewPasswordDirty ? (
@@ -707,7 +708,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                             circle
                           </span>
                         )}
-                        One uppercase letter
+                        {t('profile.security.uppercase')}
                       </li>
                       <li className="flex items-start gap-2">
                         {isNewPasswordDirty ? (
@@ -721,7 +722,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                             circle
                           </span>
                         )}
-                        One numeric digit
+                        {t('profile.security.numeric')}
                       </li>
                       <li className="flex items-start gap-2">
                         {isNewPasswordDirty ? (
@@ -735,7 +736,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                             circle
                           </span>
                         )}
-                        One special character (!, @, #, $)
+                        {t('profile.security.special')}
                       </li>
                       <li className="flex items-start gap-2">
                         {isNewPasswordDirty || isConfirmPasswordDirty ? (
@@ -749,7 +750,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                             circle
                           </span>
                         )}
-                        Passwords match
+                        {t('profile.security.match')}
                       </li>
                     </ul>
                   </div>
