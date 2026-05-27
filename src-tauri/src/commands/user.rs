@@ -207,14 +207,40 @@ pub async fn delete_user(app: AppHandle, user_id: &str) -> Result<(), String> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn invalidate_session(_app: AppHandle) -> Result<(), String> {
-    Ok(())
+pub async fn validate_session(app: AppHandle, user_id: String) -> Result<bool, String> {
+    let conn = init_db(&app)?;
+
+    let mut stmt = conn
+        .prepare("SELECT session_token, expires_at FROM sessions WHERE user_id = ?1")
+        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
+
+    let session_result: Result<(String, Option<String>), _> = stmt.query_row(params![user_id], |row| {
+        Ok((row.get(0)?, row.get(1)?))
+    });
+
+    match session_result {
+        Ok((_token, expires_at)) => {
+            if let Some(expires) = expires_at {
+                let expiry = chrono::DateTime::parse_from_rfc3339(&expires)
+                    .map_err(|e| format!("Invalid expiry date: {e}"))?;
+                if chrono::Utc::now() > expiry {
+                    return Ok(false);
+                }
+            }
+            Ok(true)
+        }
+        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(false),
+        Err(e) => Err(format!("Database error: {e}")),
+    }
 }
 
 #[tauri::command]
 #[specta::specta]
-pub async fn validate_session(_app: AppHandle, user_id: String) -> Result<bool, String> {
-    Ok(true)
+pub async fn invalidate_session(app: AppHandle, user_id: String) -> Result<(), String> {
+    let conn = init_db(&app)?;
+    conn.execute("DELETE FROM sessions WHERE user_id = ?1", params![user_id])
+        .map_err(|e| format!("Failed to delete session: {e}"))?;
+    Ok(())
 }
 
 #[tauri::command]
