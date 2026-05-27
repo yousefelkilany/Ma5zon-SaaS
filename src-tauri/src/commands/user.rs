@@ -108,7 +108,7 @@ pub async fn authenticate(
     app: AppHandle,
     username: &str,
     password: &str,
-) -> Result<Option<User>, String> {
+) -> Result<Option<(User, String)>, String> {
     let conn = init_db(&app)?;
     seed_default_admin(&conn)?;
 
@@ -130,12 +130,20 @@ pub async fn authenticate(
         Ok(user) => {
             if let Some(ref hash) = user.password_hash {
                 if verify_password(password, hash)? {
-                    Ok(Some(User {
+                    let session_token = uuid::Uuid::new_v4().to_string();
+                    let created_at = chrono::Utc::now().to_rfc3339();
+
+                    conn.execute(
+                        "INSERT OR REPLACE INTO sessions (user_id, session_token, created_at) VALUES (?1, ?2, ?3)",
+                        params![user.id, session_token, created_at],
+                    ).map_err(|e| format!("Failed to create session: {e}"))?;
+
+                    Ok(Some((User {
                         id: user.id,
                         name: user.name,
                         role: user.role,
                         avatar_url: user.avatar_url,
-                    }))
+                    }, session_token)))
                 } else {
                     Ok(None)
                 }

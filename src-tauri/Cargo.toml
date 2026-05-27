@@ -37,6 +37,7 @@ regex = "1"
 argon2 = { version = "0.5", features = ["rand"] }
 rand = "0.8"
 uuid = { version = "1", features = ["v4"] }
+chrono = "0.4"
 
 # Type-safe Tauri command bindings
 specta = { version = "=2.0.0-rc.22", features = ["derive", "serde_json"] }
