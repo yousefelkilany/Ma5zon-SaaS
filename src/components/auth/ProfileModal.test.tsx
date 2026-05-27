@@ -46,14 +46,13 @@ describe('ProfileModal', () => {
     expect(screen.getByRole('button', { name: /Save Changes/ })).toBeInTheDocument()
   })
 
-  it('shows system status in footer', () => {
+  it('shows last login in security tab', () => {
     render(
       <ProfileModal
         open={true}
         onOpenChange={() => {}}
       />
     )
-    expect(screen.getByText(/System Online/)).toBeInTheDocument()
-    expect(screen.getByText(/UTC/)).toBeInTheDocument()
+    expect(screen.getByText(/Last Login/)).toBeInTheDocument()
   })
 })
