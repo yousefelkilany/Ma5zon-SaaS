@@ -9,5 +9,6 @@ pub mod prices;
 pub mod products;
 pub mod quick_pane;
 pub mod recovery;
+pub mod schema;
 pub mod user;
 pub mod variants;
