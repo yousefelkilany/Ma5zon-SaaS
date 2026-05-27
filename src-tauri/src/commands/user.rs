@@ -185,3 +185,50 @@ pub async fn delete_user(app: AppHandle, user_id: &str) -> Result<(), String> {
 
     Ok(())
 }
+
+#[tauri::command]
+#[specta::specta]
+pub async fn invalidate_session(_app: AppHandle) -> Result<(), String> {
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn validate_session(_app: AppHandle, user_id: String) -> Result<bool, String> {
+    Ok(true)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn update_user(
+    app: AppHandle,
+    user_id: String,
+    name: String,
+    email: String,
+    avatar_url: Option<String>,
+) -> Result<User, String> {
+    let conn = init_db(&app)?;
+
+    conn.execute(
+        "UPDATE users SET name = ?1, avatar_url = ?2 WHERE id = ?3",
+        params![name, avatar_url, user_id],
+    )
+    .map_err(|e| format!("Failed to update user: {e}"))?;
+
+    let mut stmt = conn
+        .prepare("SELECT id, name, role, avatar_url FROM users WHERE id = ?1")
+        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
+
+    let user = stmt
+        .query_row(params![user_id], |row| {
+            Ok(User {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                role: row.get(2)?,
+                avatar_url: row.get(3)?,
+            })
+        })
+        .map_err(|e| format!("Failed to get updated user: {e}"))?;
+
+    Ok(user)
+}
