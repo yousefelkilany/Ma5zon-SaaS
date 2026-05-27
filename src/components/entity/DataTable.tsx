@@ -6,9 +6,10 @@ import {
   flexRender,
   type ColumnDef as TanstackColumnDef,
 } from '@tanstack/react-table'
-import type { ColumnDef, EntityRow, DataTableProps } from '@/lib/types/entity'
+import type { ColumnDef, EntityRow, DataTableProps, VariantRow } from '@/lib/types/entity'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsRTL } from '@/hooks/user-is-rtl'
+import { VariantsSubTable } from './VariantsSubTable'
 
 function StatusBadge({ status }: { status: string }) {
   const badgeClass =
@@ -51,6 +52,13 @@ function DataCell({ column, value }: { column: ColumnDef; value: unknown }) {
   return <span>{String(value)}</span>
 }
 
+interface ExpandedRowProps {
+  expandedRowIds?: Set<string>
+  variantsCache?: Map<string, VariantRow[]>
+  onRowToggleExpand?: (id: string) => void
+  isLoadingVariants?: (id: string) => boolean
+}
+
 export function DataTable({
   columns,
   data,
@@ -60,7 +68,11 @@ export function DataTable({
   onSort,
   onRowSelect,
   onRowClick,
-}: DataTableProps) {
+  expandedRowIds,
+  variantsCache,
+  onRowToggleExpand,
+  isLoadingVariants,
+}: DataTableProps & ExpandedRowProps) {
   const { t } = useTranslation()
   const visibleColumns = useMemo(
     () => columns.filter(col => col.visible).sort((a, b) => a.order - b.order),
@@ -93,6 +105,25 @@ export function DataTable({
             onChange={row.getToggleSelectedHandler()}
             onClick={e => e.stopPropagation()}
           />
+        ),
+      },
+      {
+        id: 'expand',
+        size: 40,
+        enableResizing: false,
+        header: () => null,
+        cell: ({ row }) => (
+          <button
+            className="p-1 hover:bg-surface-bright rounded transition-colors"
+            onClick={(e) => {
+              e.stopPropagation()
+              onRowToggleExpand?.(row.original.id)
+            }}
+          >
+            <span className={`material-symbols-outlined text-[18px] text-on-surface-variant transition-transform ${expandedRowIds?.has(row.original.id) ? 'rotate-90' : ''}`}>
+              chevron_right
+            </span>
+          </button>
         ),
       },
       ...visibleColumns.map(col => ({
@@ -145,7 +176,7 @@ export function DataTable({
         ),
       },
     ],
-    [visibleColumns]
+    [visibleColumns, expandedRowIds, onRowToggleExpand]
   )
 
   const table = useReactTable({
@@ -206,6 +237,9 @@ export function DataTable({
               <th className="px-3 py-3 font-medium border-r border-outline-variant w-10">
                 <Skeleton className="h-4 w-4" />
               </th>
+              <th className="px-3 py-3 font-medium border-r border-outline-variant w-10">
+                <Skeleton className="h-4 w-4" />
+              </th>
               {visibleColumns.map(col => (
                 <th
                   key={col.id}
@@ -222,6 +256,9 @@ export function DataTable({
           <tbody className="font-body-sm text-body-sm">
             {Array.from({ length: 8 }).map((_, rowIndex) => (
               <tr key={rowIndex} className="border-b border-outline-variant/30">
+                <td className="px-3 py-2">
+                  <Skeleton className="h-4 w-4" />
+                </td>
                 <td className="px-3 py-2">
                   <Skeleton className="h-4 w-4" />
                 </td>
@@ -267,7 +304,7 @@ export function DataTable({
                             onMouseDown={header.getResizeHandler()}
                             onTouchStart={header.getResizeHandler()}
                             onClick={e => e.stopPropagation()}
-                            className={`absolute top-0 h-full w-4 cursor-col-resize touch-none flex items-center justify-center 
+                            className={`absolute top-0 h-full w-4 cursor-col-resize touch-none flex items-center justify-center
                               ${isRTLlayout ? 'inset-e-0' : 'inset-s-0'}
                             `}
                           >
@@ -307,32 +344,44 @@ export function DataTable({
           </thead>
           <tbody className="divide-y divide-outline-variant">
             {table.getRowModel().rows.map(row => (
-              <tr
-                key={row.id}
-                className="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
-              >
-                {row.getVisibleCells().map(cell => {
-                  const columnDef = columns.find(c => c.id === cell.column.id)
-                  const isNameCol = columnDef?.isNameColumn
-                  return (
-                    <td
-                      key={cell.id}
-                      className={`px-compact-padding py-2 text-on-surface ${isNameCol ? 'cursor-pointer hover:bg-surface-container-highest' : ''}`}
-                      style={{ width: cell.column.getSize() }}
-                      onClick={
-                        isNameCol
-                          ? () => onRowClick(row.original.id, row.original)
-                          : undefined
-                      }
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+              <>
+                <tr
+                  key={row.id}
+                  className="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
+                >
+                  {row.getVisibleCells().map(cell => {
+                    const columnDef = columns.find(c => c.id === cell.column.id)
+                    const isNameCol = columnDef?.isNameColumn
+                    return (
+                      <td
+                        key={cell.id}
+                        className={`px-compact-padding py-2 text-on-surface ${isNameCol ? 'cursor-pointer hover:bg-surface-container-highest' : ''}`}
+                        style={{ width: cell.column.getSize() }}
+                        onClick={
+                          isNameCol
+                            ? () => onRowClick(row.original.id, row.original)
+                            : undefined
+                        }
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    )
+                  })}
+                </tr>
+                {expandedRowIds?.has(row.original.id) && (
+                  <tr key={`${row.id}-detail`}>
+                    <td colSpan={columns.length + 2} className="p-0">
+                      <VariantsSubTable
+                        variants={variantsCache?.get(row.original.id) ?? []}
+                        isLoading={isLoadingVariants?.(row.original.id)}
+                      />
                     </td>
-                  )
-                })}
-              </tr>
+                  </tr>
+                )}
+              </>
             ))}
           </tbody>
         </table>
