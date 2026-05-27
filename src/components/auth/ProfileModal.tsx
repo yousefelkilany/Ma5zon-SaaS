@@ -18,18 +18,18 @@ interface FormData {
 
 type TabId = 'account' | 'security' | 'activity'
 
-const tabs: { id: TabId; label: string }[] = [
-  { id: 'account', label: t('profile.tabs.account') },
-  { id: 'security', label: t('profile.tabs.security') },
-  { id: 'activity', label: t('profile.tabs.activity') },
-]
-
 export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
   const { user } = useAuth()
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
+
+  const tabsWithLabels: { id: TabId; label: string }[] = [
+    { id: 'account', label: t('profile.tabs.account') },
+    { id: 'security', label: t('profile.tabs.security') },
+    { id: 'activity', label: t('profile.tabs.activity') },
+  ]
 
   const [activeTab, setActiveTab] = useState<TabId>('account')
-  const { t } = useTranslation()
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [formData, setFormData] = useState<FormData>({
@@ -94,12 +94,12 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
   }, [open])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    const currentIndex = tabs.findIndex(tab => tab.id === activeTab)
+    const currentIndex = tabsWithLabels.findIndex(tab => tab.id === activeTab)
     if (e.key === 'ArrowRight') {
-      const nextTab = tabs[(currentIndex + 1) % tabs.length]
+      const nextTab = tabsWithLabels[(currentIndex + 1) % tabsWithLabels.length]
       if (nextTab) setActiveTab(nextTab.id)
     } else if (e.key === 'ArrowLeft') {
-      const prevTab = tabs[(currentIndex - 1 + tabs.length) % tabs.length]
+      const prevTab = tabsWithLabels[(currentIndex - 1 + tabsWithLabels.length) % tabsWithLabels.length]
       if (prevTab) setActiveTab(prevTab.id)
     }
   }
@@ -272,7 +272,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
             role="tablist"
             onKeyDown={handleKeyDown}
           >
-            {tabs.map(tab => (
+            {tabsWithLabels.map(tab => (
               <button
                 key={tab.id}
                 id={`${tab.id}-tab`}
