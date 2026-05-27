@@ -151,7 +151,7 @@ export function LoginModal({
                     className="w-full bg-surface-container-lowest border border-outline-variant text-on-surface px-4 py-3 rounded focus:ring-2 focus:ring-secondary focus:border-transparent transition-all outline-none text-body-md placeholder:text-on-surface-variant/30"
                     id="username"
                     name="username"
-                    placeholder="e.g. j.smith"
+                    placeholder={t('auth.usernamePlaceholder')}
                     required
                     type="text"
                     value={username}
@@ -178,7 +178,7 @@ export function LoginModal({
                     className="w-full bg-surface-container-lowest border border-outline-variant text-on-surface px-4 py-3 pr-12 rounded focus:ring-2 focus:ring-secondary focus:border-transparent transition-all outline-none text-body-md placeholder:text-on-surface-variant/30"
                     id="password"
                     name="password"
-                    placeholder="••••••••"
+                    placeholder={t('auth.passwordPlaceholder')}
                     required
                     type={showPassword ? 'text' : 'password'}
                     value={password}
