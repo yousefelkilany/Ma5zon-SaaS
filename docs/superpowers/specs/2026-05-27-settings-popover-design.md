@@ -18,13 +18,13 @@ A lightweight settings popover attached to the gear icon in the Navbar, providin
 
 ```
 ┌─────────────────────────────┐
-│  Theme                       │
-│  [☀️] [🌙] [💻]              │
-│  (selected has ring/bg)      │
-│                              │
-│  Language                    │
-│  [EN] [عربي] [💻]            │
-│  (selected has ring/bg)      │
+│  Theme                      │
+│  [☀️] [🌙] [💻]             │
+│  (selected has ring/bg)     │
+│                             │
+│  Language                   │
+│  [عربي] [EN] [💻]            │
+│  (selected has ring/bg)     │
 └─────────────────────────────┘
 ```
 
