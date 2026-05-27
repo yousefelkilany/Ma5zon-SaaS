@@ -67,7 +67,10 @@ export function useAuth() {
   }, []);
 
   // Invalidate session on app start - force re-login
+  const cleanupRanRef = useRef(false);
   useEffect(() => {
+    if (cleanupRanRef.current) return;
+    cleanupRanRef.current = true;
     console.log('[useAuth] App starting - invalidating any existing session');
     clearSessionData();
     setUserId(null);
