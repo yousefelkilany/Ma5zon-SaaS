@@ -38,6 +38,12 @@ export function FilterDialog({
 
   const filterableColumns = columns.filter(col => col.filterable && col.visible)
 
+  const statusOptions = [
+    { value: 'paid', label: t('entity.filter.statusPaid') },
+    { value: 'overdue', label: t('entity.filter.statusOverdue') },
+    { value: 'draft', label: t('entity.filter.statusDraft') },
+  ]
+
   const handleClearAll = () => {
     onApply([])
     onOpenChange(false)
@@ -75,7 +81,7 @@ export function FilterDialog({
                   <input
                     type="number"
                     aria-label={`${col.label} minimum`}
-                    placeholder="Min"
+                    placeholder={t('entity.filter.min')}
                     value={getNumberFilter(col.id).min ?? ''}
                     onChange={e => setLocalFilters(prev => ({
                       ...prev,
@@ -86,7 +92,7 @@ export function FilterDialog({
                   <input
                     type="number"
                     aria-label={`${col.label} maximum`}
-                    placeholder="Max"
+                    placeholder={t('entity.filter.max')}
                     value={getNumberFilter(col.id).max ?? ''}
                     onChange={e => setLocalFilters(prev => ({
                       ...prev,
@@ -98,22 +104,22 @@ export function FilterDialog({
               )}
               {col.type === 'status' && (
                 <div className="flex gap-2">
-                  {['Paid', 'Overdue', 'Draft'].map(status => (
-                    <label key={status} className="flex items-center gap-2">
+                  {statusOptions.map(option => (
+                    <label key={option.value} className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        id={`${col.id}-${status}`}
-                        checked={getStatusFilter(col.id).includes(status)}
+                        id={`${col.id}-${option.value}`}
+                        checked={getStatusFilter(col.id).includes(option.value)}
                         onChange={e => {
                           const currentStatuses = getStatusFilter(col.id)
                           const newStatuses = e.target.checked
-                            ? [...currentStatuses, status]
-                            : currentStatuses.filter(s => s !== status)
+                            ? [...currentStatuses, option.value]
+                            : currentStatuses.filter(s => s !== option.value)
                           setLocalFilters(prev => ({ ...prev, [col.id]: newStatuses }))
                         }}
                         className="w-4 h-4"
                       />
-                      <span className="text-body-sm text-on-surface">{status}</span>
+                      <span className="text-body-sm text-on-surface">{option.label}</span>
                     </label>
                   ))}
                 </div>
@@ -133,13 +139,13 @@ export function FilterDialog({
         </div>
         <DialogFooter className="flex justify-between">
           <Button variant="ghost" onClick={handleClearAll}>
-            Clear All
+            {t('entity.filter.clearAll')}
           </Button>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t('entity.filter.cancel')}
             </Button>
-            <Button onClick={handleApply}>Apply Filters</Button>
+            <Button onClick={handleApply}>{t('entity.filter.apply')}</Button>
           </div>
         </DialogFooter>
       </DialogContent>
