@@ -8,6 +8,11 @@ interface ProfileModalProps {
   onOpenChange: (open: boolean) => void
 }
 
+interface FormData {
+  name: string
+  email: string
+}
+
 type TabId = 'account' | 'security' | 'activity'
 
 const tabs: { id: TabId; label: string }[] = [
@@ -25,7 +30,7 @@ export function ProfileModal({
   const [activeTab, setActiveTab] = useState<TabId>('account')
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
   })
@@ -34,7 +39,7 @@ export function ProfileModal({
     if (open && user) {
       setFormData({
         name: user.name,
-        email: user.name.split(' ')[0].toLowerCase() + '@acculedger.erp',
+        email: 'user@example.com',
       })
     }
   }, [open, user])
@@ -75,19 +80,7 @@ export function ProfileModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="bg-surface-container border-outline-variant rounded-lg shadow-2xl overflow-hidden"
-        style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          margin: 0,
-          maxWidth: '48rem',
-          width: 'calc(100% - 2rem)',
-          maxHeight: '85vh',
-          overflow: 'auto',
-          zIndex: 51,
-        }}
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 m-0 max-w-5xl w-[calc(100%-2rem)] max-h-[85vh] overflow-auto z-[51] bg-surface-container border-outline-variant rounded-lg shadow-2xl overflow-hidden"
       >
         <div className="flex flex-col h-full">
           <header className="px-cozy-padding pt-cozy-padding pb-gutter bg-surface-container-high">
@@ -249,7 +242,7 @@ export function ProfileModal({
                             className="w-full bg-surface-container-low border border-outline-variant text-on-surface-variant font-body-md text-body-md px-gutter py-compact-padding cursor-not-allowed opacity-75"
                             disabled
                             type="text"
-                            value="Treasury & Risk"
+                            value="Department"
                           />
                           <span className="absolute right-gutter top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant">
                             lock
@@ -265,7 +258,7 @@ export function ProfileModal({
                             className="w-full bg-surface-container-low border border-outline-variant text-on-surface-variant font-body-md text-body-md px-gutter py-compact-padding cursor-not-allowed opacity-75"
                             disabled
                             type="text"
-                            value="London HQ (Zone A)"
+                            value="Location"
                           />
                           <span className="absolute right-gutter top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant">
                             lock
@@ -382,4 +375,3 @@ export function ProfileModal({
   )
 }
 
-export default ProfileModal
