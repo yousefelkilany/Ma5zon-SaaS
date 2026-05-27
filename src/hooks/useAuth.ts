@@ -51,53 +51,27 @@ export function useAuth() {
     };
 }, []);
 
-  // Session validation on mount - clear stale credentials
+  // Clear any persisted session on app start - force re-login
   useEffect(() => {
-    let aborted = false;
-    const storedUserId = getAuthUserId();
-    const storedToken = localStorage.getItem('session_token');
-    console.log('[useAuth] Validating session on mount, userId:', storedUserId, 'token:', storedToken);
-    if (storedUserId) {
-      commands.validateSession(storedUserId, storedToken).then(result => {
-        if (aborted) return;
-        console.log('[useAuth] validateSession result:', result);
-        if (result.status === 'error' || result.data === false) {
-          console.log('[useAuth] Session invalid, clearing auth state');
-          setAuthUserId(null);
-          setUserId(null);
-          localStorage.removeItem(`user_${storedUserId}`);
-          localStorage.removeItem('session_token');
-        } else {
-          console.log('[useAuth] Session valid, keeping logged in');
-        }
-      }).catch((err) => {
-        if (aborted) return;
-        console.log('[useAuth] validateSession error:', err);
-        setAuthUserId(null);
-        setUserId(null);
-        localStorage.removeItem('session_token');
-      });
+    console.log('[useAuth] App starting - clearing any persisted session');
+    setAuthUserId(null);
+    setUserId(null);
+    localStorage.removeItem('auth_user_id');
+    localStorage.removeItem('session_token');
+    // Clear any stored user data
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('user_')) {
+        keysToRemove.push(key);
+      }
     }
-    return () => { aborted = true; };
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    console.log('[useAuth] Cleared all persisted session data');
   }, []);
 
-  // Session invalidation on unload
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      const currentUserId = getAuthUserId();
-      const currentToken = localStorage.getItem('session_token');
-      console.log('[useAuth] beforeunload - userId:', currentUserId, 'token:', currentToken);
-      if (currentUserId) {
-        commands.invalidateSession(currentUserId).then(result => {
-          console.log('[useAuth] invalidateSession result:', result);
-        }).catch((err) => {
-          console.log('[useAuth] invalidateSession error:', err);
-        });
-      }
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, []);
+  // Session invalidation on app close is handled by clearing on next app start
+  // No need to track sessions - just clear everything on app launch
 
   const userQuery = useQuery({
     queryKey: ['user', userId],
