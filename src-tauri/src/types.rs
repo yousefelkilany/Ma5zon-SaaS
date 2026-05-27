@@ -93,6 +93,68 @@ pub struct User {
 }
 
 // ============================================================================
+// Products & Variants
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct Product {
+    pub id: i64,
+    pub name: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct Variant {
+    pub id: i64,
+    pub product_id: i64,
+    pub sku: String,
+    pub variant_name: String,
+    pub uom_id: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct VariantPrice {
+    pub variant_id: i64,
+    pub price_list_id: i64,
+    pub price: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct TableLayout {
+    pub table_name: String,
+    pub columns: Vec<ColumnDefRust>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct ColumnDefRust {
+    pub id: String,
+    pub name: String,
+    pub col_type: String,
+    pub width: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct NewVariant {
+    pub product_id: i64,
+    pub sku: String,
+    pub variant_name: String,
+    pub uom_id: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct UpdateVariant {
+    pub sku: Option<String>,
+    pub variant_name: Option<String>,
+    pub uom_id: Option<i64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct NewVariantPrice {
+    pub variant_id: i64,
+    pub price_list_id: i64,
+    pub price: f64,
+}
+
+// ============================================================================
 // Validation Functions
 // ============================================================================
 
