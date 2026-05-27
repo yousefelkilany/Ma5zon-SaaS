@@ -183,22 +183,6 @@ async authenticate(username: string, password: string) : Promise<Result<[User, s
     else return { status: "error", error: e  as any };
 }
 },
-async invalidateSession(userId: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("invalidate_session", { userId }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async validateSession(userId: string) : Promise<Result<boolean, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("validate_session", { userId }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
 async updateUser(userId: string, name: string, email: string, avatarUrl: string | null) : Promise<Result<User, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("update_user", { userId, name, email, avatarUrl }) };

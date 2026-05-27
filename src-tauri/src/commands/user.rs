@@ -32,8 +32,7 @@ fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
 
 fn init_db(app: &AppHandle) -> Result<Connection, String> {
     let db_path = get_db_path(app)?;
-    let conn = Connection::open(&db_path)
-        .map_err(|e| format!("Failed to open database: {e}"))?;
+    let conn = Connection::open(&db_path).map_err(|e| format!("Failed to open database: {e}"))?;
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS users (
@@ -138,12 +137,15 @@ pub async fn authenticate(
                         params![user.id, session_token, created_at],
                     ).map_err(|e| format!("Failed to create session: {e}"))?;
 
-                    Ok(Some((User {
-                        id: user.id,
-                        name: user.name,
-                        role: user.role,
-                        avatar_url: user.avatar_url,
-                    }, session_token)))
+                    Ok(Some((
+                        User {
+                            id: user.id,
+                            name: user.name,
+                            role: user.role,
+                            avatar_url: user.avatar_url,
+                        },
+                        session_token,
+                    )))
                 } else {
                     Ok(None)
                 }
@@ -207,61 +209,6 @@ pub async fn delete_user(app: AppHandle, user_id: &str) -> Result<(), String> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn validate_session(app: AppHandle, user_id: String, client_token: Option<String>) -> Result<bool, String> {
-    log::info!("[validate_session] Called with user_id: {}, client_token: {:?}", user_id, client_token);
-    let conn = init_db(&app)?;
-
-    let mut stmt = conn
-        .prepare("SELECT session_token, expires_at FROM sessions WHERE user_id = ?1")
-        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
-
-    let session_result: Result<(String, Option<String>), _> = stmt.query_row(params![user_id], |row| {
-        Ok((row.get(0)?, row.get(1)?))
-    });
-
-    match session_result {
-        Ok((db_token, expires_at)) => {
-            log::info!("[validate_session] Found session in DB, token: {}, expires_at: {:?}", db_token, expires_at);
-            // If client_token was provided, verify it matches the DB token
-            if let Some(ref client_t) = client_token {
-                log::info!("[validate_session] Comparing client_token: {} vs db_token: {}", client_t, db_token);
-                if client_t != &db_token {
-                    log::info!("[validate_session] Token mismatch - session is invalid!");
-                    return Ok(false);
-                }
-            }
-            if let Some(expires) = expires_at {
-                let expiry = chrono::DateTime::parse_from_rfc3339(&expires)
-                    .map_err(|e| format!("Invalid expiry date: {e}"))?;
-                if chrono::Utc::now() > expiry {
-                    log::info!("[validate_session] Session expired!");
-                    return Ok(false);
-                }
-            }
-            log::info!("[validate_session] Session is valid!");
-            Ok(true)
-        }
-        Err(rusqlite::Error::QueryReturnedNoRows) => {
-            log::info!("[validate_session] No session found in DB for user_id: {}", user_id);
-            Ok(false)
-        }
-        Err(e) => Err(format!("Database error: {e}")),
-    }
-}
-
-#[tauri::command]
-#[specta::specta]
-pub async fn invalidate_session(app: AppHandle, user_id: String) -> Result<(), String> {
-    log::info!("[invalidate_session] Called with user_id: {}", user_id);
-    let conn = init_db(&app)?;
-    let deleted = conn.execute("DELETE FROM sessions WHERE user_id = ?1", params![user_id])
-        .map_err(|e| format!("Failed to delete session: {e}"))?;
-    log::info!("[invalidate_session] Deleted {} rows", deleted);
-    Ok(())
-}
-
-#[tauri::command]
-#[specta::specta]
 pub async fn update_password(
     app: AppHandle,
     user_id: String,
@@ -274,9 +221,7 @@ pub async fn update_password(
         .prepare("SELECT password_hash FROM users WHERE id = ?1")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
-    let password_hash: Option<String> = stmt
-        .query_row(params![user_id], |row| row.get(0))
-        .ok();
+    let password_hash: Option<String> = stmt.query_row(params![user_id], |row| row.get(0)).ok();
 
     match password_hash {
         Some(hash) => {

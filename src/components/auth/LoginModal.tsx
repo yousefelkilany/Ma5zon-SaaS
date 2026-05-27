@@ -58,6 +58,8 @@ export function LoginModal({
         error: t('auth.authenticationFailed'),
         isLoading: false,
       }))
+      console.error(`${JSON.stringify(result)}`)
+      console.error(`${result.status}`)
       triggerShake()
       return
     }

@@ -36,11 +36,19 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
   })
 
   // Password form state
-  const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' })
+  const [passwordForm, setPasswordForm] = useState({
+    current: '',
+    new: '',
+    confirm: '',
+  })
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [passwordErrors, setPasswordErrors] = useState({ current: '', new: '', confirm: '' })
+  const [passwordErrors, setPasswordErrors] = useState({
+    current: '',
+    new: '',
+    confirm: '',
+  })
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
   const [passwordUpdateError, setPasswordUpdateError] = useState('')
 
@@ -76,74 +84,84 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
     }
   }
 
-const validatePassword = (): boolean => {
-  const errors = { current: '', new: '', confirm: '' }
-  let valid = true
+  const validatePassword = (): boolean => {
+    const errors = { current: '', new: '', confirm: '' }
+    let valid = true
 
-  if (!passwordForm.current) {
-    errors.current = 'Current password is required'
-    valid = false
+    if (!passwordForm.current) {
+      errors.current = 'Current password is required'
+      valid = false
+    }
+
+    if (!passwordForm.new) {
+      errors.new = 'New password is required'
+      valid = false
+    } else if (passwordForm.new.length < 12) {
+      errors.new = 'Password must be at least 12 characters'
+      valid = false
+    } else if (!/[A-Z]/.test(passwordForm.new)) {
+      errors.new = 'Password must contain at least one uppercase letter'
+      valid = false
+    } else if (!/[0-9]/.test(passwordForm.new)) {
+      errors.new = 'Password must contain at least one numeric digit'
+      valid = false
+    } else if (!/[@#$]/.test(passwordForm.new)) {
+      errors.new =
+        'Password must contain at least one special character (@, #, $)'
+      valid = false
+    }
+
+    if (passwordForm.new !== passwordForm.confirm) {
+      errors.confirm = 'Passwords do not match'
+      valid = false
+    }
+
+    setPasswordErrors(errors)
+    return valid
   }
 
-  if (!passwordForm.new) {
-    errors.new = 'New password is required'
-    valid = false
-  } else if (passwordForm.new.length < 12) {
-    errors.new = 'Password must be at least 12 characters'
-    valid = false
-  } else if (!/[A-Z]/.test(passwordForm.new)) {
-    errors.new = 'Password must contain at least one uppercase letter'
-    valid = false
-  } else if (!/[0-9]/.test(passwordForm.new)) {
-    errors.new = 'Password must contain at least one numeric digit'
-    valid = false
-  } else if (!/[@#$]/.test(passwordForm.new)) {
-    errors.new = 'Password must contain at least one special character (@, #, $)'
-    valid = false
+  const handlePasswordUpdate = async () => {
+    if (!user) return
+    if (!validatePassword()) return
+
+    setIsUpdatingPassword(true)
+    setPasswordUpdateError('')
+
+    const result = await commands.updatePassword(
+      user.id,
+      passwordForm.current,
+      passwordForm.new
+    )
+
+    setIsUpdatingPassword(false)
+
+    if (result.status === 'error') {
+      setPasswordUpdateError(result.error || 'Failed to update password')
+      return
+    }
+
+    // Success - clear form
+    setPasswordForm({ current: '', new: '', confirm: '' })
+    setActiveTab('account')
   }
 
-  if (passwordForm.new !== passwordForm.confirm) {
-    errors.confirm = 'Passwords do not match'
-    valid = false
+  const handleCancelPassword = () => {
+    setPasswordForm({ current: '', new: '', confirm: '' })
+    setPasswordErrors({ current: '', new: '', confirm: '' })
+    setPasswordUpdateError('')
   }
 
-  setPasswordErrors(errors)
-  return valid
-}
-
-const handlePasswordUpdate = async () => {
-  if (!user) return
-  if (!validatePassword()) return
-
-  setIsUpdatingPassword(true)
-  setPasswordUpdateError('')
-
-  const result = await commands.updatePassword(user.id, passwordForm.current, passwordForm.new)
-
-  setIsUpdatingPassword(false)
-
-  if (result.status === 'error') {
-    setPasswordUpdateError(result.error || 'Failed to update password')
-    return
-  }
-
-  // Success - clear form
-  setPasswordForm({ current: '', new: '', confirm: '' })
-  setActiveTab('account')
-}
-
-const handleCancelPassword = () => {
-  setPasswordForm({ current: '', new: '', confirm: '' })
-  setPasswordErrors({ current: '', new: '', confirm: '' })
-  setPasswordUpdateError('')
-}
-
-const handleSave = async () => {
+  const handleSave = async () => {
     if (!user) return
     setIsSaving(true)
     setSaveSuccess(false)
 
-    const result = await commands.updateUser(user.id, formData.name, formData.email, user.avatar_url)
+    const result = await commands.updateUser(
+      user.id,
+      formData.name,
+      formData.email,
+      user.avatar_url
+    )
 
     if (result.status === 'error') {
       setIsSaving(false)
@@ -182,8 +200,8 @@ const handleSave = async () => {
           overflow: 'auto',
           zIndex: 51,
         }}
-        title='Profile'
-        aria-description='Profile Dialog'
+        title="Profile"
+        aria-description="Profile Dialog"
       >
         <div className="flex flex-col h-full">
           <header className="px-cozy-padding pt-cozy-padding pb-gutter bg-surface-container-high">
@@ -260,14 +278,6 @@ const handleSave = async () => {
                     <p className="font-body-sm text-body-sm text-on-surface-variant">
                       {user?.role || 'Loading...'}
                     </p>
-                  </div>
-
-                  <div className="w-full pt-gutter">
-                    <div className="p-compact-padding bg-surface-container-low border border-outline-variant text-center">
-                      <span className="font-label-caps text-label-caps text-on-surface-variant">
-                        Last Login: Just now
-                      </span>
-                    </div>
                   </div>
                 </aside>
 
@@ -439,26 +449,30 @@ const handleSave = async () => {
                     </h3>
                     <ul className="space-y-3 font-body-sm text-body-sm text-on-surface-variant">
                       <li className="flex items-start gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+                        <span className="material-symbols-outlined text-secondary text-[18px]">
+                          check_circle
+                        </span>
                         Minimum 12 characters
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+                        <span className="material-symbols-outlined text-secondary text-[18px]">
+                          check_circle
+                        </span>
                         One uppercase letter
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+                        <span className="material-symbols-outlined text-secondary text-[18px]">
+                          check_circle
+                        </span>
                         One numeric digit
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
+                        <span className="material-symbols-outlined text-secondary text-[18px]">
+                          check_circle
+                        </span>
                         One special character (@, #, $)
                       </li>
                     </ul>
-                  </div>
-                  <div className="p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant text-center">
-                    <span className="font-label-caps text-label-caps text-on-surface-variant">Last Login: Just now</span>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">IP: 192.168.1.1</p>
                   </div>
                 </aside>
 
@@ -468,14 +482,20 @@ const handleSave = async () => {
                     <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">
                       Update Password
                     </h2>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      Changing your password will log you out of all other active sessions.
-                    </p>
                   </div>
-                  <form className="space-y-gutter" onSubmit={(e) => { e.preventDefault(); handlePasswordUpdate(); }}>
+                  <form
+                    className="space-y-gutter"
+                    onSubmit={e => {
+                      e.preventDefault()
+                      handlePasswordUpdate()
+                    }}
+                  >
                     {/* Current Password */}
                     <div className="space-y-2">
-                      <label className="block font-label-caps text-label-caps text-on-surface-variant" htmlFor="current-password">
+                      <label
+                        className="block font-label-caps text-label-caps text-on-surface-variant"
+                        htmlFor="current-password"
+                      >
                         Current Password
                       </label>
                       <div className="relative group">
@@ -484,25 +504,41 @@ const handleSave = async () => {
                           id="current-password"
                           type={showCurrentPassword ? 'text' : 'password'}
                           value={passwordForm.current}
-                          onChange={(e) => setPasswordForm(prev => ({ ...prev, current: e.target.value }))}
+                          onChange={e =>
+                            setPasswordForm(prev => ({
+                              ...prev,
+                              current: e.target.value,
+                            }))
+                          }
                           disabled={isUpdatingPassword}
                         />
                         <button
                           type="button"
                           className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
-                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                          onClick={() =>
+                            setShowCurrentPassword(!showCurrentPassword)
+                          }
                         >
-                          <span className="material-symbols-outlined">{showCurrentPassword ? 'visibility_off' : 'visibility'}</span>
+                          <span className="material-symbols-outlined">
+                            {showCurrentPassword
+                              ? 'visibility_off'
+                              : 'visibility'}
+                          </span>
                         </button>
                       </div>
                       {passwordErrors.current && (
-                        <p className="font-body-sm text-error">{passwordErrors.current}</p>
+                        <p className="font-body-sm text-error">
+                          {passwordErrors.current}
+                        </p>
                       )}
                     </div>
 
                     {/* New Password */}
                     <div className="space-y-2">
-                      <label className="block font-label-caps text-label-caps text-on-surface-variant" htmlFor="new-password">
+                      <label
+                        className="block font-label-caps text-label-caps text-on-surface-variant"
+                        htmlFor="new-password"
+                      >
                         New Password
                       </label>
                       <div className="relative group">
@@ -511,7 +547,12 @@ const handleSave = async () => {
                           id="new-password"
                           type={showNewPassword ? 'text' : 'password'}
                           value={passwordForm.new}
-                          onChange={(e) => setPasswordForm(prev => ({ ...prev, new: e.target.value }))}
+                          onChange={e =>
+                            setPasswordForm(prev => ({
+                              ...prev,
+                              new: e.target.value,
+                            }))
+                          }
                           disabled={isUpdatingPassword}
                         />
                         <button
@@ -519,17 +560,24 @@ const handleSave = async () => {
                           className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
                           onClick={() => setShowNewPassword(!showNewPassword)}
                         >
-                          <span className="material-symbols-outlined">{showNewPassword ? 'visibility_off' : 'visibility'}</span>
+                          <span className="material-symbols-outlined">
+                            {showNewPassword ? 'visibility_off' : 'visibility'}
+                          </span>
                         </button>
                       </div>
                       {passwordErrors.new && (
-                        <p className="font-body-sm text-error">{passwordErrors.new}</p>
+                        <p className="font-body-sm text-error">
+                          {passwordErrors.new}
+                        </p>
                       )}
                     </div>
 
                     {/* Confirm Password */}
                     <div className="space-y-2">
-                      <label className="block font-label-caps text-label-caps text-on-surface-variant" htmlFor="confirm-password">
+                      <label
+                        className="block font-label-caps text-label-caps text-on-surface-variant"
+                        htmlFor="confirm-password"
+                      >
                         Confirm New Password
                       </label>
                       <div className="relative group">
@@ -538,25 +586,40 @@ const handleSave = async () => {
                           id="confirm-password"
                           type={showConfirmPassword ? 'text' : 'password'}
                           value={passwordForm.confirm}
-                          onChange={(e) => setPasswordForm(prev => ({ ...prev, confirm: e.target.value }))}
+                          onChange={e =>
+                            setPasswordForm(prev => ({
+                              ...prev,
+                              confirm: e.target.value,
+                            }))
+                          }
                           disabled={isUpdatingPassword}
                         />
                         <button
                           type="button"
                           className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
                         >
-                          <span className="material-symbols-outlined">{showConfirmPassword ? 'visibility_off' : 'visibility'}</span>
+                          <span className="material-symbols-outlined">
+                            {showConfirmPassword
+                              ? 'visibility_off'
+                              : 'visibility'}
+                          </span>
                         </button>
                       </div>
                       {passwordErrors.confirm && (
-                        <p className="font-body-sm text-error">{passwordErrors.confirm}</p>
+                        <p className="font-body-sm text-error">
+                          {passwordErrors.confirm}
+                        </p>
                       )}
                     </div>
 
                     {passwordUpdateError && (
                       <div className="p-compact-padding bg-error-container rounded-lg border border-error">
-                        <p className="font-body-sm text-on-error-container">{passwordUpdateError}</p>
+                        <p className="font-body-sm text-on-error-container">
+                          {passwordUpdateError}
+                        </p>
                       </div>
                     )}
 
