@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import type { User } from '@/lib/bindings';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { commands } from '@/lib/bindings';
 
@@ -26,12 +27,14 @@ export function useAuth() {
   const queryClient = useQueryClient();
   // Use useState to make userId reactive so UI updates when it changes
   const [userId, setUserId] = useState<string | null>(() => getAuthUserId());
+  const userIdRef = useRef(userId);
+  useEffect(() => { userIdRef.current = userId; }, [userId]);
 
   // Sync with localStorage on mount and when storage changes
   useEffect(() => {
     const handleStorageChange = () => {
       const storedUserId = getAuthUserId();
-      if (storedUserId !== userId) {
+      if (storedUserId !== userIdRef.current) {
         setUserId(storedUserId);
       }
     };
@@ -46,23 +49,27 @@ export function useAuth() {
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(interval);
     };
-  }, [userId]);
+}, []);
 
   // Session validation on mount - clear stale credentials
   useEffect(() => {
+    let aborted = false;
     const storedUserId = getAuthUserId();
     if (storedUserId) {
       commands.validateSession(storedUserId).then(result => {
+        if (aborted) return;
         if (result.status === 'error' || result.data === false) {
           setAuthUserId(null);
           setUserId(null);
           localStorage.removeItem(`user_${storedUserId}`);
         }
       }).catch(() => {
+        if (aborted) return;
         setAuthUserId(null);
         setUserId(null);
       });
     }
+    return () => { aborted = true; };
   }, []);
 
   // Session invalidation on unload
