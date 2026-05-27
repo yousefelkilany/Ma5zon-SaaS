@@ -6,6 +6,21 @@ import { commands } from '@/lib/bindings';
 const AUTH_USER_ID_KEY = 'auth_user_id';
 const REQUEST_LOGIN_EVENT = 'auth:request-login';
 
+function clearSessionData(): void {
+  console.log('[useAuth] Clearing session data');
+  localStorage.removeItem(AUTH_USER_ID_KEY);
+  localStorage.removeItem('session_token');
+  // Clear any stored user data
+  const keysToRemove: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('user_')) {
+      keysToRemove.push(key);
+    }
+  }
+  keysToRemove.forEach(key => localStorage.removeItem(key));
+}
+
 export function getAuthUserId(): string | null {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem(AUTH_USER_ID_KEY);
@@ -38,40 +53,25 @@ export function useAuth() {
         setUserId(storedUserId);
       }
     };
-    
+
     // Listen for storage events (from same tab or other tabs)
     window.addEventListener('storage', handleStorageChange);
-    
+
     // Also poll for changes since storage event doesn't fire in same tab
     const interval = setInterval(handleStorageChange, 100);
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(interval);
     };
-}, []);
-
-  // Clear any persisted session on app start - force re-login
-  useEffect(() => {
-    console.log('[useAuth] App starting - clearing any persisted session');
-    setAuthUserId(null);
-    setUserId(null);
-    localStorage.removeItem('auth_user_id');
-    localStorage.removeItem('session_token');
-    // Clear any stored user data
-    const keysToRemove = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('user_')) {
-        keysToRemove.push(key);
-      }
-    }
-    keysToRemove.forEach(key => localStorage.removeItem(key));
-    console.log('[useAuth] Cleared all persisted session data');
   }, []);
 
-  // Session invalidation on app close is handled by clearing on next app start
-  // No need to track sessions - just clear everything on app launch
+  // Invalidate session on app start - force re-login
+  useEffect(() => {
+    console.log('[useAuth] App starting - invalidating any existing session');
+    clearSessionData();
+    setUserId(null);
+  }, []);
 
   const userQuery = useQuery({
     queryKey: ['user', userId],
@@ -120,17 +120,11 @@ export function useAuth() {
   const logout = () => {
     const currentUserId = getAuthUserId();
     console.log('[useAuth] logout called, currentUserId:', currentUserId);
-    
-    // Clear auth ID
-    setAuthUserId(null);
-    setUserId(null); // Update reactive state so UI updates immediately
-    
-    // Clear user data from localStorage
-    if (currentUserId) {
-      localStorage.removeItem(`user_${currentUserId}`);
-    }
-    localStorage.removeItem('session_token');
-    
+
+    // Clear session data
+    clearSessionData();
+    setUserId(null);
+
     // Clear query cache completely
     queryClient.clear();
   };
