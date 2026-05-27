@@ -6,7 +6,7 @@ import { commands } from '@/lib/bindings'
 interface LoginModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onLoginSuccess: (userId: string, user: { id: string; name: string; role: string; avatar_url: string | null }) => void
+  onLoginSuccess: (userId: string, user: { id: string; name: string; role: string; avatar_url: string | null }, sessionToken: string) => void
 }
 
 export function LoginModal({
@@ -73,7 +73,8 @@ export function LoginModal({
     }
 
     setFormState(prev => ({ ...prev, isLoading: false }))
-    onLoginSuccess(result.data.id, result.data)
+    const [user, sessionToken] = result.data
+    onLoginSuccess(user.id, { id: user.id, name: user.name, role: user.role, avatar_url: user.avatar_url }, sessionToken)
     onOpenChange(false)
   }
 

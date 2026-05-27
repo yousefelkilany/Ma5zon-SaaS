@@ -175,7 +175,7 @@ async deleteUser(userId: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async authenticate(username: string, password: string) : Promise<Result<User | null, string>> {
+async authenticate(username: string, password: string) : Promise<Result<[User, string] | null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("authenticate", { username, password }) };
 } catch (e) {
@@ -183,9 +183,9 @@ async authenticate(username: string, password: string) : Promise<Result<User | n
     else return { status: "error", error: e  as any };
 }
 },
-async invalidateSession() : Promise<Result<null, string>> {
+async invalidateSession(userId: string) : Promise<Result<null, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("invalidate_session") };
+    return { status: "ok", data: await TAURI_INVOKE("invalidate_session", { userId }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -202,6 +202,14 @@ async validateSession(userId: string) : Promise<Result<boolean, string>> {
 async updateUser(userId: string, name: string, email: string, avatarUrl: string | null) : Promise<Result<User, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("update_user", { userId, name, email, avatarUrl }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async updatePassword(userId: string, currentPassword: string, newPassword: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("update_password", { userId, currentPassword, newPassword }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };

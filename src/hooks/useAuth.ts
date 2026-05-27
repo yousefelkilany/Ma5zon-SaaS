@@ -77,7 +77,7 @@ export function useAuth() {
     const handleBeforeUnload = () => {
       const currentUserId = getAuthUserId();
       if (currentUserId) {
-        commands.invalidateSession().catch(() => {});
+        commands.invalidateSession(currentUserId).catch(() => {});
       }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
