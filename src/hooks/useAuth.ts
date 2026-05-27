@@ -109,10 +109,16 @@ export function useAuth() {
     gcTime: Infinity,
   });
 
-  const login = (newUserId: string, userData?: User) => {
+  const login = (newUserId: string, userData?: User, sessionToken?: string) => {
     console.log('[useAuth] login called with:', newUserId, userData);
     setAuthUserId(newUserId);
     setUserId(newUserId); // Update reactive state so UI updates immediately
+
+    // Store session token if provided
+    if (sessionToken) {
+      localStorage.setItem('session_token', sessionToken);
+    }
+
     // If userData is provided (e.g., from mock login), store it directly
     if (userData) {
       localStorage.setItem(`user_${newUserId}`, JSON.stringify(userData));
@@ -134,6 +140,7 @@ export function useAuth() {
     if (currentUserId) {
       localStorage.removeItem(`user_${currentUserId}`);
     }
+    localStorage.removeItem('session_token');
     
     // Clear query cache completely
     queryClient.clear();
