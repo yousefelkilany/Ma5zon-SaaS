@@ -102,7 +102,7 @@ export function SettingsPopover() {
             <button
               onClick={() => handleLanguageChange('ar')}
               className={`flex-1 flex flex-col items-center gap-1 p-3 rounded-lg transition-all ${
-                i18n.language === 'ar'
+                i18n.language === 'ar' && !isSystemLanguage
                   ? 'bg-secondary text-on-secondary ring-2 ring-secondary'
                   : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
               }`}
