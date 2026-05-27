@@ -66,14 +66,14 @@ export function useAuth() {
     };
   }, []);
 
-  // Invalidate session on app start - force re-login
-  const cleanupRanRef = useRef(false);
-  useEffect(() => {
-    if (cleanupRanRef.current) return;
-    cleanupRanRef.current = true;
+// Invalidate session on app start - force re-login
+  // Use sessionStorage to ensure this only runs once per browser session, not per component mount
+  const sessionInvalidatedThisSession = sessionStorage.getItem('session_invalidated');
+  if (!sessionInvalidatedThisSession) {
+    sessionStorage.setItem('session_invalidated', 'true');
     console.log('[useAuth] App starting - invalidating any existing session');
     clearSessionData();
-  }, []);
+  }
 
   const userQuery = useQuery({
     queryKey: ['user', userId],
