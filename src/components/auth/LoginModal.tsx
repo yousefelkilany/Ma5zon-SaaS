@@ -56,7 +56,7 @@ export function LoginModal({
 
     const result = await commands.authenticate(username, password)
 
-if (result.status === 'error') {
+    if (result.status === 'error') {
       setFormState(prev => ({
         ...prev,
         error: t('auth.authenticationFailed'),
@@ -98,6 +98,8 @@ if (result.status === 'error') {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        title="login dialog"
+        aria-describedby="login dialog"
         ref={contentRef}
         className="bg-surface-container border-outline-variant rounded-lg shadow-2xl overflow-hidden transition-all duration-300"
         style={{
@@ -236,15 +238,6 @@ if (result.status === 'error') {
                 )}
               </button>
             </form>
-          </div>
-
-          <div className="bg-surface-container-lowest px-cozy-padding py-compact-padding flex items-center justify-center gap-2 border-t border-outline-variant/30">
-            <span className="material-symbols-outlined text-on-surface-variant text-[14px]">
-              verified_user
-            </span>
-            <span className="text-label-caps text-on-surface-variant uppercase">
-              256-bit AES Encrypted Connection
-            </span>
           </div>
         </div>
       </DialogContent>
