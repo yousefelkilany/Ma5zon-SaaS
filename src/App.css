@@ -189,6 +189,11 @@
   padding-inline-end: 1rem;
 }
 
+.end-gutter,
+.inset-e-gutter {
+  inset-inline-end: 1rem;
+}
+
 .py-cozy-padding {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;

@@ -99,7 +99,10 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
       const nextTab = tabsWithLabels[(currentIndex + 1) % tabsWithLabels.length]
       if (nextTab) setActiveTab(nextTab.id)
     } else if (e.key === 'ArrowLeft') {
-      const prevTab = tabsWithLabels[(currentIndex - 1 + tabsWithLabels.length) % tabsWithLabels.length]
+      const prevTab =
+        tabsWithLabels[
+          (currentIndex - 1 + tabsWithLabels.length) % tabsWithLabels.length
+        ]
       if (prevTab) setActiveTab(prevTab.id)
     }
   }
@@ -172,7 +175,9 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
     setIsUpdatingPassword(false)
 
     if (result.status === 'error') {
-      setPasswordUpdateError(result.error || t('profile.security.validation.updateFailed'))
+      setPasswordUpdateError(
+        result.error || t('profile.security.validation.updateFailed')
+      )
       return
     }
 
@@ -362,7 +367,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                           type="text"
                           value={user?.role || ''}
                         />
-                        <span className="absolute right-gutter top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant">
+                        <span className="absolute top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant inset-s-2">
                           lock
                         </span>
                       </div>
@@ -381,9 +386,9 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                             className="w-full bg-surface-container-low border border-outline-variant text-on-surface-variant font-body-md text-body-md px-gutter py-compact-padding cursor-not-allowed opacity-75"
                             disabled
                             type="text"
-                            value="Department"
+                            value={t('profile.account.department')}
                           />
-                          <span className="absolute right-gutter top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant">
+                          <span className="absolute top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant inset-s-2">
                             lock
                           </span>
                         </div>
@@ -397,9 +402,9 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                             className="w-full bg-surface-container-low border border-outline-variant text-on-surface-variant font-body-md text-body-md px-gutter py-compact-padding cursor-not-allowed opacity-75"
                             disabled
                             type="text"
-                            value="Location"
+                            value={t('profile.account.location')}
                           />
-                          <span className="absolute right-gutter top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant">
+                          <span className="absolute top-1/2 -translate-y-1/2 material-symbols-outlined text-sm text-on-surface-variant inset-s-2">
                             lock
                           </span>
                         </div>
@@ -469,7 +474,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         </div>
                       )}
                     </div>
-                    <button className="absolute bottom-0 right-0 p-2 bg-secondary text-on-secondary rounded-full shadow-lg hover:bg-secondary-fixed transition-transform active:scale-95 flex items-center justify-center">
+                    <button className="absolute bottom-0 end-0 p-2 bg-secondary text-on-secondary rounded-full shadow-lg hover:bg-secondary-fixed transition-transform active:scale-95 flex items-center justify-center">
                       <span className="material-symbols-outlined text-sm">
                         edit
                       </span>
@@ -498,9 +503,9 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                 {/* Right Panel - Password Update Form */}
                 <section className="md:col-span-8 p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
                   <div className="mb-gutter">
-<h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">
-                        {t('profile.security.updatePassword')}
-                      </h2>
+                    <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">
+                      {t('profile.security.updatePassword')}
+                    </h2>
                   </div>
                   <form
                     className="space-y-gutter"
@@ -519,7 +524,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                       </label>
                       <div className="relative group">
                         <input
-                          className="w-full bg-surface-container-high border border-outline-variant rounded-lg px-cozy-padding py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none pr-12"
+                          className="w-full bg-surface-container-high border border-outline-variant rounded-lg pe-12 py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none ps-4"
                           id="current-password"
                           type={showCurrentPassword ? 'text' : 'password'}
                           value={passwordForm.current}
@@ -533,7 +538,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         />
                         <button
                           type="button"
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                          className="absolute inset-e-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
                           onClick={() =>
                             setShowCurrentPassword(!showCurrentPassword)
                           }
@@ -562,7 +567,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                       </label>
                       <div className="relative group">
                         <input
-                          className={`w-full bg-surface-container-high border rounded-lg px-cozy-padding py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none pr-12 ${passwordErrors.new ? 'border-error' : 'border-outline-variant'}`}
+                          className={`w-full bg-surface-container-high border rounded-lg pe-12 py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none ps-4 ${passwordErrors.new ? 'border-error' : 'border-outline-variant'}`}
                           id="new-password"
                           type={showNewPassword ? 'text' : 'password'}
                           value={passwordForm.new}
@@ -582,7 +587,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         />
                         <button
                           type="button"
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                          className="absolute end-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
                           onClick={() => setShowNewPassword(!showNewPassword)}
                         >
                           <span className="material-symbols-outlined">
@@ -607,7 +612,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                       </label>
                       <div className="relative group">
                         <input
-                          className={`w-full bg-surface-container-high border rounded-lg px-cozy-padding py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none pr-12 ${passwordErrors.confirm ? 'border-error' : 'border-outline-variant'}`}
+                          className={`w-full bg-surface-container-high border rounded-lg pe-12 py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none ps-4 ${passwordErrors.confirm ? 'border-error' : 'border-outline-variant'}`}
                           id="confirm-password"
                           type={showConfirmPassword ? 'text' : 'password'}
                           value={passwordForm.confirm}
@@ -626,7 +631,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                         />
                         <button
                           type="button"
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                          className="absolute inset-e-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
                           onClick={() =>
                             setShowConfirmPassword(!showConfirmPassword)
                           }
@@ -653,13 +658,15 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                       </div>
                     )}
 
-                    <div className="pt-cozy-padding flex flex-col sm:flex-row items-center gap-gutter border-t border-outline-variant">
+                    <div className="pt-compact-padding flex flex-col sm:flex-row items-center gap-gutter">
                       <button
                         className="w-full sm:w-auto px-10 py-3 bg-primary text-on-primary font-label-caps text-label-caps rounded-lg hover:bg-primary-fixed-dim active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                         type="submit"
                         disabled={isUpdatingPassword}
                       >
-                        {isUpdatingPassword ? t('profile.security.updating') : t('profile.security.updatePassword')}
+                        {isUpdatingPassword
+                          ? t('profile.security.updating')
+                          : t('profile.security.updatePassword')}
                       </button>
                       <button
                         className="w-full sm:w-auto text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface transition-colors disabled:opacity-50"
@@ -676,9 +683,9 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                 {/* Left Panel - Password Policy & Security Status */}
                 <aside className="md:col-span-4 space-y-cozy-gap">
                   <div className="p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
-<h3 className="font-headline-sm text-headline-sm text-primary mb-cozy-gap">
-                        {t('profile.security.passwordPolicy')}
-                      </h3>
+                    <h3 className="font-headline-sm text-headline-sm text-primary mb-cozy-gap">
+                      {t('profile.security.passwordPolicy')}
+                    </h3>
                     <ul className="space-y-3 font-body-sm text-body-sm text-on-surface-variant">
                       <li className="flex items-start gap-2">
                         {isNewPasswordDirty ? (
