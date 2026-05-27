@@ -299,5 +299,5 @@
   "entity.detail.tabs.audits": "التدقيق",
   "settingsPopover.language.arabic": "العربية",
   "settingsPopover.language.english": "EN",
-    "entity.workspace.selected": "تم تحديد {{count}}"
+    "entity.workspace.selected": "{count, plural, =0 {لا توجد محددات} =1 {محدد واحد} =2 {محددان} few {# محددات} many {# محدد} other {# محدد}}"
 }

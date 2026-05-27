@@ -300,5 +300,5 @@
   "entity.detail.tabs.audits": "Audits",
   "settingsPopover.language.arabic": "العربية",
   "settingsPopover.language.english": "EN",
-    "entity.workspace.selected": "{{count}} selected"
+    "entity.workspace.selected": "{count, plural, one {# selected} other {# selected}}"
 }
