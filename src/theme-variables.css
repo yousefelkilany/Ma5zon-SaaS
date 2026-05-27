@@ -192,6 +192,19 @@ html[dir="rtl"] *:not(.material-symbols-outlined) {
 .light {
   --background: #faf9f7;
   --foreground: #1a1a1a;
+  --surface: #ffffff;
+  --on-surface: #1a1a1a;
+  --surface-container-low: #faf9f7;
+  --surface-container-lowest: #ffffff;
+  --surface-container: #f5f4f2;
+  --surface-container-high: #efefea;
+  --surface-container-highest: #e8e7e2;
+  --surface-bright: #ffffff;
+  --surface-tint: #bec6e0;
+  --surface-variant: #f0efe9;
+  --on-surface-variant: #5c5c5c;
+  --outline: #909090;
+  --outline-variant: #c4c4bc;
   --card: #ffffff;
   --card-foreground: #1a1a1a;
   --popover: #f5f4f2;
@@ -208,6 +221,15 @@ html[dir="rtl"] *:not(.material-symbols-outlined) {
   --border: #c4c4bc;
   --input: #909090;
   --ring: #4edea3;
+  --tertiary: #f5a0a5;
+  --on-tertiary: #68001a;
+  --error: #e57373;
+  --on-error: #ffffff;
+  --error-container: #ffdad6;
+  --on-error-container: #410002;
+  --inverse-surface: #1a1a2e;
+  --inverse-on-surface: #faf9f7;
+  --inverse-primary: #798098;
   --chart-1: #4edea3;
   --chart-2: #bec6e0;
   --chart-3: #ffb3b6;
