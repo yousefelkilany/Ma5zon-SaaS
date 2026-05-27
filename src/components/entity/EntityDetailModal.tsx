@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -9,17 +10,18 @@ interface EntityDetailModalProps {
 
 type TabId = 'details' | 'insights' | 'audits'
 
-const tabs: { id: TabId; label: string }[] = [
-  { id: 'details', label: 'Details' },
-  { id: 'insights', label: 'Insights' },
-  { id: 'audits', label: 'Audits' },
-]
-
 export function EntityDetailModal({
   open,
   onOpenChange,
 }: EntityDetailModalProps) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<TabId>('details')
+
+  const tabs: { id: TabId; label: string }[] = [
+    { id: 'details', label: t('entity.detail.tabs.details') },
+    { id: 'insights', label: t('entity.detail.tabs.insights') },
+    { id: 'audits', label: t('entity.detail.tabs.audits') },
+  ]
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     const currentIndex = tabs.findIndex(tab => tab.id === activeTab)
