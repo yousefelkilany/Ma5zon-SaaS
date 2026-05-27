@@ -107,8 +107,8 @@ export function SettingsPopover() {
                   : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
               }`}
             >
-              <span className="text-lg font-medium">عربي</span>
-              <span className="text-xs">{t('preferences.appearance.language.arabic')}</span>
+              <span className="text-2xl">🇸🇦</span>
+              <span className="text-xs">عربي</span>
             </button>
             <button
               onClick={() => handleLanguageChange('en')}
@@ -118,8 +118,8 @@ export function SettingsPopover() {
                   : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
               }`}
             >
-              <span className="text-lg font-medium">EN</span>
-              <span className="text-xs">{t('preferences.appearance.language.english')}</span>
+              <span className="text-2xl">🇺🇸</span>
+              <span className="text-xs">EN</span>
             </button>
             <button
               onClick={() => handleLanguageChange('system')}
