@@ -129,7 +129,7 @@ pub struct ColumnDefRust {
     pub id: String,
     pub name: String,
     pub col_type: String,
-    pub width: i64,
+    pub width: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]

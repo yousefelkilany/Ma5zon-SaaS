@@ -27,15 +27,15 @@ pub async fn get_table_layout(app: AppHandle, table: &str) -> Result<TableLayout
 
     let columns: Vec<ColumnDefRust> = match table {
         "products" => vec![
-            ColumnDefRust { id: "id".to_string(), name: "ID".to_string(), col_type: "number".to_string(), width: 80 },
-            ColumnDefRust { id: "name".to_string(), name: "Product Name".to_string(), col_type: "text".to_string(), width: 200 },
+            ColumnDefRust { id: "id".to_string(), name: "ID".to_string(), col_type: "number".to_string(), width: 80.0 },
+            ColumnDefRust { id: "name".to_string(), name: "Product Name".to_string(), col_type: "text".to_string(), width: 200.0 },
         ],
         "product_variants" => vec![
-            ColumnDefRust { id: "id".to_string(), name: "ID".to_string(), col_type: "number".to_string(), width: 80 },
-            ColumnDefRust { id: "product_id".to_string(), name: "Product ID".to_string(), col_type: "number".to_string(), width: 100 },
-            ColumnDefRust { id: "sku".to_string(), name: "SKU".to_string(), col_type: "text".to_string(), width: 120 },
-            ColumnDefRust { id: "variant_name".to_string(), name: "Variant Name".to_string(), col_type: "text".to_string(), width: 180 },
-            ColumnDefRust { id: "uom_id".to_string(), name: "UOM".to_string(), col_type: "text".to_string(), width: 80 },
+            ColumnDefRust { id: "id".to_string(), name: "ID".to_string(), col_type: "number".to_string(), width: 80.0 },
+            ColumnDefRust { id: "product_id".to_string(), name: "Product ID".to_string(), col_type: "number".to_string(), width: 100.0 },
+            ColumnDefRust { id: "sku".to_string(), name: "SKU".to_string(), col_type: "text".to_string(), width: 120.0 },
+            ColumnDefRust { id: "variant_name".to_string(), name: "Variant Name".to_string(), col_type: "text".to_string(), width: 180.0 },
+            ColumnDefRust { id: "uom_id".to_string(), name: "UOM".to_string(), col_type: "text".to_string(), width: 80.0 },
         ],
         _ => return Err(format!("Unknown table: {}", table)),
     };
