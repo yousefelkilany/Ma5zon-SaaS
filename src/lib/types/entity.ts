@@ -66,3 +66,34 @@ export interface ToolbarProps {
   onExport: () => void
   activeFilterCount?: number
 }
+
+export interface ProductRow {
+  id: string
+  name: string
+  [key: string]: unknown
+}
+
+export interface VariantRow {
+  id: string
+  product_id: string
+  sku: string
+  variant_name: string
+  uom_id: number
+  [key: string]: unknown
+}
+
+export interface VariantPriceRow {
+  variant_id: string
+  price_list_id: number
+  price: number
+}
+
+export interface TableLayout {
+  table_name: string
+  columns: ColumnDef[]
+}
+
+export interface ExpandedRowState {
+  expandedIds: Set<string>
+  variantsCache: Map<string, VariantRow[]>
+}
