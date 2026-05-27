@@ -30,7 +30,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     return () => window.removeEventListener('auth:request-login', handleRequestLogin)
   }, [isLoggedIn])
 
-  const handleLoginSuccess = (userId: string) => {
+  const handleLoginSuccess = (userId: string, _userData: { id: string; name: string; role: string; avatar_url: string | null }) => {
     login(userId)
     setLoginModalOpen(false)
     pendingAuthCheckRef.current = false

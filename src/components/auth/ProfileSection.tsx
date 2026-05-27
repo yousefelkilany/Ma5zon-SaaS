@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/hooks/useAuth'
-import { commands } from '@/lib/bindings'
 import { LoginModal } from './LoginModal'
 
-const DEFAULT_AVATAR = new URL('@/assets/profile.svg', import.meta.url).href
+const DEFAULT_AVATAR = new URL('@/assets/profile.png', import.meta.url).href
 
 interface ProfileSectionProps {
   className?: string
@@ -18,30 +17,8 @@ export function ProfileSection({ className }: ProfileSectionProps) {
   // Remove the useEffect that causes extra saveUser calls - handled in handleLoginSuccess
   // The backend sync on login is already done in handleLoginSuccess
 
-  const handleLoginSuccess = async (userId: string) => {
-    console.log('[ProfileSection] handleLoginSuccess called with:', userId)
-    // Create user object from mock login
-    const userData = {
-      id: userId,
-      name: 'Guest User',
-      role: 'User',
-      avatar_url: null,
-    }
-    
-    // Try to save to backend (may fail in dev without Tauri)
-    try {
-      const result = await commands.saveUser(userData)
-      console.log('[ProfileSection] saveUser result:', result)
-    } catch (e) {
-      console.warn('[ProfileSection] saveUser failed (expected in dev):', e)
-    }
-    
-    // Store in localStorage as fallback
-    localStorage.setItem(`user_${userId}`, JSON.stringify(userData))
-    
-    // Call login with user data to set state immediately
+  const handleLoginSuccess = (userId: string, userData: { id: string; name: string; role: string; avatar_url: string | null }) => {
     login(userId, userData)
-    console.log('[ProfileSection] login called')
   }
 
   if (!isLoggedIn) {

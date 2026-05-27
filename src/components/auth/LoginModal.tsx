@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { commands } from '@/lib/bindings'
 
 interface LoginModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onLoginSuccess: (userId: string) => void
+  onLoginSuccess: (userId: string, user: { id: string; name: string; role: string; avatar_url: string | null }) => void
 }
 
 export function LoginModal({
@@ -49,9 +50,19 @@ export function LoginModal({
     e.preventDefault()
     setFormState(prev => ({ ...prev, error: '', isLoading: true }))
 
-    await new Promise(resolve => setTimeout(resolve, 1200))
+    const result = await commands.authenticate(username, password)
 
-    if (!username.trim() || !password.trim()) {
+    if (result.status === 'error') {
+      setFormState(prev => ({
+        ...prev,
+        error: t('auth.authenticationFailed'),
+        isLoading: false,
+      }))
+      triggerShake()
+      return
+    }
+
+    if (!result.data) {
       setFormState(prev => ({
         ...prev,
         error: t('auth.invalidCredentials'),
@@ -61,9 +72,8 @@ export function LoginModal({
       return
     }
 
-    const mockUserId = `user_${username.toLowerCase().replace(/\s+/g, '_')}`
     setFormState(prev => ({ ...prev, isLoading: false }))
-    onLoginSuccess(mockUserId)
+    onLoginSuccess(result.data.id, result.data)
     onOpenChange(false)
   }
 
@@ -71,7 +81,7 @@ export function LoginModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         ref={contentRef}
-        className={`bg-surface-container border-outline-variant rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ${shake ? 'animate-shake' : ''}`}
+        className="bg-surface-container border-outline-variant rounded-lg shadow-2xl overflow-hidden transition-all duration-300"
         style={{
           position: 'fixed',
           top: '50%',
@@ -90,7 +100,8 @@ export function LoginModal({
           }
         }}
       >
-        <div className="px-cozy-padding pt-cozy-padding pb-gutter text-center">
+        <div className={shake ? 'animate-shake' : ''}>
+          <div className="px-cozy-padding pt-cozy-padding pb-gutter text-center">
           <div className="mb-gutter flex justify-center">
             <img
               alt="Ma5zon Logo"
@@ -216,6 +227,7 @@ export function LoginModal({
           <span className="text-label-caps text-on-surface-variant uppercase">
             256-bit AES Encrypted Connection
           </span>
+        </div>
         </div>
       </DialogContent>
     </Dialog>

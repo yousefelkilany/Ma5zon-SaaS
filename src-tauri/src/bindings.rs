@@ -21,6 +21,7 @@ pub fn generate_bindings() -> Builder<tauri::Wry> {
         user::load_user,
         user::save_user,
         user::delete_user,
+        user::authenticate,
     ])
 }
 

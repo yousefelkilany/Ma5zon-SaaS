@@ -151,9 +151,6 @@ async updateQuickPaneShortcut(shortcut: string | null) : Promise<Result<null, st
     else return { status: "error", error: e  as any };
 }
 },
-/**
- * Load a user by ID from the SQLite database.
- */
 async loadUser(userId: string) : Promise<Result<User | null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("load_user", { userId }) };
@@ -162,9 +159,6 @@ async loadUser(userId: string) : Promise<Result<User | null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-/**
- * Save a user to the SQLite database (upsert).
- */
 async saveUser(user: User) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("save_user", { user }) };
@@ -173,12 +167,17 @@ async saveUser(user: User) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-/**
- * Delete a user from the SQLite database.
- */
 async deleteUser(userId: string) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("delete_user", { userId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async authenticate(username: string, password: string) : Promise<Result<User | null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("authenticate", { username, password }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
