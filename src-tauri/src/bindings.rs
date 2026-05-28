@@ -1,11 +1,12 @@
 use tauri_specta::{collect_commands, Builder};
 
 pub fn generate_bindings() -> Builder<tauri::Wry> {
-    use crate::commands::{notifications, preferences, products, quick_pane, recovery, user, variants};
+    use crate::commands::{db_utils, notifications, preferences, products, quick_pane, recovery, user, variants};
     use crate::utils::fs_utils;
 
     Builder::<tauri::Wry>::new().commands(collect_commands![
         fs_utils::export_file,
+        db_utils::get_table_info,
         preferences::greet,
         preferences::load_preferences,
         preferences::save_preferences,

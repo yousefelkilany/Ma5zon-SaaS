@@ -16,6 +16,14 @@ async exportFile(filePath: string, content: string) : Promise<Result<null, strin
     else return { status: "error", error: e  as any };
 }
 },
+async getTableInfo(tableName: string) : Promise<Result<TableInfo, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_table_info", { tableName }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 /**
  * Simple greeting command for demonstration purposes.
  */
@@ -314,6 +322,7 @@ quick_pane_shortcut: string | null;
  * If None, uses system locale detection
  */
 language: string | null }
+export type ColumnInfo = { cid: number; name: string; col_type: string; notnull: boolean; dflt_value: string | null; pk: boolean }
 export type JsonValue = null | boolean | number | string | JsonValue[] | Partial<{ [key in string]: JsonValue }>
 export type NewVariant = { product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number }
 export type Product = { id: string; name: string }
@@ -341,6 +350,7 @@ export type RecoveryError =
  * JSON serialization/deserialization error
  */
 { type: "ParseError"; message: string }
+export type TableInfo = { table_name: string; columns: ColumnInfo[] }
 export type UpdateVariant = { sku: string | null; variant_name: string | null; uom_id: string | null; retail_price: number | null; wholesale_price: number | null; distribution_price: number | null }
 /**
  * User data stored in SQLite

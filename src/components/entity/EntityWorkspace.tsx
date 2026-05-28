@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next'
 import { invoke } from '@tauri-apps/api/core'
 import { useQuery } from '@tanstack/react-query'
 import { commands, unwrapResult } from '@/lib/tauri-bindings'
-import type { EntityWorkspaceProps, ColumnDef, VariantRow } from '@/lib/types/entity'
+import type {
+  EntityWorkspaceProps,
+  ColumnDef,
+  VariantRow,
+} from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
 
 function EntityHeader({ entityType }: { entityType: string }) {
@@ -51,7 +55,10 @@ function EntityHeader({ entityType }: { entityType: string }) {
   )
 }
 
-async function exportToCSV(columns: ColumnDef[], data: Record<string, unknown>[]) {
+async function exportToCSV(
+  columns: ColumnDef[],
+  data: Record<string, unknown>[]
+) {
   const headers = columns
     .filter(c => c.visible)
     .map(c => c.label)
@@ -83,14 +90,15 @@ async function exportToCSV(columns: ColumnDef[], data: Record<string, unknown>[]
   }
 }
 
-
-
-function convertTableLayout(layout: { table_name: string; columns: Array<{ id: string; name: string; col_type: string; width: number }> }): ColumnDef[] {
+function convertTableLayout(layout: {
+  table_name: string
+  columns: { name: string; col_type: string; pk: boolean }[]
+}): ColumnDef[] {
   return layout.columns.map((col, index) => ({
-    id: col.id,
+    id: col.name.toLowerCase().replace(/\s+/g, '_'),
     label: col.name,
-    type: col.col_type as ColumnDef['type'],
-    width: col.width,
+    type: col.col_type === 'INTEGER' ? 'number' : col.col_type === 'TEXT' ? 'text' : 'text',
+    width: col.pk ? 80 : col.col_type === 'TEXT' ? 200 : 120,
     sortable: true,
     filterable: true,
     visible: true,
@@ -101,33 +109,38 @@ function convertTableLayout(layout: { table_name: string; columns: Array<{ id: s
 
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
-  const [variantsCache, setVariantsCache] = useState<Map<string, VariantRow[]>>(new Map())
+  const [variantsCache, setVariantsCache] = useState<Map<string, VariantRow[]>>(
+    new Map()
+  )
   const [loadingVariants, setLoadingVariants] = useState<Set<string>>(new Set())
 
-  const handleRowToggleExpand = useCallback(async (id: string) => {
-    const newExpanded = new Set(expandedIds)
-    if (newExpanded.has(id)) {
-      newExpanded.delete(id)
-    } else {
-      newExpanded.add(id)
-      if (!variantsCache.has(id)) {
-        setLoadingVariants(prev => new Set(prev).add(id))
-        try {
-          const result = await commands.variants.get_by_product(parseInt(id))
-          if (result.status === 'ok') {
-            setVariantsCache(prev => new Map(prev).set(id, result.data))
+  const handleRowToggleExpand = useCallback(
+    async (id: string) => {
+      const newExpanded = new Set(expandedIds)
+      if (newExpanded.has(id)) {
+        newExpanded.delete(id)
+      } else {
+        newExpanded.add(id)
+        if (!variantsCache.has(id)) {
+          setLoadingVariants(prev => new Set(prev).add(id))
+          try {
+            const result = await commands.variantsGetByProduct(id)
+            if (result.status === 'ok') {
+              setVariantsCache(prev => new Map(prev).set(id, result.data))
+            }
+          } finally {
+            setLoadingVariants(prev => {
+              const next = new Set(prev)
+              next.delete(id)
+              return next
+            })
           }
-        } finally {
-          setLoadingVariants(prev => {
-            const next = new Set(prev)
-            next.delete(id)
-            return next
-          })
         }
       }
-    }
-    setExpandedIds(newExpanded)
-  }, [expandedIds, variantsCache])
+      setExpandedIds(newExpanded)
+    },
+    [expandedIds, variantsCache]
+  )
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['products'],
@@ -137,9 +150,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const { data: tableLayout } = useQuery({
     queryKey: ['tableLayout', entityType],
     queryFn: async () => {
-      const result = await commands.getTableLayout(entityType)
-      console.log(`result = ${result}`);
-      console.log(`result = ${JSON.stringify(result)}`);
+      const result = await commands.dbUtils.getTableInfo(entityType)
       return unwrapResult(result)
     },
   })
@@ -159,7 +170,12 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         entityType="products"
         columns={productColumns}
         data={products ?? []}
-        pagination={{ page: 1, pageSize: 50, totalRows: (products ?? []).length, totalPages: 1 }}
+        pagination={{
+          page: 1,
+          pageSize: 50,
+          totalRows: (products ?? []).length,
+          totalPages: 1,
+        }}
         isLoading={isLoading}
         onSaveColumnPrefs={x => x}
         onFiltersApply={x => x}
@@ -167,7 +183,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         expandedRowIds={expandedIds}
         variantsCache={variantsCache}
         onRowToggleExpand={handleRowToggleExpand}
-        isLoadingVariants={(id) => loadingVariants.has(id)}
+        isLoadingVariants={id => loadingVariants.has(id)}
       />
     </div>
   )
