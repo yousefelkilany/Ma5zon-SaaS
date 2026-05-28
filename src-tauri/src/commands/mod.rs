@@ -6,15 +6,15 @@
 use async_trait::async_trait;
 use tauri::AppHandle;
 
+pub mod db_utils;
 pub mod notifications;
 pub mod preferences;
+pub mod products;
 pub mod quick_pane;
 pub mod recovery;
-pub mod db_utils;
 pub mod user;
-pub mod warehouses;
-pub mod products;
 pub mod variants;
+pub mod warehouses;
 pub mod stock;
 
 #[async_trait]
@@ -23,13 +23,12 @@ pub trait DatabaseInitializable: Send + Sync {
     async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String>;
 }
 
-use crate::commands::warehouses::WarehousesInitializer;
-
 use self::{
     products::ProductsInitializer,
-    stock::StockInitializer,
     user::UserInitializer,
     variants::VariantsInitializer,
+    warehouses::WarehousesInitializer,
+    stock::StockInitializer,
 };
 
 pub const TABLE_INITIALIZERS: &[&dyn DatabaseInitializable] = &[
