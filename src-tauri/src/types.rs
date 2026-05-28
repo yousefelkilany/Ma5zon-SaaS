@@ -111,6 +111,9 @@ pub struct Variant {
     pub sku: String,
     pub variant_name: String,
     pub uom_id: String,
+    pub retail_price: f64,
+    pub wholesale_price: f64,
+    pub distribution_price: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
@@ -118,6 +121,34 @@ pub struct VariantPrice {
     pub variant_id: String,
     pub price_list_id: PriceList,
     pub price: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct NewVariantPrice {
+    pub variant_id: String,
+    pub price_list_id: PriceList,
+    pub price: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct NewVariant {
+    pub product_id: String,
+    pub sku: String,
+    pub variant_name: String,
+    pub uom_id: String,
+    pub retail_price: f64,
+    pub wholesale_price: f64,
+    pub distribution_price: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct UpdateVariant {
+    pub sku: Option<String>,
+    pub variant_name: Option<String>,
+    pub uom_id: Option<String>,
+    pub retail_price: Option<f64>,
+    pub wholesale_price: Option<f64>,
+    pub distribution_price: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
@@ -132,21 +163,6 @@ pub struct ColumnDefRust {
     pub name: String,
     pub col_type: String,
     pub width: f64,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, Type)]
-pub struct NewVariant {
-    pub product_id: String,
-    pub sku: String,
-    pub variant_name: String,
-    pub uom_id: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, Type)]
-pub struct UpdateVariant {
-    pub sku: Option<String>,
-    pub variant_name: Option<String>,
-    pub uom_id: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Type)]
@@ -187,13 +203,6 @@ impl FromStr for PriceList {
             _ => Err(format!("Unknown price list: {}", s)),
         }
     }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, Type)]
-pub struct NewVariantPrice {
-    pub variant_id: String,
-    pub price_list_id: PriceList,
-    pub price: f64,
 }
 
 // ============================================================================

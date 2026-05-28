@@ -2,21 +2,102 @@ use rusqlite::{params, Connection};
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 
+use crate::commands::db_utils::{get_conn, get_db_path};
+use crate::commands::{self, DatabaseInitializable};
 use crate::types::{Variant, NewVariant, UpdateVariant};
 
-fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
-    let app_data_dir = app
-        .path()
-        .app_data_dir()
-        .map_err(|e| format!("Failed to get app data directory: {e}"))?;
-    std::fs::create_dir_all(&app_data_dir)
-        .map_err(|e| format!("Failed to create app data directory: {e}"))?;
-    Ok(app_data_dir.join("ma5zon.db"))
+pub struct VariantsInitializer;
+
+impl commands::DatabaseInitializable for VariantsInitializer {
+    fn table_name(&self) -> &str {
+        "product_variants"
+    }
+
+    async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
+        let conn = get_conn(app)?;
+
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS product_variants (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                product_id INTEGER NOT NULL,
+                sku TEXT UNIQUE NOT NULL,
+                variant_name TEXT NOT NULL,
+                uom_id INTEGER NOT NULL,
+                retail_price REAL NOT NULL DEFAULT 0,
+                wholesale_price REAL NOT NULL DEFAULT 0,
+                distribution_price REAL NOT NULL DEFAULT 0,
+                FOREIGN KEY(product_id) REFERENCES products(id)
+            )",
+            [],
+        )
+        .map_err(|e| format!("Failed to create product_variants table: {e}"))?;
+
+        let count: i64 = conn
+            .query_row("SELECT COUNT(*) FROM product_variants", [], |row| row.get(0))
+            .map_err(|e| format!("Failed to count variants: {e}"))?;
+
+        if count == 0 {
+            log::info!("[VariantsInitializer] Seeding sample variants");
+            seed_variants(&conn)?;
+        }
+
+        Ok(())
+    }
 }
 
-fn get_conn(app: &AppHandle) -> Result<Connection, String> {
-    let db_path = get_db_path(app)?;
-    Connection::open(&db_path).map_err(|e| format!("Failed to open database: {e}"))
+fn seed_variants(conn: &Connection) -> Result<(), String> {
+    use rand::Rng;
+
+    let mut rng = rand::thread_rng();
+
+    let mut stmt = conn
+        .prepare("SELECT id FROM products ORDER BY id")
+        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
+
+    let product_ids: Vec<i64> = stmt
+        .query_map([], |row| row.get(0))
+        .map_err(|e| format!("Failed to query products: {e}"))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("Failed to collect product IDs: {e}"))?;
+
+    let variants_data = vec![
+        (vec!["Standard Grade", "Heavy Duty", "Economy", "Premium"], "Grade"),
+        (vec!["10W", "25W", "50W", "100W"], "Power"),
+        (vec!["120V", "240V", "480V", "Dual Voltage"], "Voltage"),
+        (vec!["Male", "Female", "Barbed", "Compression"], "Connector"),
+        (vec!["1m", "2m", "5m", "10m"], "Length"),
+        (vec!["SS304", "SS316", "SS430", "Galvanized"], "Material"),
+        (vec!["Clear", "Tinted", "Mirrored", "Anti-Glare"], "Finish"),
+        (vec!["M3", "M4", "M5", "M6", "M8"], "Size"),
+        (vec!["Small", "Medium", "Large", "XL"], "Size"),
+        (vec!["2A", "5A", "10A", "20A"], "Rating"),
+    ];
+
+    let uom_names = vec!["pcs", "m", "kg", "L", "box", "roll", "set"];
+
+    for (i, product_id) in product_ids.iter().enumerate() {
+        let num_variants = rng.gen_range(2..5);
+        let variant_type = &variants_data[i % variants_data.len()];
+        let options = &variant_type.0;
+
+        for v in 0..num_variants {
+            let variant_name = format!("{} {} {}", "Product", variant_type.1, options[v % options.len()]);
+            let sku = format!("SKU-{:04}-{:02}", product_id, v + 1);
+            let uom_id = (rng.gen_range(0..uom_names.len()) + 1) as i64;
+
+            let retail_price: f64 = ((rng.gen_range(5.0_f64..500.0_f64) * 100.0).round()) / 100.0;
+            let wholesale_price: f64 = (retail_price * 0.75 * 100.0).round() / 100.0;
+            let distribution_price: f64 = (retail_price * 0.6 * 100.0).round() / 100.0;
+
+            conn.execute(
+                "INSERT INTO product_variants (product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+                rusqlite::params![product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price],
+            )
+            .map_err(|e| format!("Failed to insert variant: {e}"))?;
+        }
+    }
+
+    Ok(())
 }
 
 #[tauri::command]
@@ -24,7 +105,7 @@ fn get_conn(app: &AppHandle) -> Result<Connection, String> {
 pub async fn variants_get_all(app: AppHandle) -> Result<Vec<Variant>, String> {
     let conn = get_conn(&app)?;
     let mut stmt = conn
-        .prepare("SELECT id, product_id, sku, variant_name, uom_id FROM product_variants ORDER BY sku")
+        .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price FROM product_variants ORDER BY sku")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let variants = stmt
@@ -35,6 +116,9 @@ pub async fn variants_get_all(app: AppHandle) -> Result<Vec<Variant>, String> {
                 sku: row.get(2)?,
                 variant_name: row.get(3)?,
                 uom_id: row.get::<_, i64>(4)?.to_string(),
+                retail_price: row.get(5)?,
+                wholesale_price: row.get(6)?,
+                distribution_price: row.get(7)?,
             })
         })
         .map_err(|e| format!("Failed to query variants: {e}"))?
@@ -50,7 +134,7 @@ pub async fn variants_get_by_product(app: AppHandle, product_id: String) -> Resu
     let conn = get_conn(&app)?;
     let product_id_i64: i64 = product_id.parse().map_err(|e| format!("Invalid product_id: {e}"))?;
     let mut stmt = conn
-        .prepare("SELECT id, product_id, sku, variant_name, uom_id FROM product_variants WHERE product_id = ?1 ORDER BY sku")
+        .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price FROM product_variants WHERE product_id = ?1 ORDER BY sku")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let variants = stmt
@@ -61,6 +145,9 @@ pub async fn variants_get_by_product(app: AppHandle, product_id: String) -> Resu
                 sku: row.get(2)?,
                 variant_name: row.get(3)?,
                 uom_id: row.get::<_, i64>(4)?.to_string(),
+                retail_price: row.get(5)?,
+                wholesale_price: row.get(6)?,
+                distribution_price: row.get(7)?,
             })
         })
         .map_err(|e| format!("Failed to query variants: {e}"))?
@@ -76,7 +163,7 @@ pub async fn variants_get_by_id(app: AppHandle, id: String) -> Result<Option<Var
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let mut stmt = conn
-        .prepare("SELECT id, product_id, sku, variant_name, uom_id FROM product_variants WHERE id = ?1")
+        .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price FROM product_variants WHERE id = ?1")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let variant = stmt
@@ -87,6 +174,9 @@ pub async fn variants_get_by_id(app: AppHandle, id: String) -> Result<Option<Var
                 sku: row.get(2)?,
                 variant_name: row.get(3)?,
                 uom_id: row.get::<_, i64>(4)?.to_string(),
+                retail_price: row.get(5)?,
+                wholesale_price: row.get(6)?,
+                distribution_price: row.get(7)?,
             })
         })
         .ok();
@@ -99,8 +189,8 @@ pub async fn variants_get_by_id(app: AppHandle, id: String) -> Result<Option<Var
 pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Variant, String> {
     let conn = get_conn(&app)?;
     conn.execute(
-        "INSERT INTO product_variants (product_id, sku, variant_name, uom_id) VALUES (?1, ?2, ?3, ?4)",
-        params![variant.product_id, variant.sku, variant.variant_name, variant.uom_id],
+        "INSERT INTO product_variants (product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        params![variant.product_id, variant.sku, variant.variant_name, variant.uom_id, variant.retail_price, variant.wholesale_price, variant.distribution_price],
     )
     .map_err(|e| format!("Failed to create variant: {e}"))?;
 
@@ -111,6 +201,9 @@ pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Vari
         sku: variant.sku,
         variant_name: variant.variant_name,
         uom_id: variant.uom_id,
+        retail_price: variant.retail_price,
+        wholesale_price: variant.wholesale_price,
+        distribution_price: variant.distribution_price,
     })
 }
 
@@ -127,10 +220,13 @@ pub async fn variants_update(app: AppHandle, id: String, variant: UpdateVariant)
     let new_sku = variant.sku.unwrap_or(current.sku);
     let new_variant_name = variant.variant_name.unwrap_or(current.variant_name);
     let new_uom_id = variant.uom_id.unwrap_or(current.uom_id);
+    let new_retail_price = variant.retail_price.unwrap_or(current.retail_price);
+    let new_wholesale_price = variant.wholesale_price.unwrap_or(current.wholesale_price);
+    let new_distribution_price = variant.distribution_price.unwrap_or(current.distribution_price);
 
     conn.execute(
-        "UPDATE product_variants SET sku = ?1, variant_name = ?2, uom_id = ?3 WHERE id = ?4",
-        params![new_sku, new_variant_name, new_uom_id, id_i64],
+        "UPDATE product_variants SET sku = ?1, variant_name = ?2, uom_id = ?3, retail_price = ?4, wholesale_price = ?5, distribution_price = ?6 WHERE id = ?7",
+        params![new_sku, new_variant_name, new_uom_id, new_retail_price, new_wholesale_price, new_distribution_price, id_i64],
     )
     .map_err(|e| format!("Failed to update variant: {e}"))?;
 
@@ -140,6 +236,9 @@ pub async fn variants_update(app: AppHandle, id: String, variant: UpdateVariant)
         sku: new_sku,
         variant_name: new_variant_name,
         uom_id: new_uom_id,
+        retail_price: new_retail_price,
+        wholesale_price: new_wholesale_price,
+        distribution_price: new_distribution_price,
     })
 }
 
