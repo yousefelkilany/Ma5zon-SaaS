@@ -81,6 +81,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ['src/components/entity/DataTable.tsx'],
+    rules: {
+      'react-hooks/incompatible-library': 'off',
+    },
+  },
+  {
     files: ['scripts/**/*.js'],
     languageOptions: {
       ecmaVersion: 2022,
