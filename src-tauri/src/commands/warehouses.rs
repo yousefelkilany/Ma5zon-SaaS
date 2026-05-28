@@ -22,31 +22,13 @@ impl DatabaseInitializable for WarehousesInitializer {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 location TEXT,
-                created_at TEXT NOT NULL,
-                updated_at TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                updated_at TEXT NOT NULL DEFAULT (datetime('now')),
                 deleted_at TEXT
             )",
             [],
         )
-        .map_err(|e| format!("Failed to create warehouses table: {e}"))?;
-
-        conn.execute(
-            "ALTER TABLE warehouses ADD COLUMN created_at TEXT NOT NULL DEFAULT (datetime('now'))",
-            [],
-        )
-        .ok();
-
-        conn.execute(
-            "ALTER TABLE warehouses ADD COLUMN updated_at TEXT NOT NULL DEFAULT (datetime('now'))",
-            [],
-        )
-        .ok();
-
-        conn.execute(
-            "ALTER TABLE warehouses ADD COLUMN deleted_at TEXT",
-            [],
-        )
-        .ok();
+.map_err(|e| format!("Failed to create warehouses table: {e}"))?;
 
         let count: i64 = conn
             .query_row("SELECT COUNT(*) FROM warehouses", [], |row| row.get(0))
@@ -71,9 +53,10 @@ fn seed_warehouses(conn: &Connection) -> Result<(), String> {
     ];
 
     for (name, location) in warehouses {
+        let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
         conn.execute(
-            "INSERT INTO warehouses (name, location) VALUES (?1, ?2)",
-            params![name, location],
+            "INSERT INTO warehouses (name, location, created_at, updated_at) VALUES (?1, ?2, ?3, ?4)",
+            params![name, location, now, now],
         )
         .map_err(|e| format!("Failed to insert warehouse: {e}"))?;
     }
