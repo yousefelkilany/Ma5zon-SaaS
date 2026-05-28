@@ -102,6 +102,9 @@ pub struct User {
 pub struct Product {
     pub id: String,
     pub name: String,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
+    pub deleted_at: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
