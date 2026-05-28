@@ -6,6 +6,7 @@
   "author": "Youssef Elkilany",
   "copyright": "Copyright © 2026 Youssef Elkilany. All rights reserved.",
   "license": "MIT",
+  "packageManager": "pnpm@11.2.0",
   "overrides": {
     "typescript-eslint": {
       "typescript": "$typescript"
