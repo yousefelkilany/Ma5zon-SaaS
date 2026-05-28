@@ -3,13 +3,13 @@ use rusqlite::{params, Connection};
 use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
-use crate::commands::{self, DatabaseInitializable};
+use crate::commands::DatabaseInitializable;
 use crate::types::Product;
 
 pub struct ProductsInitializer;
 
 #[async_trait]
-impl commands::DatabaseInitializable for ProductsInitializer {
+impl DatabaseInitializable for ProductsInitializer {
     fn table_name(&self) -> &str {
         "products"
     }
@@ -43,19 +43,19 @@ fn seed_products(conn: &Connection) -> Result<(), String> {
     use rand::Rng;
 
     let products = vec![
-        "Industrial Motor Assembly", "Electronic Control Module", "Hydraulic Pump Unit",
-        "Precision Bearing Set", "Stainless Steel Fastener Kit", "LED Display Panel",
-        "Thermal Insulation Sheet", "Carbon Fiber Bracket", "Copper Wiring Harness",
-        "Aluminum Extrusion Profile", "Rubber Gasket Seal", "Plastic Housing Cover",
-        "Glass Lens Assembly", "Brass Fitting Connector", "Titanium Implant Plate",
-        "Ceramic Capacitor Array", "Magnetic Encoder Sensor", "Pneumatic Cylinder",
-        "Solar Panel Junction Box", "Composite Gear Set", "Acoustic Waveguide",
-        "Optical Fiber Bundle", "High-Frequency Transformer", "Emergency Battery Pack",
-        "Servo Drive Controller", "Linear Guide Rail", "Pressure Relief Valve",
-        "Bi-Metal Thermostat", "Anti-Vibration Mount", "RF Antenna Module",
-        "316L Stainless Tubing", "Polycarbonate Housing", "Graphite Heat Sink",
-        "Neodymium Magnet Assembly", "PTFE Liner Bearing", "Epoxy Resin Compound",
-        "Silicone Grommet Set", "Borosilicate Glass Tube", "Rolled Steel Sheet",
+        "محرك كهربائي صناعي", "وحدة تحكم إلكترونية", "وحدة هيدروليكية",
+        "طقم bearings دقيق", "طقم براغي ستانلس ستيل", "لوحة عرض LED",
+        "لوح عزل حراري", "حامل ألياف كربون", "حزمة أسلاك نحاسية",
+        "ملف ألومنيوم", "ختم مطاطي", "غطاء بلاستيكي",
+        "عدسة زجاجية", "موصل نحاسي", "لوحة تيتانيوم",
+        "مصفوفة مكثفات سيراميك", "حساس encoder مغناطيسي", "أسطوانة هوائية",
+        "صندوق تقاطع ألواح شمسية", "طقم تروس مركب", "موجّه موجات صوتي",
+        "حزمة ألياف بصرية", "محول تردد عالي", "بطارية طوارئ",
+        "متحكم محرك سيرفو", "سكة توجيه خطية", "صمام تخفيف ضغط",
+        "ثرموستات معدن ثنائي", "حامل مضاد للاهتزاز", "وحدة هوائي تردد الراديو",
+        "أنبوب ستانلس 316L", "هيكل بولي كربونات", "مبدد حراري جرافيت",
+        "طقم مغناطيس نيوديميوم", "محمل بطانة PTFE", "مركب راتنج إيبوكسي",
+        "طقم حلقة سيليكون", "أنبوب زجاجي بوريوسيليكات", "صفائح فولاذ ملفوحة",
     ];
 
     for product in products {
@@ -113,11 +113,8 @@ pub async fn get_by_id(app: AppHandle, id: String) -> Result<Option<Product>, St
 #[specta::specta]
 pub async fn create(app: AppHandle, name: String) -> Result<Product, String> {
     let conn = get_conn(&app)?;
-    conn.execute(
-        "INSERT INTO products (name) VALUES (?1)",
-        params![name],
-    )
-    .map_err(|e| format!("Failed to create product: {e}"))?;
+    conn.execute("INSERT INTO products (name) VALUES (?1)", params![name])
+        .map_err(|e| format!("Failed to create product: {e}"))?;
 
     let id = conn.last_insert_rowid().to_string();
     Ok(Product { id, name })
