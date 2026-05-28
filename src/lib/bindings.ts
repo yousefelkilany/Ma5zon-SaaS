@@ -286,62 +286,6 @@ async variantsDelete(id: string) : Promise<Result<null, string>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
-},
-async pricesGetAll() : Promise<Result<VariantPrice[], string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("prices_get_all") };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async pricesGetByVariant(variantId: string) : Promise<Result<VariantPrice[], string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("prices_get_by_variant", { variantId }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async pricesCreate(variantId: string, priceListId: string, price: number) : Promise<Result<VariantPrice, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("prices_create", { variantId, priceListId, price }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async pricesUpdate(variantId: string, priceListId: string, price: number) : Promise<Result<VariantPrice, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("prices_update", { variantId, priceListId, price }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async pricesDelete(variantId: string, priceListId: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("prices_delete", { variantId, priceListId }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async getTableLayout(table: string) : Promise<Result<TableLayout, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("get_table_layout", { table }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async initProductTables() : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("init_product_tables") };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
 }
 }
 
@@ -370,10 +314,8 @@ quick_pane_shortcut: string | null;
  * If None, uses system locale detection
  */
 language: string | null }
-export type ColumnDefRust = { id: string; name: string; col_type: string; width: number }
 export type JsonValue = null | boolean | number | string | JsonValue[] | Partial<{ [key in string]: JsonValue }>
-export type NewVariant = { product_id: string; sku: string; variant_name: string; uom_id: string }
-export type PriceList = "retail" | "wholesale" | "distribution"
+export type NewVariant = { product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number }
 export type Product = { id: string; name: string }
 /**
  * Error types for recovery operations (typed for frontend matching)
@@ -399,14 +341,12 @@ export type RecoveryError =
  * JSON serialization/deserialization error
  */
 { type: "ParseError"; message: string }
-export type TableLayout = { table_name: string; columns: ColumnDefRust[] }
-export type UpdateVariant = { sku: string | null; variant_name: string | null; uom_id: string | null }
+export type UpdateVariant = { sku: string | null; variant_name: string | null; uom_id: string | null; retail_price: number | null; wholesale_price: number | null; distribution_price: number | null }
 /**
  * User data stored in SQLite
  */
 export type User = { id: string; name: string; email: string; role: string; avatar_url: string | null }
-export type Variant = { id: string; product_id: string; sku: string; variant_name: string; uom_id: string }
-export type VariantPrice = { variant_id: string; price_list_id: PriceList; price: number }
+export type Variant = { id: string; product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number }
 
 /** tauri-specta globals **/
 
