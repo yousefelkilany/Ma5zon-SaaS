@@ -292,19 +292,25 @@ import { DataTableShell } from './DataTableShell'
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const { t } = useTranslation()
 
-  // Products data (existing query)
-  const { data: products, isLoading } = useQuery({
-    queryKey: ['products', entityType],
-    queryFn: () => {
-      if (entityType === 'products') {
-        return commands.products.getAll()
+  // Products data — fetch function determined by entityType
+  // Note: Only products fetch is implemented. Other entities (warehouses,
+  // invoices, customers, bills, vendors) return empty arrays until their
+  // fetch commands are added.
+  const { data: entityData, isLoading } = useQuery({
+    queryKey: ['entity', entityType],
+    queryFn: async () => {
+      switch (entityType) {
+        case 'products':
+          return commands.products.getAll()
+        // Other entity fetch commands to be added as they're implemented
+        default:
+          return Promise.resolve([])
       }
-      return Promise.resolve([])
     },
   })
 
   // Column layout from i18n (replaces getTableInfo query)
-  const productColumns: ColumnDef[] = useMemo(
+  const columns: ColumnDef[] = useMemo(
     () => getEntityLayout(entityType, t),
     [entityType, t]
   )
