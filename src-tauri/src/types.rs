@@ -117,6 +117,9 @@ pub struct Variant {
     pub retail_price: f64,
     pub wholesale_price: f64,
     pub distribution_price: f64,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
+    pub deleted_at: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]

@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use chrono::Local;
 use rusqlite::{params, Connection};
 use tauri::AppHandle;
 
@@ -27,11 +28,36 @@ impl DatabaseInitializable for VariantsInitializer {
                 retail_price REAL NOT NULL DEFAULT 0,
                 wholesale_price REAL NOT NULL DEFAULT 0,
                 distribution_price REAL NOT NULL DEFAULT 0,
+                created_at TEXT,
+                updated_at TEXT,
+                deleted_at TEXT,
                 FOREIGN KEY(product_id) REFERENCES products(id)
             )",
             [],
         )
         .map_err(|e| format!("Failed to create product_variants table: {e}"))?;
+
+        let alter_result = conn.execute(
+            "ALTER TABLE product_variants ADD COLUMN created_at TEXT",
+            [],
+        );
+        if alter_result.is_err() {
+            log::trace!("product_variants created_at column may already exist");
+        }
+        let alter_result = conn.execute(
+            "ALTER TABLE product_variants ADD COLUMN updated_at TEXT",
+            [],
+        );
+        if alter_result.is_err() {
+            log::trace!("product_variants updated_at column may already exist");
+        }
+        let alter_result = conn.execute(
+            "ALTER TABLE product_variants ADD COLUMN deleted_at TEXT",
+            [],
+        );
+        if alter_result.is_err() {
+            log::trace!("product_variants deleted_at column may already exist");
+        }
 
         let count: i64 = conn
             .query_row("SELECT COUNT(*) FROM product_variants", [], |row| {
@@ -124,7 +150,7 @@ fn seed_variants(conn: &Connection) -> Result<(), String> {
 pub async fn variants_get_all(app: AppHandle) -> Result<Vec<Variant>, String> {
     let conn = get_conn(&app)?;
     let mut stmt = conn
-        .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price FROM product_variants ORDER BY sku")
+        .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price, created_at, updated_at, deleted_at FROM product_variants WHERE deleted_at IS NULL ORDER BY sku")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let variants = stmt
@@ -138,6 +164,9 @@ pub async fn variants_get_all(app: AppHandle) -> Result<Vec<Variant>, String> {
                 retail_price: row.get(5)?,
                 wholesale_price: row.get(6)?,
                 distribution_price: row.get(7)?,
+                created_at: row.get(8)?,
+                updated_at: row.get(9)?,
+                deleted_at: row.get(10)?,
             })
         })
         .map_err(|e| format!("Failed to query variants: {e}"))?
@@ -158,7 +187,7 @@ pub async fn variants_get_by_product(
         .parse()
         .map_err(|e| format!("Invalid product_id: {e}"))?;
     let mut stmt = conn
-        .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price FROM product_variants WHERE product_id = ?1 ORDER BY sku")
+        .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price, created_at, updated_at, deleted_at FROM product_variants WHERE product_id = ?1 AND deleted_at IS NULL ORDER BY sku")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let variants = stmt
@@ -172,6 +201,9 @@ pub async fn variants_get_by_product(
                 retail_price: row.get(5)?,
                 wholesale_price: row.get(6)?,
                 distribution_price: row.get(7)?,
+                created_at: row.get(8)?,
+                updated_at: row.get(9)?,
+                deleted_at: row.get(10)?,
             })
         })
         .map_err(|e| format!("Failed to query variants: {e}"))?
@@ -187,7 +219,7 @@ pub async fn variants_get_by_id(app: AppHandle, id: String) -> Result<Option<Var
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let mut stmt = conn
-        .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price FROM product_variants WHERE id = ?1")
+        .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price, created_at, updated_at, deleted_at FROM product_variants WHERE id = ?1 AND deleted_at IS NULL")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let variant = stmt
@@ -201,6 +233,9 @@ pub async fn variants_get_by_id(app: AppHandle, id: String) -> Result<Option<Var
                 retail_price: row.get(5)?,
                 wholesale_price: row.get(6)?,
                 distribution_price: row.get(7)?,
+                created_at: row.get(8)?,
+                updated_at: row.get(9)?,
+                deleted_at: row.get(10)?,
             })
         })
         .ok();
@@ -212,9 +247,10 @@ pub async fn variants_get_by_id(app: AppHandle, id: String) -> Result<Option<Var
 #[specta::specta]
 pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Variant, String> {
     let conn = get_conn(&app)?;
+    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(
-        "INSERT INTO product_variants (product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-        params![variant.product_id, variant.sku, variant.variant_name, variant.uom_id, variant.retail_price, variant.wholesale_price, variant.distribution_price],
+        "INSERT INTO product_variants (product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
+        params![variant.product_id, variant.sku, variant.variant_name, variant.uom_id, variant.retail_price, variant.wholesale_price, variant.distribution_price, now, now],
     )
     .map_err(|e| format!("Failed to create variant: {e}"))?;
 
@@ -228,6 +264,9 @@ pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Vari
         retail_price: variant.retail_price,
         wholesale_price: variant.wholesale_price,
         distribution_price: variant.distribution_price,
+        created_at: Some(now.clone()),
+        updated_at: Some(now),
+        deleted_at: None,
     })
 }
 
@@ -245,18 +284,19 @@ pub async fn variants_update(
         .await?
         .ok_or_else(|| "Variant not found".to_string())?;
 
-    let new_sku = variant.sku.unwrap_or(current.sku);
-    let new_variant_name = variant.variant_name.unwrap_or(current.variant_name);
-    let new_uom_id = variant.uom_id.unwrap_or(current.uom_id);
+    let new_sku = variant.sku.unwrap_or(current.sku.clone());
+    let new_variant_name = variant.variant_name.unwrap_or(current.variant_name.clone());
+    let new_uom_id = variant.uom_id.unwrap_or(current.uom_id.clone());
     let new_retail_price = variant.retail_price.unwrap_or(current.retail_price);
     let new_wholesale_price = variant.wholesale_price.unwrap_or(current.wholesale_price);
     let new_distribution_price = variant
         .distribution_price
         .unwrap_or(current.distribution_price);
+    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
     conn.execute(
-        "UPDATE product_variants SET sku = ?1, variant_name = ?2, uom_id = ?3, retail_price = ?4, wholesale_price = ?5, distribution_price = ?6 WHERE id = ?7",
-        params![new_sku, new_variant_name, new_uom_id, new_retail_price, new_wholesale_price, new_distribution_price, id_i64],
+        "UPDATE product_variants SET sku = ?1, variant_name = ?2, uom_id = ?3, retail_price = ?4, wholesale_price = ?5, distribution_price = ?6, updated_at = ?7 WHERE id = ?8",
+        params![new_sku, new_variant_name, new_uom_id, new_retail_price, new_wholesale_price, new_distribution_price, now, id_i64],
     )
     .map_err(|e| format!("Failed to update variant: {e}"))?;
 
@@ -269,6 +309,9 @@ pub async fn variants_update(
         retail_price: new_retail_price,
         wholesale_price: new_wholesale_price,
         distribution_price: new_distribution_price,
+        created_at: current.created_at,
+        updated_at: Some(now),
+        deleted_at: current.deleted_at,
     })
 }
 
@@ -277,9 +320,10 @@ pub async fn variants_update(
 pub async fn variants_delete(app: AppHandle, id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
+    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(
-        "DELETE FROM product_variants WHERE id = ?1",
-        params![id_i64],
+        "UPDATE product_variants SET deleted_at = ?1 WHERE id = ?2",
+        params![now, id_i64],
     )
     .map_err(|e| format!("Failed to delete variant: {e}"))?;
     Ok(())
