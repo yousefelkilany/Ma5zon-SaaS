@@ -4,10 +4,11 @@ use argon2::{
     password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
-use rusqlite::{params, Connection};
-use std::path::PathBuf;
-use tauri::{AppHandle, Manager};
+use rusqlite::params;
+use tauri::AppHandle;
 
+use crate::commands::{self, DatabaseInitializable};
+use crate::commands::db_utils::{get_conn, get_db_path};
 use crate::types::User;
 
 struct UserWithHash {
@@ -19,79 +20,52 @@ struct UserWithHash {
     password_hash: Option<String>,
 }
 
-fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
-    let app_data_dir = app
-        .path()
-        .app_data_dir()
-        .map_err(|e| format!("Failed to get app data directory: {e}"))?;
+pub struct UserInitializer;
 
-    std::fs::create_dir_all(&app_data_dir)
-        .map_err(|e| format!("Failed to create app data directory: {e}"))?;
-
-    Ok(app_data_dir.join("ma5zon.db"))
-}
-
-fn init_db(app: &AppHandle) -> Result<Connection, String> {
-    let db_path = get_db_path(app)?;
-    log::debug!("[init_db] Opening database at: {:?}", db_path);
-    let conn = Connection::open(&db_path).map_err(|e| {
-        log::error!("[init_db] Failed to open database: {e}");
-        format!("Failed to open database: {e}")
-    })?;
-
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS users (
-            id TEXT PRIMARY KEY,
-            name TEXT NOT NULL UNIQUE,
-            email TEXT NOT NULL UNIQUE,
-            role TEXT NOT NULL,
-            avatar_url TEXT,
-            password_hash TEXT
-        )",
-        [],
-    )
-    .map_err(|e| {
-        log::error!("[init_db] Failed to create users table: {e}");
-        format!("Failed to create users table: {e}")
-    })?;
-
-    log::debug!("[init_db] Database initialized successfully");
-
-    Ok(conn)
-}
-
-fn seed_default_admin(conn: &Connection) -> Result<(), String> {
-    let count: i64 = conn
-        .query_row("SELECT COUNT(*) FROM users", [], |row| row.get(0))
-        .map_err(|e| format!("Failed to check users count: {e}"))?;
-
-    if count == 0 {
-        log::info!("[seed_default_admin] No users found, seeding default admin");
-        let password_hash = hash_password("admin").map_err(|e| {
-            log::error!("[seed_default_admin] Failed to hash password: {e}");
-            e
-        })?;
-        let avatar: Option<String> = None;
-        let email = "admin@localhost".to_string();
-        conn.execute(
-            "INSERT INTO users (id, name, email, role, avatar_url, password_hash) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
-            params![
-                uuid::Uuid::new_v4().to_string(),
-                "admin",
-                email,
-                "Administrator",
-                avatar,
-                password_hash
-            ],
-        )
-        .map_err(|e| {
-            log::error!("[seed_default_admin] Failed to insert default admin: {e}");
-            format!("Failed to seed default admin: {e}")
-        })?;
-        log::info!("[seed_default_admin] Default admin seeded successfully");
+impl commands::DatabaseInitializable for UserInitializer {
+    fn table_name(&self) -> &str {
+        "users"
     }
 
-    Ok(())
+    async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
+        let conn = get_conn(app)?;
+
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS users (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL UNIQUE,
+                email TEXT NOT NULL UNIQUE,
+                role TEXT NOT NULL,
+                avatar_url TEXT,
+                password_hash TEXT
+            )",
+            [],
+        )
+        .map_err(|e| format!("Failed to create users table: {e}"))?;
+
+        let count: i64 = conn
+            .query_row("SELECT COUNT(*) FROM users", [], |row| row.get(0))
+            .map_err(|e| format!("Failed to check users count: {e}"))?;
+
+        if count == 0 {
+            log::info!("[UserInitializer] Seeding default admin");
+            let password_hash = hash_password("admin").map_err(|e| format!("Failed to hash password: {e}"))?;
+            conn.execute(
+                "INSERT INTO users (id, name, email, role, avatar_url, password_hash) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+                rusqlite::params![
+                    uuid::Uuid::new_v4().to_string(),
+                    "admin",
+                    "admin@localhost",
+                    "Administrator",
+                    Option::<String>::None,
+                    password_hash
+                ],
+            )
+            .map_err(|e| format!("Failed to seed default admin: {e}"))?;
+        }
+
+        Ok(())
+    }
 }
 
 fn hash_password(password: &str) -> Result<String, String> {
@@ -122,14 +96,7 @@ pub async fn authenticate(
     password: &str,
 ) -> Result<Option<User>, String> {
     log::info!("[authenticate] Attempting login for username: {}", username);
-    let conn = init_db(&app).map_err(|e| {
-        log::error!("[authenticate] Failed to initialize database: {e}");
-        e
-    })?;
-    seed_default_admin(&conn).map_err(|e| {
-        log::error!("[authenticate] Failed to seed default admin: {e}");
-        e
-    })?;
+    let conn = get_conn(&app)?;
 
     let mut stmt = conn
         .prepare("SELECT id, name, email, role, avatar_url, password_hash FROM users WHERE name = ?1")
@@ -185,7 +152,7 @@ pub async fn authenticate(
 #[tauri::command]
 #[specta::specta]
 pub async fn load_user(app: AppHandle, user_id: &str) -> Result<Option<User>, String> {
-    let conn = init_db(&app)?;
+    let conn = get_conn(&app)?;
 
     let mut stmt = conn
         .prepare("SELECT id, name, email, role, avatar_url FROM users WHERE id = ?1")
@@ -209,7 +176,7 @@ pub async fn load_user(app: AppHandle, user_id: &str) -> Result<Option<User>, St
 #[tauri::command]
 #[specta::specta]
 pub async fn save_user(app: AppHandle, user: User) -> Result<(), String> {
-    let conn = init_db(&app)?;
+    let conn = get_conn(&app)?;
 
     conn.execute(
         "INSERT INTO users (id, name, role, avatar_url) VALUES (?1, ?2, ?3, ?4)
@@ -224,7 +191,7 @@ pub async fn save_user(app: AppHandle, user: User) -> Result<(), String> {
 #[tauri::command]
 #[specta::specta]
 pub async fn delete_user(app: AppHandle, user_id: &str) -> Result<(), String> {
-    let conn = init_db(&app)?;
+    let conn = get_conn(&app)?;
 
     conn.execute("DELETE FROM users WHERE id = ?1", params![user_id])
         .map_err(|e| format!("Failed to delete user: {e}"))?;
@@ -240,7 +207,7 @@ pub async fn update_password(
     current_password: String,
     new_password: String,
 ) -> Result<(), String> {
-    let conn = init_db(&app)?;
+    let conn = get_conn(&app)?;
 
     let mut stmt = conn
         .prepare("SELECT password_hash FROM users WHERE id = ?1")
@@ -276,7 +243,7 @@ pub async fn update_user(
     email: String,
     avatar_url: Option<String>,
 ) -> Result<User, String> {
-    let conn = init_db(&app)?;
+    let conn = get_conn(&app)?;
 
     conn.execute(
         "UPDATE users SET name = ?1, email = ?2, avatar_url = ?3 WHERE id = ?4",
