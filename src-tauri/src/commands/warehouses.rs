@@ -28,7 +28,7 @@ impl DatabaseInitializable for WarehousesInitializer {
             )",
             [],
         )
-.map_err(|e| format!("Failed to create warehouses table: {e}"))?;
+        .map_err(|e| format!("Failed to create warehouses table: {e}"))?;
 
         let count: i64 = conn
             .query_row("SELECT COUNT(*) FROM warehouses", [], |row| row.get(0))
@@ -162,9 +162,18 @@ pub async fn warehouses_update(
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+
+    let created_at: String = conn
+        .query_row(
+            "SELECT created_at FROM warehouses WHERE id = ?1 AND deleted_at IS NULL",
+            params![id_i64],
+            |row| row.get(0),
+        )
+        .map_err(|e| format!("Warehouse not found: {e}"))?;
+
     conn.execute(
-        "UPDATE warehouses SET name = ?1, location = ?2, updated_at = ?3 WHERE id = ?4",
-        params![name, location, now, id_i64],
+        "UPDATE warehouses SET name = ?1, location = ?2, updated_at = ?3 WHERE id = ?4 AND deleted_at IS NULL",
+        params![name, location, &now, id_i64],
     )
     .map_err(|e| format!("Failed to update warehouse: {e}"))?;
 
@@ -172,7 +181,7 @@ pub async fn warehouses_update(
         id,
         name,
         location,
-        created_at: None,
+        created_at: Some(created_at),
         updated_at: Some(now),
         deleted_at: None,
     })
