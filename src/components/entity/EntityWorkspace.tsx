@@ -156,7 +156,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     queryKey: ['tableLayout', entityType],
     queryFn: async () => {
       console.log(`[EntityWorkspace] Fetching table layout for: ${entityType}`)
-      const result = await commands.dbUtils.getTableInfo(entityType)
+      const result = await commands.getTableInfo(entityType)
       console.log(`[EntityWorkspace] getTableInfo result:`, result)
       return unwrapResult(result)
     },
