@@ -302,133 +302,29 @@
   "settingsPopover.language.english": "EN",
     "entity.workspace.selected": "{count, plural, one {# selected} other {# selected}}",
 
-  "entity": {
-    "layout": {
-      "products": {
-        "label": "Products",
-        "columns": {
-          "name": {
-            "label": "Product Name",
-            "type": "text",
-            "width": 200
-          },
-          "category": {
-            "label": "Category",
-            "type": "text",
-            "width": 120
-          },
-          "unit_price": {
-            "label": "Unit Price",
-            "type": "currency",
-            "width": 120
-          },
-          "qty_in_stock": {
-            "label": "Qty in Stock",
-            "type": "number",
-            "width": 100
-          }
-        }
-      },
-      "warehouses": {
-        "label": "Warehouses",
-        "columns": {
-          "name": {
-            "label": "Warehouse Name",
-            "type": "text",
-            "width": 200
-          },
-          "location": {
-            "label": "Location",
-            "type": "text",
-            "width": 150
-          }
-        }
-      },
-      "invoices": {
-        "label": "Invoices",
-        "columns": {
-          "invoice_number": {
-            "label": "Invoice #",
-            "type": "text",
-            "width": 120
-          },
-          "customer_name": {
-            "label": "Customer",
-            "type": "text",
-            "width": 180
-          },
-          "total_amount": {
-            "label": "Total",
-            "type": "currency",
-            "width": 120
-          },
-          "status": {
-            "label": "Status",
-            "type": "status",
-            "width": 100
-          },
-          "created_at": {
-            "label": "Date",
-            "type": "text",
-            "width": 100
-          }
-        }
-      },
-      "customers": {
-        "label": "Customers",
-        "columns": {
-          "name": {
-            "label": "Customer Name",
-            "type": "text",
-            "width": 200
-          },
-          "email": {
-            "label": "Email",
-            "type": "text",
-            "width": 200
-          }
-        }
-      },
-      "bills": {
-        "label": "Bills",
-        "columns": {
-          "bill_number": {
-            "label": "Bill #",
-            "type": "text",
-            "width": 120
-          },
-          "vendor_name": {
-            "label": "Vendor",
-            "type": "text",
-            "width": 180
-          },
-          "total_amount": {
-            "label": "Total",
-            "type": "currency",
-            "width": 120
-          },
-          "status": {
-            "label": "Status",
-            "type": "status",
-            "width": 100
-          }
-        }
-      },
-      "vendors": {
-        "label": "Vendors",
-        "columns": {
-          "name": {
-            "label": "Vendor Name",
-            "type": "text",
-            "width": 200
-          },
-          "email": {
-            "label": "Email",
-            "type": "text",
-            "width": 200
-          }
-        }
-      }
-    }
-  }
+  "entity.layout.products.label": "Products",
+  "entity.layout.products.columns.name": "Product Name",
+  "entity.layout.products.columns.category": "Category",
+  "entity.layout.products.columns.unit_price": "Unit Price",
+  "entity.layout.products.columns.qty_in_stock": "Qty in Stock",
+  "entity.layout.warehouses.label": "Warehouses",
+  "entity.layout.warehouses.columns.name": "Warehouse Name",
+  "entity.layout.warehouses.columns.location": "Location",
+  "entity.layout.invoices.label": "Invoices",
+  "entity.layout.invoices.columns.invoice_number": "Invoice #",
+  "entity.layout.invoices.columns.customer_name": "Customer",
+  "entity.layout.invoices.columns.total_amount": "Total",
+  "entity.layout.invoices.columns.status": "Status",
+  "entity.layout.invoices.columns.created_at": "Date",
+  "entity.layout.customers.label": "Customers",
+  "entity.layout.customers.columns.name": "Customer Name",
+  "entity.layout.customers.columns.email": "Email",
+  "entity.layout.bills.label": "Bills",
+  "entity.layout.bills.columns.bill_number": "Bill #",
+  "entity.layout.bills.columns.vendor_name": "Vendor",
+  "entity.layout.bills.columns.total_amount": "Total",
+  "entity.layout.bills.columns.status": "Status",
+  "entity.layout.vendors.label": "Vendors",
+  "entity.layout.vendors.columns.name": "Vendor Name",
+  "entity.layout.vendors.columns.email": "Email"
 }

@@ -285,135 +285,31 @@
   "entity.detail.tabs.audits": "التدقيق",
   "settingsPopover.language.arabic": "العربية",
   "settingsPopover.language.english": "EN",
-  "entity.workspace.selected": "{count, plural, =0 {لا توجد محددات} =1 {محدد واحد} =2 {محددان} few {# محددات} many {# محدد} other {# محدد}}",
+"entity.workspace.selected": "{count, plural, =0 {لا توجد محددات} =1 {محدد واحد} =2 {محددان} few {# محددات} many {# محدد} other {# محدد}}",
 
-  "entity": {
-    "layout": {
-      "products": {
-        "label": "المنتجات",
-        "columns": {
-          "name": {
-            "label": "اسم المنتج",
-            "type": "text",
-            "width": 200
-          },
-          "category": {
-            "label": "الفئة",
-            "type": "text",
-            "width": 120
-          },
-          "unit_price": {
-            "label": "سعر الوحدة",
-            "type": "currency",
-            "width": 120
-          },
-          "qty_in_stock": {
-            "label": "الكمية في المخزون",
-            "type": "number",
-            "width": 100
-          }
-        }
-      },
-      "warehouses": {
-        "label": "المستودعات",
-        "columns": {
-          "name": {
-            "label": "اسم المستودع",
-            "type": "text",
-            "width": 200
-          },
-          "location": {
-            "label": "الموقع",
-            "type": "text",
-            "width": 150
-          }
-        }
-      },
-      "invoices": {
-        "label": "الفواتير",
-        "columns": {
-          "invoice_number": {
-            "label": "رقم الفاتورة",
-            "type": "text",
-            "width": 120
-          },
-          "customer_name": {
-            "label": "العميل",
-            "type": "text",
-            "width": 180
-          },
-          "total_amount": {
-            "label": "المجموع",
-            "type": "currency",
-            "width": 120
-          },
-          "status": {
-            "label": "الحالة",
-            "type": "status",
-            "width": 100
-          },
-          "created_at": {
-            "label": "التاريخ",
-            "type": "text",
-            "width": 100
-          }
-        }
-      },
-      "customers": {
-        "label": "العملاء",
-        "columns": {
-          "name": {
-            "label": "اسم العميل",
-            "type": "text",
-            "width": 200
-          },
-          "email": {
-            "label": "البريد الإلكتروني",
-            "type": "text",
-            "width": 200
-          }
-        }
-      },
-      "bills": {
-        "label": "فواتير الشراء",
-        "columns": {
-          "bill_number": {
-            "label": "رقم الفاتورة",
-            "type": "text",
-            "width": 120
-          },
-          "vendor_name": {
-            "label": "المورد",
-            "type": "text",
-            "width": 180
-          },
-          "total_amount": {
-            "label": "المجموع",
-            "type": "currency",
-            "width": 120
-          },
-          "status": {
-            "label": "الحالة",
-            "type": "status",
-            "width": 100
-          }
-        }
-      },
-      "vendors": {
-        "label": "الموردون",
-        "columns": {
-          "name": {
-            "label": "اسم المورد",
-            "type": "text",
-            "width": 200
-          },
-          "email": {
-            "label": "البريد الإلكتروني",
-            "type": "text",
-            "width": 200
-          }
-        }
-      }
-    }
-  }
+  "entity.layout.products.label": "المنتجات",
+  "entity.layout.products.columns.name": "اسم المنتج",
+  "entity.layout.products.columns.category": "الفئة",
+  "entity.layout.products.columns.unit_price": "سعر الوحدة",
+  "entity.layout.products.columns.qty_in_stock": "الكمية في المخزون",
+  "entity.layout.warehouses.label": "المستودعات",
+  "entity.layout.warehouses.columns.name": "اسم المستودع",
+  "entity.layout.warehouses.columns.location": "الموقع",
+  "entity.layout.invoices.label": "الفواتير",
+  "entity.layout.invoices.columns.invoice_number": "رقم الفاتورة",
+  "entity.layout.invoices.columns.customer_name": "العميل",
+  "entity.layout.invoices.columns.total_amount": "المجموع",
+  "entity.layout.invoices.columns.status": "الحالة",
+  "entity.layout.invoices.columns.created_at": "التاريخ",
+  "entity.layout.customers.label": "العملاء",
+  "entity.layout.customers.columns.name": "اسم العميل",
+  "entity.layout.customers.columns.email": "البريد الإلكتروني",
+  "entity.layout.bills.label": "فواتير الشراء",
+  "entity.layout.bills.columns.bill_number": "رقم الفاتورة",
+  "entity.layout.bills.columns.vendor_name": "المورد",
+  "entity.layout.bills.columns.total_amount": "المجموع",
+  "entity.layout.bills.columns.status": "الحالة",
+  "entity.layout.vendors.label": "الموردون",
+  "entity.layout.vendors.columns.name": "اسم المورد",
+  "entity.layout.vendors.columns.email": "البريد الإلكتروني"
 }
