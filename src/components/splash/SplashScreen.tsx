@@ -58,7 +58,7 @@ function SplashScreen({ isReady, minDuration = 1000 }: SplashScreenProps) {
             {t('titlebar.appName')}
           </h1>
           <p className="text-base text-muted-foreground opacity-70">
-            Precision in every transaction.
+            {t('splash.loadingCaption')}
           </p>
         </div>
 

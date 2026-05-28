@@ -17,11 +17,6 @@ export const entityLayoutConfig = {
         type: 'currency',
         width: 120,
       },
-      qty_in_stock: {
-        labelKey: 'entity.layout.products.columns.qty_in_stock',
-        type: 'number',
-        width: 100,
-      },
     },
   },
   warehouses: {

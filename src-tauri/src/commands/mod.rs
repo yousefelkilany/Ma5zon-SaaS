@@ -12,10 +12,10 @@ pub mod preferences;
 pub mod products;
 pub mod quick_pane;
 pub mod recovery;
+pub mod stock;
 pub mod user;
 pub mod variants;
 pub mod warehouses;
-pub mod stock;
 
 #[async_trait]
 pub trait DatabaseInitializable: Send + Sync {
@@ -24,11 +24,8 @@ pub trait DatabaseInitializable: Send + Sync {
 }
 
 use self::{
-    products::ProductsInitializer,
-    user::UserInitializer,
-    variants::VariantsInitializer,
-    warehouses::WarehousesInitializer,
-    stock::StockInitializer,
+    products::ProductsInitializer, stock::StockInitializer, user::UserInitializer,
+    variants::VariantsInitializer, warehouses::WarehousesInitializer,
 };
 
 pub const TABLE_INITIALIZERS: &[&dyn DatabaseInitializable] = &[

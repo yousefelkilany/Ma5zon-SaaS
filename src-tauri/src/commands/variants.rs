@@ -113,7 +113,7 @@ fn seed_variants(conn: &Connection) -> Result<(), String> {
         (vec!["2 أمبير", "5 أمبير", "10 أمبير", "20 أمبير"], "أمبير"),
     ];
 
-    let uom_names = vec!["pcs", "m", "kg", "L", "box", "roll", "set"];
+    let uom_names = ["pcs", "m", "kg", "L", "box", "roll", "set"];
 
     for (i, product_id) in product_ids.iter().enumerate() {
         let num_variants = rng.gen_range(2..5);

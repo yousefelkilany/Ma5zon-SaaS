@@ -110,7 +110,11 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
           try {
             const result = await commands.variantsGetByProduct(id)
             if (result.status === 'ok') {
-              setVariantsCache(prev => new Map(prev).set(id, result.data))
+              const variantRows: VariantRow[] = result.data.map(v => ({
+                ...v,
+                uom_id: Number(v.uom_id),
+              }))
+              setVariantsCache(prev => new Map(prev).set(id, variantRows))
             }
           } finally {
             setLoadingVariants(prev => {

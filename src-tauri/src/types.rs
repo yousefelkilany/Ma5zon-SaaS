@@ -101,7 +101,9 @@ pub struct User {
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct Product {
     pub id: String,
+    pub company: String,
     pub name: String,
+    pub category: String,
     pub created_at: Option<String>,
     pub updated_at: Option<String>,
     pub deleted_at: Option<String>,
@@ -120,20 +122,6 @@ pub struct Variant {
     pub created_at: Option<String>,
     pub updated_at: Option<String>,
     pub deleted_at: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, Type)]
-pub struct VariantPrice {
-    pub variant_id: String,
-    pub price_list_id: PriceList,
-    pub price: f64,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, Type)]
-pub struct NewVariantPrice {
-    pub variant_id: String,
-    pub price_list_id: PriceList,
-    pub price: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
@@ -158,12 +146,30 @@ pub struct UpdateVariant {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[allow(dead_code)]
+pub struct VariantPrice {
+    pub variant_id: String,
+    pub price_list_id: PriceList,
+    pub price: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[allow(dead_code)]
+pub struct NewVariantPrice {
+    pub variant_id: String,
+    pub price_list_id: PriceList,
+    pub price: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[allow(dead_code)]
 pub struct TableLayout {
     pub table_name: String,
     pub columns: Vec<ColumnDefRust>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[allow(dead_code)]
 pub struct ColumnDefRust {
     pub id: String,
     pub name: String,
@@ -173,6 +179,7 @@ pub struct ColumnDefRust {
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Type)]
 #[serde(rename_all = "lowercase")]
+#[allow(dead_code)]
 pub enum PriceList {
     Retail,
     Wholesale,
@@ -180,6 +187,7 @@ pub enum PriceList {
 }
 
 impl PriceList {
+    #[allow(dead_code)]
     pub fn from_id(id: i64) -> Option<Self> {
         match id {
             1 => Some(PriceList::Retail),
@@ -189,6 +197,7 @@ impl PriceList {
         }
     }
 
+    #[allow(dead_code)]
     pub fn id(&self) -> i64 {
         match self {
             PriceList::Retail => 1,

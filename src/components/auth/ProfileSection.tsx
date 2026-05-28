@@ -19,7 +19,7 @@ export function ProfileSection({ className }: ProfileSectionProps) {
   // Remove the useEffect that causes extra saveUser calls - handled in handleLoginSuccess
   // The backend sync on login is already done in handleLoginSuccess
 
-  const handleLoginSuccess = (userId: string, userData: { id: string; name: string; role: string; avatar_url: string | null }) => {
+  const handleLoginSuccess = (userId: string, userData: { id: string; name: string; email: string; role: string; avatar_url: string | null }) => {
     login(userId, userData)
   }
 

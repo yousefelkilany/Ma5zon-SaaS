@@ -21,7 +21,9 @@ impl DatabaseInitializable for ProductsInitializer {
         conn.execute(
             "CREATE TABLE IF NOT EXISTS products (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                company TEXT NOT NULL,
                 name TEXT NOT NULL,
+                category TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 deleted_at DATETIME DEFAULT NULL
@@ -45,52 +47,52 @@ impl DatabaseInitializable for ProductsInitializer {
 
 fn seed_products(conn: &Connection) -> Result<(), String> {
     let products = vec![
-        "محرك كهربائي صناعي",
-        "وحدة تحكم إلكترونية",
-        "وحدة هيدروليكية",
-        "طقم bearings دقيق",
-        "طقم براغي ستانلس ستيل",
-        "لوحة عرض LED",
-        "لوح عزل حراري",
-        "حامل ألياف كربون",
-        "حزمة أسلاك نحاسية",
-        "ملف ألومنيوم",
-        "ختم مطاطي",
-        "غطاء بلاستيكي",
-        "عدسة زجاجية",
-        "موصل نحاسي",
-        "لوحة تيتانيوم",
-        "مصفوفة مكثفات سيراميك",
-        "حساس encoder مغناطيسي",
-        "أسطوانة هوائية",
-        "صندوق تقاطع ألواح شمسية",
-        "طقم تروس مركب",
-        "موجّه موجات صوتي",
-        "حزمة ألياف بصرية",
-        "محول تردد عالي",
-        "بطارية طوارئ",
-        "متحكم محرك سيرفو",
-        "سكة توجيه خطية",
-        "صمام تخفيف ضغط",
-        "ثرموستات معدن ثنائي",
-        "حامل مضاد للاهتزاز",
-        "وحدة هوائي تردد الراديو",
-        "أنبوب ستانلس 316L",
-        "هيكل بولي كربونات",
-        "مبدد حراري جرافيت",
-        "طقم مغناطيس نيوديميوم",
-        "محمل بطانة PTFE",
-        "مركب راتنج إيبوكسي",
-        "طقم حلقة سيليكون",
-        "أنبوب زجاجي بوريوسيليكات",
-        "صفائح فولاذ ملفوحة",
+        ("شركة المصاعد العربية", "محرك كهربائي صناعي", "محركات"),
+        ("شركة المصاعد العربية", "وحدة تحكم إلكترونية", "إلكترونيات"),
+        ("شركة المصاعد العربية", "وحدة هيدروليكية", "هيدروليك"),
+        ("مصادر الإنتاج", "طقم bearings دقيق", "قطع غيار"),
+        ("مصادر الإنتاج", "طقم براغي ستانلس ستيل", "مثبتات"),
+        ("مصادر الإنتاج", "لوحة عرض LED", "إلكترونيات"),
+        ("عزل الحلول", "لوح عزل حراري", "عزل"),
+        ("كربون تك", "حامل ألياف كربون", "مركبات"),
+        ("كهرباء الخليج", "حزمة أسلاك نحاسية", "كهرباء"),
+        ("كهرباء الخليج", "ملف ألومنيوم", "كهرباء"),
+        ("إدارة المشتريات", "ختم مطاطي", "مطاط"),
+        ("إدارة المشتريات", "غطاء بلاستيكي", "بلاستيك"),
+        ("أوبتكس", "عدسة زجاجية", "بصريات"),
+        ("كهرباء الخليج", "موصل نحاسي", "كهرباء"),
+        ("تيتانيوم تك", "لوحة تيتانيوم", "فلزات"),
+        ("إلكترونيات المستقبل", "مصفوفة مكثفات سيراميك", "إلكترونيات"),
+        ("سنسور تك", "حساس encoder مغناطيسي", "حساسات"),
+        ("نيوماتيك العربية", "أسطوانة هوائية", "هوائيات"),
+        ("طاقة الشمس", "صندوق تقاطع ألواح شمسية", "طاقة"),
+        ("تروس مصر", "طقم تروس مركب", "تروس"),
+        ("صوتيات", "موجّه موجات صوتي", "صوتيات"),
+        ("فايبر", "حزمة ألياف بصرية", "ألياف"),
+        ("فريكون", "محول تردد عالي", "إلكترونيات"),
+        ("باور سيستمز", "بطارية طوارئ", "بطاريات"),
+        ("سيمنس مصر", "متحكم محرك سيرفو", "تحكم"),
+        ("لينير", "سكة توجيه خطية", "حركة خطية"),
+        ("فالف", "صمام تخفيف ضغط", "صمامات"),
+        ("ثيرمو", "ثرموستات معدن ثنائي", "تحكم حراري"),
+        ("م antivibration", "حامل مضاد للاهتزاز", "مثبطات"),
+        ("راديو تك", "وحدة هوائي تردد الراديو", "اتصالات"),
+        ("ستانلس تك", "أنبوب ستانلس 316L", "فلزات"),
+        ("بولي تك", "هيكل بولي كربونات", "بلاستيك"),
+        ("جرافيت سوليوشنز", "مبدد حراري جرافيت", "حرارية"),
+        ("نيوديميوم", "طقم مغناطيس نيوديميوم", "مغناطيس"),
+        ("ت PTFE", "محمل بطانة PTFE", "محامل"),
+        ("راتنج مصر", "مركب راتنج إيبوكسي", "راتنجات"),
+        ("سيليكون", "طقم حلقة سيليكون", "سيليكون"),
+        ("بوريو", "أنبوب زجاجي بوريوسيليكات", "زجاج"),
+        ("ستيل برو", "صفائح فولاذ ملفوحة", "فلزات"),
     ];
 
     for product in products {
         let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
         conn.execute(
-            "INSERT INTO products (name, created_at, updated_at) VALUES (?1, ?2, ?3)",
-            [product, &now, &now],
+            "INSERT INTO products (company, name, category, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5)",
+            [product.0, product.1, product.2, &now, &now],
         )
         .map_err(|e| format!("Failed to insert product: {e}"))?;
     }
@@ -103,17 +105,19 @@ fn seed_products(conn: &Connection) -> Result<(), String> {
 pub async fn get_all(app: AppHandle) -> Result<Vec<Product>, String> {
     let conn = get_conn(&app)?;
     let mut stmt = conn
-        .prepare("SELECT id, name, created_at, updated_at, deleted_at FROM products WHERE deleted_at IS NULL ORDER BY name")
+        .prepare("SELECT id, company, name, category, created_at, updated_at, deleted_at FROM products WHERE deleted_at IS NULL ORDER BY name")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let products = stmt
         .query_map([], |row| {
             Ok(Product {
                 id: row.get::<_, i64>(0)?.to_string(),
-                name: row.get(1)?,
-                created_at: row.get(2)?,
-                updated_at: row.get(3)?,
-                deleted_at: row.get(4)?,
+                company: row.get(1)?,
+                name: row.get(2)?,
+                category: row.get(3)?,
+                created_at: row.get(4)?,
+                updated_at: row.get(5)?,
+                deleted_at: row.get(6)?,
             })
         })
         .map_err(|e| format!("Failed to query products: {e}"))?
@@ -129,17 +133,19 @@ pub async fn get_by_id(app: AppHandle, id: String) -> Result<Option<Product>, St
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let mut stmt = conn
-        .prepare("SELECT id, name, created_at, updated_at, deleted_at FROM products WHERE id = ?1 AND deleted_at IS NULL")
+        .prepare("SELECT id, company, name, category, created_at, updated_at, deleted_at FROM products WHERE id = ?1 AND deleted_at IS NULL")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let product = stmt
         .query_row(params![id_i64], |row| {
             Ok(Product {
                 id: row.get::<_, i64>(0)?.to_string(),
-                name: row.get(1)?,
-                created_at: row.get(2)?,
-                updated_at: row.get(3)?,
-                deleted_at: row.get(4)?,
+                company: row.get(1)?,
+                name: row.get(2)?,
+                category: row.get(3)?,
+                created_at: row.get(4)?,
+                updated_at: row.get(5)?,
+                deleted_at: row.get(6)?,
             })
         })
         .ok();
@@ -149,19 +155,26 @@ pub async fn get_by_id(app: AppHandle, id: String) -> Result<Option<Product>, St
 
 #[tauri::command]
 #[specta::specta]
-pub async fn create(app: AppHandle, name: String) -> Result<Product, String> {
+pub async fn create(
+    app: AppHandle,
+    company: String,
+    name: String,
+    category: String,
+) -> Result<Product, String> {
     let conn = get_conn(&app)?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(
-        "INSERT INTO products (name, created_at, updated_at) VALUES (?1, ?2, ?3)",
-        params![name, &now, &now],
+        "INSERT INTO products (company, name, category, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5)",
+        params![company, name, &now, &now],
     )
     .map_err(|e| format!("Failed to create product: {e}"))?;
 
     let id = conn.last_insert_rowid().to_string();
     Ok(Product {
         id,
+        company,
         name,
+        category,
         created_at: Some(now.clone()),
         updated_at: Some(now),
         deleted_at: None,
@@ -170,28 +183,36 @@ pub async fn create(app: AppHandle, name: String) -> Result<Product, String> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn update(app: AppHandle, id: String, name: String) -> Result<Product, String> {
+pub async fn update(
+    app: AppHandle,
+    id: String,
+    company: String,
+    name: String,
+    category: String,
+) -> Result<Product, String> {
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
-    let created_at: String = conn
+    let (created_at,): (String,) = conn
         .query_row(
             "SELECT created_at FROM products WHERE id = ?1 AND deleted_at IS NULL",
             params![id_i64],
-            |row| row.get(0),
+            |row| Ok((row.get(0)?,)),
         )
         .map_err(|e| format!("Product not found: {e}"))?;
 
     conn.execute(
-        "UPDATE products SET name = ?1, updated_at = ?2 WHERE id = ?3 AND deleted_at IS NULL",
-        params![name, &now, id_i64],
+        "UPDATE products SET company = ?1, name = ?2, category = ?3, updated_at = ?4 WHERE id = ?5 AND deleted_at IS NULL",
+        params![company, name, category, &now, id_i64],
     )
     .map_err(|e| format!("Failed to update product: {e}"))?;
 
     Ok(Product {
         id,
+        company,
         name,
+        category,
         created_at: Some(created_at),
         updated_at: Some(now),
         deleted_at: None,

@@ -223,17 +223,17 @@ async getById(id: string) : Promise<Result<Product | null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async create(name: string) : Promise<Result<Product, string>> {
+async create(company: string, name: string, category: string) : Promise<Result<Product, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("create", { name }) };
+    return { status: "ok", data: await TAURI_INVOKE("create", { company, name, category }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
 },
-async update(id: string, name: string) : Promise<Result<Product, string>> {
+async update(id: string, company: string, name: string, category: string) : Promise<Result<Product, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("update", { id, name }) };
+    return { status: "ok", data: await TAURI_INVOKE("update", { id, company, name, category }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -405,7 +405,7 @@ language: string | null }
 export type ColumnInfo = { cid: number; name: string; col_type: string; notnull: boolean; dflt_value: string | null; pk: boolean }
 export type JsonValue = null | boolean | number | string | JsonValue[] | Partial<{ [key in string]: JsonValue }>
 export type NewVariant = { product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number }
-export type Product = { id: string; name: string; created_at: string | null; updated_at: string | null; deleted_at: string | null }
+export type Product = { id: string; company: string; name: string; category: string; created_at: string | null; updated_at: string | null; deleted_at: string | null }
 /**
  * Error types for recovery operations (typed for frontend matching)
  */

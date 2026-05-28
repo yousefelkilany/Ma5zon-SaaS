@@ -1,7 +1,6 @@
 use async_trait::async_trait;
 use rand::{seq::SliceRandom, Rng};
 use rusqlite::{params, Connection};
-use specta::Type;
 use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
@@ -133,7 +132,7 @@ fn seed_stock_movements(conn: &Connection) -> Result<(), String> {
             .map_err(|e| format!("Failed to collect warehouse IDs: {e}"))?
     };
 
-    let movement_types = vec!["TRANSFER", "PURCHASE", "SALE", "ADJUST"];
+    let movement_types = ["TRANSFER", "PURCHASE", "SALE", "ADJUST"];
     let num_movements = rng.gen_range(30..=35);
 
     let base_date = chrono::NaiveDate::from_ymd_opt(2026, 2, 28).unwrap();

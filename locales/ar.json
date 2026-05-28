@@ -1,5 +1,6 @@
 {
   "app.name": "Ma5zon",
+  "splash.loadingCaption": "الدقة فى المعاملات",
   "menu.about": "حول {{appName}}",
   "menu.checkForUpdates": "التحقق من التحديثات...",
   "menu.preferences": "التفضيلات...",
@@ -53,14 +54,12 @@
   "common.theApplicationEncounteredAnUnexpectedError": "واجه التطبيق خطأً غير متوقع. تم حفظ بياناتك تلقائيًا.",
   "common.reloadApplication": "إعادة تحميل التطبيق",
   "common.tryAgain": "حاول مرة أخرى",
-
   "common.types.text": "نص",
   "common.types.currency": "عملة",
   "common.types.number": "رقم",
   "common.types.date": "تاريخ",
   "common.types.status": "حالة",
   "common.types.actions": "إجراءات",
-
   "commands.group.navigation": "التنقل",
   "commands.group.settings": "الإعدادات",
   "commands.group.window": "النافذة",
@@ -294,8 +293,7 @@
   "entity.detail.tabs.audits": "التدقيق",
   "settingsPopover.language.arabic": "العربية",
   "settingsPopover.language.english": "EN",
-"entity.workspace.selected": "{count, plural, =0 {لا توجد محددات} =1 {محدد واحد} =2 {محددان} few {# محددات} many {# محدد} other {# محدد}}",
-
+  "entity.workspace.selected": "{count, plural, =0 {لا توجد محددات} =1 {محدد واحد} =2 {محددان} few {# محددات} many {# محدد} other {# محدد}}",
   "entity.layout.products.label": "المنتجات",
   "entity.layout.products.columns.name": "اسم المنتج",
   "entity.layout.products.columns.category": "الفئة",

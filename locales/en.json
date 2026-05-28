@@ -1,6 +1,6 @@
 {
   "app.name": "Ma5zon",
-
+  "splash.loadingCaption": "Precision in every transaction",
   "menu.about": "About {{appName}}",
   "menu.checkForUpdates": "Check for Updates...",
   "menu.preferences": "Preferences...",
@@ -11,13 +11,11 @@
   "menu.view": "View",
   "menu.toggleLeftSidebar": "Toggle Left Sidebar",
   "menu.toggleRightSidebar": "Toggle Right Sidebar",
-
   "preferences.title": "Preferences",
   "preferences.description": "Customize your application preferences here.",
   "preferences.general": "General",
   "preferences.appearance": "Appearance",
   "preferences.advanced": "Advanced",
-
   "preferences.general.keyboardShortcuts": "Keyboard Shortcuts",
   "preferences.general.quickPaneShortcut": "Quick Pane Shortcut",
   "preferences.general.quickPaneShortcutDescription": "Global keyboard shortcut to toggle the quick pane from any application",
@@ -27,7 +25,6 @@
   "preferences.general.exampleTextPlaceholder": "Enter example text",
   "preferences.general.exampleToggle": "Example Toggle Setting",
   "preferences.general.exampleToggleDescription": "This is an example switch/toggle setting (not persisted)",
-
   "preferences.appearance.theme": "Theme",
   "preferences.appearance.colorTheme": "Color Theme",
   "preferences.appearance.colorThemeDescription": "Choose your preferred color theme",
@@ -38,7 +35,6 @@
   "preferences.appearance.language": "Language",
   "preferences.appearance.languageDescription": "Choose your preferred display language",
   "preferences.appearance.language.system": "System Default",
-
   "preferences.advanced.title": "Example Advanced Settings",
   "preferences.advanced.toggle": "Example Advanced Toggle",
   "preferences.advanced.toggleDescription": "This is an example advanced toggle setting (not persisted)",
@@ -47,12 +43,10 @@
   "preferences.advanced.option1": "Example Option 1",
   "preferences.advanced.option2": "Example Option 2",
   "preferences.advanced.option3": "Example Option 3",
-
   "common.enabled": "Enabled",
   "common.disabled": "Disabled",
   "common.reset": "Reset",
   "common.cancel": "Cancel",
-
   "common.applicationCrashed": "Application crashed",
   "common.noStackTraceAvailable": "No stack trace available",
   "common.failedToSaveCrashData": "Failed to save crash data",
@@ -60,21 +54,18 @@
   "common.theApplicationEncounteredAnUnexpectedError": "The application encountered an unexpected error. Your data has been saved automatically.",
   "common.reloadApplication": "Reload Application",
   "common.tryAgain": "Try Again",
-
   "common.types.text": "Text",
   "common.types.currency": "Currency",
   "common.types.number": "Number",
   "common.types.date": "Date",
   "common.types.status": "Status",
   "common.types.actions": "Actions",
-
   "commands.group.navigation": "Navigation",
   "commands.group.settings": "Settings",
   "commands.group.window": "Window",
   "commands.group.notification": "Notifications",
   "commands.group.debug": "Debug",
   "commands.group.other": "Other",
-
   "commands.showLeftSidebar.label": "Show Left Sidebar",
   "commands.showLeftSidebar.description": "Show the left sidebar",
   "commands.hideLeftSidebar.label": "Hide Left Sidebar",
@@ -85,7 +76,6 @@
   "commands.hideRightSidebar.description": "Hide the right sidebar",
   "commands.openPreferences.label": "Open Preferences",
   "commands.openPreferences.description": "Open the application preferences",
-
   "commands.windowClose.label": "Close Window",
   "commands.windowClose.description": "Close the current window",
   "commands.windowMinimize.label": "Minimize Window",
@@ -96,14 +86,11 @@
   "commands.windowFullscreen.description": "Enter fullscreen mode",
   "commands.windowExitFullscreen.label": "Exit Fullscreen",
   "commands.windowExitFullscreen.description": "Exit fullscreen mode",
-
   "commands.testToast.label": "Test Toast Notification",
   "commands.testToast.description": "Show a test toast notification",
-
   "commandPalette.title": "Command Palette",
   "commandPalette.placeholder": "Type a command or search...",
   "commandPalette.noResults": "No results found.",
-
   "titlebar.default": "Tauri App",
   "titlebar.logo": "Ma5zon Logo",
   "titlebar.appName": "Ma5zon",
@@ -112,7 +99,6 @@
   "titlebar.showRightSidebar": "Show Right Sidebar",
   "titlebar.hideRightSidebar": "Hide Right Sidebar",
   "titlebar.settings": "Settings",
-
   "sidebar.nav.sales": "Sales",
   "sidebar.nav.invoices": "Invoices",
   "sidebar.nav.customers": "Customers",
@@ -138,7 +124,6 @@
   "sidebar.nav.singular.warehouses": "a Warehouse",
   "titlebar.expandSidebar": "Expand sidebar",
   "titlebar.collapseSidebar": "Collapse sidebar",
-
   "nav.appName": "Ma5zon",
   "nav.appTagline": "Enterprise Finance",
   "nav.globalSearchPlaceholder": "Global Search (Records, Invoices, Customers)...",
@@ -147,7 +132,6 @@
   "nav.newTab": "New Tab",
   "nav.login": "Login",
   "nav.logout": "Logout",
-
   "auth.signIn": "Sign In",
   "auth.signInToMa5zon": "Sign In to Ma5zon",
   "auth.enterpriseFinancial": "Enterprise Financial Management System",
@@ -198,7 +182,6 @@
   "profile.security.validation.special": "Password must contain at least one special character (!, @, #, $)",
   "profile.security.validation.noMatch": "Passwords do not match",
   "profile.security.validation.updateFailed": "Failed to update password",
-
   "toast.success.preferencesSaved": "Preferences saved",
   "toast.success.testToast": "Test Toast",
   "toast.success.testToastDescription": "This is a test notification",
@@ -211,7 +194,6 @@
   "toast.error.windowMaximizeFailed": "Failed to toggle maximize: {{message}}",
   "toast.error.fullscreenEnterFailed": "Failed to enter fullscreen: {{message}}",
   "toast.error.fullscreenExitFailed": "Failed to exit fullscreen: {{message}}",
-
   "dashboard.breadcrumb.finance": "Finance",
   "dashboard.breadcrumb.executiveOverview": "Executive Overview",
   "dashboard.kpi.grossRevenue": "Gross Revenue (MTD)",
@@ -262,7 +244,6 @@
   "dashboard.chart.may": "May",
   "dashboard.chart.jun": "Jun",
   "dashboard.chart.consulting": "Consulting",
-
   "entity.workspace.section.sales": "SALES",
   "entity.workspace.section.warehouses": "WAREHOUSES",
   "entity.workspace.section.partners": "PARTNERS",
@@ -277,9 +258,9 @@
   "entity.workspace.toolbar.category": "CATEGORY:",
   "entity.workspace.toolbar.all": "All",
   "entity.workspace.toolbar.export": "Export Data",
-    "entity.workspace.toolbar.filters": "Filters",
-    "entity.workspace.toolbar.columns": "Columns",
-    "entity.workspace.toolbar.searchPlaceholder": "Search...",
+  "entity.workspace.toolbar.filters": "Filters",
+  "entity.workspace.toolbar.columns": "Columns",
+  "entity.workspace.toolbar.searchPlaceholder": "Search...",
   "entity.workspace.toolbar.print": "Print View",
   "entity.workspace.columns.entity": "Name",
   "entity.workspace.columns.doc": "Document #",
@@ -310,8 +291,7 @@
   "entity.detail.tabs.audits": "Audits",
   "settingsPopover.language.arabic": "العربية",
   "settingsPopover.language.english": "EN",
-    "entity.workspace.selected": "{count, plural, one {# selected} other {# selected}}",
-
+  "entity.workspace.selected": "{count, plural, one {# selected} other {# selected}}",
   "entity.layout.products.label": "Products",
   "entity.layout.products.columns.name": "Product Name",
   "entity.layout.products.columns.category": "Category",

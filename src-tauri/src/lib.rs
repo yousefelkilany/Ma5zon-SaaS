@@ -28,8 +28,9 @@ async fn initialize_databases(app: &AppHandle) -> Result<(), String> {
 }
 
 async fn table_exists(app: &AppHandle, table_name: &str) -> bool {
-    let conn =
-        crate::commands::db_utils::get_conn(app).map_err(|e| format!("{e}")).unwrap();
+    let conn = crate::commands::db_utils::get_conn(app)
+        .map_err(|e| e.to_string())
+        .unwrap();
     let query = format!(
         "SELECT name FROM sqlite_master WHERE type='table' AND name='{}'",
         table_name
