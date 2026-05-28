@@ -157,9 +157,9 @@ export function SideBar({ className }: SideBarProps) {
           items: [
             {
               icon: 'inventory_2',
-              label: t('sidebar.nav.stock'),
-              entityType: 'stock',
-              onClick: () => handleEntityClick('stock', t('sidebar.nav.stock')),
+              label: t('sidebar.nav.products'),
+              entityType: 'products',
+              onClick: () => handleEntityClick('products', t('sidebar.nav.products')),
             },
             {
               icon: 'warehouse',

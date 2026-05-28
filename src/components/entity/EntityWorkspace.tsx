@@ -10,15 +10,12 @@ function EntityHeader({ entityType }: { entityType: string }) {
   const { t } = useTranslation()
 
   const sections: Record<string, string> = {
+    products: t('entity.workspace.section.inventory'),
+    warehouses: t('entity.workspace.section.warehouses'),
     invoices: t('entity.workspace.section.sales'),
     customers: t('entity.workspace.section.partners'),
     bills: t('entity.workspace.section.purchases'),
     vendors: t('entity.workspace.section.partners'),
-    stock: t('entity.workspace.section.inventory'),
-    warehouses: t('entity.workspace.section.inventory'),
-    reports: t('entity.workspace.section.system'),
-    settings: t('entity.workspace.section.system'),
-    products: t('entity.workspace.section.inventory'),
   }
 
   const section = sections[entityType] ?? ''
@@ -139,15 +136,17 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
 
   const { data: tableLayout } = useQuery({
     queryKey: ['tableLayout', entityType],
-    queryFn: () => unwrapResult(commands.getTableLayout(entityType)),
+    queryFn: async () => {
+      const result = await commands.getTableLayout(entityType)
+      console.log(`result = ${result}`);
+      console.log(`result = ${JSON.stringify(result)}`);
+      return unwrapResult(result)
+    },
   })
 
-  const productColumns: ColumnDef[] = tableLayout 
+  const productColumns: ColumnDef[] = tableLayout
     ? convertTableLayout(tableLayout)
-    : [
-        { id: 'id', label: 'ID', type: 'number', width: 80, sortable: true, filterable: true, visible: true, order: 1 },
-        { id: 'name', label: 'Product Name', type: 'text', width: 200, sortable: true, filterable: true, visible: true, order: 2, isNameColumn: true },
-      ]
+    : []
 
   const handleExport = async () => {
     await exportToCSV(productColumns, products ?? [])

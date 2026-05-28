@@ -6,7 +6,12 @@ import {
   flexRender,
   type ColumnDef as TanstackColumnDef,
 } from '@tanstack/react-table'
-import type { ColumnDef, EntityRow, DataTableProps, VariantRow } from '@/lib/types/entity'
+import type {
+  ColumnDef,
+  EntityRow,
+  DataTableProps,
+  VariantRow,
+} from '@/lib/types/entity'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsRTL } from '@/hooks/user-is-rtl'
 import { VariantsSubTable } from './VariantsSubTable'
@@ -115,12 +120,14 @@ export function DataTable({
         cell: ({ row }) => (
           <button
             className="p-1 hover:bg-surface-bright rounded transition-colors"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation()
               onRowToggleExpand?.(row.original.id)
             }}
           >
-            <span className={`material-symbols-outlined text-[18px] text-on-surface-variant transition-transform ${expandedRowIds?.has(row.original.id) ? 'rotate-90' : ''}`}>
+            <span
+              className={`material-symbols-outlined text-[18px] text-on-surface-variant transition-transform ${expandedRowIds?.has(row.original.id) ? 'rotate-90' : ''}`}
+            >
               chevron_right
             </span>
           </button>
@@ -176,7 +183,7 @@ export function DataTable({
         ),
       },
     ],
-    [visibleColumns, expandedRowIds, onRowToggleExpand]
+    [visibleColumns, expandedRowIds, onRowToggleExpand, t]
   )
 
   const table = useReactTable({

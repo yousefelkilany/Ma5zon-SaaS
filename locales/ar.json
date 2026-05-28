@@ -1,6 +1,5 @@
 {
   "app.name": "Ma5zon",
-
   "menu.about": "حول {{appName}}",
   "menu.checkForUpdates": "التحقق من التحديثات...",
   "menu.preferences": "التفضيلات...",
@@ -11,13 +10,11 @@
   "menu.view": "عرض",
   "menu.toggleLeftSidebar": "تبديل الشريط الجانبي الأيسر",
   "menu.toggleRightSidebar": "تبديل الشريط الجانبي الأيمن",
-
   "preferences.title": "التفضيلات",
   "preferences.description": "تخصيص تفضيلات التطبيق الخاص بك هنا.",
   "preferences.general": "عام",
   "preferences.appearance": "المظهر",
   "preferences.advanced": "متقدم",
-
   "preferences.general.keyboardShortcuts": "اختصارات لوحة المفاتيح",
   "preferences.general.quickPaneShortcut": "اختصار اللوحة السريعة",
   "preferences.general.quickPaneShortcutDescription": "اختصار لوحة المفاتيح العام لتبديل اللوحة السريعة من أي تطبيق",
@@ -27,7 +24,6 @@
   "preferences.general.exampleTextPlaceholder": "أدخل نص المثال",
   "preferences.general.exampleToggle": "إعداد تبديل المثال",
   "preferences.general.exampleToggleDescription": "هذا مثال على إعداد المفتاح/التبديل (غير محفوظ)",
-
   "preferences.appearance.theme": "السمة",
   "preferences.appearance.colorTheme": "سمة اللون",
   "preferences.appearance.colorThemeDescription": "اختر سمة اللون المفضلة لديك",
@@ -38,7 +34,6 @@
   "preferences.appearance.language": "اللغة",
   "preferences.appearance.languageDescription": "اختر لغة العرض المفضلة لديك",
   "preferences.appearance.language.system": "افتراضي النظام",
-
   "preferences.advanced.title": "إعدادات متقدمة",
   "preferences.advanced.toggle": "تبديل متقدم",
   "preferences.advanced.toggleDescription": "هذا مثال على إعداد التبديل المتقدم (غير محفوظ)",
@@ -47,11 +42,9 @@
   "preferences.advanced.option1": "الخيار 1",
   "preferences.advanced.option2": "الخيار 2",
   "preferences.advanced.option3": "الخيار 3",
-
   "common.enabled": "مفعّل",
   "common.disabled": "معطّل",
   "common.reset": "إعادة تعيين",
-
   "common.applicationCrashed": "تعطّل التطبيق",
   "common.noStackTraceAvailable": "لا تتوفر معلومات تفصيلية للخطأ",
   "common.failedToSaveCrashData": "فشل في حفظ بيانات التعطّل",
@@ -59,14 +52,12 @@
   "common.theApplicationEncounteredAnUnexpectedError": "واجه التطبيق خطأً غير متوقع. تم حفظ بياناتك تلقائيًا.",
   "common.reloadApplication": "إعادة تحميل التطبيق",
   "common.tryAgain": "حاول مرة أخرى",
-
   "commands.group.navigation": "التنقل",
   "commands.group.settings": "الإعدادات",
   "commands.group.window": "النافذة",
   "commands.group.notification": "الإشعارات",
   "commands.group.debug": "التصحيح",
   "commands.group.other": "أخرى",
-
   "commands.showLeftSidebar.label": "إظهار الشريط الجانبي الأيسر",
   "commands.showLeftSidebar.description": "إظهار الشريط الجانبي الأيسر",
   "commands.hideLeftSidebar.label": "إخفاء الشريط الجانبي الأيسر",
@@ -77,7 +68,6 @@
   "commands.hideRightSidebar.description": "إخفاء الشريط الجانبي الأيمن",
   "commands.openPreferences.label": "فتح التفضيلات",
   "commands.openPreferences.description": "فتح تفضيلات التطبيق",
-
   "commands.windowClose.label": "إغلاق النافذة",
   "commands.windowClose.description": "إغلاق النافذة الحالية",
   "commands.windowMinimize.label": "تصغير النافذة",
@@ -88,14 +78,11 @@
   "commands.windowFullscreen.description": "الدخول إلى وضع ملء الشاشة",
   "commands.windowExitFullscreen.label": "الخروج من ملء الشاشة",
   "commands.windowExitFullscreen.description": "الخروج من وضع ملء الشاشة",
-
   "commands.testToast.label": "اختبار إشعار التنبيه",
   "commands.testToast.description": "إظهار إشعار تنبيه اختباري",
-
   "commandPalette.title": "لوحة الأوامر",
   "commandPalette.placeholder": "اكتب أمراً أو ابحث...",
   "commandPalette.noResults": "لم يتم العثور على نتائج.",
-
   "titlebar.default": "تطبيق تاوري",
   "titlebar.logo": "شعار مخزون",
   "titlebar.appName": "Ma5zon",
@@ -104,7 +91,6 @@
   "titlebar.showRightSidebar": "إظهار الشريط الجانبي الأيمن",
   "titlebar.hideRightSidebar": "إخفاء الشريط الجانبي الأيمن",
   "titlebar.settings": "الإعدادات",
-
   "sidebar.nav.sales": "المبيعات",
   "sidebar.nav.invoices": "الفواتير",
   "sidebar.nav.customers": "العملاء",
@@ -114,6 +100,7 @@
   "sidebar.nav.inventory": "المخزون",
   "sidebar.nav.system": "النظام",
   "sidebar.nav.stock": "المخزون",
+  "sidebar.nav.products": "الأصناف",
   "sidebar.nav.warehouses": "المستودعات",
   "sidebar.nav.finance": "المالية",
   "sidebar.nav.ledgers": "الدفاتر",
@@ -123,13 +110,13 @@
   "sidebar.actions.logout": "تسجيل الخروج",
   "sidebar.nav.singular.invoices": "فاتورة",
   "sidebar.nav.singular.customers": "عميل",
+  "sidebar.nav.singular.products": "صنف",
   "sidebar.nav.singular.bills": "فاتورة",
   "sidebar.nav.singular.vendors": "مورد",
   "sidebar.nav.singular.stock": "مخزون",
   "sidebar.nav.singular.warehouses": "مستودع",
   "titlebar.expandSidebar": "توسيع الشريط الجانبي",
   "titlebar.collapseSidebar": "طي الشريط الجانبي",
-
   "nav.appName": "Ma5zon",
   "nav.appTagline": "المالية للمؤسسات",
   "nav.globalSearchPlaceholder": "البحث العالمي (السجلات، الفواتير، العملاء)...",
@@ -188,7 +175,6 @@
   "profile.security.validation.special": "يجب أن تحتوي كلمة المرور على رمز خاص واحد (!، @، #، $)",
   "profile.security.validation.noMatch": "كلمات المرور غير متطابقة",
   "profile.security.validation.updateFailed": "فشل في تحديث كلمة المرور",
-
   "toast.success.preferencesSaved": "تم حفظ التفضيلات",
   "toast.success.testToast": "إشعار اختباري",
   "toast.success.testToastDescription": "هذا إشعار اختباري",
@@ -201,7 +187,6 @@
   "toast.error.windowMaximizeFailed": "فشل تبديل التكبير: {{message}}",
   "toast.error.fullscreenEnterFailed": "فشل الدخول إلى ملء الشاشة: {{message}}",
   "toast.error.fullscreenExitFailed": "فشل الخروج من ملء الشاشة: {{message}}",
-
   "dashboard.breadcrumb.finance": "المالية",
   "dashboard.breadcrumb.executiveOverview": "نظرة عامة تنفيذية",
   "dashboard.kpi.grossRevenue": "إجمالي الإيرادات (شهر حتى الآن)",
@@ -252,11 +237,12 @@
   "dashboard.chart.may": "مايو",
   "dashboard.chart.jun": "يونيو",
   "dashboard.chart.consulting": "الاستشارات",
-
   "entity.workspace.section.sales": "المبيعات",
+  "entity.workspace.section.warehouses": "المستودعات",
   "entity.workspace.section.partners": "الشركاء",
   "entity.workspace.section.purchases": "المشتريات",
   "entity.workspace.section.inventory": "المخزون",
+  "entity.workspace.section.products": "الأصناف",
   "entity.workspace.section.system": "النظام",
   "entity.workspace.addNew": "إضافة {{entity}}",
   "entity.workspace.rowsPerPage": "صفوف لكل صفحة:",
@@ -266,9 +252,9 @@
   "entity.workspace.toolbar.category": "الفئة:",
   "entity.workspace.toolbar.all": "الكل",
   "entity.workspace.toolbar.export": "تصدير البيانات",
-    "entity.workspace.toolbar.filters": "الفلاتر",
-    "entity.workspace.toolbar.columns": "الأعمدة",
-    "entity.workspace.toolbar.searchPlaceholder": "بحث...",
+  "entity.workspace.toolbar.filters": "الفلاتر",
+  "entity.workspace.toolbar.columns": "الأعمدة",
+  "entity.workspace.toolbar.searchPlaceholder": "بحث...",
   "entity.workspace.toolbar.print": "عرض الطباعة",
   "entity.workspace.columns.entity": "الاسم",
   "entity.workspace.columns.doc": "رقم المستند",
@@ -299,5 +285,5 @@
   "entity.detail.tabs.audits": "التدقيق",
   "settingsPopover.language.arabic": "العربية",
   "settingsPopover.language.english": "EN",
-    "entity.workspace.selected": "{count, plural, =0 {لا توجد محددات} =1 {محدد واحد} =2 {محددان} few {# محددات} many {# محدد} other {# محدد}}"
+  "entity.workspace.selected": "{count, plural, =0 {لا توجد محددات} =1 {محدد واحد} =2 {محددان} few {# محددات} many {# محدد} other {# محدد}}"
 }

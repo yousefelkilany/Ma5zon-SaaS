@@ -31,7 +31,7 @@ interface DataTableShellProps {
 
 const defaultPagination: PaginationState = {
   page: 1,
-  pageSize: 50,
+  pageSize: 10,
   totalRows: 0,
   totalPages: 0,
 }

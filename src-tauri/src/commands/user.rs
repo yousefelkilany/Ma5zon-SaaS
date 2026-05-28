@@ -33,7 +33,11 @@ fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
 
 fn init_db(app: &AppHandle) -> Result<Connection, String> {
     let db_path = get_db_path(app)?;
-    let conn = Connection::open(&db_path).map_err(|e| format!("Failed to open database: {e}"))?;
+    log::debug!("[init_db] Opening database at: {:?}", db_path);
+    let conn = Connection::open(&db_path).map_err(|e| {
+        log::error!("[init_db] Failed to open database: {e}");
+        format!("Failed to open database: {e}")
+    })?;
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS users (
@@ -46,7 +50,12 @@ fn init_db(app: &AppHandle) -> Result<Connection, String> {
         )",
         [],
     )
-    .map_err(|e| format!("Failed to create users table: {e}"))?;
+    .map_err(|e| {
+        log::error!("[init_db] Failed to create users table: {e}");
+        format!("Failed to create users table: {e}")
+    })?;
+
+    log::debug!("[init_db] Database initialized successfully");
 
     Ok(conn)
 }
@@ -57,19 +66,29 @@ fn seed_default_admin(conn: &Connection) -> Result<(), String> {
         .map_err(|e| format!("Failed to check users count: {e}"))?;
 
     if count == 0 {
-        let password_hash = hash_password("admin").unwrap();
+        log::info!("[seed_default_admin] No users found, seeding default admin");
+        let password_hash = hash_password("admin").map_err(|e| {
+            log::error!("[seed_default_admin] Failed to hash password: {e}");
+            e
+        })?;
         let avatar: Option<String> = None;
+        let email = "admin@localhost".to_string();
         conn.execute(
-            "INSERT INTO users (id, name, role, avatar_url, password_hash) VALUES (?1, ?2, ?3, ?4, ?5)",
+            "INSERT INTO users (id, name, email, role, avatar_url, password_hash) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
             params![
                 uuid::Uuid::new_v4().to_string(),
                 "admin",
+                email,
                 "Administrator",
                 avatar,
                 password_hash
             ],
         )
-        .map_err(|e| format!("Failed to seed default admin: {e}"))?;
+        .map_err(|e| {
+            log::error!("[seed_default_admin] Failed to insert default admin: {e}");
+            format!("Failed to seed default admin: {e}")
+        })?;
+        log::info!("[seed_default_admin] Default admin seeded successfully");
     }
 
     Ok(())
@@ -80,7 +99,10 @@ fn hash_password(password: &str) -> Result<String, String> {
     let argon2 = Argon2::default();
     let password_hash = argon2
         .hash_password(password.as_bytes(), &salt)
-        .map_err(|e| format!("Failed to hash password: {e}"))?;
+        .map_err(|e| {
+            log::error!("[hash_password] Failed to hash password: {e}");
+            format!("Failed to hash password: {e}")
+        })?;
     Ok(password_hash.to_string())
 }
 
@@ -100,8 +122,14 @@ pub async fn authenticate(
     password: &str,
 ) -> Result<Option<User>, String> {
     log::info!("[authenticate] Attempting login for username: {}", username);
-    let conn = init_db(&app)?;
-    seed_default_admin(&conn)?;
+    let conn = init_db(&app).map_err(|e| {
+        log::error!("[authenticate] Failed to initialize database: {e}");
+        e
+    })?;
+    seed_default_admin(&conn).map_err(|e| {
+        log::error!("[authenticate] Failed to seed default admin: {e}");
+        e
+    })?;
 
     let mut stmt = conn
         .prepare("SELECT id, name, email, role, avatar_url, password_hash FROM users WHERE name = ?1")
