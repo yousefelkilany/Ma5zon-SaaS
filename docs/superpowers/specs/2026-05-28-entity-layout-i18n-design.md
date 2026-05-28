@@ -168,8 +168,38 @@ Add `entity.layout` namespace:
 |-------------|---------------------|---------|
 | `text`      | `text`              | Plain string |
 | `number`    | `number`            | Right-aligned tabular nums |
-| `currency`  | `currency`          | `$` prefix, 2 decimal places |
+| `currency`  | `currency`          | Localized currency prefix (e.g., "EGP" / "جنيه مصري"), 2 decimal places |
 | `status`    | `status`            | Colored badge |
+
+**Currency prefix:** The `common.currency` i18n key is used for the currency symbol. In `DataTable`, the currency cell renderer looks up `t('common.currency')` at render time, so it automatically uses the correct localized prefix.
+
+---
+
+### Modified: `src/components/entity/DataTable.tsx`
+
+Update the `DataCell` component to use i18n for currency prefix:
+
+```typescript
+// DataTable.tsx - DataCell component (around line 36)
+function DataCell({ column, value }: { column: ColumnDef; value: unknown }) {
+  const { t } = useTranslation()
+
+  if (column.type === 'currency') {
+    const currencySymbol = t('common.currency') // "EGP" or "جنيه مصري"
+    return (
+      <span className="font-data-tabular tabular-nums">
+        {currencySymbol}{' '}
+        {(Number(value) || 0).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+        })}
+      </span>
+    )
+  }
+  // ... rest unchanged
+}
+```
+
+Note: `useTranslation` is already imported in DataTable.tsx.
 
 ---
 
