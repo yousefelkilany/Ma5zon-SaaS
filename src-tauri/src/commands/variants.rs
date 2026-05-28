@@ -3,13 +3,13 @@ use rusqlite::{params, Connection};
 use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
-use crate::commands::{self, DatabaseInitializable};
-use crate::types::{Variant, NewVariant, UpdateVariant};
+use crate::commands::DatabaseInitializable;
+use crate::types::{NewVariant, UpdateVariant, Variant};
 
 pub struct VariantsInitializer;
 
 #[async_trait]
-impl commands::DatabaseInitializable for VariantsInitializer {
+impl DatabaseInitializable for VariantsInitializer {
     fn table_name(&self) -> &str {
         "product_variants"
     }
@@ -34,7 +34,9 @@ impl commands::DatabaseInitializable for VariantsInitializer {
         .map_err(|e| format!("Failed to create product_variants table: {e}"))?;
 
         let count: i64 = conn
-            .query_row("SELECT COUNT(*) FROM product_variants", [], |row| row.get(0))
+            .query_row("SELECT COUNT(*) FROM product_variants", [], |row| {
+                row.get(0)
+            })
             .map_err(|e| format!("Failed to count variants: {e}"))?;
 
         if count == 0 {
@@ -62,12 +64,23 @@ fn seed_variants(conn: &Connection) -> Result<(), String> {
         .map_err(|e| format!("Failed to collect product IDs: {e}"))?;
 
     let variants_data = vec![
-        (vec!["درجة أولى", "درجة صناعية", "درجة اقتصادية", "درجة ممتازة"], "درجة"),
+        (
+            vec!["درجة أولى", "درجة صناعية", "درجة اقتصادية", "درجة ممتازة"],
+            "درجة",
+        ),
         (vec!["10 وات", "25 وات", "50 وات", "100 وات"], "قدرة"),
         (vec!["120 فولت", "240 فولت", "480 فولت", "جهد مزدوج"], "جهد"),
         (vec!["ذكر", "أنثى", "بارب", "ضغط"], "موصل"),
         (vec!["1 م", "2 م", "5 م", "10 م"], "طول"),
-        (vec!["ستانلس ستيل 304", "ستانلس ستيل 316", "ستانلس ستيل 430", "مجلفن"], "مادة"),
+        (
+            vec![
+                "ستانلس ستيل 304",
+                "ستانلس ستيل 316",
+                "ستانلس ستيل 430",
+                "مجلفن",
+            ],
+            "مادة",
+        ),
         (vec!["شفاف", "ملون", "مرآوي", "مضاد للتوهج"], "تشطيب"),
         (vec!["M3", "M4", "M5", "M6", "M8"], "مقاس"),
         (vec!["صغير", "وسط", "كبير", "كبير جداً"], "حجم"),
@@ -82,7 +95,12 @@ fn seed_variants(conn: &Connection) -> Result<(), String> {
         let options = &variant_type.0;
 
         for v in 0..num_variants {
-            let variant_name = format!("{} {} {}", "منتج", variant_type.1, options[v % options.len()]);
+            let variant_name = format!(
+                "{} {} {}",
+                "منتج",
+                variant_type.1,
+                options[v % options.len()]
+            );
             let sku = format!("SKU-{:04}-{:02}", product_id, v + 1);
             let uom_id = (rng.gen_range(0..uom_names.len()) + 1) as i64;
 
@@ -131,9 +149,14 @@ pub async fn variants_get_all(app: AppHandle) -> Result<Vec<Variant>, String> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn variants_get_by_product(app: AppHandle, product_id: String) -> Result<Vec<Variant>, String> {
+pub async fn variants_get_by_product(
+    app: AppHandle,
+    product_id: String,
+) -> Result<Vec<Variant>, String> {
     let conn = get_conn(&app)?;
-    let product_id_i64: i64 = product_id.parse().map_err(|e| format!("Invalid product_id: {e}"))?;
+    let product_id_i64: i64 = product_id
+        .parse()
+        .map_err(|e| format!("Invalid product_id: {e}"))?;
     let mut stmt = conn
         .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price FROM product_variants WHERE product_id = ?1 ORDER BY sku")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
@@ -210,7 +233,11 @@ pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Vari
 
 #[tauri::command]
 #[specta::specta]
-pub async fn variants_update(app: AppHandle, id: String, variant: UpdateVariant) -> Result<Variant, String> {
+pub async fn variants_update(
+    app: AppHandle,
+    id: String,
+    variant: UpdateVariant,
+) -> Result<Variant, String> {
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
 
@@ -223,7 +250,9 @@ pub async fn variants_update(app: AppHandle, id: String, variant: UpdateVariant)
     let new_uom_id = variant.uom_id.unwrap_or(current.uom_id);
     let new_retail_price = variant.retail_price.unwrap_or(current.retail_price);
     let new_wholesale_price = variant.wholesale_price.unwrap_or(current.wholesale_price);
-    let new_distribution_price = variant.distribution_price.unwrap_or(current.distribution_price);
+    let new_distribution_price = variant
+        .distribution_price
+        .unwrap_or(current.distribution_price);
 
     conn.execute(
         "UPDATE product_variants SET sku = ?1, variant_name = ?2, uom_id = ?3, retail_price = ?4, wholesale_price = ?5, distribution_price = ?6 WHERE id = ?7",
@@ -248,7 +277,10 @@ pub async fn variants_update(app: AppHandle, id: String, variant: UpdateVariant)
 pub async fn variants_delete(app: AppHandle, id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
-    conn.execute("DELETE FROM product_variants WHERE id = ?1", params![id_i64])
-        .map_err(|e| format!("Failed to delete variant: {e}"))?;
+    conn.execute(
+        "DELETE FROM product_variants WHERE id = ?1",
+        params![id_i64],
+    )
+    .map_err(|e| format!("Failed to delete variant: {e}"))?;
     Ok(())
 }

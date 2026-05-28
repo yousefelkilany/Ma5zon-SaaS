@@ -1,8 +1,8 @@
 use rusqlite::Connection;
+use serde::{Deserialize, Serialize};
+use specta::Type;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
-use specta::Type;
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct ColumnInfo {
@@ -67,11 +67,18 @@ pub async fn get_table_info(app: AppHandle, table_name: &str) -> Result<TableInf
     log::info!("[get_table_info] Found {} columns", columns.len());
 
     if columns.is_empty() {
-        log::warn!("[get_table_info] Table '{}' not found or has no columns", table_name);
+        log::warn!(
+            "[get_table_info] Table '{}' not found or has no columns",
+            table_name
+        );
         return Err(format!("Table '{}' not found", table_name));
     }
 
-    log::info!("[get_table_info] Returning TableInfo with {} columns for table '{}'", columns.len(), table_name);
+    log::info!(
+        "[get_table_info] Returning TableInfo with {} columns for table '{}'",
+        columns.len(),
+        table_name
+    );
 
     Ok(TableInfo {
         table_name: table_name.to_string(),

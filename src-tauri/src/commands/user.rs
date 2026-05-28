@@ -8,8 +8,8 @@ use async_trait::async_trait;
 use rusqlite::params;
 use tauri::AppHandle;
 
-use crate::commands::{self, DatabaseInitializable};
 use crate::commands::db_utils::get_conn;
+use crate::commands::DatabaseInitializable;
 use crate::types::User;
 
 struct UserWithHash {
@@ -24,7 +24,7 @@ struct UserWithHash {
 pub struct UserInitializer;
 
 #[async_trait]
-impl commands::DatabaseInitializable for UserInitializer {
+impl DatabaseInitializable for UserInitializer {
     fn table_name(&self) -> &str {
         "users"
     }
@@ -51,7 +51,8 @@ impl commands::DatabaseInitializable for UserInitializer {
 
         if count == 0 {
             log::info!("[UserInitializer] Seeding default admin");
-            let password_hash = hash_password("admin").map_err(|e| format!("Failed to hash password: {e}"))?;
+            let password_hash =
+                hash_password("admin").map_err(|e| format!("Failed to hash password: {e}"))?;
             conn.execute(
                 "INSERT INTO users (id, name, email, role, avatar_url, password_hash) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
                 rusqlite::params![
@@ -101,7 +102,9 @@ pub async fn authenticate(
     let conn = get_conn(&app)?;
 
     let mut stmt = conn
-        .prepare("SELECT id, name, email, role, avatar_url, password_hash FROM users WHERE name = ?1")
+        .prepare(
+            "SELECT id, name, email, role, avatar_url, password_hash FROM users WHERE name = ?1",
+        )
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let user_result = stmt.query_row(params![username], |row| {
