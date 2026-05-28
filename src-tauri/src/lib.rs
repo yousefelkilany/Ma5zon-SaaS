@@ -9,10 +9,34 @@ mod commands;
 mod types;
 mod utils;
 
-use tauri::{Manager, RunEvent, WindowEvent};
+use tauri::{AppHandle, Manager, RunEvent, WindowEvent};
 
 // Re-export only what's needed externally
 pub use types::DEFAULT_QUICK_PANE_SHORTCUT;
+
+async fn initialize_databases(app: &AppHandle) -> Result<(), String> {
+    use crate::commands::TABLE_INITIALIZERS;
+
+    for initializer in TABLE_INITIALIZERS {
+        let table_name = initializer.table_name();
+        if !table_exists(app, table_name).await {
+            log::info!("Initializing table: {}", table_name);
+            initializer.init_and_seed(app).await?;
+        }
+    }
+    Ok(())
+}
+
+async fn table_exists(app: &AppHandle, table_name: &str) -> bool {
+    let conn =
+        crate::commands::db_utils::get_conn(app).map_err(|e| format!("{e}")).unwrap();
+    let query = format!(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='{}'",
+        table_name
+    );
+    conn.query_row(&query, [], |row| row.get::<_, String>(0))
+        .is_ok()
+}
 
 /// Application entry point. Sets up all plugins and initializes the app.
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -103,6 +127,12 @@ pub fn run() {
         .plugin(tauri_plugin_os::init())
         .setup(|app| {
             log::info!("Application starting up");
+
+            if let Err(e) = futures::executor::block_on(initialize_databases(app.handle())) {
+                log::error!("Failed to initialize databases: {e}");
+                return Err(e.into());
+            }
+
             log::debug!(
                 "App handle initialized for package: {}",
                 app.package_info().name

@@ -1,13 +1,14 @@
+use async_trait::async_trait;
 use rusqlite::{params, Connection};
-use std::path::PathBuf;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 
-use crate::commands::db_utils::{get_conn, get_db_path};
+use crate::commands::db_utils::get_conn;
 use crate::commands::{self, DatabaseInitializable};
 use crate::types::{Variant, NewVariant, UpdateVariant};
 
 pub struct VariantsInitializer;
 
+#[async_trait]
 impl commands::DatabaseInitializable for VariantsInitializer {
     fn table_name(&self) -> &str {
         "product_variants"

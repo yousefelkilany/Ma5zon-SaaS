@@ -4,11 +4,12 @@ use argon2::{
     password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
+use async_trait::async_trait;
 use rusqlite::params;
 use tauri::AppHandle;
 
 use crate::commands::{self, DatabaseInitializable};
-use crate::commands::db_utils::{get_conn, get_db_path};
+use crate::commands::db_utils::get_conn;
 use crate::types::User;
 
 struct UserWithHash {
@@ -22,6 +23,7 @@ struct UserWithHash {
 
 pub struct UserInitializer;
 
+#[async_trait]
 impl commands::DatabaseInitializable for UserInitializer {
     fn table_name(&self) -> &str {
         "users"

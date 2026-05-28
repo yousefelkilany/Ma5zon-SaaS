@@ -1,12 +1,14 @@
+use async_trait::async_trait;
 use rusqlite::{params, Connection};
 use tauri::AppHandle;
 
-use crate::commands::db_utils::{get_conn, get_db_path};
+use crate::commands::db_utils::get_conn;
 use crate::commands::{self, DatabaseInitializable};
 use crate::types::Product;
 
 pub struct ProductsInitializer;
 
+#[async_trait]
 impl commands::DatabaseInitializable for ProductsInitializer {
     fn table_name(&self) -> &str {
         "products"
