@@ -62,16 +62,16 @@ fn seed_variants(conn: &Connection) -> Result<(), String> {
         .map_err(|e| format!("Failed to collect product IDs: {e}"))?;
 
     let variants_data = vec![
-        (vec!["Standard Grade", "Heavy Duty", "Economy", "Premium"], "Grade"),
-        (vec!["10W", "25W", "50W", "100W"], "Power"),
-        (vec!["120V", "240V", "480V", "Dual Voltage"], "Voltage"),
-        (vec!["Male", "Female", "Barbed", "Compression"], "Connector"),
-        (vec!["1m", "2m", "5m", "10m"], "Length"),
-        (vec!["SS304", "SS316", "SS430", "Galvanized"], "Material"),
-        (vec!["Clear", "Tinted", "Mirrored", "Anti-Glare"], "Finish"),
-        (vec!["M3", "M4", "M5", "M6", "M8"], "Size"),
-        (vec!["Small", "Medium", "Large", "XL"], "Size"),
-        (vec!["2A", "5A", "10A", "20A"], "Rating"),
+        (vec!["درجة أولى", "درجة صناعية", "درجة اقتصادية", "درجة ممتازة"], "درجة"),
+        (vec!["10 وات", "25 وات", "50 وات", "100 وات"], "قدرة"),
+        (vec!["120 فولت", "240 فولت", "480 فولت", "جهد مزدوج"], "جهد"),
+        (vec!["ذكر", "أنثى", "بارب", "ضغط"], "موصل"),
+        (vec!["1 م", "2 م", "5 م", "10 م"], "طول"),
+        (vec!["ستانلس ستيل 304", "ستانلس ستيل 316", "ستانلس ستيل 430", "مجلفن"], "مادة"),
+        (vec!["شفاف", "ملون", "مرآوي", "مضاد للتوهج"], "تشطيب"),
+        (vec!["M3", "M4", "M5", "M6", "M8"], "مقاس"),
+        (vec!["صغير", "وسط", "كبير", "كبير جداً"], "حجم"),
+        (vec!["2 أمبير", "5 أمبير", "10 أمبير", "20 أمبير"], "أمبير"),
     ];
 
     let uom_names = vec!["pcs", "m", "kg", "L", "box", "roll", "set"];
@@ -82,7 +82,7 @@ fn seed_variants(conn: &Connection) -> Result<(), String> {
         let options = &variant_type.0;
 
         for v in 0..num_variants {
-            let variant_name = format!("{} {} {}", "Product", variant_type.1, options[v % options.len()]);
+            let variant_name = format!("{} {} {}", "منتج", variant_type.1, options[v % options.len()]);
             let sku = format!("SKU-{:04}-{:02}", product_id, v + 1);
             let uom_id = (rng.gen_range(0..uom_names.len()) + 1) as i64;
 
