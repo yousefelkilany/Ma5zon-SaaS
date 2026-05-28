@@ -1,2 +1,4 @@
+packages:
+  - 'src/*'
 allowBuilds:
   '@ast-grep/cli': true
