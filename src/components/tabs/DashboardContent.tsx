@@ -20,29 +20,29 @@ export function DashboardContent() {
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
           <KpiCard
             label={t('dashboard.kpi.grossRevenue')}
-            value="$2,842,910"
-            trend="+12.4%"
+            value=""
+            trend=""
             trendType="positive"
             currency={t('common.currency')}
           />
           <KpiCard
             label={t('dashboard.kpi.totalExpenses')}
-            value="$1,120,405"
-            trend="+4.2%"
+            value=""
+            trend=""
             trendType="negative"
             currency={t('common.currency')}
           />
           <KpiCard
             label={t('dashboard.kpi.netProfit')}
-            value="$1,722,505"
-            trend="+18.1%"
+            value=""
+            trend=""
             trendType="positive"
             currency={t('common.currency')}
           />
           <KpiCard
             label={t('dashboard.kpi.cashPosition')}
-            value="$4,290,112"
-            trend="Stable"
+            value=""
+            trend=""
             trendType="neutral"
             currency={t('common.currency')}
           />

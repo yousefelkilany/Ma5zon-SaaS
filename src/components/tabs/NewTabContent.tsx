@@ -1,9 +1,9 @@
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useTabStore } from '@/store/tab-store'
-import { useAuth } from '@/hooks/useAuth'
-import { requestLogin } from '@/hooks/useAuth'
-import type { TabType } from '@/lib/utils'
+// import { useTabStore } from '@/store/tab-store'
+// import { useAuth } from '@/hooks/useAuth'
+// import { requestLogin } from '@/hooks/useAuth'
+// import type { TabType } from '@/lib/utils'
 
 function KpiCard({
   label,
@@ -16,6 +16,8 @@ function KpiCard({
   trend: string
   trendType: 'positive' | 'negative' | 'neutral'
 }) {
+  const { t } = useTranslation()
+
   const trendColors = {
     positive: 'text-secondary',
     negative: 'text-on-tertiary-container',
@@ -39,7 +41,7 @@ function KpiCard({
           {value}
         </span>
         <span className="text-on-surface-variant text-[12px] font-data-tabular">
-          USD
+          {t('common.currency')}
         </span>
       </div>
     </div>
@@ -101,7 +103,7 @@ function WorkflowPanel({
   return (
     <div className="bg-surface-container-high border border-outline-variant rounded overflow-hidden">
       <div className="bg-surface-container-highest px-compact-padding py-3 flex justify-between items-center">
-        <h3 className="text-label-caps font-label-caps text-secondary">
+        <h3 className="text-l font-label-caps text-secondary py-2">
           {title}
         </h3>
         {badge && (
@@ -142,22 +144,22 @@ function WorkflowPanel({
 
 export function NewTabContent() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
-  const { addTab } = useTabStore()
-  const { isLoggedIn } = useAuth()
+  // const navigate = useNavigate()
+  // const { addTab } = useTabStore()
+  // const { isLoggedIn } = useAuth()
 
-  const handleActionClick = (type: TabType, title: string) => {
-    if (!isLoggedIn) {
-      requestLogin()
-      return
-    }
-    addTab({
-      title,
-      type,
-      closable: true,
-    })
-    navigate(`/${type}`)
-  }
+  // const handleActionClick = (type: TabType, title: string) => {
+  //   if (!isLoggedIn) {
+  //     requestLogin()
+  //     return
+  //   }
+  //   addTab({
+  //     title,
+  //     type,
+  //     closable: true,
+  //   })
+  //   navigate(`/${type}`)
+  // }
 
   return (
     <div className="px-margin-edge py-6">
@@ -165,35 +167,35 @@ export function NewTabContent() {
       <section className="grid grid-cols-1 md:grid-cols-4 gap-gutter">
         <KpiCard
           label={t('dashboard.kpi.grossRevenue')}
-          value="$2,842,910"
-          trend="+12.4%"
+          value=""
+          trend=""
           trendType="positive"
         />
         <KpiCard
           label={t('dashboard.kpi.totalExpenses')}
-          value="$1,120,405"
-          trend="+4.2%"
+          value=""
+          trend=""
           trendType="negative"
         />
         <KpiCard
           label={t('dashboard.kpi.netProfit')}
-          value="$1,722,505"
-          trend="+18.1%"
+          value=""
+          trend=""
           trendType="positive"
         />
         <KpiCard
           label={t('dashboard.kpi.cashPosition')}
-          value="$4,290,112"
-          trend="Stable"
+          value=""
+          trend=""
           trendType="neutral"
         />
       </section>
 
       {/* Workflow Panels */}
-      <section className="grid grid-cols-1 lg:grid-cols-4 gap-gutter">
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-gutter py-cozy-padding">
         <WorkflowPanel
           title={t('dashboard.workflow.salesWorkflow')}
-          badge="5 Active"
+          // badge="5 Active"
           actions={[
             { label: t('dashboard.workflow.createNewInvoice') },
             { label: t('dashboard.workflow.convertDraftQuotes'), badge: 12 },
@@ -211,7 +213,7 @@ export function NewTabContent() {
 
         <WorkflowPanel
           title={t('dashboard.workflow.purchaseOrder')}
-          badge="Paused: 2"
+          // badge="Paused: 2"
           badgeType="paused"
           actions={[
             { label: t('dashboard.workflow.processBatchBills') },
@@ -226,7 +228,7 @@ export function NewTabContent() {
 
         <WorkflowPanel
           title={t('dashboard.workflow.inventoryControl')}
-          badge="Crit: 1"
+          // badge="Crit: 1"
           badgeType="crit"
           actions={[
             { label: t('dashboard.workflow.stockReconciliation') },
@@ -239,11 +241,11 @@ export function NewTabContent() {
               value: 3,
               type: 'warning',
             },
-            { label: t('dashboard.status.valuation'), value: '$1.2M' },
+            { label: t('dashboard.status.valuation'), value: '' },
           ]}
         />
 
-        <WorkflowPanel
+        {/* <WorkflowPanel
           title={t('dashboard.workflow.treasuryOps')}
           badge="Online"
           badgeType="online"
@@ -256,11 +258,11 @@ export function NewTabContent() {
             { label: t('dashboard.status.balances'), value: 6 },
             { label: t('dashboard.status.lastSync'), value: '2m ago' },
           ]}
-        />
+        /> */}
       </section>
 
       {/* Action Buttons */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+      {/* <section className="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
         <ActionCard
           title={t('dashboard.actions.salesInvoice')}
           description={t('dashboard.actions.salesInvoiceDesc')}
@@ -283,36 +285,36 @@ export function NewTabContent() {
             )
           }
         />
-      </section>
+      </section> */}
     </div>
   )
 }
 
-function ActionCard({
-  title,
-  description,
-  icon,
-  onClick,
-}: {
-  title: string
-  description: string
-  icon: string
-  onClick: () => void
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="bg-surface-container border border-outline-variant rounded p-cozy-padding flex items-center gap-4 hover:border-secondary/30 transition-all text-left"
-    >
-      <span className="material-symbols-outlined text-[32px] text-secondary">
-        {icon}
-      </span>
-      <div>
-        <h4 className="text-body-md font-body-md font-medium text-on-surface">
-          {title}
-        </h4>
-        <p className="text-body-sm text-on-surface-variant">{description}</p>
-      </div>
-    </button>
-  )
-}
+// function ActionCard({
+//   title,
+//   description,
+//   icon,
+//   onClick,
+// }: {
+//   title: string
+//   description: string
+//   icon: string
+//   onClick: () => void
+// }) {
+//   return (
+//     <button
+//       onClick={onClick}
+//       className="bg-surface-container border border-outline-variant rounded p-cozy-padding flex items-center gap-4 hover:border-secondary/30 transition-all text-left"
+//     >
+//       <span className="material-symbols-outlined text-[32px] text-secondary">
+//         {icon}
+//       </span>
+//       <div>
+//         <h4 className="text-body-md font-body-md font-medium text-on-surface">
+//           {title}
+//         </h4>
+//         <p className="text-body-sm text-on-surface-variant">{description}</p>
+//       </div>
+//     </button>
+//   )
+// }

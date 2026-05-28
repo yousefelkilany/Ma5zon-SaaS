@@ -106,7 +106,12 @@ function NavItemsList({
   return (
     <div className="space-y-1">
       {items.map(item => (
-        <NavItem key={item.label} {...item} collapsed={collapsed} onClick={item.onClick} />
+        <NavItem
+          key={item.label}
+          {...item}
+          collapsed={collapsed}
+          onClick={item.onClick}
+        />
       ))}
     </div>
   )
@@ -119,58 +124,92 @@ export function SideBar({ className }: SideBarProps) {
   const { addTab, setActiveTab } = useTabStore()
   const { isLoggedIn, logout } = useAuth()
 
-  const handleEntityClick = useCallback((entityType: string, title: string) => {
-    if (!isLoggedIn) {
-      requestLogin()
-      return
-    }
-    const existingTab = useTabStore.getState().getTabByEntityType(entityType)
+  const handleEntityClick = useCallback(
+    (entityType: string, title: string) => {
+      if (!isLoggedIn) {
+        requestLogin()
+        return
+      }
+      const existingTab = useTabStore.getState().getTabByEntityType(entityType)
 
-    if (existingTab) {
-      setActiveTab(existingTab.id)
-    } else {
-      const newTabId = addTab({
-        title,
-        type: 'entity',
-        closable: true,
-        entityType,
-      })
-      setActiveTab(newTabId)
-    }
+      if (existingTab) {
+        setActiveTab(existingTab.id)
+      } else {
+        const newTabId = addTab({
+          title,
+          type: 'entity',
+          closable: true,
+          entityType,
+        })
+        setActiveTab(newTabId)
+      }
 
-    navigate(`/entity/${entityType}`)
-  }, [addTab, setActiveTab, navigate])
+      navigate(`/entity/${entityType}`)
+    },
+    [addTab, setActiveTab, navigate, isLoggedIn]
+  )
 
-  const NAV_SECTIONS = useMemo(() => [
-    {
-      title: t('sidebar.nav.sales'),
-      items: [
-        { icon: 'receipt', label: t('sidebar.nav.invoices'), entityType: 'invoices', onClick: () => handleEntityClick('invoices', t('sidebar.nav.invoices')) },
-        { icon: 'groups', label: t('sidebar.nav.customers'), entityType: 'customers', onClick: () => handleEntityClick('customers', t('sidebar.nav.customers')) },
-      ],
-    },
-    {
-      title: t('sidebar.nav.purchases'),
-      items: [
-        { icon: 'shopping_cart', label: t('sidebar.nav.bills'), entityType: 'bills', onClick: () => handleEntityClick('bills', t('sidebar.nav.bills')) },
-        { icon: 'store', label: t('sidebar.nav.vendors'), entityType: 'vendors', onClick: () => handleEntityClick('vendors', t('sidebar.nav.vendors')) },
-      ],
-    },
-    {
-      title: t('sidebar.nav.inventory'),
-      items: [
-        { icon: 'inventory_2', label: t('sidebar.nav.stock'), entityType: 'stock', onClick: () => handleEntityClick('stock', t('sidebar.nav.stock')) },
-        { icon: 'warehouse', label: t('sidebar.nav.warehouses'), entityType: 'warehouses', onClick: () => handleEntityClick('warehouses', t('sidebar.nav.warehouses')) },
-      ],
-    },
-    {
-      title: t('sidebar.nav.system'),
-      items: [
-        { icon: 'bar_chart', label: t('sidebar.nav.reports'), entityType: 'reports', onClick: () => handleEntityClick('reports', t('sidebar.nav.reports')) },
-        { icon: 'settings', label: t('sidebar.nav.settings'), entityType: 'settings', onClick: () => handleEntityClick('settings', t('sidebar.nav.settings')) },
-      ],
-    },
-  ] as const, [t, handleEntityClick])
+  const NAV_SECTIONS = useMemo(
+    () =>
+      [
+        {
+          title: t('sidebar.nav.inventory'),
+          items: [
+            {
+              icon: 'inventory_2',
+              label: t('sidebar.nav.stock'),
+              entityType: 'stock',
+              onClick: () => handleEntityClick('stock', t('sidebar.nav.stock')),
+            },
+            {
+              icon: 'warehouse',
+              label: t('sidebar.nav.warehouses'),
+              entityType: 'warehouses',
+              onClick: () =>
+                handleEntityClick('warehouses', t('sidebar.nav.warehouses')),
+            },
+          ],
+        },
+        {
+          title: t('sidebar.nav.sales'),
+          items: [
+            {
+              icon: 'receipt',
+              label: t('sidebar.nav.invoices'),
+              entityType: 'invoices',
+              onClick: () =>
+                handleEntityClick('invoices', t('sidebar.nav.invoices')),
+            },
+            {
+              icon: 'groups',
+              label: t('sidebar.nav.customers'),
+              entityType: 'customers',
+              onClick: () =>
+                handleEntityClick('customers', t('sidebar.nav.customers')),
+            },
+          ],
+        },
+        {
+          title: t('sidebar.nav.purchases'),
+          items: [
+            {
+              icon: 'shopping_cart',
+              label: t('sidebar.nav.bills'),
+              entityType: 'bills',
+              onClick: () => handleEntityClick('bills', t('sidebar.nav.bills')),
+            },
+            {
+              icon: 'store',
+              label: t('sidebar.nav.vendors'),
+              entityType: 'vendors',
+              onClick: () =>
+                handleEntityClick('vendors', t('sidebar.nav.vendors')),
+            },
+          ],
+        },
+      ] as const,
+    [t, handleEntityClick]
+  )
 
   return (
     <div
@@ -185,7 +224,11 @@ export function SideBar({ className }: SideBarProps) {
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-1 hover:bg-surface-container-high rounded text-on-surface-variant focus-visible:ring-2 focus-visible:ring-primary"
-          aria-label={collapsed ? t('titlebar.expandSidebar') : t('titlebar.collapseSidebar')}
+          aria-label={
+            collapsed
+              ? t('titlebar.expandSidebar')
+              : t('titlebar.collapseSidebar')
+          }
         >
           <span className="material-symbols-outlined text-[20px] icon-directional">
             {collapsed ? 'menu' : 'menu_open'}
@@ -209,7 +252,12 @@ export function SideBar({ className }: SideBarProps) {
       <div className="px-4 pb-6 mt-auto">
         <div className="border-t border-outline-variant mb-4" />
         {isLoggedIn && (
-          <NavItem icon="logout" label={t('sidebar.actions.logout')} collapsed={collapsed} onClick={logout} />
+          <NavItem
+            icon="logout"
+            label={t('sidebar.actions.logout')}
+            collapsed={collapsed}
+            onClick={logout}
+          />
         )}
       </div>
     </div>
