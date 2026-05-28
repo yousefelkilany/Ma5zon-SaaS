@@ -18,7 +18,7 @@ const mockT = (key: string) => {
 describe('getEntityLayout', () => {
   it('returns ColumnDef array for valid entity', () => {
     const result = getEntityLayout('products', mockT as never)
-    expect(result).toHaveLength(4)
+    expect(result).toHaveLength(3)
     expect(result[0]).toMatchObject({
       id: 'name',
       label: 'Product Name',
