@@ -175,7 +175,7 @@ async deleteUser(userId: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async authenticate(username: string, password: string) : Promise<Result<[User, string] | null, string>> {
+async authenticate(username: string, password: string) : Promise<Result<User | null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("authenticate", { username, password }) };
 } catch (e) {
@@ -404,7 +404,7 @@ export type UpdateVariant = { sku: string | null; variant_name: string | null; u
 /**
  * User data stored in SQLite
  */
-export type User = { id: string; name: string; role: string; avatar_url: string | null }
+export type User = { id: string; name: string; email: string; role: string; avatar_url: string | null }
 export type Variant = { id: string; product_id: string; sku: string; variant_name: string; uom_id: string }
 export type VariantPrice = { variant_id: string; price_list_id: PriceList; price: number }
 

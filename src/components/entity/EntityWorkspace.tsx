@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { invoke } from '@tauri-apps/api/core'
 import { useQuery } from '@tanstack/react-query'
-import { commands } from '@/lib/tauri-bindings'
+import { commands, unwrapResult } from '@/lib/tauri-bindings'
 import type { EntityWorkspaceProps, ColumnDef, VariantRow } from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
 
@@ -86,6 +86,22 @@ async function exportToCSV(columns: ColumnDef[], data: Record<string, unknown>[]
   }
 }
 
+
+
+function convertTableLayout(layout: { table_name: string; columns: Array<{ id: string; name: string; col_type: string; width: number }> }): ColumnDef[] {
+  return layout.columns.map((col, index) => ({
+    id: col.id,
+    label: col.name,
+    type: col.col_type as ColumnDef['type'],
+    width: col.width,
+    sortable: true,
+    filterable: true,
+    visible: true,
+    order: index + 1,
+    isNameColumn: index === 1,
+  }))
+}
+
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
   const [variantsCache, setVariantsCache] = useState<Map<string, VariantRow[]>>(new Map())
@@ -118,13 +134,20 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['products'],
-    queryFn: () => commands.products.get_all(),
+    queryFn: () => commands.products.getAll(),
   })
 
-  const productColumns: ColumnDef[] = [
-    { id: 'id', label: 'ID', type: 'number', width: 80, sortable: true, filterable: true, visible: true, order: 1 },
-    { id: 'name', label: 'Product Name', type: 'text', width: 200, sortable: true, filterable: true, visible: true, order: 2, isNameColumn: true },
-  ]
+  const { data: tableLayout } = useQuery({
+    queryKey: ['tableLayout', entityType],
+    queryFn: () => unwrapResult(commands.getTableLayout(entityType)),
+  })
+
+  const productColumns: ColumnDef[] = tableLayout 
+    ? convertTableLayout(tableLayout)
+    : [
+        { id: 'id', label: 'ID', type: 'number', width: 80, sortable: true, filterable: true, visible: true, order: 1 },
+        { id: 'name', label: 'Product Name', type: 'text', width: 200, sortable: true, filterable: true, visible: true, order: 2, isNameColumn: true },
+      ]
 
   const handleExport = async () => {
     await exportToCSV(productColumns, products ?? [])

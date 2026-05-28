@@ -148,7 +148,7 @@
   "auth.authenticating": "جاري المصادقة...",
   "auth.login.dialogTitle": "نافذة تسجيل الدخول",
   "auth.login.dialogDescription": "نافذة تسجيل الدخول",
-  "auth.usernamePlaceholder": "مثال: ي.سميث",
+  "auth.usernamePlaceholder": "مثال: محمد",
   "auth.passwordPlaceholder": "••••••••",
   "profile.tabs.account": "الحساب",
   "profile.tabs.security": "الأمان",

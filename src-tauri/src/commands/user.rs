@@ -13,6 +13,7 @@ use crate::types::User;
 struct UserWithHash {
     id: String,
     name: String,
+    email: String,
     role: String,
     avatar_url: Option<String>,
     password_hash: Option<String>,
@@ -38,6 +39,7 @@ fn init_db(app: &AppHandle) -> Result<Connection, String> {
         "CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
             name TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL UNIQUE,
             role TEXT NOT NULL,
             avatar_url TEXT,
             password_hash TEXT
@@ -45,17 +47,6 @@ fn init_db(app: &AppHandle) -> Result<Connection, String> {
         [],
     )
     .map_err(|e| format!("Failed to create users table: {e}"))?;
-
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS sessions (
-            user_id TEXT PRIMARY KEY,
-            session_token TEXT NOT NULL,
-            created_at TEXT NOT NULL,
-            expires_at TEXT
-        )",
-        [],
-    )
-    .map_err(|e| format!("Failed to create sessions table: {e}"))?;
 
     Ok(conn)
 }
@@ -107,46 +98,42 @@ pub async fn authenticate(
     app: AppHandle,
     username: &str,
     password: &str,
-) -> Result<Option<(User, String)>, String> {
+) -> Result<Option<User>, String> {
     log::info!("[authenticate] Attempting login for username: {}", username);
     let conn = init_db(&app)?;
     seed_default_admin(&conn)?;
 
     let mut stmt = conn
-        .prepare("SELECT id, name, role, avatar_url, password_hash FROM users WHERE name = ?1")
+        .prepare("SELECT id, name, email, role, avatar_url, password_hash FROM users WHERE name = ?1")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let user_result = stmt.query_row(params![username], |row| {
         Ok(UserWithHash {
             id: row.get(0)?,
             name: row.get(1)?,
-            role: row.get(2)?,
-            avatar_url: row.get(3)?,
-            password_hash: row.get(4)?,
+            email: row.get(2)?,
+            role: row.get(3)?,
+            avatar_url: row.get(4)?,
+            password_hash: row.get(5)?,
         })
     });
 
     match user_result {
         Ok(user) => {
-            log::info!("[authenticate] User found: {}, attempting password verify", user.name);
+            log::info!(
+                "[authenticate] User found: {}, attempting password verify",
+                user.name
+            );
             if let Some(ref hash) = user.password_hash {
                 if verify_password(password, hash)? {
-                    log::info!("[authenticate] Password verified, creating session");
-                    let session_token = uuid::Uuid::new_v4().to_string();
-                    let created_at = chrono::Utc::now().to_rfc3339();
-
-                    conn.execute(
-                        "INSERT OR REPLACE INTO sessions (user_id, session_token, created_at) VALUES (?1, ?2, ?3)",
-                        params![user.id, session_token, created_at],
-                    ).map_err(|e| format!("Failed to create session: {e}"))?;
-
-                    log::info!("[authenticate] Success, returning user and token");
-                    Ok(Some((User {
+                    log::info!("[authenticate] Password verified, returning user");
+                    Ok(Some(User {
                         id: user.id,
                         name: user.name,
+                        email: user.email,
                         role: user.role,
                         avatar_url: user.avatar_url,
-                    }, session_token)))
+                    }))
                 } else {
                     log::info!("[authenticate] Password verification failed");
                     Ok(None)
@@ -173,7 +160,7 @@ pub async fn load_user(app: AppHandle, user_id: &str) -> Result<Option<User>, St
     let conn = init_db(&app)?;
 
     let mut stmt = conn
-        .prepare("SELECT id, name, role, avatar_url FROM users WHERE id = ?1")
+        .prepare("SELECT id, name, email, role, avatar_url FROM users WHERE id = ?1")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let user = stmt
@@ -181,8 +168,9 @@ pub async fn load_user(app: AppHandle, user_id: &str) -> Result<Option<User>, St
             Ok(User {
                 id: row.get(0)?,
                 name: row.get(1)?,
-                role: row.get(2)?,
-                avatar_url: row.get(3)?,
+                email: row.get(2)?,
+                role: row.get(3)?,
+                avatar_url: row.get(4)?,
             })
         })
         .ok();
@@ -255,30 +243,31 @@ pub async fn update_password(
 #[specta::specta]
 pub async fn update_user(
     app: AppHandle,
-    _user_id: String,
+    user_id: String,
     name: String,
-    _email: String,
+    email: String,
     avatar_url: Option<String>,
 ) -> Result<User, String> {
     let conn = init_db(&app)?;
 
     conn.execute(
-        "UPDATE users SET name = ?1, avatar_url = ?2 WHERE id = ?3",
-        params![name, avatar_url, _user_id],
+        "UPDATE users SET name = ?1, email = ?2, avatar_url = ?3 WHERE id = ?4",
+        params![name, email, avatar_url, user_id],
     )
     .map_err(|e| format!("Failed to update user: {e}"))?;
 
     let mut stmt = conn
-        .prepare("SELECT id, name, role, avatar_url FROM users WHERE id = ?1")
+        .prepare("SELECT id, name, email, role, avatar_url FROM users WHERE id = ?1")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let user = stmt
-        .query_row(params![_user_id], |row| {
+        .query_row(params![user_id], |row| {
             Ok(User {
                 id: row.get(0)?,
                 name: row.get(1)?,
-                role: row.get(2)?,
-                avatar_url: row.get(3)?,
+                email: row.get(2)?,
+                role: row.get(3)?,
+                avatar_url: row.get(4)?,
             })
         })
         .map_err(|e| format!("Failed to get updated user: {e}"))?;

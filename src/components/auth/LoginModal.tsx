@@ -9,7 +9,7 @@ interface LoginModalProps {
   onLoginSuccess: (
     userId: string,
     user: { id: string; name: string; role: string; avatar_url: string | null },
-    sessionToken: string
+    // sessionToken: string
   ) => void
 }
 
@@ -78,10 +78,11 @@ export function LoginModal({
       return
     }
 
-    console.log(`[LoginModal] Login success for user: ${result.data[0].name}`)
+    console.log(`[LoginModal] Login success for user: ${result.data.name}`)
 
     setFormState(prev => ({ ...prev, isLoading: false }))
-    const [user, sessionToken] = result.data
+    // const [user, sessionToken] = result.data
+    const user = result.data
     onLoginSuccess(
       user.id,
       {
@@ -90,7 +91,7 @@ export function LoginModal({
         role: user.role,
         avatar_url: user.avatar_url,
       },
-      sessionToken
+      // sessionToken
     )
     onOpenChange(false)
   }
@@ -98,7 +99,7 @@ export function LoginModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        title={t('auth.login.dialogTitle')}
+        title=""
         aria-describedby={t('auth.login.dialogDescription')}
         ref={contentRef}
         className="bg-surface-container border-outline-variant rounded-lg shadow-2xl overflow-hidden transition-all duration-300"
@@ -202,7 +203,7 @@ export function LoginModal({
                     }
                     disabled={isLoading}
                   >
-                    <span className="material-symbols-outlined">
+                    <span className="material-symbols-outlined inset-e-0">
                       {showPassword ? 'visibility_off' : 'visibility'}
                     </span>
                   </button>

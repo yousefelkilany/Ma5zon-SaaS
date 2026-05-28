@@ -89,6 +89,7 @@ impl std::fmt::Display for RecoveryError {
 pub struct User {
     pub id: String,
     pub name: String,
+    pub email: String,
     pub role: String,
     pub avatar_url: Option<String>,
 }
