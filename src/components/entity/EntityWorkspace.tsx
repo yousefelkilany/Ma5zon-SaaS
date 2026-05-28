@@ -1,8 +1,9 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { invoke } from '@tauri-apps/api/core'
 import { useQuery } from '@tanstack/react-query'
-import { commands, unwrapResult } from '@/lib/tauri-bindings'
+import { commands } from '@/lib/tauri-bindings'
+import { getEntityLayout } from '@/lib/entity-layout'
 import type {
   EntityWorkspaceProps,
   ColumnDef,
@@ -90,35 +91,6 @@ async function exportToCSV(
   }
 }
 
-function convertTableLayout(layout: {
-  table_name: string
-  columns: { name: string; col_type: string; pk: boolean }[]
-}): ColumnDef[] {
-  const skipColumns = ['id', '_id', 'fk_', 'pk']
-
-  return layout.columns
-    .filter(col => {
-      const name = col.name.toLowerCase()
-      return !skipColumns.some(skip => name === skip || name.endsWith(skip))
-    })
-    .map((col, index) => ({
-      id: col.name.toLowerCase().replace(/\s+/g, '_'),
-      label: col.name,
-      type:
-        col.col_type === 'INTEGER'
-          ? 'number'
-          : col.col_type === 'TEXT'
-            ? 'text'
-            : 'text',
-      width: col.col_type === 'TEXT' ? 200 : 120,
-      sortable: true,
-      filterable: true,
-      visible: true,
-      order: index + 1,
-      isNameColumn: index === 0,
-    }))
-}
-
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
   const [variantsCache, setVariantsCache] = useState<Map<string, VariantRow[]>>(
@@ -154,58 +126,46 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     [expandedIds, variantsCache]
   )
 
-  const tableNameMap: Record<string, string> = {
-    products: 'products',
-    warehouses: 'warehouses',
-    invoices: 'invoices',
-    customers: 'customers',
-    bills: 'bills',
-    vendors: 'vendors',
-  }
-
-  const tableName = tableNameMap[entityType] ?? entityType
-
-  const { data: products, isLoading } = useQuery({
-    queryKey: ['products', entityType],
-    queryFn: () => {
-      if (entityType === 'products') {
-        return commands.products.getAll()
-      }
-      return Promise.resolve([])
-    },
-  })
-
-  const { data: tableLayout } = useQuery({
-    queryKey: ['tableLayout', entityType],
+  const { data: entityData, isLoading } = useQuery({
+    queryKey: ['entity', entityType],
     queryFn: async () => {
-      console.log(`[EntityWorkspace] Fetching table layout for: ${entityType}`)
-      const result = await commands.getTableInfo(entityType)
-      console.log(`[EntityWorkspace] getTableInfo result:`, result)
-      return unwrapResult(result)
+      switch (entityType) {
+        case 'products': {
+          const result = await commands.getAll()
+          return result.status === 'ok' ? result.data : []
+        }
+        case 'warehouses': {
+          const result = await commands.warehousesGetAll()
+          return result.status === 'ok' ? result.data : []
+        }
+        default:
+          return []
+      }
     },
   })
 
-  console.log(`[EntityWorkspace] tableLayout state:`, tableLayout)
+  const { t } = useTranslation()
 
-  const productColumns: ColumnDef[] = tableLayout
-    ? convertTableLayout(tableLayout)
-    : []
+  const columns: ColumnDef[] = useMemo(
+    () => getEntityLayout(entityType, t),
+    [entityType, t]
+  )
 
   const handleExport = async () => {
-    await exportToCSV(productColumns, products ?? [])
+    await exportToCSV(columns, entityData ?? [])
   }
 
   return (
     <div className="px-margin-edge flex flex-col h-full bg-background py-6">
       <EntityHeader entityType={entityType} />
       <DataTableShell
-        entityType="products"
-        columns={productColumns}
-        data={products ?? []}
+        entityType={entityType}
+        columns={columns}
+        data={entityData ?? []}
         pagination={{
           page: 1,
           pageSize: 10,
-          totalRows: (products ?? []).length,
+          totalRows: (entityData ?? []).length,
           totalPages: 1,
         }}
         isLoading={isLoading}
