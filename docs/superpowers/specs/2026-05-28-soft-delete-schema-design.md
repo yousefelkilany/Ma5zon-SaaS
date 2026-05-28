@@ -2,7 +2,7 @@
 
 ## Overview
 
-Add `created_at`, `updated_at`, `deleted_at` columns to `products` and `warehouses` tables. Implement soft delete pattern: delete commands set `deleted_at` timestamp instead of removing records. All query commands filter out soft-deleted records.
+Add `created_at`, `updated_at`, `deleted_at` columns to `products`, `warehouses`, and `product_variants` tables. Implement soft delete pattern: delete commands set `deleted_at` timestamp instead of removing records. All query commands filter out soft-deleted records.
 
 Also fix missing bindings in `bindings.rs` for warehouse and stock commands.
 
@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    deleted_at DATETIME DEFAULT NULL  -- NULL = active, timestamp = deleted
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,  -- Set at creation, updated on UPDATE
+    deleted_at DATETIME DEFAULT NULL               -- NULL = active, timestamp = soft deleted
 );
 ```
 
@@ -28,6 +28,24 @@ CREATE TABLE IF NOT EXISTS warehouses (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     deleted_at DATETIME DEFAULT NULL
+);
+```
+
+### product_variants table
+```sql
+CREATE TABLE IF NOT EXISTS product_variants (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id INTEGER NOT NULL,
+    sku TEXT UNIQUE NOT NULL,
+    variant_name TEXT NOT NULL,
+    uom_id INTEGER NOT NULL,
+    retail_price REAL NOT NULL DEFAULT 0,
+    wholesale_price REAL NOT NULL DEFAULT 0,
+    distribution_price REAL NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    deleted_at DATETIME DEFAULT NULL,
+    FOREIGN KEY(product_id) REFERENCES products(id)
 );
 ```
 
@@ -60,10 +78,20 @@ Use `ALTER TABLE` to add new columns to existing tables. Check if column exists 
 
 ```rust
 // Add columns if they don't exist (for existing databases)
+// Products
 conn.execute("ALTER TABLE products ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP", []);
 conn.execute("ALTER TABLE products ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP", []);
 conn.execute("ALTER TABLE products ADD COLUMN deleted_at DATETIME DEFAULT NULL", []);
-// Same for warehouses
+
+// Warehouses
+conn.execute("ALTER TABLE warehouses ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP", []);
+conn.execute("ALTER TABLE warehouses ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP", []);
+conn.execute("ALTER TABLE warehouses ADD COLUMN deleted_at DATETIME DEFAULT NULL", []);
+
+// Variants
+conn.execute("ALTER TABLE product_variants ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP", []);
+conn.execute("ALTER TABLE product_variants ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP", []);
+conn.execute("ALTER TABLE product_variants ADD COLUMN deleted_at DATETIME DEFAULT NULL", []);
 ```
 
 ## Missing Bindings
