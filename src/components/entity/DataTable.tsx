@@ -34,13 +34,16 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function DataCell({ column, value }: { column: ColumnDef; value: unknown }) {
+  const { t } = useTranslation()
+
   if (column.type === 'status') {
     return <StatusBadge status={String(value)} />
   }
   if (column.type === 'currency') {
+    const currencySymbol = t('common.currency')
     return (
       <span className="font-data-tabular tabular-nums">
-        ${' '}
+        {currencySymbol}{' '}
         {(Number(value) || 0).toLocaleString('en-US', {
           minimumFractionDigits: 2,
         })}
