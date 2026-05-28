@@ -300,5 +300,135 @@
   "entity.detail.tabs.audits": "Audits",
   "settingsPopover.language.arabic": "العربية",
   "settingsPopover.language.english": "EN",
-    "entity.workspace.selected": "{count, plural, one {# selected} other {# selected}}"
+    "entity.workspace.selected": "{count, plural, one {# selected} other {# selected}}",
+
+  "entity": {
+    "layout": {
+      "products": {
+        "label": "Products",
+        "columns": {
+          "name": {
+            "label": "Product Name",
+            "type": "text",
+            "width": 200
+          },
+          "category": {
+            "label": "Category",
+            "type": "text",
+            "width": 120
+          },
+          "unit_price": {
+            "label": "Unit Price",
+            "type": "currency",
+            "width": 120
+          },
+          "qty_in_stock": {
+            "label": "Qty in Stock",
+            "type": "number",
+            "width": 100
+          }
+        }
+      },
+      "warehouses": {
+        "label": "Warehouses",
+        "columns": {
+          "name": {
+            "label": "Warehouse Name",
+            "type": "text",
+            "width": 200
+          },
+          "location": {
+            "label": "Location",
+            "type": "text",
+            "width": 150
+          }
+        }
+      },
+      "invoices": {
+        "label": "Invoices",
+        "columns": {
+          "invoice_number": {
+            "label": "Invoice #",
+            "type": "text",
+            "width": 120
+          },
+          "customer_name": {
+            "label": "Customer",
+            "type": "text",
+            "width": 180
+          },
+          "total_amount": {
+            "label": "Total",
+            "type": "currency",
+            "width": 120
+          },
+          "status": {
+            "label": "Status",
+            "type": "status",
+            "width": 100
+          },
+          "created_at": {
+            "label": "Date",
+            "type": "text",
+            "width": 100
+          }
+        }
+      },
+      "customers": {
+        "label": "Customers",
+        "columns": {
+          "name": {
+            "label": "Customer Name",
+            "type": "text",
+            "width": 200
+          },
+          "email": {
+            "label": "Email",
+            "type": "text",
+            "width": 200
+          }
+        }
+      },
+      "bills": {
+        "label": "Bills",
+        "columns": {
+          "bill_number": {
+            "label": "Bill #",
+            "type": "text",
+            "width": 120
+          },
+          "vendor_name": {
+            "label": "Vendor",
+            "type": "text",
+            "width": 180
+          },
+          "total_amount": {
+            "label": "Total",
+            "type": "currency",
+            "width": 120
+          },
+          "status": {
+            "label": "Status",
+            "type": "status",
+            "width": 100
+          }
+        }
+      },
+      "vendors": {
+        "label": "Vendors",
+        "columns": {
+          "name": {
+            "label": "Vendor Name",
+            "type": "text",
+            "width": 200
+          },
+          "email": {
+            "label": "Email",
+            "type": "text",
+            "width": 200
+          }
+        }
+      }
+    }
+  }
 }
