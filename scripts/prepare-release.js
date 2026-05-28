@@ -60,7 +60,13 @@ async function prepareRelease() {
 
     // Run all checks first
     console.log('\n🔍 Running pre-release checks...')
-    exec('npm run check:all')
+    exec('pnpm run typecheck')
+    exec('pnpm run lint')
+    exec('pnpm run ast:lint')
+    exec('pnpm run rust:fmt:check')
+    exec('pnpm run rust:clippy')
+    exec('pnpm run test:run')
+    exec('pnpm run rust:test')
     console.log('✅ All checks passed')
 
     // Update package.json

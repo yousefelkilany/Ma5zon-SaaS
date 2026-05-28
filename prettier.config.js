@@ -11,11 +11,4 @@ export default {
   quoteProps: 'as-needed',
   jsxSingleQuote: false,
   proseWrap: 'preserve',
-  ignore: [
-    '**/.kilo/**',
-    '**/stitch-screens/**',
-    '**/locales/generated/**',
-    '**/src-tauri/**',
-    'pnpm-lock.yaml',
-  ],
 }
