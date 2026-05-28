@@ -1,7 +1,7 @@
 use tauri_specta::{collect_commands, Builder};
 
 pub fn generate_bindings() -> Builder<tauri::Wry> {
-    use crate::commands::{db_utils, notifications, preferences, products, quick_pane, recovery, user, variants};
+    use crate::commands::{db_utils, notifications, preferences, products, quick_pane, recovery, stock, user, variants, warehouses};
     use crate::utils::fs_utils;
 
     Builder::<tauri::Wry>::new().commands(collect_commands![
@@ -36,6 +36,16 @@ pub fn generate_bindings() -> Builder<tauri::Wry> {
         variants::variants_create,
         variants::variants_update,
         variants::variants_delete,
+        warehouses::warehouses_get_all,
+        warehouses::warehouses_get_by_id,
+        warehouses::warehouses_create,
+        warehouses::warehouses_update,
+        warehouses::warehouses_delete,
+        stock::stock_levels_get_all,
+        stock::stock_levels_get_by_variant,
+        stock::stock_levels_get_by_warehouse,
+        stock::stock_movements_get_all,
+        stock::stock_movements_get_by_variant,
     ])
 }
 

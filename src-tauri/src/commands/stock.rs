@@ -1,6 +1,7 @@
 use async_trait::async_trait;
 use rand::{seq::SliceRandom, Rng};
 use rusqlite::{params, Connection};
+use specta::Type;
 use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
@@ -190,14 +191,14 @@ fn seed_stock_movements(conn: &Connection) -> Result<(), String> {
     Ok(())
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
 pub struct StockLevel {
     pub variant_id: String,
     pub warehouse_id: String,
     pub quantity: f64,
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
 pub struct StockMovement {
     pub id: String,
     pub variant_id: String,

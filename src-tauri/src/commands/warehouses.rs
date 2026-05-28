@@ -3,12 +3,12 @@ use rusqlite::{params, Connection};
 use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
-use crate::commands::{self, DatabaseInitializable};
+use crate::commands::DatabaseInitializable;
 
 pub struct WarehousesInitializer;
 
 #[async_trait]
-impl commands::DatabaseInitializable for WarehousesInitializer {
+impl DatabaseInitializable for WarehousesInitializer {
     fn table_name(&self) -> &str {
         "warehouses"
     }
@@ -59,7 +59,7 @@ fn seed_warehouses(conn: &Connection) -> Result<(), String> {
     Ok(())
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
 pub struct Warehouse {
     pub id: String,
     pub name: String,
@@ -113,7 +113,11 @@ pub async fn warehouses_get_by_id(app: AppHandle, id: String) -> Result<Option<W
 
 #[tauri::command]
 #[specta::specta]
-pub async fn warehouses_create(app: AppHandle, name: String, location: String) -> Result<Warehouse, String> {
+pub async fn warehouses_create(
+    app: AppHandle,
+    name: String,
+    location: String,
+) -> Result<Warehouse, String> {
     let conn = get_conn(&app)?;
     conn.execute(
         "INSERT INTO warehouses (name, location) VALUES (?1, ?2)",
@@ -127,7 +131,12 @@ pub async fn warehouses_create(app: AppHandle, name: String, location: String) -
 
 #[tauri::command]
 #[specta::specta]
-pub async fn warehouses_update(app: AppHandle, id: String, name: String, location: String) -> Result<Warehouse, String> {
+pub async fn warehouses_update(
+    app: AppHandle,
+    id: String,
+    name: String,
+    location: String,
+) -> Result<Warehouse, String> {
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     conn.execute(
