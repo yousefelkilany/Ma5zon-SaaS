@@ -51,6 +51,7 @@
   "common.enabled": "Enabled",
   "common.disabled": "Disabled",
   "common.reset": "Reset",
+  "common.cancel": "Cancel",
 
   "common.applicationCrashed": "Application crashed",
   "common.noStackTraceAvailable": "No stack trace available",
@@ -59,6 +60,13 @@
   "common.theApplicationEncounteredAnUnexpectedError": "The application encountered an unexpected error. Your data has been saved automatically.",
   "common.reloadApplication": "Reload Application",
   "common.tryAgain": "Try Again",
+
+  "common.types.text": "Text",
+  "common.types.currency": "Currency",
+  "common.types.number": "Number",
+  "common.types.date": "Date",
+  "common.types.status": "Status",
+  "common.types.actions": "Actions",
 
   "commands.group.navigation": "Navigation",
   "commands.group.settings": "Settings",
@@ -115,6 +123,7 @@
   "sidebar.nav.system": "System",
   "sidebar.nav.stock": "Stock",
   "sidebar.nav.warehouses": "Warehouses",
+  "sidebar.nav.products": "Products",
   "sidebar.nav.finance": "Finance",
   "sidebar.nav.ledgers": "Ledgers",
   "sidebar.nav.plReport": "P&L Report",
@@ -244,7 +253,7 @@
   "common.currency": "EGP",
   "dashboard.chart.cashFlowTrends": "Cash Flow Trends",
   "dashboard.chart.downloadReport": "Download Report",
-  "dashboard.chart.revenueByCategory": "Revenue by Category",
+  "dashboard.chart.monthlyRevenue": "Monthly Revenue",
   "dashboard.chart.cashInVsCashOut": "Cash In vs. Cash Out",
   "dashboard.chart.jan": "Jan",
   "dashboard.chart.feb": "Feb",
@@ -255,6 +264,7 @@
   "dashboard.chart.consulting": "Consulting",
 
   "entity.workspace.section.sales": "SALES",
+  "entity.workspace.section.warehouses": "WAREHOUSES",
   "entity.workspace.section.partners": "PARTNERS",
   "entity.workspace.section.purchases": "PURCHASES",
   "entity.workspace.section.inventory": "INVENTORY",

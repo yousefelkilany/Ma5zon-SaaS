@@ -70,7 +70,7 @@ export function ColumnVisibilityDialog({
                 />
                 <span className="flex-1 text-on-surface text-body-sm">{col.label}</span>
                 <span className="text-on-surface-variant text-body-sm text-xs">
-                  {col.type}
+                  {col.typeLabel}
                 </span>
               </div>
             ))}

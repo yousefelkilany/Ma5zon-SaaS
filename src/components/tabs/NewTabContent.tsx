@@ -192,7 +192,7 @@ export function NewTabContent() {
       </section>
 
       {/* Workflow Panels */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-gutter py-cozy-padding">
+      {/* <section className="grid grid-cols-1 lg:grid-cols-3 gap-gutter py-cozy-padding">
         <WorkflowPanel
           title={t('dashboard.workflow.salesWorkflow')}
           // badge="5 Active"
@@ -245,7 +245,7 @@ export function NewTabContent() {
           ]}
         />
 
-        {/* <WorkflowPanel
+        <WorkflowPanel
           title={t('dashboard.workflow.treasuryOps')}
           badge="Online"
           badgeType="online"
@@ -258,8 +258,8 @@ export function NewTabContent() {
             { label: t('dashboard.status.balances'), value: 6 },
             { label: t('dashboard.status.lastSync'), value: '2m ago' },
           ]}
-        /> */}
-      </section>
+        />
+      </section> */}
 
       {/* Action Buttons */}
       {/* <section className="grid grid-cols-1 lg:grid-cols-2 gap-gutter">

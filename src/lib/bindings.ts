@@ -294,6 +294,86 @@ async variantsDelete(id: string) : Promise<Result<null, string>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async warehousesGetAll() : Promise<Result<Warehouse[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("warehouses_get_all") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async warehousesGetById(id: string) : Promise<Result<Warehouse | null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("warehouses_get_by_id", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async warehousesCreate(name: string, location: string) : Promise<Result<Warehouse, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("warehouses_create", { name, location }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async warehousesUpdate(id: string, name: string, location: string) : Promise<Result<Warehouse, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("warehouses_update", { id, name, location }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async warehousesDelete(id: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("warehouses_delete", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async stockLevelsGetAll() : Promise<Result<StockLevel[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("stock_levels_get_all") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async stockLevelsGetByVariant(variantId: string) : Promise<Result<StockLevel[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("stock_levels_get_by_variant", { variantId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async stockLevelsGetByWarehouse(warehouseId: string) : Promise<Result<StockLevel[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("stock_levels_get_by_warehouse", { warehouseId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async stockMovementsGetAll() : Promise<Result<StockMovement[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("stock_movements_get_all") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async stockMovementsGetByVariant(variantId: string) : Promise<Result<StockMovement[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("stock_movements_get_by_variant", { variantId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -325,7 +405,7 @@ language: string | null }
 export type ColumnInfo = { cid: number; name: string; col_type: string; notnull: boolean; dflt_value: string | null; pk: boolean }
 export type JsonValue = null | boolean | number | string | JsonValue[] | Partial<{ [key in string]: JsonValue }>
 export type NewVariant = { product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number }
-export type Product = { id: string; name: string }
+export type Product = { id: string; name: string; created_at: string | null; updated_at: string | null; deleted_at: string | null }
 /**
  * Error types for recovery operations (typed for frontend matching)
  */
@@ -350,13 +430,16 @@ export type RecoveryError =
  * JSON serialization/deserialization error
  */
 { type: "ParseError"; message: string }
+export type StockLevel = { variant_id: string; warehouse_id: string; quantity: number }
+export type StockMovement = { id: string; variant_id: string; from_warehouse_id: string | null; to_warehouse_id: string | null; quantity: number; movement_type: string; created_at: string }
 export type TableInfo = { table_name: string; columns: ColumnInfo[] }
 export type UpdateVariant = { sku: string | null; variant_name: string | null; uom_id: string | null; retail_price: number | null; wholesale_price: number | null; distribution_price: number | null }
 /**
  * User data stored in SQLite
  */
 export type User = { id: string; name: string; email: string; role: string; avatar_url: string | null }
-export type Variant = { id: string; product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number }
+export type Variant = { id: string; product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number; created_at: string | null; updated_at: string | null; deleted_at: string | null }
+export type Warehouse = { id: string; name: string; location: string; created_at: string | null; updated_at: string | null; deleted_at: string | null }
 
 /** tauri-specta globals **/
 

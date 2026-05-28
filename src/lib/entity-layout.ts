@@ -24,6 +24,7 @@ export function getEntityLayout(
       id: key,
       label: t(config.labelKey),
       type: config.type as ColumnDef['type'],
+      typeLabel: t(`common.types.${config.type}`),
       width: config.width,
       sortable: true,
       filterable: true,

@@ -6,6 +6,7 @@ export interface ColumnDef {
   id: string
   label: string
   type: 'text' | 'currency' | 'number' | 'date' | 'status' | 'actions'
+  typeLabel: string,
   width: number
   sortable: boolean
   filterable: boolean

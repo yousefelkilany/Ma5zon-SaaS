@@ -80,7 +80,7 @@ export function DashboardContent() {
           <div className="bg-surface-container border border-outline-variant rounded p-cozy-padding min-h-100 flex flex-col">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-headline-sm text-on-surface">
-                {t('dashboard.chart.revenueByCategory')}
+                {t('dashboard.chart.monthlyRevenue')}
               </h3>
               <div className="flex gap-2">
                 <span className="w-3 h-3 bg-secondary rounded-full" />
@@ -89,7 +89,7 @@ export function DashboardContent() {
             </div>
             <div className="flex-1 flex flex-col justify-end gap-4 px-4">
               <div className="flex items-end gap-gutter h-full">
-                <Bar height="85%" label={t('dashboard.chart.consulting')} />
+                <Bar height="85%" />
                 <Bar height="60%" />
                 <Bar height="45%" />
                 <Bar height="75%" />
