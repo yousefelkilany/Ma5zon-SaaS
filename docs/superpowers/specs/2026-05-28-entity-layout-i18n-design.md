@@ -292,16 +292,18 @@ import { DataTableShell } from './DataTableShell'
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const { t } = useTranslation()
 
-  // Products data — fetch function determined by entityType
-  // Note: Only products fetch is implemented. Other entities (warehouses,
-  // invoices, customers, bills, vendors) return empty arrays until their
-  // fetch commands are added.
+  // Entity data — fetch function determined by entityType
+  // Note: products and warehouses fetch commands are implemented.
+  // Other entities (invoices, customers, bills, vendors) return empty
+  // arrays until their fetch commands are added.
   const { data: entityData, isLoading } = useQuery({
     queryKey: ['entity', entityType],
     queryFn: async () => {
       switch (entityType) {
         case 'products':
           return commands.products.getAll()
+        case 'warehouses':
+          return commands.warehousesGetAll()
         // Other entity fetch commands to be added as they're implemented
         default:
           return Promise.resolve([])
