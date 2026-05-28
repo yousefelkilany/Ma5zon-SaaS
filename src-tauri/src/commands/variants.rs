@@ -295,7 +295,7 @@ pub async fn variants_update(
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
     conn.execute(
-        "UPDATE product_variants SET sku = ?1, variant_name = ?2, uom_id = ?3, retail_price = ?4, wholesale_price = ?5, distribution_price = ?6, updated_at = ?7 WHERE id = ?8",
+        "UPDATE product_variants SET sku = ?1, variant_name = ?2, uom_id = ?3, retail_price = ?4, wholesale_price = ?5, distribution_price = ?6, updated_at = ?7 WHERE id = ?8 AND deleted_at IS NULL",
         params![new_sku, new_variant_name, new_uom_id, new_retail_price, new_wholesale_price, new_distribution_price, now, id_i64],
     )
     .map_err(|e| format!("Failed to update variant: {e}"))?;
@@ -322,7 +322,7 @@ pub async fn variants_delete(app: AppHandle, id: String) -> Result<(), String> {
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(
-        "UPDATE product_variants SET deleted_at = ?1 WHERE id = ?2",
+        "UPDATE product_variants SET deleted_at = ?1 WHERE id = ?2 AND deleted_at IS NULL",
         params![now, id_i64],
     )
     .map_err(|e| format!("Failed to delete variant: {e}"))?;
