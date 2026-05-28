@@ -94,22 +94,29 @@ function convertTableLayout(layout: {
   table_name: string
   columns: { name: string; col_type: string; pk: boolean }[]
 }): ColumnDef[] {
-  return layout.columns.map((col, index) => ({
-    id: col.name.toLowerCase().replace(/\s+/g, '_'),
-    label: col.name,
-    type:
-      col.col_type === 'INTEGER'
-        ? 'number'
-        : col.col_type === 'TEXT'
-          ? 'text'
-          : 'text',
-    width: col.pk ? 80 : col.col_type === 'TEXT' ? 200 : 120,
-    sortable: true,
-    filterable: true,
-    visible: true,
-    order: index + 1,
-    isNameColumn: index === 1,
-  }))
+  const skipColumns = ['id', '_id', 'fk_', 'pk']
+
+  return layout.columns
+    .filter(col => {
+      const name = col.name.toLowerCase()
+      return !skipColumns.some(skip => name === skip || name.endsWith(skip))
+    })
+    .map((col, index) => ({
+      id: col.name.toLowerCase().replace(/\s+/g, '_'),
+      label: col.name,
+      type:
+        col.col_type === 'INTEGER'
+          ? 'number'
+          : col.col_type === 'TEXT'
+            ? 'text'
+            : 'text',
+      width: col.col_type === 'TEXT' ? 200 : 120,
+      sortable: true,
+      filterable: true,
+      visible: true,
+      order: index + 1,
+      isNameColumn: index === 0,
+    }))
 }
 
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
@@ -147,9 +154,25 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     [expandedIds, variantsCache]
   )
 
+  const tableNameMap: Record<string, string> = {
+    products: 'products',
+    warehouses: 'warehouses',
+    invoices: 'invoices',
+    customers: 'customers',
+    bills: 'bills',
+    vendors: 'vendors',
+  }
+
+  const tableName = tableNameMap[entityType] ?? entityType
+
   const { data: products, isLoading } = useQuery({
-    queryKey: ['products'],
-    queryFn: () => commands.products.getAll(),
+    queryKey: ['products', entityType],
+    queryFn: () => {
+      if (entityType === 'products') {
+        return commands.products.getAll()
+      }
+      return Promise.resolve([])
+    },
   })
 
   const { data: tableLayout } = useQuery({
