@@ -8,11 +8,9 @@ use tauri::AppHandle;
 pub mod db_utils;
 pub mod notifications;
 pub mod preferences;
-pub mod prices;
 pub mod products;
 pub mod quick_pane;
 pub mod recovery;
-pub mod schema;
 pub mod user;
 pub mod variants;
 
@@ -20,3 +18,15 @@ pub trait DatabaseInitializable {
     fn table_name(&self) -> &str;
     async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String>;
 }
+
+use self::{
+    products::ProductsInitializer,
+    user::UserInitializer,
+    variants::VariantsInitializer,
+};
+
+pub const TABLE_INITIALIZERS: &[&dyn DatabaseInitializable] = &[
+    &UserInitializer,
+    &ProductsInitializer,
+    &VariantsInitializer,
+];
