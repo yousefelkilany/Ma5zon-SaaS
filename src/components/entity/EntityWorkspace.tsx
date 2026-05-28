@@ -97,7 +97,12 @@ function convertTableLayout(layout: {
   return layout.columns.map((col, index) => ({
     id: col.name.toLowerCase().replace(/\s+/g, '_'),
     label: col.name,
-    type: col.col_type === 'INTEGER' ? 'number' : col.col_type === 'TEXT' ? 'text' : 'text',
+    type:
+      col.col_type === 'INTEGER'
+        ? 'number'
+        : col.col_type === 'TEXT'
+          ? 'text'
+          : 'text',
     width: col.pk ? 80 : col.col_type === 'TEXT' ? 200 : 120,
     sortable: true,
     filterable: true,
@@ -150,10 +155,14 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const { data: tableLayout } = useQuery({
     queryKey: ['tableLayout', entityType],
     queryFn: async () => {
+      console.log(`[EntityWorkspace] Fetching table layout for: ${entityType}`)
       const result = await commands.dbUtils.getTableInfo(entityType)
+      console.log(`[EntityWorkspace] getTableInfo result:`, result)
       return unwrapResult(result)
     },
   })
+
+  console.log(`[EntityWorkspace] tableLayout state:`, tableLayout)
 
   const productColumns: ColumnDef[] = tableLayout
     ? convertTableLayout(tableLayout)
@@ -172,7 +181,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         data={products ?? []}
         pagination={{
           page: 1,
-          pageSize: 50,
+          pageSize: 10,
           totalRows: (products ?? []).length,
           totalPages: 1,
         }}

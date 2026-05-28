@@ -38,9 +38,15 @@ pub fn get_conn(app: &AppHandle) -> Result<Connection, String> {
 #[tauri::command]
 #[specta::specta]
 pub async fn get_table_info(app: AppHandle, table_name: &str) -> Result<TableInfo, String> {
+    log::info!("[get_table_info] Called with table_name: {}", table_name);
     let conn = get_conn(&app)?;
+    log::info!("[get_table_info] Connection established");
+
+    let query = format!("PRAGMA table_info({})", table_name);
+    log::info!("[get_table_info] Executing query: {}", query);
+
     let mut stmt = conn
-        .prepare(&format!("PRAGMA table_info({})", table_name))
+        .prepare(&query)
         .map_err(|e| format!("Failed to prepare pragma statement: {e}"))?;
 
     let columns: Vec<ColumnInfo> = stmt
@@ -58,9 +64,14 @@ pub async fn get_table_info(app: AppHandle, table_name: &str) -> Result<TableInf
         .collect::<Result<Vec<_>, _>>()
         .map_err(|e| format!("Failed to collect column info: {e}"))?;
 
+    log::info!("[get_table_info] Found {} columns", columns.len());
+
     if columns.is_empty() {
+        log::warn!("[get_table_info] Table '{}' not found or has no columns", table_name);
         return Err(format!("Table '{}' not found", table_name));
     }
+
+    log::info!("[get_table_info] Returning TableInfo with {} columns for table '{}'", columns.len(), table_name);
 
     Ok(TableInfo {
         table_name: table_name.to_string(),
