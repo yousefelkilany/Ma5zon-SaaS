@@ -30,24 +30,6 @@ impl DatabaseInitializable for ProductsInitializer {
         )
         .map_err(|e| format!("Failed to create products table: {e}"))?;
 
-        conn.execute(
-            "ALTER TABLE products ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP",
-            [],
-        )
-        .map_err(|e| format!("Failed to add created_at column (may already exist): {e}"))?;
-
-        conn.execute(
-            "ALTER TABLE products ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP",
-            [],
-        )
-        .map_err(|e| format!("Failed to add updated_at column (may already exist): {e}"))?;
-
-        conn.execute(
-            "ALTER TABLE products ADD COLUMN deleted_at DATETIME DEFAULT NULL",
-            [],
-        )
-        .map_err(|e| format!("Failed to add deleted_at column (may already exist): {e}"))?;
-
         let count: i64 = conn
             .query_row("SELECT COUNT(*) FROM products", [], |row| row.get(0))
             .map_err(|e| format!("Failed to count products: {e}"))?;
@@ -192,6 +174,15 @@ pub async fn update(app: AppHandle, id: String, name: String) -> Result<Product,
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+
+    let created_at: String = conn
+        .query_row(
+            "SELECT created_at FROM products WHERE id = ?1 AND deleted_at IS NULL",
+            params![id_i64],
+            |row| row.get(0),
+        )
+        .map_err(|e| format!("Product not found: {e}"))?;
+
     conn.execute(
         "UPDATE products SET name = ?1, updated_at = ?2 WHERE id = ?3 AND deleted_at IS NULL",
         params![name, &now, id_i64],
@@ -201,7 +192,7 @@ pub async fn update(app: AppHandle, id: String, name: String) -> Result<Product,
     Ok(Product {
         id,
         name,
-        created_at: None,
+        created_at: Some(created_at),
         updated_at: Some(now),
         deleted_at: None,
     })
@@ -213,10 +204,14 @@ pub async fn delete(app: AppHandle, id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-    conn.execute(
-        "UPDATE products SET deleted_at = ?1 WHERE id = ?2 AND deleted_at IS NULL",
-        params![&now, id_i64],
-    )
-    .map_err(|e| format!("Failed to delete product: {e}"))?;
+    let affected = conn
+        .execute(
+            "UPDATE products SET deleted_at = ?1 WHERE id = ?2 AND deleted_at IS NULL",
+            params![&now, id_i64],
+        )
+        .map_err(|e| format!("Failed to delete product: {e}"))?;
+    if affected == 0 {
+        return Err("Product not found".to_string());
+    }
     Ok(())
 }
