@@ -1,22 +1,67 @@
 use rusqlite::{params, Connection};
-use std::path::PathBuf;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 
+use crate::commands::db_utils::{get_conn, get_db_path};
+use crate::commands::{self, DatabaseInitializable};
 use crate::types::Product;
 
-fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
-    let app_data_dir = app
-        .path()
-        .app_data_dir()
-        .map_err(|e| format!("Failed to get app data directory: {e}"))?;
-    std::fs::create_dir_all(&app_data_dir)
-        .map_err(|e| format!("Failed to create app data directory: {e}"))?;
-    Ok(app_data_dir.join("ma5zon.db"))
+pub struct ProductsInitializer;
+
+impl commands::DatabaseInitializable for ProductsInitializer {
+    fn table_name(&self) -> &str {
+        "products"
+    }
+
+    async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
+        let conn = get_conn(app)?;
+
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS products (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL
+            )",
+            [],
+        )
+        .map_err(|e| format!("Failed to create products table: {e}"))?;
+
+        let count: i64 = conn
+            .query_row("SELECT COUNT(*) FROM products", [], |row| row.get(0))
+            .map_err(|e| format!("Failed to count products: {e}"))?;
+
+        if count == 0 {
+            log::info!("[ProductsInitializer] Seeding sample products");
+            seed_products(&conn)?;
+        }
+
+        Ok(())
+    }
 }
 
-fn get_conn(app: &AppHandle) -> Result<Connection, String> {
-    let db_path = get_db_path(app)?;
-    Connection::open(&db_path).map_err(|e| format!("Failed to open database: {e}"))
+fn seed_products(conn: &Connection) -> Result<(), String> {
+    use rand::Rng;
+
+    let products = vec![
+        "Industrial Motor Assembly", "Electronic Control Module", "Hydraulic Pump Unit",
+        "Precision Bearing Set", "Stainless Steel Fastener Kit", "LED Display Panel",
+        "Thermal Insulation Sheet", "Carbon Fiber Bracket", "Copper Wiring Harness",
+        "Aluminum Extrusion Profile", "Rubber Gasket Seal", "Plastic Housing Cover",
+        "Glass Lens Assembly", "Brass Fitting Connector", "Titanium Implant Plate",
+        "Ceramic Capacitor Array", "Magnetic Encoder Sensor", "Pneumatic Cylinder",
+        "Solar Panel Junction Box", "Composite Gear Set", "Acoustic Waveguide",
+        "Optical Fiber Bundle", "High-Frequency Transformer", "Emergency Battery Pack",
+        "Servo Drive Controller", "Linear Guide Rail", "Pressure Relief Valve",
+        "Bi-Metal Thermostat", "Anti-Vibration Mount", "RF Antenna Module",
+        "316L Stainless Tubing", "Polycarbonate Housing", "Graphite Heat Sink",
+        "Neodymium Magnet Assembly", "PTFE Liner Bearing", "Epoxy Resin Compound",
+        "Silicone Grommet Set", "Borosilicate Glass Tube", "Rolled Steel Sheet",
+    ];
+
+    for product in products {
+        conn.execute("INSERT INTO products (name) VALUES (?1)", [product])
+            .map_err(|e| format!("Failed to insert product: {e}"))?;
+    }
+
+    Ok(())
 }
 
 #[tauri::command]
