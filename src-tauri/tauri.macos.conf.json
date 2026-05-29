@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "identifier": "com.ma5zon.app",
+  "identifier": "com.ma5zon.finance",
   "app": {
     "windows": [
       {
