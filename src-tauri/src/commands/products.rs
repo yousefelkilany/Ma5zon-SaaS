@@ -5,7 +5,8 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
-use crate::sql::products::{create_table, get_all as sql_get_all, get_by_id as sql_get_by_id, create as sql_create, update as sql_update, soft_delete as sql_soft_delete, get_created_at as sql_get_created_at};
+use crate::sql::products::{create_table, get_by_id as sql_get_by_id, create as sql_create, update as sql_update, soft_delete as sql_soft_delete, get_created_at as sql_get_created_at, build_where_clause, build_get_all};
+use crate::sql::products::FilterState;
 use crate::types::Product;
 
 pub struct ProductsInitializer;
@@ -92,10 +93,18 @@ fn seed_products(conn: &Connection) -> Result<(), String> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn get_all(app: AppHandle) -> Result<Vec<Product>, String> {
+pub async fn get_all(
+    app: AppHandle,
+    filters: Vec<FilterState>,
+    _columns: Vec<String>,
+) -> Result<Vec<Product>, String> {
     let conn = get_conn(&app)?;
+    
+    let where_clause = build_where_clause(&filters);
+    let query = build_get_all(&where_clause);
+    
     let mut stmt = conn
-        .prepare(sql_get_all())
+        .prepare(&query)
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let products = stmt

@@ -5,7 +5,8 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
-use crate::sql::warehouses::{create, create_table, get_all, get_by_id, get_created_at, soft_delete, update};
+use crate::sql::warehouses::{create, create_table, get_by_id, get_created_at, soft_delete, update, build_where_clause, build_get_all};
+use crate::sql::warehouses::FilterState;
 
 pub struct WarehousesInitializer;
 
@@ -67,10 +68,18 @@ pub struct Warehouse {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn warehouses_get_all(app: AppHandle) -> Result<Vec<Warehouse>, String> {
+pub async fn warehouses_get_all(
+    app: AppHandle,
+    filters: Vec<FilterState>,
+    _columns: Vec<String>,
+) -> Result<Vec<Warehouse>, String> {
     let conn = get_conn(&app)?;
+    
+    let where_clause = build_where_clause(&filters);
+    let query = build_get_all(&where_clause);
+    
     let mut stmt = conn
-        .prepare(get_all())
+        .prepare(&query)
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let warehouses = stmt
