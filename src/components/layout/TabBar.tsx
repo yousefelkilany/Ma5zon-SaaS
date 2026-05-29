@@ -45,7 +45,7 @@ export function TabBar() {
             tabIndex={isActive ? 0 : -1}
             onClick={() => handleTabClick(tab.id)}
             className={cn(
-              'flex items-center px-4 h-full text-[11px] font-label-caps font-medium cursor-pointer shrink-0 border-b-2 transition-colors',
+              'flex items-center px-2 h-full text-[11px] font-label-caps font-medium cursor-pointer shrink-0 border-b-2 transition-colors',
               isActive
                 ? 'bg-secondary/20 border-secondary text-secondary'
                 : 'text-on-surface-variant hover:bg-surface-container-high border-transparent'
@@ -55,7 +55,7 @@ export function TabBar() {
             {tab.closable && (
               <span
                 onClick={(e) => handleCloseTab(e, tab.id)}
-                className="material-symbols-outlined text-[14px] ms-2 hover:text-error"
+                className="material-symbols-outlined text-[14px] me-2 hover:text-error"
               >
                 close
               </span>

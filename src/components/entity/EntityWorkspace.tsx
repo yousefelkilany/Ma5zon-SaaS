@@ -10,6 +10,7 @@ import type {
   VariantRow,
 } from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
+import { cn } from '@/lib/utils'
 
 function EntityHeader({ entityType }: { entityType: string }) {
   const { t } = useTranslation()
@@ -36,7 +37,13 @@ function EntityHeader({ entityType }: { entityType: string }) {
         <div className="flex flex-col">
           <nav className="flex items-center space-x-2 text-on-surface-variant mb-1">
             <span className="font-label-caps text-label-caps">{section}</span>
-            <span className="material-symbols-outlined text-sm icon-directional">
+            <span
+              className={cn(
+                'material-symbols-outlined text-sm',
+                document.documentElement.getAttribute('dir') == 'rtl' &&
+                  'rotate-180'
+              )}
+            >
               chevron_right
             </span>
             <span className="font-label-caps text-label-caps text-on-surface">
