@@ -5,7 +5,7 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
-use crate::sql::products::{get_all as sql_get_all, get_by_id as sql_get_by_id, create as sql_create, update as sql_update, soft_delete as sql_soft_delete, get_created_at as sql_get_created_at};
+use crate::sql::products::{create_table, get_all as sql_get_all, get_by_id as sql_get_by_id, create as sql_create, update as sql_update, soft_delete as sql_soft_delete, get_created_at as sql_get_created_at};
 use crate::types::Product;
 
 pub struct ProductsInitializer;
@@ -19,18 +19,7 @@ impl DatabaseInitializable for ProductsInitializer {
     async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
         let conn = get_conn(app)?;
 
-        conn.execute(
-            "CREATE TABLE IF NOT EXISTS products (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                company TEXT NOT NULL,
-                name TEXT NOT NULL,
-                category TEXT NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                deleted_at DATETIME DEFAULT NULL
-            )",
-            [],
-        )
+        conn.execute(create_table(), [])
         .map_err(|e| format!("Failed to create products table: {e}"))?;
 
         let count: i64 = conn
