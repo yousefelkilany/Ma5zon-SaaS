@@ -12,8 +12,38 @@ export const entityLayoutConfig = {
         type: 'text',
         width: 120,
       },
-      unit_price: {
-        labelKey: 'entity.layout.products.columns.unit_price',
+    },
+  },
+  product_variants: {
+    labelKey: 'entity.layout.product_variants.label',
+    columns: {
+      sku: {
+        labelKey: 'entity.layout.product_variants.columns.sku',
+        type: 'text',
+        width: 120,
+      },
+      variant_name: {
+        labelKey: 'entity.layout.product_variants.columns.variant_name',
+        type: 'text',
+        width: 150,
+      },
+      uom_id: {
+        labelKey: 'entity.layout.product_variants.columns.uom',
+        type: 'text',
+        width: 80,
+      },
+      retail_price: {
+        labelKey: 'entity.layout.product_variants.columns.retail',
+        type: 'currency',
+        width: 100,
+      },
+      wholesale_price: {
+        labelKey: 'entity.layout.product_variants.columns.wholesale',
+        type: 'currency',
+        width: 110,
+      },
+      dist_price: {
+        labelKey: 'entity.layout.product_variants.columns.distribution',
         type: 'currency',
         width: 120,
       },
