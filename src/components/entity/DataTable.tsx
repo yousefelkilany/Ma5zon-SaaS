@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react'
+import { useMemo, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useReactTable,
@@ -15,6 +15,10 @@ import type {
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsRTL } from '@/hooks/user-is-rtl'
 import { VariantsSubTable } from './VariantsSubTable'
+import { ProductDetailModal } from './ProductDetailModal'
+import { WarehouseDetailModal } from './WarehouseDetailModal'
+import { VariantDetailModal } from './VariantDetailModal'
+import { ConfirmationDialog } from './ConfirmationDialog'
 
 function StatusBadge({ status }: { status: string }) {
   const badgeClass =
@@ -68,6 +72,7 @@ interface ExpandedRowProps {
 }
 
 export function DataTable({
+  entityType,
   columns,
   data,
   sort,
@@ -76,12 +81,35 @@ export function DataTable({
   onSort,
   onRowSelect,
   onRowClick,
+  onEditClick,
+  onDeleteClick,
   expandedRowIds,
   variantsCache,
   onRowToggleExpand,
   isLoadingVariants,
 }: DataTableProps & ExpandedRowProps) {
   const { t } = useTranslation()
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
+
+  const handleEditClick = useCallback(
+    (id: string, row: EntityRow) => {
+      onEditClick?.(id, row)
+      setSelectedEntityId(id)
+      setEditModalOpen(true)
+    },
+    [onEditClick]
+  )
+
+  const handleDeleteClick = useCallback(
+    (id: string, row: EntityRow) => {
+      onDeleteClick?.(id, row)
+      setSelectedEntityId(id)
+      setDeleteModalOpen(true)
+    },
+    [onDeleteClick]
+  )
   const visibleColumns = useMemo(
     () => columns.filter(col => col.visible).sort((a, b) => a.order - b.order),
     [columns]
@@ -89,105 +117,129 @@ export function DataTable({
 
   const isRTLlayout = useIsRTL()
 
-  const tableColumns = useMemo<TanstackColumnDef<EntityRow>[]>(
-    () => [
-      {
-        id: 'select',
-        size: 10,
-        enableResizing: false,
-        header: ({ table }) => (
-          <input
-            type="checkbox"
-            className="w-4 h-4"
-            aria-label={t('entity.workspace.selectAll')}
-            checked={table.getIsAllRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}
-          />
-        ),
-        cell: ({ row }) => (
-          <input
-            type="checkbox"
-            className="w-4 h-4"
-            aria-label={t('entity.workspace.selectRow')}
-            checked={row.getIsSelected()}
-            onChange={row.getToggleSelectedHandler()}
-            onClick={e => e.stopPropagation()}
-          />
-        ),
-      },
-      {
-        id: 'expand',
-        size: 10,
-        enableResizing: false,
-        header: () => null,
-        cell: ({ row }) => (
+  const selectColumn = useMemo<TanstackColumnDef<EntityRow>>(
+    () => ({
+      id: 'select',
+      size: 10,
+      enableResizing: false,
+      header: ({ table }) => (
+        <input
+          type="checkbox"
+          className="w-4 h-4"
+          aria-label={t('entity.workspace.selectAll')}
+          checked={table.getIsAllRowsSelected()}
+          onChange={table.getToggleAllRowsSelectedHandler()}
+        />
+      ),
+      cell: ({ row }) => (
+        <input
+          type="checkbox"
+          className="w-4 h-4"
+          aria-label={t('entity.workspace.selectRow')}
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+          onClick={e => e.stopPropagation()}
+        />
+      ),
+    }),
+    [t]
+  )
+
+  const expandColumn = useMemo<TanstackColumnDef<EntityRow>>(
+    () => ({
+      id: 'expand',
+      size: 10,
+      enableResizing: false,
+      header: () => null,
+      cell: ({ row }) => (
+        <button
+          className="p-1 hover:bg-surface-bright rounded transition-colors"
+          onClick={e => {
+            e.stopPropagation()
+            onRowToggleExpand?.(row.original.id)
+          }}
+        >
+          <span
+            className={`icon-directional material-symbols-outlined text-[18px] text-on-surface-variant transition-transform ${expandedRowIds?.has(row.original.id) ? 'rotate-90' : 'rotate-180'}`}
+          >
+            chevron_right
+          </span>
+        </button>
+      ),
+    }),
+    [expandedRowIds, onRowToggleExpand]
+  )
+
+  const _actionsColumn = useMemo<TanstackColumnDef<EntityRow>>(
+    () => ({
+      id: 'actions',
+      size: 100,
+      enableResizing: false,
+      header: () => (
+        <span className="text-center">
+          {t('entity.workspace.columns.actions')}
+        </span>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
-            className="p-1 hover:bg-surface-bright rounded transition-colors"
+            className="p-1 text-on-surface-variant hover:text-primary"
+            title={t('entity.workspace.edit')}
+            aria-label={t('entity.workspace.edit')}
             onClick={e => {
               e.stopPropagation()
-              onRowToggleExpand?.(row.original.id)
+              handleEditClick(row.original.id, row.original)
             }}
           >
             <span
-              className={`icon-directional material-symbols-outlined text-[18px] text-on-surface-variant transition-transform ${expandedRowIds?.has(row.original.id) ? 'rotate-90' : ''}`}
+              className="material-symbols-outlined text-[18px]"
+              aria-hidden="true"
             >
-              chevron_right
+              edit
             </span>
           </button>
-        ),
-      },
-      ...visibleColumns.map(col => ({
+          <button
+            className="p-1 text-on-surface-variant hover:text-error"
+            title={t('entity.workspace.delete')}
+            aria-label={t('entity.workspace.delete')}
+            onClick={e => {
+              e.stopPropagation()
+              handleDeleteClick(row.original.id, row.original)
+            }}
+          >
+            <span
+              className="material-symbols-outlined text-[18px]"
+              aria-hidden="true"
+            >
+              delete
+            </span>
+          </button>
+        </div>
+      ),
+    }),
+    [t, handleEditClick, handleDeleteClick]
+  )
+
+  const tableColumns = useMemo<TanstackColumnDef<EntityRow>[]>(() => {
+    const cols: TanstackColumnDef<EntityRow>[] = [selectColumn]
+    if (entityType === 'products') cols.push(expandColumn)
+    cols.push(
+      ...visibleColumns.map((col, idx) => ({
         id: col.id,
         accessorKey: col.id,
         header: col.label,
         size: col.width,
         enableSorting: col.sortable,
-        enableResizing: true,
+        enableResizing: idx + 1 != visibleColumns.length,
         cell: ({ getValue }: { getValue: () => unknown }) => (
           <DataCell column={col} value={getValue()} />
         ),
-      })),
-      {
-        id: 'actions',
-        size: 100,
-        enableResizing: false,
-        header: () => (
-          <span className="text-center">
-            {t('entity.workspace.columns.actions')}
-          </span>
-        ),
-        cell: () => (
-          <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              className="p-1 text-on-surface-variant hover:text-primary"
-              title={t('entity.workspace.edit')}
-              aria-label={t('entity.workspace.edit')}
-            >
-              <span
-                className="material-symbols-outlined text-[18px]"
-                aria-hidden="true"
-              >
-                edit
-              </span>
-            </button>
-            <button
-              className="p-1 text-on-surface-variant hover:text-error"
-              title={t('entity.workspace.delete')}
-              aria-label={t('entity.workspace.delete')}
-            >
-              <span
-                className="material-symbols-outlined text-[18px]"
-                aria-hidden="true"
-              >
-                delete
-              </span>
-            </button>
-          </div>
-        ),
-      },
-    ],
-    [visibleColumns, expandedRowIds, onRowToggleExpand, t]
-  )
+      }))
+    )
+    cols.push(_actionsColumn)
+
+    return cols
+  }, [selectColumn, expandColumn, entityType, visibleColumns, _actionsColumn])
 
   const table = useReactTable({
     data,
@@ -289,6 +341,7 @@ export function DataTable({
   }
 
   return (
+    <>
     <div className="flex-1 overflow-auto border border-outline-variant rounded-lg bg-surface-container-lowest">
       <div className="min-w-0">
         <table
@@ -399,5 +452,42 @@ export function DataTable({
         </table>
       </div>
     </div>
+    {entityType === 'products' && selectedEntityId && (
+      <ProductDetailModal
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+        entityId={selectedEntityId}
+        onDeleted={undefined}
+      />
+    )}
+    {entityType === 'warehouses' && selectedEntityId && (
+      <WarehouseDetailModal
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+        entityId={selectedEntityId}
+        onDeleted={undefined}
+      />
+    )}
+    {entityType === 'variants' && selectedEntityId && (
+      <VariantDetailModal
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+        entityId={selectedEntityId}
+        onDeleted={undefined}
+      />
+    )}
+    {selectedEntityId && (
+      <ConfirmationDialog
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        title={t('entity.workspace.deleteConfirmTitle')}
+        description={t('entity.workspace.deleteConfirmMessage')}
+        onConfirm={() => {
+          setDeleteModalOpen(false)
+          setSelectedEntityId(null)
+        }}
+      />
+    )}
+    </>
   )
 }
