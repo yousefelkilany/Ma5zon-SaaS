@@ -105,12 +105,11 @@ export function DataTable({
 
   const handleDeleteClick = useCallback(
     (id: string, row: EntityRow) => {
-      onDeleteClick?.(id, row)
       setSelectedEntityId(id)
       setSelectedRow(row)
       setDeleteModalOpen(true)
     },
-    [onDeleteClick]
+    []
   )
   const visibleColumns = useMemo(
     () => columns.filter(col => col.visible).sort((a, b) => a.order - b.order),
