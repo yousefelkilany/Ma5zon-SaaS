@@ -1,5 +1,16 @@
 //! SQL statements for users entity.
 
+pub fn create_table() -> &'static str {
+    "CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE,
+        email TEXT NOT NULL UNIQUE,
+        role TEXT NOT NULL,
+        avatar_url TEXT,
+        password_hash TEXT
+    )"
+}
+
 pub fn get_by_name() -> &'static str {
     "SELECT id, name, email, role, avatar_url, password_hash \
      FROM users WHERE name = ?1"
