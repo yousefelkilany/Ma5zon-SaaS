@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ColumnDef, FilterState } from '@/lib/types/entity'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
@@ -22,6 +22,16 @@ export function FilterDialog({
 }: FilterDialogProps) {
   const { t } = useTranslation()
   const [localFilters, setLocalFilters] = useState<Record<string, string | string[] | { min?: string; max?: string }>>({})
+
+  useEffect(() => {
+    if (open) {
+      const initialized: Record<string, string | string[] | { min?: string; max?: string }> = {}
+      filters.forEach(f => {
+        initialized[f.columnId] = f.value as string | string[] | { min?: string; max?: string }
+      })
+      setLocalFilters(initialized)
+    }
+  }, [open, filters])
 
   const getFilterValue = (columnId: string) => {
     const val = localFilters[columnId]
@@ -50,7 +60,18 @@ export function FilterDialog({
   }
 
   const handleApply = () => {
-    onApply(filters)
+    const appliedFilters = Object.entries(localFilters)
+      .filter(([_, v]) => v !== '' && (Array.isArray(v) ? v.length > 0 : true))
+      .map(([columnId, value]) => {
+        if (typeof value === 'string') {
+          return { columnId, operator: 'contains' as const, value }
+        } else if (Array.isArray(value)) {
+          return { columnId, operator: 'eq' as const, value }
+        } else {
+          return { columnId, operator: 'between' as const, value: [value.min ?? '', value.max ?? ''] }
+        }
+      }) as FilterState[]
+    onApply(appliedFilters)
     onOpenChange(false)
   }
 
