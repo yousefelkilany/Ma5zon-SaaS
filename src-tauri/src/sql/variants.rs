@@ -1,5 +1,22 @@
 //! SQL statements for product_variants entity.
 
+pub fn create_table() -> &'static str {
+    "CREATE TABLE IF NOT EXISTS product_variants (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        product_id INTEGER NOT NULL,
+        sku TEXT UNIQUE NOT NULL,
+        variant_name TEXT NOT NULL,
+        uom_id INTEGER NOT NULL,
+        retail_price REAL NOT NULL DEFAULT 0,
+        wholesale_price REAL NOT NULL DEFAULT 0,
+        distribution_price REAL NOT NULL DEFAULT 0,
+        created_at TEXT,
+        updated_at TEXT,
+        deleted_at TEXT,
+        FOREIGN KEY(product_id) REFERENCES products(id)
+    )"
+}
+
 pub fn get_all() -> &'static str {
     "SELECT id, product_id, sku, variant_name, uom_id, retail_price, \
      wholesale_price, distribution_price, created_at, updated_at, deleted_at \
