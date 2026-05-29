@@ -12,6 +12,8 @@ pub const DEFAULT_QUICK_PANE_SHORTCUT: &str = "CommandOrControl+Shift+.";
 /// Maximum size for recovery data files (10MB)
 pub const MAX_RECOVERY_DATA_BYTES: u32 = 10_485_760;
 
+pub const ADMIN_ROLE: &str = "Administrator";
+
 /// Pre-compiled regex pattern for filename validation.
 /// Only allows alphanumeric characters, dashes, underscores, and a single extension.
 pub static FILENAME_PATTERN: LazyLock<Regex> = LazyLock::new(|| {

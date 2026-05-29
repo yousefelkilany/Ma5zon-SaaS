@@ -8,13 +8,13 @@ use async_trait::async_trait;
 use rusqlite::params;
 use tauri::AppHandle;
 
-use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::sql::users::{
     create_table, delete, get_by_id, get_by_name, get_password_hash,
     update_password as sql_update_password, update_user as sql_update_user, upsert,
 };
 use crate::types::User;
+use crate::{commands::db_utils::get_conn, types::ADMIN_ROLE};
 
 struct UserWithHash {
     id: String,
@@ -37,7 +37,7 @@ impl DatabaseInitializable for UserInitializer {
         let conn = get_conn(app)?;
 
         conn.execute(create_table(), [])
-        .map_err(|e| format!("Failed to create users table: {e}"))?;
+            .map_err(|e| format!("Failed to create users table: {e}"))?;
 
         let count: i64 = conn
             .query_row("SELECT COUNT(*) FROM users", [], |row| row.get(0))
@@ -53,7 +53,7 @@ impl DatabaseInitializable for UserInitializer {
                     uuid::Uuid::new_v4().to_string(),
                     "admin",
                     "admin@localhost",
-                    "Administrator",
+                    ADMIN_ROLE,
                     Option::<String>::None,
                     password_hash
                 ],
@@ -175,8 +175,11 @@ pub async fn load_user(app: AppHandle, user_id: &str) -> Result<Option<User>, St
 pub async fn save_user(app: AppHandle, user: User) -> Result<(), String> {
     let conn = get_conn(&app)?;
 
-    conn.execute(upsert(), params![user.id, user.name, user.role, user.avatar_url])
-        .map_err(|e| format!("Failed to save user: {e}"))?;
+    conn.execute(
+        upsert(),
+        params![user.id, user.name, user.role, user.avatar_url],
+    )
+    .map_err(|e| format!("Failed to save user: {e}"))?;
 
     Ok(())
 }

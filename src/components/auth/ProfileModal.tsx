@@ -259,7 +259,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
           overflow: 'auto',
           zIndex: 51,
         }}
-        title="Profile"
+        title=""
         aria-description="Profile Dialog"
       >
         <div className="flex flex-col h-full">

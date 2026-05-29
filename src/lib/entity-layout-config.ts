@@ -2,13 +2,13 @@ export const entityLayoutConfig = {
   products: {
     labelKey: 'entity.layout.products.label',
     columns: {
-      company: {
-        labelKey: 'entity.layout.products.columns.company',
+      name: {
+        labelKey: 'entity.layout.products.columns.name',
         type: 'text',
         width: 200,
       },
-      name: {
-        labelKey: 'entity.layout.products.columns.name',
+      company: {
+        labelKey: 'entity.layout.products.columns.company',
         type: 'text',
         width: 200,
       },
