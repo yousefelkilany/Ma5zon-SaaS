@@ -1,5 +1,17 @@
 //! SQL statements for products entity.
 
+pub fn create_table() -> &'static str {
+    "CREATE TABLE IF NOT EXISTS products (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        company TEXT NOT NULL,
+        name TEXT NOT NULL,
+        category TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        deleted_at DATETIME DEFAULT NULL
+    )"
+}
+
 pub fn get_all() -> &'static str {
     "SELECT id, company, name, category, created_at, updated_at, deleted_at \
      FROM products WHERE deleted_at IS NULL ORDER BY name"
