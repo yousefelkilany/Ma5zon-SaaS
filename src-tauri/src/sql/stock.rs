@@ -18,7 +18,7 @@ pub fn create_movements_table() -> &'static str {
         from_warehouse_id INTEGER,
         to_warehouse_id INTEGER,
         quantity REAL NOT NULL,
-        type TEXT NOT NULL,
+        \"type\" TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(variant_id) REFERENCES product_variants(id),
         FOREIGN KEY(from_warehouse_id) REFERENCES warehouses(id),
@@ -42,11 +42,11 @@ pub fn get_levels_by_warehouse() -> &'static str {
 }
 
 pub fn get_movements_all() -> &'static str {
-    "SELECT id, variant_id, from_warehouse_id, to_warehouse_id, quantity, type, created_at \
+    "SELECT id, variant_id, from_warehouse_id, to_warehouse_id, quantity, \"type\", created_at \
      FROM stock_movements ORDER BY created_at DESC"
 }
 
 pub fn get_movements_by_variant() -> &'static str {
-    "SELECT id, variant_id, from_warehouse_id, to_warehouse_id, quantity, type, created_at \
+    "SELECT id, variant_id, from_warehouse_id, to_warehouse_id, quantity, \"type\", created_at \
      FROM stock_movements WHERE variant_id = ?1 ORDER BY created_at DESC"
 }
