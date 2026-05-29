@@ -263,3 +263,14 @@ pub fn validate_theme(theme: &str) -> Result<(), String> {
         _ => Err("Invalid theme: must be 'light', 'dark', or 'system'".to_string()),
     }
 }
+
+// ============================================================================
+// Filter State
+// ============================================================================
+
+#[derive(Debug, Clone, Deserialize, Type)]
+pub struct FilterState {
+    pub column_id: String,
+    pub operator: String,
+    pub value: serde_json::Value,
+}

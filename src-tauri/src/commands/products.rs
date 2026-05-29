@@ -6,7 +6,7 @@ use tauri::AppHandle;
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::sql::products::{create_table, get_by_id as sql_get_by_id, create as sql_create, update as sql_update, soft_delete as sql_soft_delete, get_created_at as sql_get_created_at, build_where_clause, build_get_all};
-use crate::sql::products::FilterState;
+use crate::types::FilterState;
 use crate::types::Product;
 
 pub struct ProductsInitializer;

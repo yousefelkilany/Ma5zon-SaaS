@@ -6,7 +6,7 @@ use tauri::AppHandle;
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::sql::warehouses::{create, create_table, get_by_id, get_created_at, soft_delete, update, build_where_clause, build_get_all};
-use crate::sql::warehouses::FilterState;
+use crate::types::FilterState;
 
 pub struct WarehousesInitializer;
 

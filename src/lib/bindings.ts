@@ -207,9 +207,9 @@ async updatePassword(userId: string, currentPassword: string, newPassword: strin
     else return { status: "error", error: e  as any };
 }
 },
-async getAll() : Promise<Result<Product[], string>> {
+async getAll(filters: FilterState[], columns: string[]) : Promise<Result<Product[], string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("get_all") };
+    return { status: "ok", data: await TAURI_INVOKE("get_all", { filters, columns }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -295,9 +295,9 @@ async variantsDelete(id: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async warehousesGetAll() : Promise<Result<Warehouse[], string>> {
+async warehousesGetAll(filters: FilterState[], columns: string[]) : Promise<Result<Warehouse[], string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("warehouses_get_all") };
+    return { status: "ok", data: await TAURI_INVOKE("warehouses_get_all", { filters, columns }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -403,6 +403,7 @@ quick_pane_shortcut: string | null;
  */
 language: string | null }
 export type ColumnInfo = { cid: number; name: string; col_type: string; notnull: boolean; dflt_value: string | null; pk: boolean }
+export type FilterState = { column_id: string; operator: string; value: JsonValue }
 export type JsonValue = null | boolean | number | string | JsonValue[] | Partial<{ [key in string]: JsonValue }>
 export type NewVariant = { product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number }
 export type Product = { id: string; company: string; name: string; category: string; created_at: string | null; updated_at: string | null; deleted_at: string | null }

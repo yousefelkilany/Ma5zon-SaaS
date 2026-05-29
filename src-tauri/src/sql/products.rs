@@ -40,14 +40,7 @@ pub fn get_created_at() -> &'static str {
     "SELECT created_at FROM products WHERE id = ?1 AND deleted_at IS NULL"
 }
 
-use serde::Deserialize;
-
-#[derive(Debug, Deserialize, specta::Type)]
-pub struct FilterState {
-    pub column_id: String,
-    pub operator: String,
-    pub value: serde_json::Value,
-}
+use crate::types::FilterState;
 
 pub fn build_where_clause(filters: &[FilterState]) -> String {
     if filters.is_empty() {
