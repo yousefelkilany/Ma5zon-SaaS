@@ -24,9 +24,14 @@ export function Toolbar({
             onChange={e => onSearchChange(e.target.value)}
             className="w-full bg-surface-bright border border-outline-variant rounded px-3 py-1.5 text-on-surface text-body-sm placeholder:text-on-surface-variant/50"
           />
-          <span className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">
-            search
-          </span>
+          <button
+            type="button"
+            className="absolute inset-e-10 top-1/2 -translate-y-1/2"
+          >
+            <span className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">
+              search
+            </span>
+          </button>
         </div>
         <div className="h-6 w-px bg-outline-variant" />
         <button

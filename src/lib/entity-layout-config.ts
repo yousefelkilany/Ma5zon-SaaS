@@ -5,17 +5,17 @@ export const entityLayoutConfig = {
       name: {
         labelKey: 'entity.layout.products.columns.name',
         type: 'text',
-        width: 200,
+        width: 400,
       },
       company: {
         labelKey: 'entity.layout.products.columns.company',
         type: 'text',
-        width: 200,
+        width: 400,
       },
       category: {
         labelKey: 'entity.layout.products.columns.category',
         type: 'text',
-        width: 120,
+        width: 275,
       },
     },
   },
@@ -25,12 +25,12 @@ export const entityLayoutConfig = {
       sku: {
         labelKey: 'entity.layout.product_variants.columns.sku',
         type: 'text',
-        width: 120,
+        width: 275,
       },
       variant_name: {
         labelKey: 'entity.layout.product_variants.columns.variant_name',
         type: 'text',
-        width: 150,
+        width: 220,
       },
       uom_id: {
         labelKey: 'entity.layout.product_variants.columns.uom',
@@ -40,7 +40,7 @@ export const entityLayoutConfig = {
       retail_price: {
         labelKey: 'entity.layout.product_variants.columns.retail',
         type: 'currency',
-        width: 100,
+        width: 170,
       },
       wholesale_price: {
         labelKey: 'entity.layout.product_variants.columns.wholesale',
@@ -50,7 +50,7 @@ export const entityLayoutConfig = {
       distribution_price: {
         labelKey: 'entity.layout.product_variants.columns.distribution',
         type: 'currency',
-        width: 120,
+        width: 275,
       },
     },
   },
@@ -60,12 +60,12 @@ export const entityLayoutConfig = {
       name: {
         labelKey: 'entity.layout.warehouses.columns.name',
         type: 'text',
-        width: 200,
+        width: 400,
       },
       location: {
         labelKey: 'entity.layout.warehouses.columns.location',
         type: 'text',
-        width: 150,
+        width: 220,
       },
     },
   },
@@ -75,7 +75,7 @@ export const entityLayoutConfig = {
       invoice_number: {
         labelKey: 'entity.layout.invoices.columns.invoice_number',
         type: 'text',
-        width: 120,
+        width: 275,
       },
       customer_name: {
         labelKey: 'entity.layout.invoices.columns.customer_name',
@@ -85,17 +85,17 @@ export const entityLayoutConfig = {
       total_amount: {
         labelKey: 'entity.layout.invoices.columns.total_amount',
         type: 'currency',
-        width: 120,
+        width: 275,
       },
       status: {
         labelKey: 'entity.layout.invoices.columns.status',
         type: 'status',
-        width: 100,
+        width: 170,
       },
       created_at: {
         labelKey: 'entity.layout.invoices.columns.created_at',
         type: 'text',
-        width: 100,
+        width: 170,
       },
     },
   },
@@ -105,12 +105,12 @@ export const entityLayoutConfig = {
       name: {
         labelKey: 'entity.layout.customers.columns.name',
         type: 'text',
-        width: 200,
+        width: 400,
       },
       email: {
         labelKey: 'entity.layout.customers.columns.email',
         type: 'text',
-        width: 200,
+        width: 400,
       },
     },
   },
@@ -120,7 +120,7 @@ export const entityLayoutConfig = {
       bill_number: {
         labelKey: 'entity.layout.bills.columns.bill_number',
         type: 'text',
-        width: 120,
+        width: 275,
       },
       vendor_name: {
         labelKey: 'entity.layout.bills.columns.vendor_name',
@@ -130,12 +130,12 @@ export const entityLayoutConfig = {
       total_amount: {
         labelKey: 'entity.layout.bills.columns.total_amount',
         type: 'currency',
-        width: 120,
+        width: 275,
       },
       status: {
         labelKey: 'entity.layout.bills.columns.status',
         type: 'status',
-        width: 100,
+        width: 170,
       },
     },
   },
@@ -145,12 +145,12 @@ export const entityLayoutConfig = {
       name: {
         labelKey: 'entity.layout.vendors.columns.name',
         type: 'text',
-        width: 200,
+        width: 400,
       },
       email: {
         labelKey: 'entity.layout.vendors.columns.email',
         type: 'text',
-        width: 200,
+        width: 400,
       },
     },
   },

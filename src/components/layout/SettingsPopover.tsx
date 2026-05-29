@@ -1,5 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover'
 import { useTheme } from '@/hooks/use-theme'
 import { usePreferences, useSavePreferences } from '@/services/preferences'
 
@@ -40,13 +44,15 @@ export function SettingsPopover() {
     <Popover>
       <PopoverTrigger asChild>
         <button className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full">
-          <span className="material-symbols-outlined" style={{ fontSize: '1.75em' }}>
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: '1.75em' }}
+          >
             settings
           </span>
         </button>
       </PopoverTrigger>
       <PopoverContent
-        align="end"
         side="bottom"
         sideOffset={8}
         className="w-72 bg-surface-container border-outline-variant rounded-lg p-4 shadow-xl"
@@ -66,7 +72,9 @@ export function SettingsPopover() {
               }`}
             >
               <span className="material-symbols-outlined">light_mode</span>
-              <span className="text-xs">{t('preferences.appearance.theme.light')}</span>
+              <span className="text-xs">
+                {t('preferences.appearance.theme.light')}
+              </span>
             </button>
             <button
               onClick={() => handleThemeChange('dark')}
@@ -77,7 +85,9 @@ export function SettingsPopover() {
               }`}
             >
               <span className="material-symbols-outlined">dark_mode</span>
-              <span className="text-xs">{t('preferences.appearance.theme.dark')}</span>
+              <span className="text-xs">
+                {t('preferences.appearance.theme.dark')}
+              </span>
             </button>
             <button
               onClick={() => handleThemeChange('system')}
@@ -88,7 +98,9 @@ export function SettingsPopover() {
               }`}
             >
               <span className="material-symbols-outlined">desktop_windows</span>
-              <span className="text-xs">{t('preferences.appearance.theme.system')}</span>
+              <span className="text-xs">
+                {t('preferences.appearance.theme.system')}
+              </span>
             </button>
           </div>
         </div>
@@ -108,7 +120,9 @@ export function SettingsPopover() {
               }`}
             >
               <span className="text-2xl">🇸🇦</span>
-              <span className="text-xs">{t('settingsPopover.language.arabic')}</span>
+              <span className="text-xs">
+                {t('settingsPopover.language.arabic')}
+              </span>
             </button>
             <button
               onClick={() => handleLanguageChange('en')}
@@ -119,7 +133,9 @@ export function SettingsPopover() {
               }`}
             >
               <span className="text-2xl">🇺🇸</span>
-              <span className="text-xs">{t('settingsPopover.language.english')}</span>
+              <span className="text-xs">
+                {t('settingsPopover.language.english')}
+              </span>
             </button>
             <button
               onClick={() => handleLanguageChange('system')}
@@ -130,7 +146,9 @@ export function SettingsPopover() {
               }`}
             >
               <span className="material-symbols-outlined">desktop_windows</span>
-              <span className="text-xs">{t('preferences.appearance.theme.system')}</span>
+              <span className="text-xs">
+                {t('preferences.appearance.theme.system')}
+              </span>
             </button>
           </div>
         </div>

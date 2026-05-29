@@ -103,14 +103,11 @@ export function DataTable({
     [onEditClick]
   )
 
-  const handleDeleteClick = useCallback(
-    (id: string, row: EntityRow) => {
-      setSelectedEntityId(id)
-      setSelectedRow(row)
-      setDeleteModalOpen(true)
-    },
-    []
-  )
+  const handleDeleteClick = useCallback((id: string, row: EntityRow) => {
+    setSelectedEntityId(id)
+    setSelectedRow(row)
+    setDeleteModalOpen(true)
+  }, [])
   const visibleColumns = useMemo(
     () => columns.filter(col => col.visible).sort((a, b) => a.order - b.order),
     [columns]
@@ -343,164 +340,167 @@ export function DataTable({
 
   return (
     <>
-    <div className="flex-1 overflow-auto border border-outline-variant rounded-lg bg-surface-container-lowest">
-      <div className="min-w-0">
-        <table
-          className="w-full border-collapse text-body-sm"
-          style={{ tableLayout: 'fixed' }}
-        >
-          <thead className="sticky top-0 z-10 bg-surface-container-high border-b border-outline-variant shadow-sm">
-            {table.getHeaderGroups().map(headerGroup => {
-              const headers = headerGroup.headers
-              return (
-                <tr key={headerGroup.id}>
-                  {headers.map((header, _index) => {
-                    const canResize = header.column.getCanResize()
+      <div className="flex-1 overflow-auto border border-outline-variant rounded-lg bg-surface-container-lowest">
+        <div className="min-w-0">
+          <table
+            className="w-full border-collapse text-body-sm"
+            style={{
+              tableLayout: 'fixed',
+              width: table.getTotalSize(),
+            }}
+          >
+            <thead className="sticky top-0 z-10 bg-surface-container-high border-b border-outline-variant shadow-sm">
+              {table.getHeaderGroups().map(headerGroup => {
+                const headers = headerGroup.headers
+                return (
+                  <tr key={headerGroup.id}>
+                    {headers.map((header, _index) => {
+                      const canResize = header.column.getCanResize()
 
-                    return (
-                      <th
-                        key={header.id}
-                        className="px-compact-padding py-2.5 text-left font-bold text-on-surface relative select-none"
-                        style={{ width: header.getSize() ?? 20 }}
-                      >
-                        {canResize && (
-                          <div
-                            onMouseDown={header.getResizeHandler()}
-                            onTouchStart={header.getResizeHandler()}
-                            onClick={e => e.stopPropagation()}
-                            className={`absolute top-0 h-full w-4 cursor-col-resize touch-none flex items-center justify-center
+                      return (
+                        <th
+                          key={header.id}
+                          className="px-compact-padding py-2.5 text-left font-bold text-on-surface relative select-none"
+                          style={{ width: header.getSize() ?? 20 }}
+                        >
+                          {canResize && (
+                            <div
+                              onMouseDown={header.getResizeHandler()}
+                              onTouchStart={header.getResizeHandler()}
+                              onClick={e => e.stopPropagation()}
+                              className={`absolute top-0 h-full w-4 cursor-col-resize touch-none flex items-center justify-center
                               ${isRTLlayout ? 'inset-e-0' : 'inset-s-0'}
                             `}
-                          >
-                            <div
-                              className={`h-full w-0.5 transition-colors  ${header.column.getIsResizing() ? 'bg-secondary' : 'bg-outline-variant hover:bg-secondary'}`}
-                            />
-                          </div>
-                        )}
-                        {header.isPlaceholder ? null : (
-                          <div className="flex items-center justify-between">
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                            {header.column.columnDef.enableSorting && (
-                              <button
-                                className="p-1 hover:bg-surface-bright rounded transition-colors focus-visible:ring-2 focus-visible:ring-secondary"
-                                onClick={() => handleSortChange(header.id)}
-                              >
-                                <span className="material-symbols-outlined text-[16px] text-on-surface-variant">
-                                  {sort?.columnId === header.id
-                                    ? sort.direction === 'asc'
-                                      ? 'expand_less'
-                                      : 'expand_more'
-                                    : 'unfold_more'}
-                                </span>
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </th>
-                    )
-                  })}
-                </tr>
-              )
-            })}
-          </thead>
-<tbody className="divide-y divide-outline-variant">
-            {table.getRowModel().rows.map(row => (
-              <Fragment key={row.id}>
-                <tr
-                  className="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
-                >
-                  {row.getVisibleCells().map(cell => {
-                    const columnDef = columns.find(c => c.id === cell.column.id)
-                    const isNameCol = columnDef?.isNameColumn
-                    return (
-                      <td
-                        key={cell.id}
-                        className={`px-compact-padding py-2 text-on-surface ${isNameCol ? 'cursor-pointer hover:bg-surface-container-highest' : ''}`}
-                        style={{
-                          width: cell.column.getSize(),
-                        }}
-                        onClick={
-                          isNameCol
-                            ? () => onRowClick(row.original.id, row.original)
-                            : undefined
-                        }
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    )
-                  })}
-                </tr>
-                {expandedRowIds?.has(row.original.id) && (
-                  <tr>
-                    <td colSpan={columns.length + 2} className="p-0">
-                      <VariantsSubTable
-                        variants={variantsCache?.get(row.original.id) ?? []}
-                        isLoading={isLoadingVariants?.(row.original.id)}
-                      />
-                    </td>
+                            >
+                              <div
+                                className={`h-full w-0.5 transition-colors  ${header.column.getIsResizing() ? 'bg-secondary' : 'bg-outline-variant hover:bg-secondary'}`}
+                              />
+                            </div>
+                          )}
+                          {header.isPlaceholder ? null : (
+                            <div className="flex items-center justify-between">
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                              {header.column.columnDef.enableSorting && (
+                                <button
+                                  className="p-1 hover:bg-surface-bright rounded transition-colors focus-visible:ring-2 focus-visible:ring-secondary"
+                                  onClick={() => handleSortChange(header.id)}
+                                >
+                                  <span className="material-symbols-outlined text-[16px] text-on-surface-variant">
+                                    {sort?.columnId === header.id
+                                      ? sort.direction === 'asc'
+                                        ? 'expand_less'
+                                        : 'expand_more'
+                                      : 'unfold_more'}
+                                  </span>
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </th>
+                      )
+                    })}
                   </tr>
-                )}
-              </Fragment>
-            ))}
-          </tbody>
-        </table>
+                )
+              })}
+            </thead>
+            <tbody className="divide-y divide-outline-variant">
+              {table.getRowModel().rows.map(row => (
+                <Fragment key={row.id}>
+                  <tr className="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30">
+                    {row.getVisibleCells().map(cell => {
+                      const columnDef = columns.find(
+                        c => c.id === cell.column.id
+                      )
+                      const isNameCol = columnDef?.isNameColumn
+                      return (
+                        <td
+                          key={cell.id}
+                          className={`px-compact-padding py-2 text-on-surface ${isNameCol ? 'cursor-pointer hover:bg-surface-container-highest' : ''}`}
+                          style={{
+                            width: cell.column.getSize(),
+                          }}
+                          onClick={
+                            isNameCol
+                              ? () => onRowClick(row.original.id, row.original)
+                              : undefined
+                          }
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                  {expandedRowIds?.has(row.original.id) && (
+                    <tr>
+                      <td colSpan={columns.length + 2} className="p-0">
+                        <VariantsSubTable
+                          variants={variantsCache?.get(row.original.id) ?? []}
+                          isLoading={isLoadingVariants?.(row.original.id)}
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-    {entityType === 'products' && selectedEntityId && (
-      <ProductDetailModal
-        open={editModalOpen}
-        onOpenChange={setEditModalOpen}
-        entityId={selectedEntityId}
-        onDeleted={() => {
-          setEditModalOpen(false)
-          setSelectedEntityId(null)
-        }}
-      />
-    )}
-    {entityType === 'warehouses' && selectedEntityId && (
-      <WarehouseDetailModal
-        open={editModalOpen}
-        onOpenChange={setEditModalOpen}
-        entityId={selectedEntityId}
-        onDeleted={() => {
-          setEditModalOpen(false)
-          setSelectedEntityId(null)
-        }}
-      />
-    )}
-    {entityType === 'variants' && selectedEntityId && (
-      <VariantDetailModal
-        open={editModalOpen}
-        onOpenChange={setEditModalOpen}
-        entityId={selectedEntityId}
-        onDeleted={() => {
-          setEditModalOpen(false)
-          setSelectedEntityId(null)
-        }}
-      />
-    )}
-    {selectedEntityId && (
-      <ConfirmationDialog
-        open={deleteModalOpen}
-        onOpenChange={setDeleteModalOpen}
-        title={t('entity.workspace.deleteConfirmTitle')}
-        description={t('entity.workspace.deleteConfirmMessage')}
-        onConfirm={() => {
-          if (selectedEntityId && selectedRow) {
-            onDeleteClick?.(selectedEntityId, selectedRow)
-          }
-          setDeleteModalOpen(false)
-          setSelectedEntityId(null)
-          setSelectedRow(null)
-        }}
-      />
-    )}
+      {entityType === 'products' && selectedEntityId && (
+        <ProductDetailModal
+          open={editModalOpen}
+          onOpenChange={setEditModalOpen}
+          entityId={selectedEntityId}
+          onDeleted={() => {
+            setEditModalOpen(false)
+            setSelectedEntityId(null)
+          }}
+        />
+      )}
+      {entityType === 'warehouses' && selectedEntityId && (
+        <WarehouseDetailModal
+          open={editModalOpen}
+          onOpenChange={setEditModalOpen}
+          entityId={selectedEntityId}
+          onDeleted={() => {
+            setEditModalOpen(false)
+            setSelectedEntityId(null)
+          }}
+        />
+      )}
+      {entityType === 'variants' && selectedEntityId && (
+        <VariantDetailModal
+          open={editModalOpen}
+          onOpenChange={setEditModalOpen}
+          entityId={selectedEntityId}
+          onDeleted={() => {
+            setEditModalOpen(false)
+            setSelectedEntityId(null)
+          }}
+        />
+      )}
+      {selectedEntityId && (
+        <ConfirmationDialog
+          open={deleteModalOpen}
+          onOpenChange={setDeleteModalOpen}
+          title={t('entity.workspace.deleteConfirmTitle')}
+          description={t('entity.workspace.deleteConfirmMessage')}
+          onConfirm={() => {
+            if (selectedEntityId && selectedRow) {
+              onDeleteClick?.(selectedEntityId, selectedRow)
+            }
+            setDeleteModalOpen(false)
+            setSelectedEntityId(null)
+            setSelectedRow(null)
+          }}
+        />
+      )}
     </>
   )
 }

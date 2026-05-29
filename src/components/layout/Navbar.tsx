@@ -27,7 +27,7 @@ export function Navbar() {
       {/* Center: Global Search */}
       <div className="flex-1 flex items-center justify-center max-w-xl mx-auto">
         <div className="relative w-full">
-          <span className="material-symbols-outlined absolute inset-inline-start-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">
+          <span className="material-symbols-outlined absolute inset-inline-start-1 top-1/2 -translate-y-1/2 me-2 text-on-surface-variant text-[20px]">
             search
           </span>
           <input
