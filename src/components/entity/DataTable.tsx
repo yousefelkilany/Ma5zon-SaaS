@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState } from 'react'
+import { useMemo, useCallback, useState, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useReactTable,
@@ -92,6 +92,7 @@ export function DataTable({
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
+  const [selectedRow, setSelectedRow] = useState<EntityRow | null>(null)
 
   const handleEditClick = useCallback(
     (id: string, row: EntityRow) => {
@@ -106,6 +107,7 @@ export function DataTable({
     (id: string, row: EntityRow) => {
       onDeleteClick?.(id, row)
       setSelectedEntityId(id)
+      setSelectedRow(row)
       setDeleteModalOpen(true)
     },
     [onDeleteClick]
@@ -405,11 +407,10 @@ export function DataTable({
               )
             })}
           </thead>
-          <tbody className="divide-y divide-outline-variant">
+<tbody className="divide-y divide-outline-variant">
             {table.getRowModel().rows.map(row => (
-              <>
+              <Fragment key={row.id}>
                 <tr
-                  key={row.id}
                   className="hover:bg-surface-container-high transition-colors group even:bg-surface-container-low/30"
                 >
                   {row.getVisibleCells().map(cell => {
@@ -437,7 +438,7 @@ export function DataTable({
                   })}
                 </tr>
                 {expandedRowIds?.has(row.original.id) && (
-                  <tr key={`${row.id}-detail`}>
+                  <tr>
                     <td colSpan={columns.length + 2} className="p-0">
                       <VariantsSubTable
                         variants={variantsCache?.get(row.original.id) ?? []}
@@ -446,7 +447,7 @@ export function DataTable({
                     </td>
                   </tr>
                 )}
-              </>
+              </Fragment>
             ))}
           </tbody>
         </table>
@@ -457,7 +458,10 @@ export function DataTable({
         open={editModalOpen}
         onOpenChange={setEditModalOpen}
         entityId={selectedEntityId}
-        onDeleted={undefined}
+        onDeleted={() => {
+          setEditModalOpen(false)
+          setSelectedEntityId(null)
+        }}
       />
     )}
     {entityType === 'warehouses' && selectedEntityId && (
@@ -465,7 +469,10 @@ export function DataTable({
         open={editModalOpen}
         onOpenChange={setEditModalOpen}
         entityId={selectedEntityId}
-        onDeleted={undefined}
+        onDeleted={() => {
+          setEditModalOpen(false)
+          setSelectedEntityId(null)
+        }}
       />
     )}
     {entityType === 'variants' && selectedEntityId && (
@@ -473,7 +480,10 @@ export function DataTable({
         open={editModalOpen}
         onOpenChange={setEditModalOpen}
         entityId={selectedEntityId}
-        onDeleted={undefined}
+        onDeleted={() => {
+          setEditModalOpen(false)
+          setSelectedEntityId(null)
+        }}
       />
     )}
     {selectedEntityId && (
@@ -483,8 +493,12 @@ export function DataTable({
         title={t('entity.workspace.deleteConfirmTitle')}
         description={t('entity.workspace.deleteConfirmMessage')}
         onConfirm={() => {
+          if (selectedEntityId && selectedRow) {
+            onDeleteClick?.(selectedEntityId, selectedRow)
+          }
           setDeleteModalOpen(false)
           setSelectedEntityId(null)
+          setSelectedRow(null)
         }}
       />
     )}
