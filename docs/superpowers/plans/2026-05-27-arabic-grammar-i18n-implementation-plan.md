@@ -540,7 +540,7 @@ git commit -m "feat(i18n): migrate SettingsPopover language labels to translatio
 
 - [ ] **Step 1: Run type check**
 
-Run: `cd /mnt/C/Accountant-SaaS && npm run typecheck`
+Run: `cd /mnt/C/Ma5zon-SaaS && npm run typecheck`
 Expected: No TypeScript errors
 
 - [ ] **Step 2: Run lint check**

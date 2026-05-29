@@ -200,7 +200,7 @@ use chrono::Local;
 
 - [ ] **Step 10: Run cargo check to verify compilation**
 
-Run: `cd /mnt/C/Accountant-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
+Run: `cd /mnt/C/Ma5zon-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
 Expected: No errors
 
 - [ ] **Step 11: Commit**
@@ -389,7 +389,7 @@ use chrono::Local;
 
 - [ ] **Step 10: Run cargo check to verify compilation**
 
-Run: `cd /mnt/C/Accountant-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
+Run: `cd /mnt/C/Ma5zon-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
 Expected: No errors
 
 - [ ] **Step 11: Commit**
@@ -646,7 +646,7 @@ use chrono::Local;
 
 - [ ] **Step 11: Run cargo check to verify compilation**
 
-Run: `cd /mnt/C/Accountant-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
+Run: `cd /mnt/C/Ma5zon-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
 Expected: No errors
 
 - [ ] **Step 12: Commit**
@@ -664,7 +664,7 @@ git commit -m "feat: add soft delete columns and behavior to variants"
 
 - [ ] **Step 1: Run full cargo check on entire project**
 
-Run: `cd /mnt/C/Accountant-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
+Run: `cd /mnt/C/Ma5zon-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
 Expected: No errors (warnings are OK)
 
 - [ ] **Step 2: Commit final state**

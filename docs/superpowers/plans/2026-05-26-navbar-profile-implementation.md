@@ -323,7 +323,7 @@ export function useAuth() {
 **Files:**
 - Create: `src/components/auth/LoginModal.tsx`
 
-- **Based on**: `/mnt/C/Accountant-SaaS/stitch-screens/login-modal.html`
+- **Based on**: `/mnt/C/Ma5zon-SaaS/stitch-screens/login-modal.html`
 
 - [ ] **Step 1: Create LoginModal.tsx**
 

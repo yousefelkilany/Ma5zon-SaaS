@@ -55,7 +55,7 @@ Replace lines 45-59 with:
 
 - [ ] **Step 2: Run cargo check to verify compilation**
 
-Run: `cd /mnt/C/Accountant-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
+Run: `cd /mnt/C/Ma5zon-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
 Expected: No errors related to products.rs
 
 - [ ] **Step 3: Commit**
@@ -105,7 +105,7 @@ let variant_name = format!("{} {} {}", "منتج", variant_type.1, options[v % o
 
 - [ ] **Step 3: Run cargo check to verify compilation**
 
-Run: `cd /mnt/C/Accountant-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
+Run: `cd /mnt/C/Ma5zon-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
 Expected: No errors related to variants.rs
 
 - [ ] **Step 4: Commit**
@@ -281,7 +281,7 @@ pub async fn warehouses_delete(app: AppHandle, id: String) -> Result<(), String>
 
 - [ ] **Step 2: Run cargo check to verify compilation**
 
-Run: `cd /mnt/C/Accountant-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
+Run: `cd /mnt/C/Ma5zon-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
 Expected: No errors related to warehouses.rs
 
 - [ ] **Step 3: Commit**
@@ -637,7 +637,7 @@ pub async fn stock_movements_get_by_variant(app: AppHandle, variant_id: String) 
 
 - [ ] **Step 2: Run cargo check to verify compilation**
 
-Run: `cd /mnt/C/Accountant-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
+Run: `cd /mnt/C/Ma5zon-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
 Expected: No errors related to stock.rs. Note: may need to add chrono to Cargo.toml if not present.
 
 - [ ] **Step 3: If chrono not in Cargo.toml, add it**
@@ -650,7 +650,7 @@ chrono = "0.4"
 
 - [ ] **Step 4: Run cargo check again to verify compilation**
 
-Run: `cd /mnt/C/Accountant-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
+Run: `cd /mnt/C/Ma5zon-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
 Expected: No errors
 
 - [ ] **Step 5: Commit**
@@ -706,7 +706,7 @@ pub const TABLE_INITIALIZERS: &[&dyn DatabaseInitializable] = &[
 
 - [ ] **Step 2: Run cargo check to verify compilation**
 
-Run: `cd /mnt/C/Accountant-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
+Run: `cd /mnt/C/Ma5zon-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1`
 Expected: No errors
 
 - [ ] **Step 3: Commit**

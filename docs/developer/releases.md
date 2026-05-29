@@ -38,7 +38,7 @@ Add these secrets (Settings → Secrets and variables → Actions):
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/yousefelkilany/accountant-SaaS/releases/latest/download/latest.json"
+        "https://github.com/yousefelkilany/Ma5zon-SaaS/releases/latest/download/latest.json"
       ],
       "dialog": false,
       "pubkey": "YOUR_PUBLIC_KEY_FROM_STEP_1"

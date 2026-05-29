@@ -85,7 +85,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/yousefelkilany/accountant-SaaS/releases/latest/download/latest.json"
+        "https://github.com/yousefelkilany/Ma5zon-SaaS/releases/latest/download/latest.json"
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEU5RDJGMTA5ODlGNEU0N0YKUldSLzVQU0pDZkhTNlJoM2RGYlhPZTZmakxrYjlpU2dQMzNNbGRTUXc2OUNxbVhZNHk4Y2Y5MXUK"

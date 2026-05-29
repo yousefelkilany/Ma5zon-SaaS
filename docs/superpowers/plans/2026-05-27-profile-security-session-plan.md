@@ -32,7 +32,7 @@ conn.execute(
 .map_err(|e| format!("Failed to create sessions table: {e}"))?;
 ```
 
-Run: `cd /mnt/C/Accountant-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1 | head -50`
+Run: `cd /mnt/C/Ma5zon-SaaS && cargo check --manifest-path src-tauri/Cargo.toml 2>&1 | head -50`
 Expected: No errors (sessions table creation added)
 
 - [ ] **Step 2: Commit**
@@ -287,13 +287,13 @@ async updatePassword(userId: string, currentPassword: string, newPassword: strin
 }
 ```
 
-Run: `cd /mnt/C/Accountant-SaaS && npx tsc --noEmit 2>&1 | head -30`
+Run: `cd /mnt/C/Ma5zon-SaaS && npx tsc --noEmit 2>&1 | head -30`
 Expected: Errors if specta types not regenerated
 
 - [ ] **Step 3: Regenerate specta types**
 
 ```bash
-cd /mnt/C/Accountant-SaaS && pnpm tauri-dev 2>&1 | head -20 || npm run tauri-dev 2>&1 | head -20
+cd /mnt/C/Ma5zon-SaaS && pnpm tauri-dev 2>&1 | head -20 || npm run tauri-dev 2>&1 | head -20
 ```
 
 Or check package.json for specta generation command.
@@ -556,7 +556,7 @@ const handleCancelPassword = () => {
 }
 ```
 
-Run: `cd /mnt/C/Accountant-SaaS && npx tsc --noEmit 2>&1 | head -30`
+Run: `cd /mnt/C/Ma5zon-SaaS && npx tsc --noEmit 2>&1 | head -30`
 Expected: TypeScript errors to fix (missing imports, etc.)
 
 - [ ] **Step 4: Reset password form when tab changes or modal closes**
@@ -638,7 +638,7 @@ if (result.status === 'ok' && result.data) {
 }
 ```
 
-Run: `cd /mnt/C/Accountant-SaaS && npx tsc --noEmit 2>&1 | head -30`
+Run: `cd /mnt/C/Ma5zon-SaaS && npx tsc --noEmit 2>&1 | head -30`
 Expected: Errors if bindings not regenerated yet
 
 - [ ] **Step 2: Commit**
@@ -658,7 +658,7 @@ git commit -m "feat: LoginModal passes session token to login"
 - [ ] **Step 1: Verify app builds**
 
 ```bash
-cd /mnt/C/Accountant-SaaS && npm run build 2>&1 | tail -30
+cd /mnt/C/Ma5zon-SaaS && npm run build 2>&1 | tail -30
 ```
 
 - [ ] **Step 2: Verify Tauri dev starts**

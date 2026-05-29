@@ -354,7 +354,7 @@ git commit -m "feat: integrate SplashScreen into App with ready state tracking"
 
 - [ ] **Step 1: Run typecheck**
 
-Run: `cd /mnt/C/Accountant-SaaS && pnpm run typecheck`
+Run: `cd /mnt/C/Ma5zon-SaaS && pnpm run typecheck`
 Expected: No errors (may need to add @types/node if logo import causes issues)
 
 - [ ] **Step 2: Run lint**

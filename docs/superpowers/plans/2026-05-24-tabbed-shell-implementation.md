@@ -41,7 +41,7 @@ src/
 
 - [ ] **Step 1: Install react-router-dom**
 
-Run: `cd /mnt/C/Accountant-SaaS && pnpm add react-router-dom`
+Run: `cd /mnt/C/Ma5zon-SaaS && pnpm add react-router-dom`
 
 Expected: Adds react-router-dom to dependencies
 
@@ -237,7 +237,7 @@ describe('useTabStore', () => {
 
 - [ ] **Step 4: Run tests**
 
-Run: `cd /mnt/C/Accountant-SaaS && pnpm test src/store/tab-store.test.ts`
+Run: `cd /mnt/C/Ma5zon-SaaS && pnpm test src/store/tab-store.test.ts`
 
 Expected: All tests pass
 
@@ -1228,25 +1228,25 @@ git commit -m "feat: integrate routing with tab system"
 
 - [ ] **Step 1: Run typecheck**
 
-Run: `cd /mnt/C/Accountant-SaaS && pnpm typecheck`
+Run: `cd /mnt/C/Ma5zon-SaaS && pnpm typecheck`
 
 Expected: No TypeScript errors
 
 - [ ] **Step 2: Run all tests**
 
-Run: `cd /mnt/C/Accountant-SaaS && pnpm test:run`
+Run: `cd /mnt/C/Ma5zon-SaaS && pnpm test:run`
 
 Expected: All tests pass
 
 - [ ] **Step 3: Run lint**
 
-Run: `cd /mnt/C/Accountant-SaaS && pnpm lint`
+Run: `cd /mnt/C/Ma5zon-SaaS && pnpm lint`
 
 Expected: No lint errors (or only pre-existing warnings)
 
 - [ ] **Step 4: Run check:all**
 
-Run: `cd /mnt/C/Accountant-SaaS && pnpm check:all`
+Run: `cd /mnt/C/Ma5zon-SaaS && pnpm check:all`
 
 Expected: All checks pass
 

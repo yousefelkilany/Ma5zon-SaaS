@@ -172,13 +172,13 @@ main()
 - [ ] **Step 4: Install @babel/parser if not available**
 
 ```bash
-cd /mnt/C/Accountant-SaaS && pnpm add -D @babel/parser @types/babel__parser
+cd /mnt/C/Ma5zon-SaaS && pnpm add -D @babel/parser @types/babel__parser
 ```
 
 - [ ] **Step 5: Test script on LeftSideBar**
 
 ```bash
-cd /mnt/C/Accountant-SaaS && npx tsx scripts/generate-translations.ts src/components/layout/LeftSideBar.tsx
+cd /mnt/C/Ma5zon-SaaS && npx tsx scripts/generate-translations.ts src/components/layout/LeftSideBar.tsx
 ```
 
 Expected output: `Generated N keys to locales/generated/pending-keys.json`
@@ -331,7 +331,7 @@ aria-label={collapsed ? t('titlebar.expandSidebar') : t('titlebar.collapseSideba
 - [ ] **Step 9: Verify build passes**
 
 ```bash
-cd /mnt/C/Accountant-SaaS && pnpm run build
+cd /mnt/C/Ma5zon-SaaS && pnpm run build
 ```
 
 - [ ] **Step 10: Commit**

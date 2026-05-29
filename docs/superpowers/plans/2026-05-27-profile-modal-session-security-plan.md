@@ -507,7 +507,7 @@ Builder::<tauri::Wry>::new().commands(collect_commands![
 
 - [ ] **Step 3: Export TypeScript bindings**
 
-Run: `cd /mnt/C/Accountant-SaaS/src-tauri && cargo test export_bindings -- --ignored`
+Run: `cd /mnt/C/Ma5zon-SaaS/src-tauri && cargo test export_bindings -- --ignored`
 
 Expected: "✓ TypeScript bindings exported to ../src/lib/bindings.ts"
 
@@ -646,7 +646,7 @@ const handleSave = async () => {
 
 - [ ] **Step 1: Run npm check:all or equivalent**
 
-Run: `cd /mnt/C/Accountant-SaaS && npm run check:all`
+Run: `cd /mnt/C/Ma5zon-SaaS && npm run check:all`
 
 Expected: All checks pass
 

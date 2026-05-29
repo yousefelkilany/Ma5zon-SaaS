@@ -161,7 +161,7 @@ export function SettingsPopover() {
 
 - [ ] **Step 2: Run TypeScript check**
 
-Run: `cd /mnt/C/Accountant-SaaS && npx tsc --noEmit src/components/layout/SettingsPopover.tsx 2>&1 || true`
+Run: `cd /mnt/C/Ma5zon-SaaS && npx tsc --noEmit src/components/layout/SettingsPopover.tsx 2>&1 || true`
 Expected: Should show any type errors to fix
 
 - [ ] **Step 3: Commit**
@@ -227,7 +227,7 @@ Note: The ProfileSection already handles its own styling, so SettingsPopover sho
 
 - [ ] **Step 2: Run TypeScript check**
 
-Run: `cd /mnt/C/Accountant-SaaS && npx tsc --noEmit 2>&1 | head -50`
+Run: `cd /mnt/C/Ma5zon-SaaS && npx tsc --noEmit 2>&1 | head -50`
 Expected: No errors related to SettingsPopover
 
 - [ ] **Step 3: Commit**
