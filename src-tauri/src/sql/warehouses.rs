@@ -1,5 +1,16 @@
 //! SQL statements for warehouses entity.
 
+pub fn create_table() -> &'static str {
+    "CREATE TABLE IF NOT EXISTS warehouses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        location TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        deleted_at TEXT
+    )"
+}
+
 pub fn get_all() -> &'static str {
     "SELECT id, name, location, created_at, updated_at, deleted_at \
      FROM warehouses WHERE deleted_at IS NULL ORDER BY name"
