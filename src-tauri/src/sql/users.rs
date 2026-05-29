@@ -1,0 +1,31 @@
+//! SQL statements for users entity.
+
+pub fn get_by_name() -> &'static str {
+    "SELECT id, name, email, role, avatar_url, password_hash \
+     FROM users WHERE name = ?1"
+}
+
+pub fn get_by_id() -> &'static str {
+    "SELECT id, name, email, role, avatar_url FROM users WHERE id = ?1"
+}
+
+pub fn upsert() -> &'static str {
+    "INSERT INTO users (id, name, role, avatar_url) VALUES (?1, ?2, ?3, ?4) \
+     ON CONFLICT(id) DO UPDATE SET name = ?2, role = ?3, avatar_url = ?4"
+}
+
+pub fn delete() -> &'static str {
+    "DELETE FROM users WHERE id = ?1"
+}
+
+pub fn get_password_hash() -> &'static str {
+    "SELECT password_hash FROM users WHERE id = ?1"
+}
+
+pub fn update_password() -> &'static str {
+    "UPDATE users SET password_hash = ?1 WHERE id = ?2"
+}
+
+pub fn update_user() -> &'static str {
+    "UPDATE users SET name = ?1, email = ?2, avatar_url = ?3 WHERE id = ?4"
+}
