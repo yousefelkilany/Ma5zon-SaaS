@@ -290,7 +290,7 @@ export function VariantDetailModal({
                                 {field.type === 'date'
                                   ? entity[field.key as 'created_at' | 'updated_at']
                                     ? new Date(
-                                        entity[field.key as 'created_at' | 'updated_at']!
+                                        entity[field.key as 'created_at' | 'updated_at'] ?? ''
                                       ).toLocaleString()
                                     : '—'
                                   : field.type === 'number'

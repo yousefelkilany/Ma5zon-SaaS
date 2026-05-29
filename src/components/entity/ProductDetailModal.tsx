@@ -55,10 +55,12 @@ export function ProductDetailModal({
     category: '',
   })
   const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteError, setDeleteError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
+  const [loadError, setLoadError] = useState('')
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -79,17 +81,24 @@ export function ProductDetailModal({
 
   const loadEntity = useCallback(async () => {
     setIsLoading(true)
+    setLoadError('')
     const result = await commands.getById(entityId)
     setIsLoading(false)
-    if (result.status === 'ok' && result.data) {
-      setEntity(result.data)
-      setEditForm({
-        company: result.data.company,
-        name: result.data.name,
-        category: result.data.category,
-      })
+    if (result.status === 'ok') {
+      if (result.data) {
+        setEntity(result.data)
+        setEditForm({
+          company: result.data.company,
+          name: result.data.name,
+          category: result.data.category,
+        })
+      } else {
+        setLoadError(t('entity.detail.notFound'))
+      }
+    } else {
+      setLoadError(result.error ?? 'Failed to load product')
     }
-  }, [entityId])
+  }, [entityId, t])
 
   useEffect(() => {
     if (!open) {
@@ -117,6 +126,7 @@ export function ProductDetailModal({
   async function handleSave() {
     if (!entity) return
     setIsSaving(true)
+    setSaveError('')
     const result = await commands.update(
       entity.id,
       editForm.company,
@@ -127,6 +137,8 @@ export function ProductDetailModal({
     if (result.status === 'ok') {
       setEntity(result.data)
       setIsEditing(false)
+    } else {
+      setSaveError(result.error ?? 'Save failed')
     }
   }
 
@@ -257,6 +269,9 @@ export function ProductDetailModal({
                       </div>
 
                       {/* Footer Actions */}
+                      {saveError && (
+                        <p className="text-body-sm text-error">{saveError}</p>
+                      )}
                       <div className="flex items-center justify-between pt-4 border-t border-outline-variant">
                         <Button
                           variant="ghost"
@@ -302,6 +317,8 @@ export function ProductDetailModal({
                         </div>
                       </div>
                     </div>
+                  ) : loadError ? (
+                    <p className="text-body-md text-error">{loadError}</p>
                   ) : (
                     <p className="text-body-md text-on-surface-variant">
                       {t('entity.detail.notFound')}
