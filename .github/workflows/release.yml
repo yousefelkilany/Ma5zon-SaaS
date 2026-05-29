@@ -55,7 +55,10 @@ jobs:
           const file = 'src-tauri/tauri.conf.json';
 
           // Capture arguments passed by tauri-action (e.g., --bundles msi)
-          const passedArgs = process.argv.slice(2).join(' ');
+          const passedArgs = process.argv
+            .slice(2)
+            .filter(arg => arg !== 'build')
+            .join(' ');
 
           function setConfig(mode, suffix) {
             const cfg = JSON.parse(fs.readFileSync(file, 'utf8'));
