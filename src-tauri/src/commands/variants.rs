@@ -5,6 +5,7 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
+use crate::sql::variants::{create, get_all, get_by_id, get_by_product, soft_delete, update};
 use crate::types::{NewVariant, UpdateVariant, Variant};
 
 pub struct VariantsInitializer;
@@ -150,7 +151,7 @@ fn seed_variants(conn: &Connection) -> Result<(), String> {
 pub async fn variants_get_all(app: AppHandle) -> Result<Vec<Variant>, String> {
     let conn = get_conn(&app)?;
     let mut stmt = conn
-        .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price, created_at, updated_at, deleted_at FROM product_variants WHERE deleted_at IS NULL ORDER BY sku")
+        .prepare(get_all())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let variants = stmt
@@ -187,7 +188,7 @@ pub async fn variants_get_by_product(
         .parse()
         .map_err(|e| format!("Invalid product_id: {e}"))?;
     let mut stmt = conn
-        .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price, created_at, updated_at, deleted_at FROM product_variants WHERE product_id = ?1 AND deleted_at IS NULL ORDER BY sku")
+        .prepare(get_by_product())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let variants = stmt
@@ -219,7 +220,7 @@ pub async fn variants_get_by_id(app: AppHandle, id: String) -> Result<Option<Var
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let mut stmt = conn
-        .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price, created_at, updated_at, deleted_at FROM product_variants WHERE id = ?1 AND deleted_at IS NULL")
+        .prepare(get_by_id())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let variant = stmt
@@ -249,7 +250,7 @@ pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Vari
     let conn = get_conn(&app)?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(
-        "INSERT INTO product_variants (product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
+        create(),
         params![variant.product_id, variant.sku, variant.variant_name, variant.uom_id, variant.retail_price, variant.wholesale_price, variant.distribution_price, now, now],
     )
     .map_err(|e| format!("Failed to create variant: {e}"))?;
@@ -295,7 +296,7 @@ pub async fn variants_update(
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
     conn.execute(
-        "UPDATE product_variants SET sku = ?1, variant_name = ?2, uom_id = ?3, retail_price = ?4, wholesale_price = ?5, distribution_price = ?6, updated_at = ?7 WHERE id = ?8 AND deleted_at IS NULL",
+        update(),
         params![new_sku, new_variant_name, new_uom_id, new_retail_price, new_wholesale_price, new_distribution_price, now, id_i64],
     )
     .map_err(|e| format!("Failed to update variant: {e}"))?;
@@ -322,7 +323,7 @@ pub async fn variants_delete(app: AppHandle, id: String) -> Result<(), String> {
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(
-        "UPDATE product_variants SET deleted_at = ?1 WHERE id = ?2 AND deleted_at IS NULL",
+        soft_delete(),
         params![now, id_i64],
     )
     .map_err(|e| format!("Failed to delete variant: {e}"))?;
