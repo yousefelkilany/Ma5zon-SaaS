@@ -366,7 +366,9 @@ export function DataTable({
                       <td
                         key={cell.id}
                         className={`px-compact-padding py-2 text-on-surface ${isNameCol ? 'cursor-pointer hover:bg-surface-container-highest' : ''}`}
-                        style={{ width: cell.column.getSize() }}
+                        style={{
+                          width: cell.column.getSize(),
+                        }}
                         onClick={
                           isNameCol
                             ? () => onRowClick(row.original.id, row.original)

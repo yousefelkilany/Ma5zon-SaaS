@@ -3,7 +3,7 @@
  * preferred language at app startup.
  */
 import { locale } from '@tauri-apps/plugin-os'
-import i18n, { availableLanguages } from './config'
+import i18n, { availableLanguages, defaultLanguage } from './config'
 import { logger } from '@/lib/logger'
 
 /**
@@ -28,11 +28,11 @@ export async function initializeLanguage(
           language: savedLanguage,
         })
       } else {
-        logger.warn('Saved language not available, using English', {
+        logger.warn('Saved language not available, using Arabic', {
           savedLanguage,
           availableLanguages,
         })
-        await i18n.changeLanguage('en')
+        await i18n.changeLanguage(defaultLanguage)
       }
       return
     }
@@ -44,7 +44,7 @@ export async function initializeLanguage(
     if (systemLocale) {
       // Extract the language code (e.g., "en-US" -> "en")
       const parts = systemLocale.split('-')
-      const langCode = (parts[0] ?? 'en').toLowerCase()
+      const langCode = (parts[0] ?? defaultLanguage).toLowerCase()
 
       if (availableLanguages.includes(langCode)) {
         await i18n.changeLanguage(langCode)
@@ -63,11 +63,11 @@ export async function initializeLanguage(
     }
 
     // Fallback to English
-    await i18n.changeLanguage('en')
+    await i18n.changeLanguage(defaultLanguage)
     logger.info('Language set to English (fallback)')
   } catch (error) {
     logger.error('Failed to initialize language', { error })
     // Ensure we have some language set
-    await i18n.changeLanguage('en')
+    await i18n.changeLanguage(defaultLanguage)
   }
 }

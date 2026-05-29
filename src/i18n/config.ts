@@ -4,12 +4,13 @@ import en from '../../locales/en.json'
 import ar from '../../locales/ar.json'
 
 const resources = {
-  en: { translation: en },
   ar: { translation: ar },
+  en: { translation: en },
 }
 
 // RTL language detection (includes languages not yet in resources for future expansion)
 const rtlLanguages = ['ar']
+export const defaultLanguage = 'ar'
 
 i18n.use(initReactI18next).init({
   resources,
