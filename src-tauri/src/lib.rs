@@ -6,6 +6,7 @@
 
 mod bindings;
 mod commands;
+mod sql;
 mod types;
 mod utils;
 

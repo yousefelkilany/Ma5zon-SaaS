@@ -5,6 +5,7 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
+use crate::sql::products::{get_all as sql_get_all, get_by_id as sql_get_by_id, create as sql_create, update as sql_update, soft_delete as sql_soft_delete};
 use crate::types::Product;
 
 pub struct ProductsInitializer;
@@ -105,7 +106,7 @@ fn seed_products(conn: &Connection) -> Result<(), String> {
 pub async fn get_all(app: AppHandle) -> Result<Vec<Product>, String> {
     let conn = get_conn(&app)?;
     let mut stmt = conn
-        .prepare("SELECT id, company, name, category, created_at, updated_at, deleted_at FROM products WHERE deleted_at IS NULL ORDER BY name")
+        .prepare(sql_get_all())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let products = stmt
@@ -133,7 +134,7 @@ pub async fn get_by_id(app: AppHandle, id: String) -> Result<Option<Product>, St
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let mut stmt = conn
-        .prepare("SELECT id, company, name, category, created_at, updated_at, deleted_at FROM products WHERE id = ?1 AND deleted_at IS NULL")
+        .prepare(sql_get_by_id())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let product = stmt
@@ -164,7 +165,7 @@ pub async fn create(
     let conn = get_conn(&app)?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(
-        "INSERT INTO products (company, name, category, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5)",
+        sql_create(),
         params![company, name, &now, &now],
     )
     .map_err(|e| format!("Failed to create product: {e}"))?;
@@ -202,8 +203,8 @@ pub async fn update(
         )
         .map_err(|e| format!("Product not found: {e}"))?;
 
-    conn.execute(
-        "UPDATE products SET company = ?1, name = ?2, category = ?3, updated_at = ?4 WHERE id = ?5 AND deleted_at IS NULL",
+conn.execute(
+        sql_update(),
         params![company, name, category, &now, id_i64],
     )
     .map_err(|e| format!("Failed to update product: {e}"))?;
@@ -227,7 +228,7 @@ pub async fn delete(app: AppHandle, id: String) -> Result<(), String> {
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     let affected = conn
         .execute(
-            "UPDATE products SET deleted_at = ?1 WHERE id = ?2 AND deleted_at IS NULL",
+            sql_soft_delete(),
             params![&now, id_i64],
         )
         .map_err(|e| format!("Failed to delete product: {e}"))?;
