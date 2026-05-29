@@ -5,7 +5,7 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
-use crate::sql::warehouses::{create, get_all, get_by_id, get_created_at, soft_delete, update};
+use crate::sql::warehouses::{create, create_table, get_all, get_by_id, get_created_at, soft_delete, update};
 
 pub struct WarehousesInitializer;
 
@@ -18,18 +18,8 @@ impl DatabaseInitializable for WarehousesInitializer {
     async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
         let conn = get_conn(app)?;
 
-        conn.execute(
-            "CREATE TABLE IF NOT EXISTS warehouses (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                location TEXT,
-                created_at TEXT NOT NULL DEFAULT (datetime('now')),
-                updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-                deleted_at TEXT
-            )",
-            [],
-        )
-        .map_err(|e| format!("Failed to create warehouses table: {e}"))?;
+        conn.execute(create_table(), [])
+            .map_err(|e| format!("Failed to create warehouses table: {e}"))?;
 
         let count: i64 = conn
             .query_row("SELECT COUNT(*) FROM warehouses", [], |row| row.get(0))
