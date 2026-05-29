@@ -5,6 +5,10 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
+use crate::sql::stock::{
+    get_levels_all, get_levels_by_variant, get_levels_by_warehouse,
+    get_movements_all, get_movements_by_variant,
+};
 
 pub struct StockInitializer;
 
@@ -213,7 +217,7 @@ pub struct StockMovement {
 pub async fn stock_levels_get_all(app: AppHandle) -> Result<Vec<StockLevel>, String> {
     let conn = get_conn(&app)?;
     let mut stmt = conn
-        .prepare("SELECT variant_id, warehouse_id, quantity FROM stock_levels ORDER BY variant_id, warehouse_id")
+        .prepare(get_levels_all())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let levels = stmt
@@ -242,7 +246,7 @@ pub async fn stock_levels_get_by_variant(
         .parse()
         .map_err(|e| format!("Invalid variant_id: {e}"))?;
     let mut stmt = conn
-        .prepare("SELECT variant_id, warehouse_id, quantity FROM stock_levels WHERE variant_id = ?1 ORDER BY warehouse_id")
+        .prepare(get_levels_by_variant())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let levels = stmt
@@ -271,7 +275,7 @@ pub async fn stock_levels_get_by_warehouse(
         .parse()
         .map_err(|e| format!("Invalid warehouse_id: {e}"))?;
     let mut stmt = conn
-        .prepare("SELECT variant_id, warehouse_id, quantity FROM stock_levels WHERE warehouse_id = ?1 ORDER BY variant_id")
+        .prepare(get_levels_by_warehouse())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let levels = stmt
@@ -294,7 +298,7 @@ pub async fn stock_levels_get_by_warehouse(
 pub async fn stock_movements_get_all(app: AppHandle) -> Result<Vec<StockMovement>, String> {
     let conn = get_conn(&app)?;
     let mut stmt = conn
-        .prepare("SELECT id, variant_id, from_warehouse_id, to_warehouse_id, quantity, type, created_at FROM stock_movements ORDER BY created_at DESC")
+        .prepare(get_movements_all())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let movements = stmt
@@ -327,7 +331,7 @@ pub async fn stock_movements_get_by_variant(
         .parse()
         .map_err(|e| format!("Invalid variant_id: {e}"))?;
     let mut stmt = conn
-        .prepare("SELECT id, variant_id, from_warehouse_id, to_warehouse_id, quantity, type, created_at FROM stock_movements WHERE variant_id = ?1 ORDER BY created_at DESC")
+        .prepare(get_movements_by_variant())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let movements = stmt
