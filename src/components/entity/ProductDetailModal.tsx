@@ -57,6 +57,7 @@ export function ProductDetailModal({
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
 
   const tabs: { id: TabId; label: string }[] = [
@@ -64,6 +65,17 @@ export function ProductDetailModal({
     { id: 'insights', label: t('entity.detail.tabs.insights') },
     { id: 'audits', label: t('entity.detail.tabs.audits') },
   ]
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    const currentIndex = tabs.findIndex(tab => tab.id === activeTab)
+    if (e.key === 'ArrowRight') {
+      const nextTab = tabs[(currentIndex + 1) % tabs.length]
+      if (nextTab) setActiveTab(nextTab.id)
+    } else if (e.key === 'ArrowLeft') {
+      const prevTab = tabs[(currentIndex - 1 + tabs.length) % tabs.length]
+      if (prevTab) setActiveTab(prevTab.id)
+    }
+  }
 
   const loadEntity = useCallback(async () => {
     setIsLoading(true)
@@ -86,6 +98,7 @@ export function ProductDetailModal({
       setIsEditing(false)
       setEditForm({ company: '', name: '', category: '' })
       setActiveTab('details')
+      setDeleteError('')
     }
   }, [open])
 
@@ -94,6 +107,12 @@ export function ProductDetailModal({
       loadEntity()
     }
   }, [open, entityId, loadEntity])
+
+  useEffect(() => {
+    if (!showDeleteConfirm) {
+      setDeleteError('')
+    }
+  }, [showDeleteConfirm])
 
   async function handleSave() {
     if (!entity) return
@@ -114,12 +133,15 @@ export function ProductDetailModal({
   async function handleDelete() {
     if (!entity) return
     setIsDeleting(true)
+    setDeleteError('')
     const result = await commands.delete(entity.id)
     setIsDeleting(false)
     if (result.status === 'ok') {
       setShowDeleteConfirm(false)
       onOpenChange(false)
       onDeleted?.()
+    } else {
+      setDeleteError(result.error ?? 'Delete failed')
     }
   }
 
@@ -154,6 +176,7 @@ export function ProductDetailModal({
             <div
               className="flex border-b border-outline-variant mb-4"
               role="tablist"
+              onKeyDown={handleKeyDown}
             >
               {tabs.map(tab => (
                 <button
@@ -198,7 +221,7 @@ export function ProductDetailModal({
                       <div className="grid grid-cols-2 gap-4">
                         {PRODUCT_FIELDS.map(field => (
                           <div key={field.key} className="space-y-1">
-                            <label className="text-label-caps text-label-caps text-on-surface-variant">
+                            <label className="text-label-caps text-on-surface-variant">
                               {t(field.label)}
                             </label>
                             {isEditing && field.type === 'text' ? (
@@ -341,6 +364,7 @@ export function ProductDetailModal({
         onConfirm={handleDelete}
         isDestructive
         isLoading={isDeleting}
+        error={deleteError}
       />
     </>
   )

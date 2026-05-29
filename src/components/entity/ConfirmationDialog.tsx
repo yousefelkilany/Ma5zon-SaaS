@@ -19,6 +19,7 @@ interface ConfirmationDialogProps {
   onConfirm: () => void
   isDestructive?: boolean
   isLoading?: boolean
+  error?: string
 }
 
 export function ConfirmationDialog({
@@ -31,6 +32,7 @@ export function ConfirmationDialog({
   onConfirm,
   isDestructive = true,
   isLoading = false,
+  error,
 }: ConfirmationDialogProps) {
   const { t } = useTranslation()
 
@@ -40,6 +42,7 @@ export function ConfirmationDialog({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
+          {error && <p className="text-error text-body-sm mt-2">{error}</p>}
         </DialogHeader>
         <DialogFooter className="gap-2">
           <Button
