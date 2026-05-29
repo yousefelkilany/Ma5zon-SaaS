@@ -46,9 +46,11 @@ export function WarehouseDetailModal({
   const { t } = useTranslation()
   const [entity, setEntity] = useState<Warehouse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({ name: '', location: '' })
   const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteError, setDeleteError] = useState('')
@@ -73,14 +75,21 @@ export function WarehouseDetailModal({
 
   const loadEntity = useCallback(async () => {
     setIsLoading(true)
+    setLoadError('')
     const result = await commands.warehousesGetById(entityId)
     setIsLoading(false)
-    if (result.status === 'ok' && result.data) {
-      setEntity(result.data)
-      setEditForm({
-        name: result.data.name,
-        location: result.data.location,
-      })
+    if (result.status === 'ok') {
+      if (result.data) {
+        setEntity(result.data)
+        setEditForm({
+          name: result.data.name,
+          location: result.data.location,
+        })
+      } else {
+        setLoadError('Warehouse not found')
+      }
+    } else {
+      setLoadError(result.error ?? 'Failed to load warehouse')
     }
   }, [entityId])
 
@@ -88,10 +97,12 @@ export function WarehouseDetailModal({
     if (!open) {
       setEntity(null)
       setIsLoading(true)
+      setLoadError('')
       setIsEditing(false)
       setEditForm({ name: '', location: '' })
       setActiveTab('details')
       setDeleteError('')
+      setSaveError('')
     }
   }, [open])
 
@@ -109,7 +120,12 @@ export function WarehouseDetailModal({
 
   async function handleSave() {
     if (!entity) return
+    if (!editForm.name.trim() || !editForm.location.trim()) {
+      setSaveError('Name and location are required')
+      return
+    }
     setIsSaving(true)
+    setSaveError('')
     const result = await commands.warehousesUpdate(
       entity.id,
       editForm.name,
@@ -119,6 +135,8 @@ export function WarehouseDetailModal({
     if (result.status === 'ok') {
       setEntity(result.data)
       setIsEditing(false)
+    } else {
+      setSaveError(result.error ?? 'Save failed')
     }
   }
 
@@ -237,6 +255,9 @@ export function WarehouseDetailModal({
                       </div>
 
                       {/* Footer Actions */}
+                      {saveError && (
+                        <p className="text-body-sm text-error">{saveError}</p>
+                      )}
                       <div className="flex items-center justify-between pt-4 border-t border-outline-variant">
                         <Button
                           variant="ghost"
@@ -282,6 +303,8 @@ export function WarehouseDetailModal({
                         </div>
                       </div>
                     </div>
+                  ) : loadError ? (
+                    <p className="text-body-md text-error">{loadError}</p>
                   ) : (
                     <p className="text-body-md text-on-surface-variant">
                       {t('entity.detail.notFound')}
