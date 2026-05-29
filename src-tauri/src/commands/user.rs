@@ -10,6 +10,10 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
+use crate::sql::users::{
+    delete, get_by_id, get_by_name, get_password_hash, update_password as sql_update_password,
+    update_user as sql_update_user, upsert,
+};
 use crate::types::User;
 
 struct UserWithHash {
@@ -102,9 +106,7 @@ pub async fn authenticate(
     let conn = get_conn(&app)?;
 
     let mut stmt = conn
-        .prepare(
-            "SELECT id, name, email, role, avatar_url, password_hash FROM users WHERE name = ?1",
-        )
+        .prepare(get_by_name())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let user_result = stmt.query_row(params![username], |row| {
@@ -160,7 +162,7 @@ pub async fn load_user(app: AppHandle, user_id: &str) -> Result<Option<User>, St
     let conn = get_conn(&app)?;
 
     let mut stmt = conn
-        .prepare("SELECT id, name, email, role, avatar_url FROM users WHERE id = ?1")
+        .prepare(get_by_id())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let user = stmt
@@ -183,12 +185,8 @@ pub async fn load_user(app: AppHandle, user_id: &str) -> Result<Option<User>, St
 pub async fn save_user(app: AppHandle, user: User) -> Result<(), String> {
     let conn = get_conn(&app)?;
 
-    conn.execute(
-        "INSERT INTO users (id, name, role, avatar_url) VALUES (?1, ?2, ?3, ?4)
-         ON CONFLICT(id) DO UPDATE SET name = ?2, role = ?3, avatar_url = ?4",
-        params![user.id, user.name, user.role, user.avatar_url],
-    )
-    .map_err(|e| format!("Failed to save user: {e}"))?;
+    conn.execute(upsert(), params![user.id, user.name, user.role, user.avatar_url])
+        .map_err(|e| format!("Failed to save user: {e}"))?;
 
     Ok(())
 }
@@ -198,7 +196,7 @@ pub async fn save_user(app: AppHandle, user: User) -> Result<(), String> {
 pub async fn delete_user(app: AppHandle, user_id: &str) -> Result<(), String> {
     let conn = get_conn(&app)?;
 
-    conn.execute("DELETE FROM users WHERE id = ?1", params![user_id])
+    conn.execute(delete(), params![user_id])
         .map_err(|e| format!("Failed to delete user: {e}"))?;
 
     Ok(())
@@ -215,7 +213,7 @@ pub async fn update_password(
     let conn = get_conn(&app)?;
 
     let mut stmt = conn
-        .prepare("SELECT password_hash FROM users WHERE id = ?1")
+        .prepare(get_password_hash())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let password_hash: Option<String> = stmt.query_row(params![user_id], |row| row.get(0)).ok();
@@ -230,11 +228,8 @@ pub async fn update_password(
     }
 
     let new_hash = hash_password(&new_password)?;
-    conn.execute(
-        "UPDATE users SET password_hash = ?1 WHERE id = ?2",
-        params![new_hash, user_id],
-    )
-    .map_err(|e| format!("Failed to update password: {e}"))?;
+    conn.execute(sql_update_password(), params![new_hash, user_id])
+        .map_err(|e| format!("Failed to update password: {e}"))?;
 
     Ok(())
 }
@@ -250,14 +245,11 @@ pub async fn update_user(
 ) -> Result<User, String> {
     let conn = get_conn(&app)?;
 
-    conn.execute(
-        "UPDATE users SET name = ?1, email = ?2, avatar_url = ?3 WHERE id = ?4",
-        params![name, email, avatar_url, user_id],
-    )
-    .map_err(|e| format!("Failed to update user: {e}"))?;
+    conn.execute(sql_update_user(), params![name, email, avatar_url, user_id])
+        .map_err(|e| format!("Failed to update user: {e}"))?;
 
     let mut stmt = conn
-        .prepare("SELECT id, name, email, role, avatar_url FROM users WHERE id = ?1")
+        .prepare(get_by_id())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let user = stmt
