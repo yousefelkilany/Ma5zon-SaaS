@@ -1,4 +1,4 @@
-name: 'Release Tauri Template App'
+name: 'Release Ma5zon'
 
 on:
   push:
@@ -92,7 +92,8 @@ jobs:
           EOF
 
 
-      - name: Build and release
+      - name: Build & Publish Standard
+        id: tauri-build
         uses: tauri-apps/tauri-action@dev
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -100,20 +101,26 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ github.ref_name || inputs.version }}
-          releaseName: 'Tauri Template App ${{ github.ref_name || inputs.version }}'
+          releaseName: 'Ma5zon ${{ github.ref_name || inputs.version }}'
           releaseBody: |
-            ## Tauri Template App ${{ github.ref_name || inputs.version }}
-
+            ## Ma5zon ${{ github.ref_name || inputs.version }}
+            
             ### Installation Instructions
-            - **Standard Installer**: Download the standard `.msi` file. Requires an internet connection during setup to download WebView2 if missing.
-            - **Offline Installer (`-Offline.msi`)**: Fully self-contained installer. Bundles WebView2; works without an active internet connection.
-
-            ### Auto-Updates
-            Existing users will receive automatic update notifications.
-
-            **Full Changelog**: https://github.com/${{ github.repository }}/commits/${{ github.ref_name || inputs.version }}
+            - **Standard Installer**: Download the standard `.msi` file.
+            - **Offline Installer**: Bundles WebView2; works without active internet.
           releaseDraft: true
           prerelease: false
           uploadUpdaterJson: true
           tauriScript: node build-all.cjs
           args: '--bundles msi'
+
+      - name: Upload Offline Installer
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name || inputs.version }}
+          draft: true
+          files: |
+            src-tauri/target/release/bundle/msi/Ma5zon Offline_*.msi
+            src-tauri/target/release/bundle/msi/Ma5zon Offline_*.msi.sig
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
