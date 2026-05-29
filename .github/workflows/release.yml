@@ -49,7 +49,7 @@ jobs:
       - name: Create Multi-Build Script
         shell: bash
         run: |
-          cat << 'EOF' > build-all.js
+          cat << 'EOF' > build-all.cjs
           const { execSync } = require('child_process');
           const fs = require('fs');
           const file = 'src-tauri/tauri.conf.json';
@@ -112,5 +112,5 @@ jobs:
           releaseDraft: true
           prerelease: false
           uploadUpdaterJson: true
-          tauriScript: node build-all.js
+          tauriScript: node build-all.cjs
           args: '--bundles msi'
