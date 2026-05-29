@@ -112,4 +112,5 @@ jobs:
           releaseDraft: true
           prerelease: false
           uploadUpdaterJson: true
+          tauriScript: node build-all.js
           args: '--bundles msi'
