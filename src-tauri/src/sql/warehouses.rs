@@ -21,5 +21,5 @@ pub fn update() -> &'static str {
 }
 
 pub fn soft_delete() -> &'static str {
-    "UPDATE warehouses SET deleted_at = ?1 WHERE id = ?2"
+    "UPDATE warehouses SET deleted_at = ?1 WHERE id = ?2 AND deleted_at IS NULL"
 }

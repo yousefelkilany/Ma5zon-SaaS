@@ -293,6 +293,7 @@
   "settingsPopover.language.english": "EN",
   "entity.workspace.selected": "{count, plural, one {# selected} other {# selected}}",
   "entity.layout.products.label": "Products",
+  "entity.layout.products.columns.company": "Company Name",
   "entity.layout.products.columns.name": "Product Name",
   "entity.layout.products.columns.category": "Category",
   "entity.layout.products.columns.unit_price": "Unit Price",
@@ -316,5 +317,12 @@
   "entity.layout.bills.columns.status": "Status",
   "entity.layout.vendors.label": "Vendors",
   "entity.layout.vendors.columns.name": "Vendor Name",
-  "entity.layout.vendors.columns.email": "Email"
+  "entity.layout.vendors.columns.email": "Email",
+  "entity.layout.product_variants.label": "Variants",
+  "entity.layout.product_variants.columns.sku": "SKU",
+  "entity.layout.product_variants.columns.variant_name": "Variant Name",
+  "entity.layout.product_variants.columns.uom": "UOM",
+  "entity.layout.product_variants.columns.retail": "Retail",
+  "entity.layout.product_variants.columns.wholesale": "Wholesale",
+  "entity.layout.product_variants.columns.distribution": "Distribution"
 }

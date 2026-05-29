@@ -2,6 +2,11 @@ export const entityLayoutConfig = {
   products: {
     labelKey: 'entity.layout.products.label',
     columns: {
+      company: {
+        labelKey: 'entity.layout.products.columns.company',
+        type: 'text',
+        width: 200,
+      },
       name: {
         labelKey: 'entity.layout.products.columns.name',
         type: 'text',
@@ -42,7 +47,7 @@ export const entityLayoutConfig = {
         type: 'currency',
         width: 110,
       },
-      dist_price: {
+      distribution_price: {
         labelKey: 'entity.layout.product_variants.columns.distribution',
         type: 'currency',
         width: 120,

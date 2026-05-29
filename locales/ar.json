@@ -233,7 +233,7 @@
   "dashboard.badge.paused": "متوقف",
   "dashboard.badge.crit": "حرج",
   "dashboard.badge.online": "متصل",
-  "common.currency": "جنيه مصري",
+  "common.currency": "ج.م.",
   "dashboard.chart.cashFlowTrends": "اتجاهات التدفق النقدي",
   "dashboard.chart.downloadReport": "تحميل التقرير",
   "dashboard.chart.monthlyRevenue": "الإيرادات الشهرية",
@@ -295,6 +295,7 @@
   "settingsPopover.language.english": "EN",
   "entity.workspace.selected": "{count, plural, =0 {لا توجد محددات} =1 {محدد واحد} =2 {محددان} few {# محددات} many {# محدد} other {# محدد}}",
   "entity.layout.products.label": "المنتجات",
+  "entity.layout.products.columns.company": "اسم الشركة",
   "entity.layout.products.columns.name": "اسم المنتج",
   "entity.layout.products.columns.category": "الفئة",
   "entity.layout.products.columns.unit_price": "سعر الوحدة",
@@ -318,5 +319,12 @@
   "entity.layout.bills.columns.status": "الحالة",
   "entity.layout.vendors.label": "الموردون",
   "entity.layout.vendors.columns.name": "اسم المورد",
-  "entity.layout.vendors.columns.email": "البريد الإلكتروني"
+  "entity.layout.vendors.columns.email": "البريد الإلكتروني",
+  "entity.layout.product_variants.label": "المتغيرات",
+  "entity.layout.product_variants.columns.sku": "رمز المنتج",
+  "entity.layout.product_variants.columns.variant_name": "اسم المتغير",
+  "entity.layout.product_variants.columns.uom": "الوحدة",
+  "entity.layout.product_variants.columns.retail": "المفرد",
+  "entity.layout.product_variants.columns.wholesale": "الجملة",
+  "entity.layout.product_variants.columns.distribution": "التوزيع"
 }

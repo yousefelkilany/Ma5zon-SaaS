@@ -93,7 +93,7 @@ export function DataTable({
     () => [
       {
         id: 'select',
-        size: 40,
+        size: 10,
         enableResizing: false,
         header: ({ table }) => (
           <input
@@ -117,7 +117,7 @@ export function DataTable({
       },
       {
         id: 'expand',
-        size: 40,
+        size: 10,
         enableResizing: false,
         header: () => null,
         cell: ({ row }) => (
@@ -129,7 +129,7 @@ export function DataTable({
             }}
           >
             <span
-              className={`material-symbols-outlined text-[18px] text-on-surface-variant transition-transform ${expandedRowIds?.has(row.original.id) ? 'rotate-90' : ''}`}
+              className={`icon-directional material-symbols-outlined text-[18px] text-on-surface-variant transition-transform ${expandedRowIds?.has(row.original.id) ? 'rotate-90' : ''}`}
             >
               chevron_right
             </span>
@@ -307,7 +307,7 @@ export function DataTable({
                       <th
                         key={header.id}
                         className="px-compact-padding py-2.5 text-left font-bold text-on-surface relative select-none"
-                        style={{ width: header.getSize() }}
+                        style={{ width: header.getSize() ?? 20 }}
                       >
                         {canResize && (
                           <div
