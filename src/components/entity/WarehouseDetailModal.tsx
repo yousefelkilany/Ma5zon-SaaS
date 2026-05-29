@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useQueryClient } from '@tanstack/react-query'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
@@ -46,7 +47,6 @@ export function WarehouseDetailModal({
   const { t } = useTranslation()
   const [entity, setEntity] = useState<Warehouse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [loadError, setLoadError] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({ name: '', location: '' })
   const [isSaving, setIsSaving] = useState(false)
@@ -55,6 +55,8 @@ export function WarehouseDetailModal({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteError, setDeleteError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
+  const [loadError, setLoadError] = useState('')
+  const queryClient = useQueryClient()
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -135,6 +137,7 @@ export function WarehouseDetailModal({
     if (result.status === 'ok') {
       setEntity(result.data)
       setIsEditing(false)
+      queryClient.invalidateQueries({ queryKey: ['entity', 'warehouses'] })
     } else {
       setSaveError(result.error ?? 'Save failed')
     }
