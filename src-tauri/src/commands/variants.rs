@@ -5,7 +5,7 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
-use crate::sql::variants::{create, get_all, get_by_id, get_by_product, soft_delete, update};
+use crate::sql::variants::{create, create_table, get_all, get_by_id, get_by_product, soft_delete, update};
 use crate::types::{NewVariant, UpdateVariant, Variant};
 
 pub struct VariantsInitializer;
@@ -19,46 +19,8 @@ impl DatabaseInitializable for VariantsInitializer {
     async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
         let conn = get_conn(app)?;
 
-        conn.execute(
-            "CREATE TABLE IF NOT EXISTS product_variants (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                product_id INTEGER NOT NULL,
-                sku TEXT UNIQUE NOT NULL,
-                variant_name TEXT NOT NULL,
-                uom_id INTEGER NOT NULL,
-                retail_price REAL NOT NULL DEFAULT 0,
-                wholesale_price REAL NOT NULL DEFAULT 0,
-                distribution_price REAL NOT NULL DEFAULT 0,
-                created_at TEXT,
-                updated_at TEXT,
-                deleted_at TEXT,
-                FOREIGN KEY(product_id) REFERENCES products(id)
-            )",
-            [],
-        )
-        .map_err(|e| format!("Failed to create product_variants table: {e}"))?;
-
-        let alter_result = conn.execute(
-            "ALTER TABLE product_variants ADD COLUMN created_at TEXT",
-            [],
-        );
-        if alter_result.is_err() {
-            log::trace!("product_variants created_at column may already exist");
-        }
-        let alter_result = conn.execute(
-            "ALTER TABLE product_variants ADD COLUMN updated_at TEXT",
-            [],
-        );
-        if alter_result.is_err() {
-            log::trace!("product_variants updated_at column may already exist");
-        }
-        let alter_result = conn.execute(
-            "ALTER TABLE product_variants ADD COLUMN deleted_at TEXT",
-            [],
-        );
-        if alter_result.is_err() {
-            log::trace!("product_variants deleted_at column may already exist");
-        }
+        conn.execute(create_table(), [])
+            .map_err(|e| format!("Failed to create product_variants table: {e}"))?;
 
         let count: i64 = conn
             .query_row("SELECT COUNT(*) FROM product_variants", [], |row| {
