@@ -74,9 +74,11 @@ export function VariantDetailModal({
     distribution_price: '',
   })
   const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteError, setDeleteError] = useState('')
+  const [loadError, setLoadError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
 
   const tabs: { id: TabId; label: string }[] = [
@@ -85,16 +87,35 @@ export function VariantDetailModal({
     { id: 'audits', label: t('entity.detail.tabs.audits') },
   ]
 
-  useEffect(() => {
-    if (open && entityId) {
-      loadEntity()
+  const loadEntity = useCallback(async () => {
+    setIsLoading(true)
+    setLoadError('')
+    const result = await commands.variantsGetById(entityId)
+    setIsLoading(false)
+    if (result.status === 'ok') {
+      if (result.data) {
+        setEntity(result.data)
+        setEditForm({
+          sku: result.data.sku,
+          variant_name: result.data.variant_name,
+          uom_id: result.data.uom_id,
+          retail_price: result.data.retail_price.toString(),
+          wholesale_price: result.data.wholesale_price.toString(),
+          distribution_price: result.data.distribution_price.toString(),
+        })
+      } else {
+        setLoadError('Variant not found')
+      }
+    } else {
+      setLoadError(result.error ?? 'Failed to load variant')
     }
-  }, [open, entityId])
+  }, [entityId])
 
   useEffect(() => {
     if (!open) {
       setEntity(null)
       setIsLoading(true)
+      setLoadError('')
       setIsEditing(false)
       setEditForm({
         sku: '',
@@ -105,29 +126,25 @@ export function VariantDetailModal({
         distribution_price: '',
       })
       setActiveTab('details')
+      setDeleteError('')
+      setSaveError('')
     }
   }, [open])
 
-  const loadEntity = useCallback(async () => {
-    setIsLoading(true)
-    const result = await commands.variantsGetById(entityId)
-    setIsLoading(false)
-    if (result.status === 'ok' && result.data) {
-      setEntity(result.data)
-      setEditForm({
-        sku: result.data.sku,
-        variant_name: result.data.variant_name,
-        uom_id: result.data.uom_id,
-        retail_price: result.data.retail_price.toString(),
-        wholesale_price: result.data.wholesale_price.toString(),
-        distribution_price: result.data.distribution_price.toString(),
-      })
+  useEffect(() => {
+    if (open && entityId) {
+      loadEntity()
     }
-  }, [entityId])
+  }, [open, entityId, loadEntity])
 
   async function handleSave() {
     if (!entity) return
+    if (!editForm.sku.trim() || !editForm.variant_name.trim()) {
+      setSaveError('SKU and variant name are required')
+      return
+    }
     setIsSaving(true)
+    setSaveError('')
     const result = await commands.variantsUpdate(entity.id, {
       sku: editForm.sku,
       variant_name: editForm.variant_name,
@@ -140,6 +157,8 @@ export function VariantDetailModal({
     if (result.status === 'ok') {
       setEntity(result.data)
       setIsEditing(false)
+    } else {
+      setSaveError(result.error ?? 'Save failed')
     }
   }
 
@@ -286,6 +305,9 @@ export function VariantDetailModal({
                       </div>
 
                       {/* Footer Actions */}
+                      {saveError && (
+                        <p className="text-body-sm text-error">{saveError}</p>
+                      )}
                       <div className="flex items-center justify-between pt-4 border-t border-outline-variant">
                         <Button
                           variant="ghost"
@@ -331,6 +353,8 @@ export function VariantDetailModal({
                         </div>
                       </div>
                     </div>
+                  ) : loadError ? (
+                    <p className="text-body-md text-error">{loadError}</p>
                   ) : (
                     <p className="text-body-md text-on-surface-variant">
                       {t('entity.detail.notFound')}
