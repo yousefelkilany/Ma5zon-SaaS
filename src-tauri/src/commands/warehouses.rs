@@ -5,6 +5,7 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
+use crate::sql::warehouses::{create, get_all, get_by_id, get_created_at, soft_delete, update};
 
 pub struct WarehousesInitializer;
 
@@ -79,7 +80,7 @@ pub struct Warehouse {
 pub async fn warehouses_get_all(app: AppHandle) -> Result<Vec<Warehouse>, String> {
     let conn = get_conn(&app)?;
     let mut stmt = conn
-        .prepare("SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses WHERE deleted_at IS NULL ORDER BY name")
+        .prepare(get_all())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let warehouses = stmt
@@ -106,7 +107,7 @@ pub async fn warehouses_get_by_id(app: AppHandle, id: String) -> Result<Option<W
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let mut stmt = conn
-        .prepare("SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses WHERE id = ?1 AND deleted_at IS NULL")
+        .prepare(get_by_id())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let warehouse = stmt
@@ -135,7 +136,7 @@ pub async fn warehouses_create(
     let conn = get_conn(&app)?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(
-        "INSERT INTO warehouses (name, location, created_at, updated_at) VALUES (?1, ?2, ?3, ?4)",
+        create(),
         params![name, location, now, now],
     )
     .map_err(|e| format!("Failed to create warehouse: {e}"))?;
@@ -164,15 +165,11 @@ pub async fn warehouses_update(
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
     let created_at: String = conn
-        .query_row(
-            "SELECT created_at FROM warehouses WHERE id = ?1 AND deleted_at IS NULL",
-            params![id_i64],
-            |row| row.get(0),
-        )
+        .query_row(get_created_at(), params![id_i64], |row| row.get(0))
         .map_err(|e| format!("Warehouse not found: {e}"))?;
 
     conn.execute(
-        "UPDATE warehouses SET name = ?1, location = ?2, updated_at = ?3 WHERE id = ?4 AND deleted_at IS NULL",
+        update(),
         params![name, location, &now, id_i64],
     )
     .map_err(|e| format!("Failed to update warehouse: {e}"))?;
@@ -194,7 +191,7 @@ pub async fn warehouses_delete(app: AppHandle, id: String) -> Result<(), String>
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(
-        "UPDATE warehouses SET deleted_at = ?1 WHERE id = ?2",
+        soft_delete(),
         params![now, id_i64],
     )
     .map_err(|e| format!("Failed to delete warehouse: {e}"))?;

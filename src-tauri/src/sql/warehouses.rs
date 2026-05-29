@@ -23,3 +23,7 @@ pub fn update() -> &'static str {
 pub fn soft_delete() -> &'static str {
     "UPDATE warehouses SET deleted_at = ?1 WHERE id = ?2 AND deleted_at IS NULL"
 }
+
+pub fn get_created_at() -> &'static str {
+    "SELECT created_at FROM warehouses WHERE id = ?1 AND deleted_at IS NULL"
+}
