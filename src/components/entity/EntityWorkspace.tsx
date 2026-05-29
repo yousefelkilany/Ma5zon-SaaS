@@ -142,11 +142,11 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     queryFn: async () => {
       switch (entityType) {
         case 'products': {
-          const result = await commands.getAll()
+          const result = await commands.getAll([], [])
           return result.status === 'ok' ? result.data : []
         }
         case 'warehouses': {
-          const result = await commands.warehousesGetAll()
+          const result = await commands.warehousesGetAll([], [])
           return result.status === 'ok' ? result.data : []
         }
         default:
