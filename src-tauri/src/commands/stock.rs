@@ -6,8 +6,8 @@ use tauri::AppHandle;
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::sql::stock::{
-    get_levels_all, get_levels_by_variant, get_levels_by_warehouse,
-    get_movements_all, get_movements_by_variant,
+    create_levels_table, create_movements_table, get_levels_all, get_levels_by_variant,
+    get_levels_by_warehouse, get_movements_all, get_movements_by_variant,
 };
 
 pub struct StockInitializer;
@@ -21,35 +21,10 @@ impl DatabaseInitializable for StockInitializer {
     async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
         let conn = get_conn(app)?;
 
-        conn.execute(
-            "CREATE TABLE IF NOT EXISTS stock_levels (
-                variant_id INTEGER NOT NULL,
-                warehouse_id INTEGER NOT NULL,
-                quantity REAL NOT NULL DEFAULT 0,
-                PRIMARY KEY (variant_id, warehouse_id),
-                FOREIGN KEY(variant_id) REFERENCES product_variants(id),
-                FOREIGN KEY(warehouse_id) REFERENCES warehouses(id)
-            )",
-            [],
-        )
-        .map_err(|e| format!("Failed to create stock_levels table: {e}"))?;
-
-        conn.execute(
-            "CREATE TABLE IF NOT EXISTS stock_movements (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                variant_id INTEGER NOT NULL,
-                from_warehouse_id INTEGER,
-                to_warehouse_id INTEGER,
-                quantity REAL NOT NULL,
-                type TEXT NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(variant_id) REFERENCES product_variants(id),
-                FOREIGN KEY(from_warehouse_id) REFERENCES warehouses(id),
-                FOREIGN KEY(to_warehouse_id) REFERENCES warehouses(id)
-            )",
-            [],
-        )
-        .map_err(|e| format!("Failed to create stock_movements table: {e}"))?;
+        conn.execute(create_levels_table(), [])
+            .map_err(|e| format!("Failed to create stock_levels table: {e}"))?;
+        conn.execute(create_movements_table(), [])
+            .map_err(|e| format!("Failed to create stock_movements table: {e}"))?;
 
         let count: i64 = conn
             .query_row("SELECT COUNT(*) FROM stock_levels", [], |row| row.get(0))
