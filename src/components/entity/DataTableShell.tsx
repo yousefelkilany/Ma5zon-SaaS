@@ -10,7 +10,7 @@ import type {
 import { Toolbar } from './Toolbar'
 import { DataTable } from './DataTable'
 import { PaginationFooter } from './PaginationFooter'
-import { EntityDetailModal } from './EntityDetailModal'
+
 import { FilterDialog } from './FilterDialog'
 import { ColumnVisibilityDialog } from './ColumnVisibilityDialog'
 
@@ -57,8 +57,6 @@ export function DataTableShell({
   const [paginationState, setPaginationState] = useState<PaginationState>(
     pagination || defaultPagination
   )
-  const [detailModalOpen, setDetailModalOpen] = useState(false)
-  const [, setDetailEntityId] = useState<string | null>(null)
   const [filterDialogOpen, setFilterDialogOpen] = useState(false)
   const [columnDialogOpen, setColumnDialogOpen] = useState(false)
 
@@ -74,9 +72,8 @@ export function DataTableShell({
     setSelectedIds(ids)
   }, [])
 
-  const handleRowClick = useCallback((id: string) => {
-    setDetailEntityId(id)
-    setDetailModalOpen(true)
+  const handleRowClick = useCallback((_id: string) => {
+    // Row click handling is done in DataTable with typed modals
   }, [])
 
   const handleBulkAction = useCallback((_action: string) => {
@@ -127,10 +124,6 @@ export function DataTableShell({
         pagination={paginationState}
         onPageChange={handlePageChange}
         isLoading={isLoading}
-      />
-      <EntityDetailModal
-        open={detailModalOpen}
-        onOpenChange={setDetailModalOpen}
       />
       <FilterDialog
         open={filterDialogOpen}
