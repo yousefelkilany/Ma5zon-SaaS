@@ -46,6 +46,49 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install
 
+      - name: Create Multi-Build Script
+        shell: bash
+        run: |
+          cat << 'EOF' > build-all.js
+          const { execSync } = require('child_process');
+          const fs = require('fs');
+          const file = 'src-tauri/tauri.conf.json';
+
+          // Capture arguments passed by tauri-action (e.g., --bundles msi)
+          const passedArgs = process.argv.slice(2).join(' ');
+
+          function setConfig(mode, suffix) {
+            const cfg = JSON.parse(fs.readFileSync(file, 'utf8'));
+            const isV2 = !cfg.tauri;
+            const bundle = isV2 ? (cfg.bundle = cfg.bundle || {}) : (cfg.tauri.bundle = cfg.tauri.bundle || {});
+            bundle.windows = bundle.windows || {};
+            bundle.windows.webviewInstallMode = bundle.windows.webviewInstallMode || {};
+            bundle.windows.webviewInstallMode.type = bundle.windows.webviewInstallMode.type || {};
+            bundle.windows.webviewInstallMode.type = mode;
+
+            if (suffix) {
+              if (cfg.productName && !cfg.productName.endsWith(suffix)) cfg.productName += suffix;
+            }
+            fs.writeFileSync(file, JSON.stringify(cfg, null, 2));
+          }
+
+          const originalConfig = fs.readFileSync(file, 'utf8');
+
+          try {
+            console.log('--- Building Standard MSI (Downloads WebView2) ---');
+            setConfig('downloadBootstrapper', '');
+            execSync(`pnpm tauri build ${passedArgs}`, { stdio: 'inherit' });
+
+            console.log('--- Building Offline MSI (Bundles WebView2) ---');
+            setConfig('offlineInstaller', ' Offline');
+            execSync(`pnpm tauri build ${passedArgs}`, { stdio: 'inherit' });
+          } finally {
+            // Always restore original config file
+            fs.writeFileSync(file, originalConfig);
+          }
+          EOF
+
+
       - name: Build and release
         uses: tauri-apps/tauri-action@dev
         env:
@@ -59,7 +102,8 @@ jobs:
             ## Tauri Template App ${{ github.ref_name || inputs.version }}
 
             ### Installation Instructions
-            - **Windows**: Download the `.msi` file and run the installer
+            - **Standard Installer**: Download the standard `.msi` file. Requires an internet connection during setup to download WebView2 if missing.
+            - **Offline Installer (`-Offline.msi`)**: Fully self-contained installer. Bundles WebView2; works without an active internet connection.
 
             ### Auto-Updates
             Existing users will receive automatic update notifications.

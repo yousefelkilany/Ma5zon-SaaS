@@ -61,11 +61,11 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "publisher": "Your Name",
-    "category": "DeveloperTool",
-    "shortDescription": "A Tauri React template application",
-    "longDescription": "A modern Tauri React template with comprehensive boilerplate code, TypeScript, Tailwind CSS, and shadcn/ui components.",
-    "copyright": "Copyright © 2025 Your Name. All rights reserved.",
+    "publisher": "Youssef Elkilany",
+    "category": "Finance",
+    "shortDescription": "Ma5zon for Enterprise Finance",
+    "longDescription": "Ma5zon for Enterprise Finance.",
+    "copyright": "Copyright © 2026 Youssef Elkilany. All rights reserved.",
     "macOS": {
       "frameworks": [],
       "minimumSystemVersion": "10.15",
@@ -73,6 +73,12 @@
       "providerShortName": null,
       "entitlements": null,
       "exceptionDomain": ""
+    },
+    "windows": {
+      "webviewInstallMode": {
+        "silent": true,
+        "type": "downloadBootstrapper"
+      }
     }
   },
   "plugins": {
