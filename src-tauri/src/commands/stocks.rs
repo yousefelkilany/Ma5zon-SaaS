@@ -5,7 +5,7 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
-use crate::sql::stock::{
+use crate::sql::stocks::{
     create_levels_table, create_movements_table, get_levels_all, get_levels_by_variant,
     get_levels_by_warehouse, get_movements_all, get_movements_by_variant,
 };

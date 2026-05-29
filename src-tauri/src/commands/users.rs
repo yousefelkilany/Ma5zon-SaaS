@@ -11,8 +11,8 @@ use tauri::AppHandle;
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::sql::users::{
-    delete, get_by_id, get_by_name, get_password_hash, update_password as sql_update_password,
-    update_user as sql_update_user, upsert,
+    create_table, delete, get_by_id, get_by_name, get_password_hash,
+    update_password as sql_update_password, update_user as sql_update_user, upsert,
 };
 use crate::types::User;
 
@@ -36,17 +36,7 @@ impl DatabaseInitializable for UserInitializer {
     async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
         let conn = get_conn(app)?;
 
-        conn.execute(
-            "CREATE TABLE IF NOT EXISTS users (
-                id TEXT PRIMARY KEY,
-                name TEXT NOT NULL UNIQUE,
-                email TEXT NOT NULL UNIQUE,
-                role TEXT NOT NULL,
-                avatar_url TEXT,
-                password_hash TEXT
-            )",
-            [],
-        )
+        conn.execute(create_table(), [])
         .map_err(|e| format!("Failed to create users table: {e}"))?;
 
         let count: i64 = conn

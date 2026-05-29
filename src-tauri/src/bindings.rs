@@ -2,7 +2,7 @@ use tauri_specta::{collect_commands, Builder};
 
 pub fn generate_bindings() -> Builder<tauri::Wry> {
     use crate::commands::{
-        db_utils, notifications, preferences, products, quick_pane, recovery, stock, user,
+        db_utils, notifications, preferences, products, quick_pane, recovery, stocks, users,
         variants, warehouses,
     };
     use crate::utils::fs_utils;
@@ -22,12 +22,12 @@ pub fn generate_bindings() -> Builder<tauri::Wry> {
         quick_pane::toggle_quick_pane,
         quick_pane::get_default_quick_pane_shortcut,
         quick_pane::update_quick_pane_shortcut,
-        user::load_user,
-        user::save_user,
-        user::delete_user,
-        user::authenticate,
-        user::update_user,
-        user::update_password,
+        users::load_user,
+        users::save_user,
+        users::delete_user,
+        users::authenticate,
+        users::update_user,
+        users::update_password,
         products::get_all,
         products::get_by_id,
         products::create,
@@ -44,11 +44,11 @@ pub fn generate_bindings() -> Builder<tauri::Wry> {
         warehouses::warehouses_create,
         warehouses::warehouses_update,
         warehouses::warehouses_delete,
-        stock::stock_levels_get_all,
-        stock::stock_levels_get_by_variant,
-        stock::stock_levels_get_by_warehouse,
-        stock::stock_movements_get_all,
-        stock::stock_movements_get_by_variant,
+        stocks::stock_levels_get_all,
+        stocks::stock_levels_get_by_variant,
+        stocks::stock_levels_get_by_warehouse,
+        stocks::stock_movements_get_all,
+        stocks::stock_movements_get_by_variant,
     ])
 }
 

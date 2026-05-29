@@ -5,5 +5,5 @@
 pub mod products;
 pub mod warehouses;
 pub mod variants;
-pub mod stock;
+pub mod stocks;
 pub mod users;

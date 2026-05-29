@@ -6,6 +6,12 @@ import './i18n'
 import App from './App'
 import { queryClient } from './lib/query-client'
 
+// document.addEventListener('DOMContentLoaded', () => {
+//   document.addEventListener('contextmenu', e => {
+//     e.preventDefault()
+//   })
+// })
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>

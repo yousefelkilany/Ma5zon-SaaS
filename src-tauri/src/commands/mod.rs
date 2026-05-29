@@ -12,8 +12,8 @@ pub mod preferences;
 pub mod products;
 pub mod quick_pane;
 pub mod recovery;
-pub mod stock;
-pub mod user;
+pub mod stocks;
+pub mod users;
 pub mod variants;
 pub mod warehouses;
 
@@ -24,7 +24,7 @@ pub trait DatabaseInitializable: Send + Sync {
 }
 
 use self::{
-    products::ProductsInitializer, stock::StockInitializer, user::UserInitializer,
+    products::ProductsInitializer, stocks::StockInitializer, users::UserInitializer,
     variants::VariantsInitializer, warehouses::WarehousesInitializer,
 };
 
