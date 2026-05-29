@@ -70,7 +70,7 @@ export function FilterDialog({
                 <input
                   type="text"
                   aria-label={`Filter ${col.label}`}
-                  placeholder={`Filter ${col.label}...`}
+                  placeholder={t('entity.filter.placeholder', { column: col.label })}
                   value={getFilterValue(col.id)}
                   onChange={e => setLocalFilters(prev => ({ ...prev, [col.id]: e.target.value }))}
                   className="w-full bg-surface-bright border border-outline-variant rounded px-3 py-1.5 text-on-surface text-body-sm"
