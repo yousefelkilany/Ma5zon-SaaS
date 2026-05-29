@@ -5,7 +5,7 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
-use crate::sql::products::{get_all as sql_get_all, get_by_id as sql_get_by_id, create as sql_create, update as sql_update, soft_delete as sql_soft_delete};
+use crate::sql::products::{get_all as sql_get_all, get_by_id as sql_get_by_id, create as sql_create, update as sql_update, soft_delete as sql_soft_delete, get_created_at as sql_get_created_at};
 use crate::types::Product;
 
 pub struct ProductsInitializer;
@@ -197,7 +197,7 @@ pub async fn update(
 
     let (created_at,): (String,) = conn
         .query_row(
-            "SELECT created_at FROM products WHERE id = ?1 AND deleted_at IS NULL",
+            sql_get_created_at(),
             params![id_i64],
             |row| Ok((row.get(0)?,)),
         )
