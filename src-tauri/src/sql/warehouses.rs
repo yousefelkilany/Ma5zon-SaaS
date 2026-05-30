@@ -27,10 +27,10 @@ impl Warehouse {
 
 pub fn fetch_all(
     conn: &Connection,
-    limit: Option<i64>,
-    offset: Option<i64>,
-) -> DbErr<(Vec<Warehouse>, i64)> {
-    let total: i64 = conn.query_row(
+    limit: Option<i32>,
+    offset: Option<i32>,
+) -> DbErr<(Vec<Warehouse>, i32)> {
+    let total: i32 = conn.query_row(
         "SELECT COUNT(*) FROM warehouses",
         [],
         |row| row.get(0),

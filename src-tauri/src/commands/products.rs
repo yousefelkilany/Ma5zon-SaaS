@@ -148,15 +148,15 @@ pub async fn products_get_paginated(
     let offset = (page - 1) * page_size;
     let conn = get_conn(&app)?;
 
-    let (products, total_count) = fetch_all(&conn, Some(page_size as i64), Some(offset as i64))
+    let (products, total_count) = fetch_all(&conn, Some(page_size), Some(offset))
         .map_err(|e| format!("Failed to fetch products: {e}"))?;
 
-    let total_pages = (total_count + page_size as i64 - 1) / page_size as i64;
+    let total_pages = (total_count + page_size - 1) / page_size;
 
     Ok(PaginatedResponse {
         data: products,
-        total_count: total_count as i32,
-        total_pages: total_pages as i32,
+        total_count,
+        total_pages,
     })
 }
 

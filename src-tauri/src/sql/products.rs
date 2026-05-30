@@ -5,10 +5,10 @@ use crate::types::Product;
 
 pub fn fetch_all(
     conn: &Connection,
-    limit: Option<i64>,
-    offset: Option<i64>,
-) -> DbErr<(Vec<Product>, i64)> {
-    let total: i64 = conn.query_row(
+    limit: Option<i32>,
+    offset: Option<i32>,
+) -> DbErr<(Vec<Product>, i32)> {
+    let total: i32 = conn.query_row(
         "SELECT COUNT(*) FROM products",
         [],
         |row| row.get(0),

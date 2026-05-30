@@ -123,7 +123,7 @@ pub async fn warehouses_get_paginated(
     let offset = (page - 1) * page_size;
     let conn = get_conn(&app)?;
 
-    let (raw_warehouses, total_count) = fetch_all(&conn, Some(page_size as i64), Some(offset as i64))
+    let (raw_warehouses, total_count) = fetch_all(&conn, Some(page_size), Some(offset))
         .map_err(|e| format!("Failed to fetch warehouses: {e}"))?;
 
     let warehouses: Vec<Warehouse> = raw_warehouses
@@ -138,12 +138,12 @@ pub async fn warehouses_get_paginated(
         })
         .collect();
 
-    let total_pages = (total_count + page_size as i64 - 1) / page_size as i64;
+    let total_pages = (total_count + page_size - 1) / page_size;
 
     Ok(PaginatedResponse {
         data: warehouses,
-        total_count: total_count as i32,
-        total_pages: total_pages as i32,
+        total_count,
+        total_pages,
     })
 }
 
