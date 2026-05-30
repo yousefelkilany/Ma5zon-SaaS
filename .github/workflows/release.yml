@@ -83,7 +83,7 @@ jobs:
             execSync(`pnpm tauri build ${passedArgs}`, { stdio: 'inherit' });
 
             console.log('--- Building Offline MSI (Bundles WebView2) ---');
-            setConfig('offlineInstaller', ' Offline');
+            setConfig('offlineInstaller', '-Offline');
             execSync(`pnpm tauri build ${passedArgs}`, { stdio: 'inherit' });
           } finally {
             // Always restore original config file
@@ -120,7 +120,7 @@ jobs:
           tag_name: ${{ github.ref_name || inputs.version }}
           draft: true
           files: |
-            src-tauri/target/release/bundle/msi/Ma5zon Offline_*.msi
-            src-tauri/target/release/bundle/msi/Ma5zon Offline_*.msi.sig
+            src-tauri/target/release/bundle/msi/Ma5zon-Offline_*.msi
+            src-tauri/target/release/bundle/msi/Ma5zon-Offline_*.msi.sig
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
