@@ -6,6 +6,7 @@ import type {
 } from '@/lib/types/entity'
 import { useTranslation } from 'react-i18next'
 import { Skeleton } from '@/components/ui/skeleton'
+import { PaginationFooter } from '@/components/entity'
 import { formatCurrency } from '@/lib/utils'
 import i18n from '@/i18n/config'
 import { ChevronRightIcon, ChevronDownIcon } from 'lucide-react'
@@ -71,6 +72,12 @@ export function WarehousesSubTable({
   const [errorVariants, setErrorVariants] = useState<Map<string, string>>(
     new Map()
   )
+  const [productPagination, setProductPagination] = useState({
+    page: 1,
+    pageSize: 10,
+    totalRows: 0,
+    totalPages: 1,
+  })
 
   const typedCommands = commands as Commands
 
@@ -81,6 +88,7 @@ export function WarehousesSubTable({
         newExpanded.delete(whId)
       } else {
         newExpanded.add(whId)
+        setProductPagination(prev => ({ ...prev, page: 1 }))
         if (!productsCache.has(whId) && !localProductsCache.has(whId)) {
           setLoadingProducts(prev => new Set(prev).add(whId))
           setErrorProducts(prev => {
@@ -120,6 +128,10 @@ export function WarehousesSubTable({
       typedCommands,
     ]
   )
+
+  const handleProductPageChange = useCallback((page: number, pageSize: number) => {
+    setProductPagination(prev => ({ ...prev, page, pageSize }))
+  }, [])
 
   const handleProductExpand = useCallback(
     async (productId: string, whId: string) => {
@@ -349,6 +361,11 @@ export function WarehousesSubTable({
                   </>
                 )
               })}
+              <PaginationFooter
+                pagination={productPagination}
+                onPageChange={handleProductPageChange}
+                isLoading={isLoadingProducts(warehouseId)}
+              />
             </>
           )}
           {!isWarehouseExpanded &&
