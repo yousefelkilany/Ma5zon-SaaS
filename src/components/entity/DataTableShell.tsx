@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { QueryClient } from '@tanstack/react-query'
 import type {
   ColumnDef,
   EntityRow,
@@ -16,6 +17,7 @@ import { ColumnVisibilityDialog } from './ColumnVisibilityDialog'
 
 interface DataTableShellProps {
   entityType: string
+  queryClient: QueryClient
   columns: ColumnDef[]
   data: EntityRow[]
   pagination: PaginationState
@@ -38,6 +40,7 @@ const defaultPagination: PaginationState = {
 
 export function DataTableShell({
   entityType,
+  queryClient,
   columns,
   data,
   pagination,
@@ -83,9 +86,10 @@ export function DataTableShell({
   const handleColumnSave = useCallback(
     (newColumns: ColumnDef[]) => {
       onSaveColumnPrefs(newColumns)
+      queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
       setColumnDialogOpen(false)
     },
-    [onSaveColumnPrefs]
+    [onSaveColumnPrefs, queryClient, entityType]
   )
 
   return (

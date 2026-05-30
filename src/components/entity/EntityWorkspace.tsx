@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { invoke } from '@tauri-apps/api/core'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 import { getEntityLayout } from '@/lib/entity-layout'
 import type {
@@ -99,6 +99,7 @@ async function exportToCSV(
 }
 
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
+  const queryClient = useQueryClient()
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
   const [variantsCache, setVariantsCache] = useState<Map<string, VariantRow[]>>(
     new Map()
@@ -171,6 +172,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
       <EntityHeader entityType={entityType} />
       <DataTableShell
         entityType={entityType}
+        queryClient={queryClient}
         columns={columns}
         data={entityData ?? []}
         pagination={{
