@@ -29,6 +29,8 @@ interface DataTableShellProps {
   variantsCache?: Map<string, VariantRow[]>
   onRowToggleExpand?: (id: string) => void
   isLoadingVariants?: (id: string) => boolean
+  onVariantClick?: (variantId: string, productId: string) => void
+  onAddVariant?: (productId: string) => void
 }
 
 const defaultPagination: PaginationState = {
@@ -52,6 +54,8 @@ export function DataTableShell({
   variantsCache,
   onRowToggleExpand,
   isLoadingVariants,
+  onVariantClick,
+  onAddVariant,
 }: DataTableShellProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sort, setSort] = useState<SortState | null>(null)
@@ -122,6 +126,8 @@ export function DataTableShell({
             variantsCache={variantsCache}
             onRowToggleExpand={onRowToggleExpand}
             isLoadingVariants={isLoadingVariants}
+            onVariantClick={onVariantClick}
+            onAddVariant={onAddVariant}
           />
         </div>
       </div>
