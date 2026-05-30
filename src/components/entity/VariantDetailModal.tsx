@@ -146,7 +146,7 @@ export function VariantDetailModal({
           sku: '',
         }))
       )
-      const whResult = await commands.warehousesGetAll([], [])
+      const whResult = await commands.warehousesGetAll([], [], null)
       if (whResult.status === 'ok') {
         const names = new Map<string, string>()
         for (const w of whResult.data) {

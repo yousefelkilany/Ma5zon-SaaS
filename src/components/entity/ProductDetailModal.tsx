@@ -118,7 +118,7 @@ export function ProductDetailModal({
     setIsLoadingStock(false)
     if (result.status === 'ok') {
       setStockLevels(result.data)
-      const whResult = await commands.warehousesGetAll([], [])
+      const whResult = await commands.warehousesGetAll([], [], null)
       if (whResult.status === 'ok') {
         const names = new Map<string, string>()
         for (const w of whResult.data) {
