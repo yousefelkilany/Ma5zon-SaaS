@@ -43,7 +43,7 @@ fn seed_variants(conn: &Connection) -> Result<(), String> {
     let mut rng = rand::thread_rng();
 
     let mut stmt = conn
-        .prepare("SELECT id FROM products ORDER BY id")
+        .prepare("SELECT id FROM active_products ORDER BY id")
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let product_ids: Vec<i64> = stmt

@@ -98,7 +98,9 @@ export function VariantDetailModal({
   const [activeTab, setActiveTab] = useState<TabId>('details')
   const [stockLevels, setStockLevels] = useState<StockLevelWithVariant[]>([])
   const [isLoadingStock, setIsLoadingStock] = useState(false)
-  const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(new Map())
+  const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
+    new Map()
+  )
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -137,11 +139,13 @@ export function VariantDetailModal({
     const result = await commands.stockLevelsGetByVariant(entityId)
     setIsLoadingStock(false)
     if (result.status === 'ok') {
-      setStockLevels(result.data.map((l: StockLevel) => ({
-        ...l,
-        variant_name: '',
-        sku: '',
-      })))
+      setStockLevels(
+        result.data.map((l: StockLevel) => ({
+          ...l,
+          variant_name: '',
+          sku: '',
+        }))
+      )
       const whResult = await commands.warehousesGetAll([], [])
       if (whResult.status === 'ok') {
         const names = new Map<string, string>()
@@ -433,7 +437,11 @@ export function VariantDetailModal({
               )}
 
               {activeTab === 'stock' && (
-                <div id="stock-panel" role="tabpanel" aria-labelledby="stock-tab">
+                <div
+                  id="stock-panel"
+                  role="tabpanel"
+                  aria-labelledby="stock-tab"
+                >
                   <StockLevelsTable
                     stockLevels={stockLevels}
                     isLoading={isLoadingStock}

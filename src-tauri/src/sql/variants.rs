@@ -7,32 +7,37 @@ pub fn create_table() -> &'static str {
         sku TEXT UNIQUE NOT NULL,
         variant_name TEXT NOT NULL,
         uom_id INTEGER NOT NULL,
-        retail_price REAL NOT NULL DEFAULT 0,
-        wholesale_price REAL NOT NULL DEFAULT 0,
-        distribution_price REAL NOT NULL DEFAULT 0,
-        created_at TEXT,
-        updated_at TEXT,
-        deleted_at TEXT,
+        retail_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+        wholesale_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+        distribution_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        deleted_at DATETIME DEFAULT NULL,
         FOREIGN KEY(product_id) REFERENCES products(id)
-    )"
+    )
+
+    CREATE INDEX idx_variant_product_id ON product_variants(product_id);
+
+    CREATE VIEW active_product_variants AS
+    SELECT * FROM product_variants WHERE deleted_at IS NULL;"
 }
 
 pub fn get_all() -> &'static str {
     "SELECT id, product_id, sku, variant_name, uom_id, retail_price, \
      wholesale_price, distribution_price, created_at, updated_at, deleted_at \
-     FROM product_variants WHERE deleted_at IS NULL ORDER BY sku"
+     FROM active_product_variants ORDER BY sku"
 }
 
 pub fn get_by_id() -> &'static str {
     "SELECT id, product_id, sku, variant_name, uom_id, retail_price, \
      wholesale_price, distribution_price, created_at, updated_at, deleted_at \
-     FROM product_variants WHERE id = ?1 AND deleted_at IS NULL"
+     FROM active_product_variants WHERE id = ?1"
 }
 
 pub fn get_by_product() -> &'static str {
     "SELECT id, product_id, sku, variant_name, uom_id, retail_price, \
      wholesale_price, distribution_price, created_at, updated_at, deleted_at \
-     FROM product_variants WHERE product_id = ?1 AND deleted_at IS NULL ORDER BY sku"
+     FROM active_product_variants WHERE product_id = ?1 ORDER BY sku"
 }
 
 pub fn create() -> &'static str {

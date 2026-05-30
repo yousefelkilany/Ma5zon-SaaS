@@ -8,16 +8,22 @@ pub fn create_table() -> &'static str {
         role TEXT NOT NULL,
         avatar_url TEXT,
         password_hash TEXT
-    )"
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        deleted_at DATETIME DEFAULT NULL,
+    )
+
+    CREATE VIEW active_users AS
+    SELECT * FROM users WHERE deleted_at IS NULL;"
 }
 
 pub fn get_by_name() -> &'static str {
     "SELECT id, name, email, role, avatar_url, password_hash \
-     FROM users WHERE name = ?1"
+     FROM active_users WHERE name = ?1"
 }
 
 pub fn get_by_id() -> &'static str {
-    "SELECT id, name, email, role, avatar_url FROM users WHERE id = ?1"
+    "SELECT id, name, email, role, avatar_url FROM active_users WHERE id = ?1"
 }
 
 pub fn upsert() -> &'static str {
@@ -25,12 +31,12 @@ pub fn upsert() -> &'static str {
      ON CONFLICT(id) DO UPDATE SET name = ?2, role = ?3, avatar_url = ?4"
 }
 
-pub fn delete() -> &'static str {
-    "DELETE FROM users WHERE id = ?1"
+pub fn soft_delete() -> &'static str {
+    "UPDATE users SET deleted_at = ?1 WHERE id = ?2 AND deleted_at IS NULL"
 }
 
 pub fn get_password_hash() -> &'static str {
-    "SELECT password_hash FROM users WHERE id = ?1"
+    "SELECT password_hash FROM active_users WHERE id = ?1"
 }
 
 pub fn update_password() -> &'static str {

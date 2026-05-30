@@ -5,20 +5,23 @@ pub fn create_table() -> &'static str {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         location TEXT,
-        created_at TEXT NOT NULL DEFAULT (datetime('now')),
-        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-        deleted_at TEXT
-    )"
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        deleted_at DATETIME DEFAULT NULL,
+    )
+
+    CREATE VIEW active_warehouses AS
+    SELECT * FROM warehouses WHERE deleted_at IS NULL;"
 }
 
 pub fn get_all() -> &'static str {
     "SELECT id, name, location, created_at, updated_at, deleted_at \
-     FROM warehouses WHERE deleted_at IS NULL ORDER BY name"
+     FROM active_warehouses ORDER BY name"
 }
 
 pub fn get_by_id() -> &'static str {
     "SELECT id, name, location, created_at, updated_at, deleted_at \
-     FROM warehouses WHERE id = ?1 AND deleted_at IS NULL"
+     FROM active_warehouses WHERE id = ?1 AND deleted_at IS NULL"
 }
 
 pub fn create() -> &'static str {
@@ -36,7 +39,7 @@ pub fn soft_delete() -> &'static str {
 }
 
 pub fn get_created_at() -> &'static str {
-    "SELECT created_at FROM warehouses WHERE id = ?1 AND deleted_at IS NULL"
+    "SELECT created_at FROM active_warehouses WHERE id = ?1 AND deleted_at IS NULL"
 }
 
 use crate::types::FilterState;
@@ -109,7 +112,7 @@ pub fn build_where_clause(filters: &[FilterState]) -> String {
 }
 
 pub fn build_get_all(where_clause: &str) -> String {
-    let base = "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses WHERE deleted_at IS NULL";
+    let base = "SELECT id, name, location, created_at, updated_at, deleted_at FROM active_warehouses";
     if where_clause.is_empty() {
         format!("{} ORDER BY name", base)
     } else {

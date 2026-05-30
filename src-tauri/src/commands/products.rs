@@ -28,7 +28,7 @@ impl DatabaseInitializable for ProductsInitializer {
             .map_err(|e| format!("Failed to create products table: {e}"))?;
 
         let count: i64 = conn
-            .query_row("SELECT COUNT(*) FROM products", [], |row| row.get(0))
+            .query_row("SELECT COUNT(*) FROM active_products", [], |row| row.get(0))
             .map_err(|e| format!("Failed to count products: {e}"))?;
 
         if count == 0 {
@@ -216,7 +216,7 @@ pub async fn update(
 
 #[tauri::command]
 #[specta::specta]
-pub async fn delete(app: AppHandle, id: String) -> Result<(), String> {
+pub async fn soft_delete(app: AppHandle, id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();

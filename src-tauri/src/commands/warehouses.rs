@@ -23,7 +23,7 @@ impl DatabaseInitializable for WarehousesInitializer {
             .map_err(|e| format!("Failed to create warehouses table: {e}"))?;
 
         let count: i64 = conn
-            .query_row("SELECT COUNT(*) FROM warehouses", [], |row| row.get(0))
+            .query_row("SELECT COUNT(*) FROM active_warehouses", [], |row| row.get(0))
             .map_err(|e| format!("Failed to count warehouses: {e}"))?;
 
         if count == 0 {

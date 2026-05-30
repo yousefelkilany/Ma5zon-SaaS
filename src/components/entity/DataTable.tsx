@@ -162,7 +162,8 @@ export function DataTable({
 
   const tableColumns = useMemo<TanstackColumnDef<EntityRow>[]>(() => {
     const cols: TanstackColumnDef<EntityRow>[] = [selectColumn]
-    if (entityType === 'products' || entityType === 'warehouses') cols.push(expandColumn)
+    if (entityType === 'products' || entityType === 'warehouses')
+      cols.push(expandColumn)
     cols.push(
       ...visibleColumns.map((col, idx) => ({
         id: col.id,
@@ -408,7 +409,9 @@ export function DataTable({
                         )}
                         {entityType === 'warehouses' && (
                           <WarehousesSubTable
-                            stockLevels={stockLevelsCache?.get(row.original.id) ?? []}
+                            stockLevels={
+                              stockLevelsCache?.get(row.original.id) ?? []
+                            }
                             isLoading={isLoadingStockLevels?.(row.original.id)}
                             warehouseId={row.original.id}
                           />

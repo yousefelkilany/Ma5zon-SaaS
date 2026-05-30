@@ -97,10 +97,13 @@ export function DataTableShell({
     setSelectedIds(new Set())
   }, [])
 
-  const handleFiltersApply = useCallback((newFilters: FilterState[]) => {
-    setFilters(newFilters)
-    onFiltersApply(newFilters)
-  }, [onFiltersApply])
+  const handleFiltersApply = useCallback(
+    (newFilters: FilterState[]) => {
+      setFilters(newFilters)
+      onFiltersApply(newFilters)
+    },
+    [onFiltersApply]
+  )
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -155,7 +158,7 @@ export function DataTableShell({
         open={columnDialogOpen}
         onOpenChange={setColumnDialogOpen}
         columns={localColumns}
-        onSave={(cols) => {
+        onSave={cols => {
           setLocalColumns(cols)
           onSaveColumnPrefs(cols)
           setColumnDialogOpen(false)

@@ -448,6 +448,7 @@ export type RecoveryError =
  */
 { type: "ParseError"; message: string }
 export type StockLevel = { variant_id: string; warehouse_id: string; quantity: number }
+export type StockLevelWithVariant = { variant_id: string; variant_name: string; sku: string; warehouse_id: string; quantity: number }
 export type StockMovement = { id: string; variant_id: string; from_warehouse_id: string | null; to_warehouse_id: string | null; quantity: number; movement_type: string; created_at: string }
 export type TableInfo = { table_name: string; columns: ColumnInfo[] }
 export type UpdateVariant = { sku: string | null; variant_name: string | null; uom_id: string | null; retail_price: number | null; wholesale_price: number | null; distribution_price: number | null }

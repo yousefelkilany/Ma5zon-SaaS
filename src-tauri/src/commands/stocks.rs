@@ -57,7 +57,7 @@ fn seed_stock_levels(conn: &Connection) -> Result<(), String> {
 
     let warehouse_ids: Vec<i64> = {
         let mut stmt = conn
-            .prepare("SELECT id FROM warehouses ORDER BY id")
+            .prepare("SELECT id FROM active_warehouses ORDER BY id")
             .map_err(|e| format!("Failed to prepare statement: {e}"))?;
         let rows = stmt
             .query_map([], |row| row.get(0))
@@ -103,7 +103,7 @@ fn seed_stock_movements(conn: &Connection) -> Result<(), String> {
 
     let warehouse_ids: Vec<i64> = {
         let mut stmt = conn
-            .prepare("SELECT id FROM warehouses ORDER BY id")
+            .prepare("SELECT id FROM active_warehouses ORDER BY id")
             .map_err(|e| format!("Failed to prepare statement: {e}"))?;
         let rows = stmt
             .query_map([], |row| row.get(0))

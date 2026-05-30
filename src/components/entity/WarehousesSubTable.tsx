@@ -50,16 +50,19 @@ export function WarehousesSubTable({
           </tr>
         </thead>
         <tbody>
-          {stockLevels.map((level) => (
-            <tr key={`${level.variant_id}-${warehouseId}`} className="border-t border-outline-variant/30">
+          {stockLevels.map(level => (
+            <tr
+              key={`${level.variant_id}-${warehouseId}`}
+              className="border-t border-outline-variant/30"
+            >
               <td className="px-3 py-2 text-on-surface">
                 {level.variant_name}
               </td>
-              <td className="px-3 py-2 text-on-surface-variant">
-                {level.sku}
-              </td>
+              <td className="px-3 py-2 text-on-surface-variant">{level.sku}</td>
               <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
-                {level.quantity.toLocaleString(locale, { minimumFractionDigits: 2 })}
+                {level.quantity.toLocaleString(locale, {
+                  minimumFractionDigits: 2,
+                })}
               </td>
             </tr>
           ))}

@@ -5,16 +5,17 @@ use argon2::{
     Argon2,
 };
 use async_trait::async_trait;
+use chrono::Local;
 use rusqlite::params;
 use tauri::AppHandle;
 
-use crate::commands::DatabaseInitializable;
 use crate::sql::users::{
-    create_table, delete, get_by_id, get_by_name, get_password_hash,
+    create_table, get_by_id, get_by_name, get_password_hash,
     update_password as sql_update_password, update_user as sql_update_user, upsert,
 };
 use crate::types::User;
 use crate::{commands::db_utils::get_conn, types::ADMIN_ROLE};
+use crate::{commands::DatabaseInitializable, sql::users::soft_delete};
 
 struct UserWithHash {
     id: String,
@@ -40,7 +41,7 @@ impl DatabaseInitializable for UserInitializer {
             .map_err(|e| format!("Failed to create users table: {e}"))?;
 
         let count: i64 = conn
-            .query_row("SELECT COUNT(*) FROM users", [], |row| row.get(0))
+            .query_row("SELECT COUNT(*) FROM active_users", [], |row| row.get(0))
             .map_err(|e| format!("Failed to check users count: {e}"))?;
 
         if count == 0 {
@@ -186,10 +187,10 @@ pub async fn save_user(app: AppHandle, user: User) -> Result<(), String> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn delete_user(app: AppHandle, user_id: &str) -> Result<(), String> {
+pub async fn soft_delete_user(app: AppHandle, user_id: &str) -> Result<(), String> {
     let conn = get_conn(&app)?;
-
-    conn.execute(delete(), params![user_id])
+    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    conn.execute(soft_delete(), params![now, user_id])
         .map_err(|e| format!("Failed to delete user: {e}"))?;
 
     Ok(())

@@ -65,13 +65,18 @@ pub fn get_stock_levels_by_product() -> &'static str {
 }
 
 pub fn get_levels_by_warehouse_with_names() -> &'static str {
+    // update this statement and corresponding UI table to be expanding rows
     "SELECT
         v.id AS variant_id,
+        p.company,
+        p.category,
+        p.name,
         v.variant_name,
         v.sku,
         COALESCE(s.warehouse_id, 0) AS warehouse_id,
         COALESCE(s.quantity, 0) AS current_qty
      FROM product_variants v
+     JOIN products p ON v.product_id = p.id
      LEFT JOIN stock_levels s ON v.id = s.variant_id AND s.warehouse_id = ?1
      ORDER BY v.variant_name"
 }
