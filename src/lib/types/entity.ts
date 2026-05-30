@@ -101,3 +101,11 @@ export interface ExpandedRowState {
   expandedIds: Set<string>
   variantsCache: Map<string, VariantRow[]>
 }
+
+export interface VariantsSubTableProps {
+  variants: VariantRow[]
+  isLoading?: boolean
+  productId: string
+  onVariantClick?: (variantId: string, productId: string) => void
+  onAddVariant?: (productId: string) => void
+}
