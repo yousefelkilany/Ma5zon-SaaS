@@ -13,7 +13,7 @@ pub struct Warehouse {
 }
 
 impl Warehouse {
-    pub fn from_row(row:&rusqlite::Row) -> DbErr<Self> {
+    pub fn from_row(row: &rusqlite::Row) -> DbErr<Self> {
         Ok(Warehouse {
             id: row.get(0)?,
             name: row.get(1)?,
@@ -36,65 +36,41 @@ pub fn fetch_all(
         |row| row.get(0),
     )?;
 
-    let warehouses = match (limit, offset) {
+    let warehouses: Vec<Warehouse> = match (limit, offset) {
         (Some(limit), Some(offset)) => {
             let mut stmt = conn.prepare(
-                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses LIMIT ? OFFSET ?"
+                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses LIMIT ? OFFSET ?",
             )?;
-            let rows = stmt.query_map([limit, offset], Warehouse::from_row)?;
-            rows.collect()
+            let mut rows = stmt.query([limit, offset])?;
+            let mut warehouses = Vec::new();
+            while let Some(row) = rows.next()? {
+                warehouses.push(Warehouse::from_row(row)?);
+            }
+            warehouses
         }
         (Some(limit), None) => {
             let mut stmt = conn.prepare(
-                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses LIMIT ?"
+                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses LIMIT ?",
             )?;
-            let rows = stmt.query_map([limit], Warehouse::from_row)?;
-            rows.collect()
+            let mut rows = stmt.query([limit])?;
+            let mut warehouses = Vec::new();
+            while let Some(row) = rows.next()? {
+                warehouses.push(Warehouse::from_row(row)?);
+            }
+            warehouses
         }
         _ => {
             let mut stmt = conn.prepare(
-                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses"
+                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses",
             )?;
-            let rows = stmt.query_map([], Warehouse::from_row)?;
-            rows.collect()
+            let mut rows = stmt.query([])?;
+            let mut warehouses = Vec::new();
+            while let Some(row) = rows.next()? {
+                warehouses.push(Warehouse::from_row(row)?);
+            }
+            warehouses
         }
-    }?;
-
-    Ok((warehouses, total))
-}
-
-pub async fn fetch_all(
-    db: &Pool<Sqlite>,
-    limit: Option<i64>,
-    offset: Option<i64>,
-) -> Result<(Vec<Warehouse>, i64), DbErr> {
-    let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM warehouses")
-        .fetch_one(db)
-        .await?;
-
-    let warehouses = match (limit, offset) {
-        (Some(limit), Some(offset)) => {
-            sqlx::query_as::<_, Warehouse>(
-                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses LIMIT ? OFFSET ?"
-            )
-            .bind(limit)
-            .bind(offset)
-            .fetch_all(db)
-        }
-        (Some(limit), None) => {
-            sqlx::query_as::<_, Warehouse>(
-                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses LIMIT ?"
-            )
-            .bind(limit)
-            .fetch_all(db)
-        }
-        _ => {
-            sqlx::query_as::<_, Warehouse>(
-                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses"
-            )
-            .fetch_all(db)
-        }
-    }.await?;
+    };
 
     Ok((warehouses, total))
 }
@@ -151,7 +127,7 @@ pub fn build_where_clause(filters: &[FilterState]) -> String {
     let clauses: Vec<String> = filters
         .iter()
         .map(|f| {
-            let column = &f.column_id;
+            let column =&f.column_id;
             match f.operator.as_str() {
                 "eq" => {
                     if let Some(arr) = f.value.as_array() {
