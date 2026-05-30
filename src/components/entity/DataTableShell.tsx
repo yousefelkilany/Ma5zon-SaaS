@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import type { QueryClient } from '@tanstack/react-query'
 import type {
   ColumnDef,
@@ -66,6 +66,11 @@ export function DataTableShell({
   )
   const [filterDialogOpen, setFilterDialogOpen] = useState(false)
   const [columnDialogOpen, setColumnDialogOpen] = useState(false)
+  const [localColumns, setLocalColumns] = useState<ColumnDef[]>(columns)
+
+  useEffect(() => {
+    setLocalColumns(columns)
+  }, [columns])
 
   const handleSort = useCallback((newSort: SortState | null) => {
     setSort(newSort)
@@ -92,15 +97,6 @@ export function DataTableShell({
     onFiltersApply(newFilters)
   }, [onFiltersApply])
 
-  const handleColumnSave = useCallback(
-    (newColumns: ColumnDef[]) => {
-      onSaveColumnPrefs(newColumns)
-      queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
-      setColumnDialogOpen(false)
-    },
-    [onSaveColumnPrefs, queryClient, entityType]
-  )
-
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <Toolbar
@@ -119,7 +115,7 @@ export function DataTableShell({
           <DataTable
             entityType={entityType}
             queryClient={queryClient}
-            columns={columns}
+            columns={localColumns}
             data={data}
             sort={sort}
             isLoading={isLoading}
@@ -151,8 +147,12 @@ export function DataTableShell({
       <ColumnVisibilityDialog
         open={columnDialogOpen}
         onOpenChange={setColumnDialogOpen}
-        columns={columns}
-        onSave={handleColumnSave}
+        columns={localColumns}
+        onSave={(cols) => {
+          setLocalColumns(cols)
+          onSaveColumnPrefs(cols)
+          setColumnDialogOpen(false)
+        }}
       />
     </div>
   )

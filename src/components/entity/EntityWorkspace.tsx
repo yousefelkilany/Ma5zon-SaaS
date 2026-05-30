@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { invoke } from '@tauri-apps/api/core'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -132,7 +132,19 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const [selectedVariantProductId, setSelectedVariantProductId] = useState<
     string | null
   >(null)
+  const [columnPrefs, setColumnPrefs] = useState<ColumnDef[] | null>(null)
   const [variantDetailOpen, setVariantDetailOpen] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`user_prefs_columns_${entityType}`)
+    if (saved) {
+      try {
+        setColumnPrefs(JSON.parse(saved))
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }, [entityType])
 
   const handleAddNewClick = useCallback(() => {
     setCreateModalType(
@@ -237,13 +249,20 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
 
   const { t } = useTranslation()
 
-  const columns: ColumnDef[] = useMemo(
-    () => getEntityLayout(entityType, t),
-    [entityType, t]
-  )
+  const columns: ColumnDef[] = useMemo(() => {
+    const defaultCols = getEntityLayout(entityType, t)
+    if (columnPrefs) {
+      return defaultCols.map(col => {
+        const saved = columnPrefs.find(c => c.id === col.id)
+        return saved ? { ...col, ...saved } : col
+      })
+    }
+    return defaultCols
+  }, [entityType, t, columnPrefs])
 
   const handleSaveColumnPrefs = useCallback(
     (columns: ColumnDef[]) => {
+      setColumnPrefs(columns)
       localStorage.setItem(
         `user_prefs_columns_${entityType}`,
         JSON.stringify(columns)
