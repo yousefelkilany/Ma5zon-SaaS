@@ -62,7 +62,7 @@ if (REMOVE) {
         if (DRY_RUN) {
           console.log(`Would remove: ${key}`);
         } else {
-          delete json[key];
+          Reflect.deleteProperty(json, key);
         }
       }
     }

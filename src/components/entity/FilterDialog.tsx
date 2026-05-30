@@ -33,7 +33,7 @@ export function FilterDialog({
       } else if (Array.isArray(val)) {
         initialized[f.columnId] = val as unknown as string[]
       } else {
-        initialized[f.columnId] = { min: String(val) ?? '', max: '' }
+        initialized[f.columnId] = { min: String(val) || '', max: '' }
       }
     })
     setLocalFilters(initialized)

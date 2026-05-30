@@ -78,7 +78,7 @@ export function DataTableShell({
 
     const normalizedSearch = normalizeArabic(searchValue.toLowerCase())
 
-    const searchableKeys = localColumns
+    const searchableKeys = columns
       .filter(col => col.type !== 'actions' && col.visible)
       .map(col => col.id)
 
