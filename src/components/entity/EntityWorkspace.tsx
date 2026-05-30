@@ -12,6 +12,7 @@ import type {
   FilterState,
   SortState,
   StockLevelWithVariant,
+  EntityRow,
 } from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
 import { ProductCreateModal } from './ProductCreateModal'
@@ -351,6 +352,27 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     await exportToCSV(columns, entityData ?? [])
   }
 
+  const handleBulkPrint = useCallback(
+    (_ids: Set<string>, _data: EntityRow[]) => {
+      // TODO: Implement bulk print
+    },
+    []
+  )
+
+  const handleBulkExport = useCallback(
+    (_ids: Set<string>, _data: EntityRow[]) => {
+      // TODO: Implement bulk export
+    },
+    []
+  )
+
+  const handleBulkDelete = useCallback(
+    (_ids: Set<string>) => {
+      // TODO: Implement bulk delete
+    },
+    []
+  )
+
   return (
     <div className="px-margin-edge flex flex-col h-full bg-background py-6">
       <EntityHeader entityType={entityType} onAddNewClick={handleAddNewClick} />
@@ -370,6 +392,9 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         onSaveColumnPrefs={handleSaveColumnPrefs}
         onFiltersApply={handleFiltersApply}
         onExport={handleExport}
+        onPrintSelected={handleBulkPrint}
+        onExportSelected={handleBulkExport}
+        onDelete={handleBulkDelete}
         sort={sort}
         onSortChange={handleSortChange}
         expandedRowIds={expandedIds}

@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { QueryClient } from '@tanstack/react-query'
 import type {
   ColumnDef,
@@ -12,9 +13,9 @@ import type {
 import { Toolbar } from './Toolbar'
 import { DataTable } from './DataTable'
 import { PaginationFooter } from './PaginationFooter'
-
 import { FilterDialog } from './FilterDialog'
 import { ColumnVisibilityDialog } from './ColumnVisibilityDialog'
+import { ConfirmationDialog } from './ConfirmationDialog'
 import Fuse from 'fuse.js'
 import { normalizeArabic } from '@/lib/utils'
 
@@ -28,6 +29,9 @@ interface DataTableShellProps {
   onSaveColumnPrefs: (columns: ColumnDef[]) => void
   onFiltersApply: (filters: FilterState[]) => void
   onExport: () => void
+  onPrintSelected: (ids: Set<string>, data: EntityRow[]) => void
+  onExportSelected: (ids: Set<string>, data: EntityRow[]) => void
+  onDelete: (ids: Set<string>) => void
   onPageChange?: (page: number, pageSize: number) => void
   sort?: SortState | null
   onSortChange?: (sort: SortState | null) => void
@@ -51,6 +55,9 @@ export function DataTableShell({
   onSaveColumnPrefs,
   onFiltersApply,
   onExport,
+  onPrintSelected,
+  onExportSelected,
+  onDelete,
   onPageChange,
   sort: externalSort,
   onSortChange,
@@ -63,6 +70,7 @@ export function DataTableShell({
   stockLevelsCache,
   isLoadingStockLevels,
 }: DataTableShellProps) {
+  const { t } = useTranslation()
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sort, setSort] = useState<SortState | null>(null)
   const [filters, setFilters] = useState<FilterState[]>([])
@@ -70,6 +78,7 @@ export function DataTableShell({
   const [filterDialogOpen, setFilterDialogOpen] = useState(false)
   const [columnDialogOpen, setColumnDialogOpen] = useState(false)
   const [localColumns, setLocalColumns] = useState<ColumnDef[]>(columns)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   const filteredData = useMemo(() => {
     if (!searchValue.trim() || searchValue.length < 2) {
@@ -135,16 +144,22 @@ export function DataTableShell({
   }, [])
 
   const handlePrintSelected = useCallback(() => {
-    setSelectedIds(new Set())
-  }, [])
+    onPrintSelected(selectedIds, filteredData)
+  }, [selectedIds, filteredData, onPrintSelected])
 
   const handleExportSelected = useCallback(() => {
-    setSelectedIds(new Set())
+    onExportSelected(selectedIds, filteredData)
+  }, [selectedIds, filteredData, onExportSelected])
+
+  const handleDeleteClick = useCallback(() => {
+    setDeleteDialogOpen(true)
   }, [])
 
-  const handleDelete = useCallback(() => {
+  const handleConfirmDelete = useCallback(() => {
+    onDelete(selectedIds)
+    setDeleteDialogOpen(false)
     setSelectedIds(new Set())
-  }, [])
+  }, [selectedIds, onDelete])
 
   const handleFiltersApply = useCallback(
     (newFilters: FilterState[]) => {
@@ -166,7 +181,7 @@ export function DataTableShell({
         selectedCount={selectedIds.size}
         onPrintSelected={handlePrintSelected}
         onExportSelected={handleExportSelected}
-        onDelete={handleDelete}
+        onDelete={handleDeleteClick}
         onExport={onExport}
       />
       <div className="flex-1 overflow-hidden">
@@ -214,6 +229,16 @@ export function DataTableShell({
           onSaveColumnPrefs(cols)
           setColumnDialogOpen(false)
         }}
+      />
+      <ConfirmationDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open)
+        }}
+        title={t('entity.workspace.deleteConfirmTitle')}
+        description={t('entity.workspace.deleteConfirmDescription', { count: selectedIds.size })}
+        confirmLabel={t('entity.workspace.delete')}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   )
