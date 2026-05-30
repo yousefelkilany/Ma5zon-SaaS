@@ -467,12 +467,12 @@ pub async fn products_get_by_warehouse_paginated(
         })
         .collect();
 
-    let total_pages = (total_count as f64 / page_size as f64).ceil();
+    let total_pages = (total_count + page_size as i64 - 1) / page_size as i64;
 
     Ok(PaginatedResponse {
         data: products,
-        total_count: total_count as f64,
-        total_pages,
+        total_count: total_count as i32,
+        total_pages: total_pages as i32,
     })
 }
 

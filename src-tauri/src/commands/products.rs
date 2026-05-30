@@ -16,8 +16,8 @@ use crate::types::Product;
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
 pub struct PaginatedResponse<T> {
     pub data: Vec<T>,
-    pub total_count: f64,
-    pub total_pages: f64,
+    pub total_count: i32,
+    pub total_pages: i32,
 }
 
 pub struct ProductsInitializer;
@@ -151,12 +151,12 @@ pub async fn products_get_paginated(
     let (products, total_count) = fetch_all(&conn, Some(page_size as i64), Some(offset as i64))
         .map_err(|e| format!("Failed to fetch products: {e}"))?;
 
-    let total_pages = (total_count as f64 / page_size as f64).ceil();
+    let total_pages = (total_count + page_size as i64 - 1) / page_size as i64;
 
     Ok(PaginatedResponse {
         data: products,
-        total_count: total_count as f64,
-        total_pages,
+        total_count: total_count as i32,
+        total_pages: total_pages as i32,
     })
 }
 
