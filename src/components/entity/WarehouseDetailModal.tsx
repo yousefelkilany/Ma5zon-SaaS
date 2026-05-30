@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useQueryClient } from '@tanstack/react-query'
+import type { QueryClient } from '@tanstack/react-query'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,7 @@ interface WarehouseDetailModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   entityId: string
+  queryClient: QueryClient
   onDeleted?: () => void
 }
 
@@ -42,6 +43,7 @@ export function WarehouseDetailModal({
   open,
   onOpenChange,
   entityId,
+  queryClient,
   onDeleted,
 }: WarehouseDetailModalProps) {
   const { t } = useTranslation()
@@ -56,7 +58,6 @@ export function WarehouseDetailModal({
   const [deleteError, setDeleteError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
   const [loadError, setLoadError] = useState('')
-  const queryClient = useQueryClient()
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -152,6 +153,7 @@ export function WarehouseDetailModal({
     if (result.status === 'ok') {
       setShowDeleteConfirm(false)
       onOpenChange(false)
+      queryClient.invalidateQueries({ queryKey: ['entity', 'warehouses'] })
       onDeleted?.()
     } else {
       setDeleteError(result.error ?? 'Delete failed')

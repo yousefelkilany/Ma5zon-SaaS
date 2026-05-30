@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useQueryClient } from '@tanstack/react-query'
+import type { QueryClient } from '@tanstack/react-query'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,7 @@ interface VariantDetailModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   entityId: string
+  queryClient: QueryClient
   onDeleted?: () => void
 }
 
@@ -60,6 +61,7 @@ export function VariantDetailModal({
   open,
   onOpenChange,
   entityId,
+  queryClient,
   onDeleted,
 }: VariantDetailModalProps) {
   const { t } = useTranslation()
@@ -81,7 +83,6 @@ export function VariantDetailModal({
   const [deleteError, setDeleteError] = useState('')
   const [loadError, setLoadError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
-  const queryClient = useQueryClient()
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -174,6 +175,7 @@ export function VariantDetailModal({
     if (result.status === 'ok') {
       setShowDeleteConfirm(false)
       onOpenChange(false)
+      queryClient.invalidateQueries({ queryKey: ['entity', 'variants'] })
       onDeleted?.()
     } else {
       setDeleteError(result.error ?? 'Delete failed')

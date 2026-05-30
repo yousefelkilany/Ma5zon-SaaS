@@ -388,10 +388,10 @@ export function DataTable({
           open={editModalOpen}
           onOpenChange={setEditModalOpen}
           entityId={selectedEntityId}
+          queryClient={queryClient}
           onDeleted={() => {
             setEditModalOpen(false)
             setSelectedEntityId(null)
-            queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
           }}
         />
       )}
@@ -400,10 +400,10 @@ export function DataTable({
           open={editModalOpen}
           onOpenChange={setEditModalOpen}
           entityId={selectedEntityId}
+          queryClient={queryClient}
           onDeleted={() => {
             setEditModalOpen(false)
             setSelectedEntityId(null)
-            queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
           }}
         />
       )}
@@ -412,14 +412,13 @@ export function DataTable({
           open={editModalOpen}
           onOpenChange={setEditModalOpen}
           entityId={selectedEntityId}
+          queryClient={queryClient}
           onDeleted={() => {
             setEditModalOpen(false)
             setSelectedEntityId(null)
-            queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
           }}
         />
       )}
-
-      </>
+    </>
   )
 }
