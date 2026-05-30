@@ -10,6 +10,7 @@ import type {
   ColumnDef,
   VariantRow,
   FilterState,
+  SortState,
   StockLevelWithVariant,
 } from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
@@ -118,6 +119,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const queryClient = useQueryClient()
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
   const [activeFilters, setActiveFilters] = useState<FilterState[]>([])
+  const [sort, setSort] = useState<SortState | null>(null)
   const [variantsCache, setVariantsCache] = useState<Map<string, VariantRow[]>>(
     new Map()
   )
@@ -247,20 +249,27 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   )
 
   const { data: entityData, isLoading } = useQuery({
-    queryKey: ['entity', entityType, activeFilters],
+    queryKey: ['entity', entityType, activeFilters, sort],
     queryFn: async () => {
       const bindingFilters: BindingFilterState[] = activeFilters.map(f => ({
         column_id: f.columnId,
         operator: f.operator,
         value: f.value,
       }))
+      const bindingSort = sort
+        ? { column_id: sort.columnId, direction: sort.direction }
+        : null
       switch (entityType) {
         case 'products': {
-          const result = await commands.getAll(bindingFilters, [])
+          const result = await commands.getAll(bindingFilters, [], bindingSort)
           return result.status === 'ok' ? result.data : []
         }
         case 'warehouses': {
-          const result = await commands.warehousesGetAll(bindingFilters, [])
+          const result = await commands.warehousesGetAll(
+            bindingFilters,
+            [],
+            bindingSort
+          )
           return result.status === 'ok' ? result.data : []
         }
         default:
@@ -294,6 +303,10 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     [entityType, queryClient]
   )
 
+  const handleSortChange = useCallback((newSort: SortState | null) => {
+    setSort(newSort)
+  }, [])
+
   const handleFiltersApply = useCallback(
     (filters: FilterState[]) => {
       setActiveFilters(filters)
@@ -324,6 +337,8 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         onSaveColumnPrefs={handleSaveColumnPrefs}
         onFiltersApply={handleFiltersApply}
         onExport={handleExport}
+        sort={sort}
+        onSortChange={handleSortChange}
         expandedRowIds={expandedIds}
         variantsCache={variantsCache}
         onRowToggleExpand={handleRowToggleExpand}

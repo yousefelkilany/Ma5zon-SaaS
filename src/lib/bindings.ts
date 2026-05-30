@@ -207,9 +207,9 @@ async updatePassword(userId: string, currentPassword: string, newPassword: strin
     else return { status: "error", error: e  as any };
 }
 },
-async getAll(filters: FilterState[], columns: string[]) : Promise<Result<Product[], string>> {
+async getAll(filters: FilterState[], columns: string[], sort: SortState | null) : Promise<Result<Product[], string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("get_all", { filters, columns }) };
+    return { status: "ok", data: await TAURI_INVOKE("get_all", { filters, columns, sort }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -295,9 +295,9 @@ async variantsDelete(id: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async warehousesGetAll(filters: FilterState[], columns: string[]) : Promise<Result<Warehouse[], string>> {
+async warehousesGetAll(filters: FilterState[], columns: string[], sort: SortState | null) : Promise<Result<Warehouse[], string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("warehouses_get_all", { filters, columns }) };
+    return { status: "ok", data: await TAURI_INVOKE("warehouses_get_all", { filters, columns, sort }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -447,6 +447,7 @@ export type RecoveryError =
  * JSON serialization/deserialization error
  */
 { type: "ParseError"; message: string }
+export type SortState = { column_id: string; direction: string }
 export type StockLevel = { variant_id: string; warehouse_id: string; quantity: number }
 export type StockLevelWithVariant = { variant_id: string; variant_name: string; sku: string; warehouse_id: string; quantity: number }
 export type StockMovement = { id: string; variant_id: string; from_warehouse_id: string | null; to_warehouse_id: string | null; quantity: number; movement_type: string; created_at: string }

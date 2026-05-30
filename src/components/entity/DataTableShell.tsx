@@ -26,6 +26,8 @@ interface DataTableShellProps {
   onSaveColumnPrefs: (columns: ColumnDef[]) => void
   onFiltersApply: (filters: FilterState[]) => void
   onExport: () => void
+  sort?: SortState | null
+  onSortChange?: (sort: SortState | null) => void
   expandedRowIds?: Set<string>
   variantsCache?: Map<string, VariantRow[]>
   onRowToggleExpand?: (id: string) => void
@@ -34,7 +36,6 @@ interface DataTableShellProps {
   onAddVariant?: (productId: string) => void
   stockLevelsCache?: Map<string, StockLevelWithVariant[]>
   isLoadingStockLevels?: (id: string) => boolean
-  onSortChange?: (sort: SortState | null) => void
 }
 
 const defaultPagination: PaginationState = {
@@ -54,6 +55,8 @@ export function DataTableShell({
   onSaveColumnPrefs,
   onFiltersApply,
   onExport,
+  sort: externalSort,
+  onSortChange,
   expandedRowIds,
   variantsCache,
   onRowToggleExpand,
@@ -62,7 +65,6 @@ export function DataTableShell({
   onAddVariant,
   stockLevelsCache,
   isLoadingStockLevels,
-  onSortChange,
 }: DataTableShellProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sort, setSort] = useState<SortState | null>(null)
@@ -78,6 +80,12 @@ export function DataTableShell({
   useEffect(() => {
     setLocalColumns(columns)
   }, [columns])
+
+  useEffect(() => {
+    if (externalSort !== undefined) {
+      setSort(externalSort)
+    }
+  }, [externalSort])
 
   const handleSortChange = useCallback((newSort: SortState | null) => {
     setSort(newSort)
