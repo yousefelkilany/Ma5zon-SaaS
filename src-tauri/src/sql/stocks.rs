@@ -1,5 +1,96 @@
 //! SQL statements for stock_levels and stock_movements entities.
 
+use rusqlite::{Connection, Result as DbErr};
+
+#[derive(Debug, Clone)]
+pub struct ProductWithStock {
+    pub id: String,
+    pub name: String,
+    pub sku: String,
+    pub price: f64,
+    pub quantity: f64,
+}
+
+impl ProductWithStock {
+    pub fn from_row(row: &rusqlite::Row) -> DbErr<Self> {
+        Ok(ProductWithStock {
+            id: row.get::<usize, i64>(0)?.to_string(),
+            name: row.get(1)?,
+            sku: row.get(2)?,
+            price: row.get(3)?,
+            quantity: row.get(4)?,
+        })
+    }
+}
+
+pub fn fetch_products_by_warehouse_with_stock(
+    conn: &Connection,
+    warehouse_id: i64,
+    limit: Option<i64>,
+    offset: Option<i64>,
+) -> DbErr<(Vec<ProductWithStock>, i64)> {
+    let total: i64 = conn.query_row(
+        "SELECT COUNT(*) FROM products p
+         INNER JOIN product_variants v ON p.id = v.product_id
+         INNER JOIN stock_levels sl ON v.id = sl.variant_id
+         WHERE sl.warehouse_id = ?",
+        [warehouse_id],
+        |row| row.get(0),
+    )?;
+
+    let products: Vec<ProductWithStock> = match (limit, offset) {
+        (Some(limit), Some(offset)) => {
+            let mut stmt = conn.prepare(
+                "SELECT p.id, p.name, p.sku, p.price, sl.quantity
+                 FROM products p
+                 INNER JOIN product_variants v ON p.id = v.product_id
+                 INNER JOIN stock_levels sl ON v.id = sl.variant_id
+                 WHERE sl.warehouse_id = ?
+                 LIMIT ? OFFSET ?"
+            )?;
+            let mut rows = stmt.query([warehouse_id, limit, offset])?;
+            let mut products = Vec::new();
+            while let Some(row) = rows.next()? {
+                products.push(ProductWithStock::from_row(row)?);
+            }
+            products
+        }
+        (Some(limit), None) => {
+            let mut stmt = conn.prepare(
+                "SELECT p.id, p.name, p.sku, p.price, sl.quantity
+                 FROM products p
+                 INNER JOIN product_variants v ON p.id = v.product_id
+                 INNER JOIN stock_levels sl ON v.id = sl.variant_id
+                 WHERE sl.warehouse_id = ?
+                 LIMIT ?"
+            )?;
+            let mut rows = stmt.query([warehouse_id, limit])?;
+            let mut products = Vec::new();
+            while let Some(row) = rows.next()? {
+                products.push(ProductWithStock::from_row(row)?);
+            }
+            products
+        }
+        _ => {
+            let mut stmt = conn.prepare(
+                "SELECT p.id, p.name, p.sku, p.price, sl.quantity
+                 FROM products p
+                 INNER JOIN product_variants v ON p.id = v.product_id
+                 INNER JOIN stock_levels sl ON v.id = sl.variant_id
+                 WHERE sl.warehouse_id = ?"
+            )?;
+            let mut rows = stmt.query([warehouse_id])?;
+            let mut products = Vec::new();
+            while let Some(row) = rows.next()? {
+                products.push(ProductWithStock::from_row(row)?);
+            }
+            products
+        }
+    };
+
+    Ok((products, total))
+}
+
 pub fn create_levels_table() -> &'static str {
     "CREATE TABLE IF NOT EXISTS stock_levels (
         variant_id INTEGER NOT NULL,
