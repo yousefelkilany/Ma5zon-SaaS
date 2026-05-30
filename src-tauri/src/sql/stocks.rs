@@ -50,3 +50,28 @@ pub fn get_movements_by_variant() -> &'static str {
     "SELECT id, variant_id, from_warehouse_id, to_warehouse_id, quantity, \"type\", created_at \
      FROM stock_movements WHERE variant_id = ?1 ORDER BY created_at DESC"
 }
+
+pub fn get_stock_levels_by_product() -> &'static str {
+    "SELECT
+        v.id AS variant_id,
+        v.variant_name,
+        v.sku,
+        COALESCE(s.warehouse_id, 0) AS warehouse_id,
+        COALESCE(s.quantity, 0) AS current_qty
+     FROM product_variants v
+     LEFT JOIN stock_levels s ON v.id = s.variant_id
+     WHERE v.product_id = ?1
+     ORDER BY v.variant_name"
+}
+
+pub fn get_levels_by_warehouse_with_names() -> &'static str {
+    "SELECT
+        v.id AS variant_id,
+        v.variant_name,
+        v.sku,
+        COALESCE(s.warehouse_id, 0) AS warehouse_id,
+        COALESCE(s.quantity, 0) AS current_qty
+     FROM product_variants v
+     LEFT JOIN stock_levels s ON v.id = s.variant_id AND s.warehouse_id = ?1
+     ORDER BY v.variant_name"
+}
