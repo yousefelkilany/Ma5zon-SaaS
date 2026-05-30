@@ -24,6 +24,7 @@ The application currently has hardcoded English strings throughout UI components
 ### Pattern: `Feature.section.item`
 
 Rules:
+
 - Use lowercase for all keys
 - Use camelCase for multi-word items
 - Nest keys under feature prefixes
@@ -31,17 +32,17 @@ Rules:
 
 ### Feature Prefixes
 
-| Prefix | Usage |
-|--------|-------|
-| `sidebar` | Sidebar navigation |
-| `dashboard` | Dashboard and NewTabContent |
-| `titlebar` | Title bar controls |
-| `common` | Reusable strings (buttons, labels) |
-| `nav` | Navigation labels |
-| `actions` | Action labels |
-| `status` | Status badges/labels |
-| `error` | Error messages |
-| `success` | Success messages |
+| Prefix      | Usage                              |
+| ----------- | ---------------------------------- |
+| `sidebar`   | Sidebar navigation                 |
+| `dashboard` | Dashboard and NewTabContent        |
+| `titlebar`  | Title bar controls                 |
+| `common`    | Reusable strings (buttons, labels) |
+| `nav`       | Navigation labels                  |
+| `actions`   | Action labels                      |
+| `status`    | Status badges/labels               |
+| `error`     | Error messages                     |
+| `success`   | Success messages                   |
 
 ### Examples
 
@@ -130,12 +131,15 @@ common.currency
 ## 3. Translation Detection Script
 
 ### Purpose
+
 Scan `.tsx` components for hardcoded string literals and generate translation keys.
 
 ### Location
+
 `scripts/generate-translations.ts`
 
 ### Behavior
+
 1. Accepts file path or directory as input
 2. Parses TSX/TS files using AST parser (`tsx` or `typescript` + `@babel/parser`)
 3. Extracts string literals that are:
@@ -154,6 +158,7 @@ Scan `.tsx` components for hardcoded string literals and generate translation ke
 6. Outputs to `locales/generated/pending-keys.json`
 
 ### Output Format
+
 ```json
 {
   "sidebar.nav.sales": "Sales",
@@ -163,11 +168,13 @@ Scan `.tsx` components for hardcoded string literals and generate translation ke
 ```
 
 ### Usage
+
 ```bash
 npx tsx scripts/generate-translations.ts src/components/layout/LeftSideBar.tsx
 ```
 
 ### Key Generation Algorithm
+
 1. Convert string to lowercase
 2. Split on word boundaries
 3. Map to closest feature prefix based on component location
@@ -179,6 +186,7 @@ npx tsx scripts/generate-translations.ts src/components/layout/LeftSideBar.tsx
 ## 4. Locale File Structure
 
 ### Location
+
 ```
 locales/
   en.json     ← English values (primary)
@@ -186,11 +194,13 @@ locales/
 ```
 
 ### Maintenance
+
 - Both files must be updated together
 - Keys must match exactly in both files
 - Empty values are NOT allowed - must have both English and Arabic
 
 ### Existing Keys (Pre-migration)
+
 The following keys already exist in `en.json`/`ar.json` and should be preserved:
 
 ```
@@ -296,11 +306,13 @@ toast.error.fullscreenExitFailed
 ## 5. Component Migration Pattern
 
 ### Step 1: Add useTranslation import
+
 ```tsx
 import { useTranslation } from 'react-i18next'
 ```
 
 ### Step 2: Call useTranslation in component
+
 ```tsx
 function MyComponent() {
   const { t } = useTranslation()
@@ -309,6 +321,7 @@ function MyComponent() {
 ```
 
 ### Step 3: Replace hardcoded strings with t()
+
 ```tsx
 // Before
 <span>Sales</span>
@@ -318,6 +331,7 @@ function MyComponent() {
 ```
 
 ### Step 4: Nested string handling
+
 ```tsx
 // Before
 <span className="text-on-surface font-bold">Executive Overview</span>
@@ -327,9 +341,12 @@ function MyComponent() {
 ```
 
 ### Step 5: Dynamic values in translations
+
 ```tsx
 // If string has interpolation, use t() with options
-{t('toast.error.windowCloseFailed', { message: errorMessage })}
+{
+  t('toast.error.windowCloseFailed', { message: errorMessage })
+}
 ```
 
 ---
@@ -337,6 +354,7 @@ function MyComponent() {
 ## 6. Implementation Phases
 
 ### Phase 1: Script Development
+
 **Estimated:** 1-2 hours
 
 1. Create `scripts/generate-translations.ts`
@@ -347,6 +365,7 @@ function MyComponent() {
 6. Refine key naming based on output
 
 ### Phase 2: Component Migration
+
 **Estimated:** 3-4 hours
 
 1. Run script on all components in `src/components/`
@@ -358,6 +377,7 @@ function MyComponent() {
 7. Test each component
 
 ### Phase 3: Arabic Translation
+
 **Estimated:** Ongoing
 
 1. Review all English values in locale files
@@ -371,9 +391,11 @@ function MyComponent() {
 ## 7. Files to Modify
 
 ### New Files
+
 - `scripts/generate-translations.ts` - Translation key generator script
 
 ### Modified Files
+
 - `src/components/layout/LeftSideBar.tsx`
 - `src/components/tabs/NewTabContent.tsx`
 - `src/components/tabs/DashboardContent.tsx`

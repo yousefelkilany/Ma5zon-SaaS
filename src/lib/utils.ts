@@ -21,7 +21,12 @@ export function formatCurrency(
   }).format(price)
 }
 
-export type TabType = 'dashboard' | 'new-tab' | 'sales-invoice' | 'purchase-invoice' | 'entity'
+export type TabType =
+  | 'dashboard'
+  | 'new-tab'
+  | 'sales-invoice'
+  | 'purchase-invoice'
+  | 'entity'
 
 export interface Tab {
   id: string

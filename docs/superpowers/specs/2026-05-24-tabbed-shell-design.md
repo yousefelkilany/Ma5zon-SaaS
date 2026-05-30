@@ -8,6 +8,7 @@
 ## 1. Overview
 
 Implement a tabbed shell layout where:
+
 - **Navbar** (top) contains logo, search bar, quick add button, profile
 - **Tab bar** (below navbar) contains open tabs + plus icon for new tabs
 - **Collapsible sidebar** (left) contains navigation categories with icons + text
@@ -63,7 +64,7 @@ interface TabState {
   activeTabId: string
 
   // Actions
-  addTab: (tab: Omit<Tab, 'id'>) => string  // returns new tab id
+  addTab: (tab: Omit<Tab, 'id'>) => string // returns new tab id
   removeTab: (tabId: string) => void
   setActiveTab: (tabId: string) => void
   getActiveTab: () => Tab | undefined
@@ -74,6 +75,7 @@ interface TabState {
 ```
 
 **Invariant Rules:**
+
 1. On initialization: Dashboard tab must exist at index 0
 2. On every `addTab`/`removeTab`: Dashboard must remain at index 0, be non-closable
 3. Closing active tab: activate adjacent tab or Dashboard
@@ -130,12 +132,14 @@ interface TabState {
 Placeholder data for MVP:
 
 **KPI Cards (4-column grid):**
+
 1. Gross Revenue (MTD): $2,842,910 (+12.4%)
 2. Total Expenses: $1,120,405 (+4.2%)
 3. Net Profit: $1,722,505 (+18.1%)
 4. Cash Position: $4,290,112 (Stable)
 
 **Charts (2-column grid):**
+
 1. Cash Flow Trends - area chart placeholder with gradient fill
 2. Revenue by Category - bar chart placeholder with 6 bars
 
@@ -146,21 +150,25 @@ Placeholder data for MVP:
 Action hub with categorized buttons:
 
 **Sales Workflow:**
+
 - Create New Invoice
 - Convert Draft Quotes (badge: 12)
 - Recurring Billings
 
 **Purchase Order:**
+
 - Process Batch Bills
 - Approve POs (badge: 04)
 - Vendor Management
 
 **Inventory Control:**
+
 - Stock Reconciliation
 - Price Adjustment Log
 - Replenishment Audit
 
 **Treasury Ops:**
+
 - Reconcile Bank Feed (badge: 114)
 - Inter-Account Transfer
 - Forex Exposure Report
@@ -180,7 +188,7 @@ Create `src/store/tab-store.ts`:
 ```typescript
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { v4 as uuidv4 } from 'uuid'  // or nanoid
+import { v4 as uuidv4 } from 'uuid' // or nanoid
 
 const DEFAULT_DASHBOARD_TAB = {
   id: 'dashboard',
@@ -206,7 +214,7 @@ export const useTabStore = create<TabState>()(
       tabs: [DEFAULT_DASHBOARD_TAB],
       activeTabId: 'dashboard',
 
-      addTab: (tabData) => {
+      addTab: tabData => {
         const newTab: Tab = {
           ...tabData,
           id: uuidv4(),
@@ -218,7 +226,7 @@ export const useTabStore = create<TabState>()(
         return newTab.id
       },
 
-      removeTab: (tabId) => {
+      removeTab: tabId => {
         const { tabs, activeTabId } = get()
         const tab = tabs.find(t => t.id === tabId)
         if (!tab || !tab.closable) return
@@ -235,7 +243,7 @@ export const useTabStore = create<TabState>()(
         set({ tabs: newTabs, activeTabId: newActiveId })
       },
 
-      setActiveTab: (tabId) => {
+      setActiveTab: tabId => {
         set({ activeTabId: tabId })
       },
 
@@ -251,7 +259,8 @@ export const useTabStore = create<TabState>()(
         if (!hasDashboard) {
           set(state => ({
             tabs: [DEFAULT_DASHBOARD_TAB, ...state.tabs],
-            activeTabId: state.activeTabId === '' ? 'dashboard' : state.activeTabId,
+            activeTabId:
+              state.activeTabId === '' ? 'dashboard' : state.activeTabId,
           }))
         } else {
           // Ensure dashboard is at index 0
@@ -360,6 +369,7 @@ src/
 ## 8. MVP Scope (This Iteration)
 
 For this iteration, implement:
+
 1. Tab store with dashboard invariant
 2. Navbar component
 3. TabBar with add/close functionality
@@ -369,6 +379,7 @@ For this iteration, implement:
 7. Browser history navigation (back/forward)
 
 **Excluded for now:**
+
 - Actual navigation to other tab types (sales invoice, etc.) - only dashboard and new-tab
 - Clicking action buttons creates tab but content is same placeholder until future iteration
 

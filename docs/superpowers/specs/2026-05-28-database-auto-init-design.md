@@ -13,6 +13,7 @@ Implement automatic database initialization on app startup using a convention-ba
 ## Schema Changes
 
 ### Removed Tables
+
 - `price_lists` — replaced by `PriceList` enum in Rust
 - `variant_prices` — no longer needed
 
@@ -33,6 +34,7 @@ CREATE TABLE product_variants (
 ```
 
 ### Table Dependency Order
+
 1. `users` — no dependencies
 2. `products` — no dependencies
 3. `product_variants` — depends on products
@@ -56,18 +58,21 @@ Each module that manages a table implements this trait.
 ### 2. Module Implementations
 
 #### `user.rs`
+
 - Add `struct UserInitializer`
 - Implement `DatabaseInitializable` for `UserInitializer`
 - `init_and_seed`: creates `users` table, seeds default admin
 - Remove existing `init_db` function (replaced by trait impl)
 
 #### `products.rs`
+
 - Add `struct ProductsInitializer`
 - Implement `DatabaseInitializable` for `ProductsInitializer`
 - `init_and_seed`: creates `products` table, seeds ~40 sample products
 - Move seed data from `schema.rs::seed_product_tables`
 
 #### `variants.rs`
+
 - Add `struct VariantsInitializer`
 - Implement `DatabaseInitializable` for `VariantsInitializer`
 - `init_and_seed`: creates `product_variants` table with price columns, seeds sample variants with prices
@@ -120,6 +125,7 @@ Call `initialize_databases(app.handle())` in `setup()` before returning `Ok(())`
 ### 5. Cleanup
 
 #### Removed Files/Code
+
 - `schema.rs::init_product_tables` — delete
 - `schema.rs::seed_product_tables` — delete
 - `schema.rs::get_table_layout` — delete (hardcoded old schema)
@@ -138,6 +144,7 @@ Call `initialize_databases(app.handle())` in `setup()` before returning `Ok(())`
 ## Verification
 
 After implementation:
+
 1. Delete `ma5zon.db`
 2. Start app
 3. Check logs — should see "Initializing table: users", "Initializing table: products", "Initializing table: product_variants"

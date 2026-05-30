@@ -13,6 +13,7 @@
 ## Task 1: Fix FilterDialog handleApply Bug
 
 **Files:**
+
 - Modify: `src/components/entity/FilterDialog.tsx:1-154`
 
 **Context:** Currently `handleApply` passes the `filters` prop to `onApply` instead of `localFilters`. Also `localFilters` never syncs from `filters` prop when dialog opens.
@@ -20,17 +21,27 @@
 - [ ] **Step 1: Add useEffect to sync localFilters from filters prop**
 
 In `FilterDialog.tsx`, find line 24:
+
 ```typescript
-const [localFilters, setLocalFilters] = useState<Record<string, string | string[] | { min?: string; max?: string }>>({})
+const [localFilters, setLocalFilters] = useState<
+  Record<string, string | string[] | { min?: string; max?: string }>
+>({})
 ```
 
 Add this useEffect after the state declaration (after line 24):
+
 ```typescript
 useEffect(() => {
   if (open) {
-    const initialized: Record<string, string | string[] | { min?: string; max?: string }> = {}
+    const initialized: Record<
+      string,
+      string | string[] | { min?: string; max?: string }
+    > = {}
     filters.forEach(f => {
-      initialized[f.columnId] = f.value as string | string[] | { min?: string; max?: string }
+      initialized[f.columnId] = f.value as
+        | string
+        | string[]
+        | { min?: string; max?: string }
     })
     setLocalFilters(initialized)
   }
@@ -40,6 +51,7 @@ useEffect(() => {
 - [ ] **Step 2: Fix handleApply to use localFilters instead of filters prop**
 
 Find the current handleApply (lines 52-55):
+
 ```typescript
 const handleApply = () => {
   onApply(filters)
@@ -48,6 +60,7 @@ const handleApply = () => {
 ```
 
 Replace with:
+
 ```typescript
 const handleApply = () => {
   const appliedFilters: FilterState[] = Object.entries(localFilters)
@@ -58,7 +71,11 @@ const handleApply = () => {
       } else if (Array.isArray(value)) {
         return { columnId, operator: 'eq' as const, value }
       } else {
-        return { columnId, operator: 'between' as const, value: [value.min ?? '', value.max ?? ''] }
+        return {
+          columnId,
+          operator: 'between' as const,
+          value: [value.min ?? '', value.max ?? ''],
+        }
       }
     })
   onApply(appliedFilters)
@@ -83,6 +100,7 @@ git commit -m "fix: FilterDialog handleApply uses localFilters instead of prop"
 ## Task 2: Add Drag-to-Reorder to ColumnVisibilityDialog
 
 **Files:**
+
 - Modify: `src/components/entity/ColumnVisibilityDialog.tsx:1-87`
 
 **Context:** The dialog already has a GripVertical icon for each row but no actual drag functionality. Need to add @dnd-kit sortable.
@@ -96,11 +114,13 @@ Verify in `package.json` that these are added.
 - [ ] **Step 2: Import dnd-kit utilities**
 
 Find line 12:
+
 ```typescript
 import { GripVertical } from 'lucide-react'
 ```
 
 Add after:
+
 ```typescript
 import {
   DndContext,
@@ -124,11 +144,13 @@ import { CSS } from '@dnd-kit/utilities'
 - [ ] **Step 3: Add state for drag active item and sensors**
 
 Find line 27:
+
 ```typescript
 const [localColumns, setLocalColumns] = useState<ColumnDef[]>(columns)
 ```
 
 Add after:
+
 ```typescript
 const [activeId, setActiveId] = useState<string | null>(null)
 
@@ -158,6 +180,7 @@ const handleDragEnd = (event: DragEndEvent) => {
 - [ ] **Step 4: Replace the row rendering with SortableContext + DragOverlay**
 
 Find the map block (lines 55-76):
+
 ```typescript
 <div className="space-y-2 py-4 max-h-80 overflow-auto">
   {localColumns
@@ -186,6 +209,7 @@ Find the map block (lines 55-76):
 ```
 
 Replace with:
+
 ```typescript
 <DndContext
   sensors={sensors}
@@ -227,6 +251,7 @@ Replace with:
 - [ ] **Step 5: Add SortableRow component**
 
 Before the `ColumnVisibilityDialog` function (after imports), add:
+
 ```typescript
 interface SortableRowProps {
   col: ColumnDef
@@ -296,6 +321,7 @@ git commit -m "feat: add drag-to-reorder to ColumnVisibilityDialog with @dnd-kit
 ## Task 3: Update Rust Commands for Filter/Column Support
 
 **Files:**
+
 - Modify: `src-tauri/src/sql/products.rs:1-41`
 - Modify: `src-tauri/src/sql/warehouses.rs`
 - Modify: `src-tauri/src/commands/products.rs:93-118`
@@ -408,7 +434,7 @@ pub fn get_all(filters: &[FilterState], columns: &[String], where_clause: &str) 
     } else {
         columns.join(", ")
     };
-    
+
     format!(
         "SELECT {} FROM products{}ORDER BY name",
         cols,
@@ -431,7 +457,7 @@ pub fn get_all_with_filters(where_clause: &str, columns: &[String]) -> String {
     } else {
         columns.join(", ")
     };
-    
+
     if where_clause.is_empty() {
         format!(
             "SELECT {} FROM products WHERE deleted_at IS NULL ORDER BY name",
@@ -458,7 +484,7 @@ pub fn build_get_all(columns: &[String], where_clause: &str) -> String {
     } else {
         columns.iter().map(|c| c.as_str()).collect::<Vec<_>>().join(", ")
     };
-    
+
     let base = format!("SELECT {} FROM products WHERE deleted_at IS NULL", cols);
     if where_clause.is_empty() {
         format!("{} ORDER BY name", base)
@@ -483,10 +509,10 @@ pub async fn get_all(
     columns: Vec<String>,
 ) -> Result<Vec<Product>, String> {
     let conn = get_conn(&app)?;
-    
+
     let where_clause = build_where_clause(&filters);
     let query = build_get_all(&columns, &where_clause);
-    
+
     let mut stmt = conn
         .prepare(&query)
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
@@ -512,39 +538,41 @@ pub async fn get_all(
 ```
 
 Add import for FilterState at top of file:
+
 ```rust
 use crate::sql::products::{build_where_clause, build_get_all, create_table, get_by_id as sql_get_by_id, create as sql_create, update as sql_update, soft_delete as sql_soft_delete, get_created_at as sql_get_created_at};
 ```
 
 Wait — we also need to handle the columns SELECT. The issue is we always SELECT specific columns (id, company, name, etc.) but if user passes `columns: ["name", "category"]` we want only those. But the Product struct has all fields — if we only SELECT name and category but try to read id, company, etc. from row, it will fail.
 
-So the behavior should be: if columns is empty, SELECT * (all fields). If columns is non-empty, SELECT those columns but return Product with only those fields populated... or we need a different return type.
+So the behavior should be: if columns is empty, SELECT \* (all fields). If columns is non-empty, SELECT those columns but return Product with only those fields populated... or we need a different return type.
 
 Actually looking back at the existing command, the return type is `Vec<Product>` which has all fields. If we SELECT only name, category but return Product with id="" and created_at=None, that would be wrong.
 
 The spec says: "Column selection - If `columns` parameter is empty → `SELECT *`, If non-empty → `SELECT column1, column2...`"
 
 But we can't return a Product with missing fields. So either:
+
 1. Return type changes to `Vec<serde_json::Value>` when columns is non-empty
 2. Only certain columns are selectable that still return full Product
 
-Looking at the design spec: "columns parameter: if empty, SELECT *; if non-empty, SELECT column1, column2..."
+Looking at the design spec: "columns parameter: if empty, SELECT \*; if non-empty, SELECT column1, column2..."
 
 I think the intent is that for the table display, only visible columns are fetched, but the returned data is still a full entity (the hidden ones just aren't displayed). So if user hides "company" column, we don't fetch it but Product still has company="" (or we don't care because it's not displayed).
 
 This is a mismatch though. Let me think...
 
-Actually, if we SELECT only id, name, category and row.get::<_, i64>(0)? gets id, row.get(1)? gets company — but we didn't SELECT company so it would error.
+Actually, if we SELECT only id, name, category and row.get::<\_, i64>(0)? gets id, row.get(1)? gets company — but we didn't SELECT company so it would error.
 
 The cleanest solution: when columns is non-empty, return `Vec<serde_json::Value>` instead of `Vec<Product>`. Or make columns parameter control which columns of Product to populate, but still SELECT all needed for Product.
 
 Let me simplify: we always SELECT id, company, name, category, created_at, updated_at, deleted_at (all 7 columns). The `columns` parameter filters WHICH columns to return in the JSON response, not which SQL columns to SELECT. So the SQL always selects all 7, but the returned objects only include the requested columns.
 
-Actually that's also complex. Let me just implement: if columns is empty → SELECT * (all fields). If columns non-empty → still SELECT all 7 but return all fields (ignore columns for now, it's for future optimization).
+Actually that's also complex. Let me just implement: if columns is empty → SELECT \* (all fields). If columns non-empty → still SELECT all 7 but return all fields (ignore columns for now, it's for future optimization).
 
-Actually re-reading the spec: "columns parameter: if empty, SELECT *; if non-empty, SELECT column1, column2..."
+Actually re-reading the spec: "columns parameter: if empty, SELECT \*; if non-empty, SELECT column1, column2..."
 
-The simplest path: for now, accept the parameter but only use it for SELECT * vs SELECT specific columns when we have a more flexible return type. For this implementation, let me just accept filters and build WHERE, and for columns, if non-empty, build the SELECT list but map to Product fields only for known columns.
+The simplest path: for now, accept the parameter but only use it for SELECT \* vs SELECT specific columns when we have a more flexible return type. For this implementation, let me just accept filters and build WHERE, and for columns, if non-empty, build the SELECT list but map to Product fields only for known columns.
 
 Let me step back. The spec says: "A) Add new parameters to the same command — e.g., getAll(filters: FilterState[], columns: string[]) — existing query gets extended with WHERE clause and SELECT only needed columns"
 
@@ -581,6 +609,7 @@ git commit -m "feat: add filter/column support to get_all and warehouses_get_all
 ## Task 4: Connect Frontend to Rust Commands
 
 **Files:**
+
 - Modify: `src/components/entity/EntityWorkspace.tsx:140-156`
 - Modify: `src/lib/tauri-bindings.ts` (generated, may need re-export)
 
@@ -591,6 +620,7 @@ git commit -m "feat: add filter/column support to get_all and warehouses_get_all
 In `EntityWorkspace.tsx`, find the useQuery for entity data (lines 140-156). The queryFn calls `commands.getAll()` or `commands.warehousesGetAll()`. Need to update these calls to pass empty filters and columns arrays for now (since we haven't built the full filter UI-to-Rust pipeline yet).
 
 Find:
+
 ```typescript
 case 'products': {
   const result = await commands.getAll()
@@ -599,6 +629,7 @@ case 'products': {
 ```
 
 Replace with:
+
 ```typescript
 case 'products': {
   const result = await commands.getAll([], [])
@@ -607,6 +638,7 @@ case 'products': {
 ```
 
 Similarly for warehouses:
+
 ```typescript
 case 'warehouses': {
   const result = await commands.warehousesGetAll([], [])
@@ -614,7 +646,7 @@ case 'warehouses': {
 }
 ```
 
-Note: Since the Rust commands now require filters and columns parameters, the existing calls would fail without them. This step ensures the calls are updated to pass empty arrays (matching "SELECT * with no WHERE" behavior).
+Note: Since the Rust commands now require filters and columns parameters, the existing calls would fail without them. This step ensures the calls are updated to pass empty arrays (matching "SELECT \* with no WHERE" behavior).
 
 - [ ] **Step 2: Verify frontend compiles**
 
@@ -633,6 +665,7 @@ git commit -m "chore: update commands.getAll/warehousesGetAll calls with filters
 ## Task 5: DataTableShell Callback Verification
 
 **Files:**
+
 - Modify: `src/components/entity/DataTableShell.tsx:83-89`
 
 **Context:** The FilterDialog fix makes handleApply convert localFilters to FilterState[] and call onApply. Need to verify DataTableShell's onFiltersApply is properly connected to EntityWorkspace's query refetch.
@@ -640,6 +673,7 @@ git commit -m "chore: update commands.getAll/warehousesGetAll calls with filters
 Find `handleColumnSave` (lines 83-89) and check it calls `onSaveColumnPrefs`. For `onFiltersApply`, it comes from props and is called with filters. Need to ensure EntityWorkspace passes a handler that triggers refetch.
 
 In `EntityWorkspace.tsx` (line 184):
+
 ```typescript
 onFiltersApply={x => x}
 ```
@@ -660,19 +694,20 @@ git commit -m "chore: verify DataTableShell onFiltersApply callback wiring"
 
 ## Summary of File Changes
 
-| File | Change |
-|------|--------|
-| `src/components/entity/FilterDialog.tsx` | Fix handleApply, add useEffect for initial sync |
-| `src/components/entity/ColumnVisibilityDialog.tsx` | Add @dnd-kit drag-to-reorder with stack-shadow overlay |
-| `src-tauri/src/sql/products.rs` | Add build_where_clause and build_get_all functions |
-| `src-tauri/src/sql/warehouses.rs` | Add build_where_clause and build_get_all functions |
-| `src-tauri/src/commands/products.rs` | Update get_all to accept filters/columns params |
-| `src-tauri/src/commands/warehouses.rs` | Update warehouses_get_all to accept filters/columns params |
-| `src/components/entity/EntityWorkspace.tsx` | Update command calls with filters/columns params |
+| File                                               | Change                                                     |
+| -------------------------------------------------- | ---------------------------------------------------------- |
+| `src/components/entity/FilterDialog.tsx`           | Fix handleApply, add useEffect for initial sync            |
+| `src/components/entity/ColumnVisibilityDialog.tsx` | Add @dnd-kit drag-to-reorder with stack-shadow overlay     |
+| `src-tauri/src/sql/products.rs`                    | Add build_where_clause and build_get_all functions         |
+| `src-tauri/src/sql/warehouses.rs`                  | Add build_where_clause and build_get_all functions         |
+| `src-tauri/src/commands/products.rs`               | Update get_all to accept filters/columns params            |
+| `src-tauri/src/commands/warehouses.rs`             | Update warehouses_get_all to accept filters/columns params |
+| `src/components/entity/EntityWorkspace.tsx`        | Update command calls with filters/columns params           |
 
 ## Verification
 
 After all tasks complete:
+
 1. `pnpm run check:all` — TypeScript passes
 2. `cargo build --manifest-path src-tauri/Cargo.toml` — Rust compiles
 3. Open entity workspace (products or warehouses), open filter dialog, set a filter, click Apply — no console errors

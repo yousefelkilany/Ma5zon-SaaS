@@ -23,8 +23,9 @@ describe('ProfileModal', () => {
   it('contains save button', () => {
     render(<ProfileModal open={true} onOpenChange={() => {}} />)
     const buttons = screen.getAllByRole('button')
-    const saveButton = buttons.find(btn =>
-      btn.textContent?.includes('save') || btn.textContent?.includes('حفظ')
+    const saveButton = buttons.find(
+      btn =>
+        btn.textContent?.includes('save') || btn.textContent?.includes('حفظ')
     )
     expect(saveButton).toBeInTheDocument()
   })

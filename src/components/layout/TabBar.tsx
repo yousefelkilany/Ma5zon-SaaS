@@ -35,7 +35,7 @@ export function TabBar() {
       role="tablist"
       className="flex items-center h-10 px-gutter bg-surface-container-lowest gap-1 overflow-x-auto no-scrollbar border-t border-outline-variant/30"
     >
-      {tabs.map((tab) => {
+      {tabs.map(tab => {
         const isActive = tab.id === activeTabId
         return (
           <div
@@ -54,7 +54,7 @@ export function TabBar() {
             {tab.title}
             {tab.closable && (
               <span
-                onClick={(e) => handleCloseTab(e, tab.id)}
+                onClick={e => handleCloseTab(e, tab.id)}
                 className="material-symbols-outlined text-[14px] me-2 hover:text-error"
               >
                 close

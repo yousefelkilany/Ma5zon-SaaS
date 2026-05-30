@@ -29,6 +29,7 @@ src/components/entity/DataTable.tsx           # Modify — wire edit/delete butt
 ## Task 1: Create ConfirmationDialog
 
 **Files:**
+
 - Create: `src/components/entity/ConfirmationDialog.tsx`
 
 ```tsx
@@ -118,6 +119,7 @@ git commit -m "feat: add shared ConfirmationDialog component"
 ## Task 2: Create ProductDetailModal
 
 **Files:**
+
 - Create: `src/components/entity/ProductDetailModal.tsx`
 
 - [ ] **Step 1: Create ProductDetailModal.tsx**
@@ -174,7 +176,11 @@ export function ProductDetailModal({
   const [entity, setEntity] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
-  const [editForm, setEditForm] = useState({ company: '', name: '', category: '' })
+  const [editForm, setEditForm] = useState({
+    company: '',
+    name: '',
+    category: '',
+  })
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -304,7 +310,11 @@ export function ProductDetailModal({
             {/* Tab Content */}
             <div className="flex-1 overflow-auto">
               {activeTab === 'details' && (
-                <div id="details-panel" role="tabpanel" aria-labelledby="details-tab">
+                <div
+                  id="details-panel"
+                  role="tabpanel"
+                  aria-labelledby="details-tab"
+                >
                   {isLoading ? (
                     <div className="grid grid-cols-2 gap-4">
                       {Array.from({ length: 6 }).map((_, i) => (
@@ -338,9 +348,11 @@ export function ProductDetailModal({
                               <p className="text-body-md text-on-surface">
                                 {field.type === 'date'
                                   ? entity[field.key]
-                                    ? new Date(entity[field.key]!).toLocaleString()
+                                    ? new Date(
+                                        entity[field.key]!
+                                      ).toLocaleString()
                                     : '—'
-                                  : entity[field.key] ?? '—'}
+                                  : (entity[field.key] ?? '—')}
                               </p>
                             )}
                           </div>
@@ -402,7 +414,11 @@ export function ProductDetailModal({
               )}
 
               {activeTab === 'insights' && (
-                <div id="insights-panel" role="tabpanel" aria-labelledby="insights-tab">
+                <div
+                  id="insights-panel"
+                  role="tabpanel"
+                  aria-labelledby="insights-tab"
+                >
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4">
                       {Array.from({ length: 3 }).map((_, i) => (
@@ -418,7 +434,11 @@ export function ProductDetailModal({
               )}
 
               {activeTab === 'audits' && (
-                <div id="audits-panel" role="tabpanel" aria-labelledby="audits-tab">
+                <div
+                  id="audits-panel"
+                  role="tabpanel"
+                  aria-labelledby="audits-tab"
+                >
                   <div className="space-y-3">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <div key={i} className="flex items-center gap-3">
@@ -465,6 +485,7 @@ git commit -m "feat: add ProductDetailModal with inline edit and delete"
 ## Task 3: Create WarehouseDetailModal
 
 **Files:**
+
 - Create: `src/components/entity/WarehouseDetailModal.tsx`
 
 - [ ] **Step 1: Create WarehouseDetailModal.tsx**
@@ -639,7 +660,11 @@ export function WarehouseDetailModal({
             {/* Tab Content */}
             <div className="flex-1 overflow-auto">
               {activeTab === 'details' && (
-                <div id="details-panel" role="tabpanel" aria-labelledby="details-tab">
+                <div
+                  id="details-panel"
+                  role="tabpanel"
+                  aria-labelledby="details-tab"
+                >
                   {isLoading ? (
                     <div className="grid grid-cols-2 gap-4">
                       {Array.from({ length: 4 }).map((_, i) => (
@@ -673,9 +698,11 @@ export function WarehouseDetailModal({
                               <p className="text-body-md text-on-surface">
                                 {field.type === 'date'
                                   ? entity[field.key]
-                                    ? new Date(entity[field.key]!).toLocaleString()
+                                    ? new Date(
+                                        entity[field.key]!
+                                      ).toLocaleString()
                                     : '—'
-                                  : entity[field.key] ?? '—'}
+                                  : (entity[field.key] ?? '—')}
                               </p>
                             )}
                           </div>
@@ -737,7 +764,11 @@ export function WarehouseDetailModal({
               )}
 
               {activeTab === 'insights' && (
-                <div id="insights-panel" role="tabpanel" aria-labelledby="insights-tab">
+                <div
+                  id="insights-panel"
+                  role="tabpanel"
+                  aria-labelledby="insights-tab"
+                >
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4">
                       {Array.from({ length: 3 }).map((_, i) => (
@@ -753,7 +784,11 @@ export function WarehouseDetailModal({
               )}
 
               {activeTab === 'audits' && (
-                <div id="audits-panel" role="tabpanel" aria-labelledby="audits-tab">
+                <div
+                  id="audits-panel"
+                  role="tabpanel"
+                  aria-labelledby="audits-tab"
+                >
                   <div className="space-y-3">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <div key={i} className="flex items-center gap-3">
@@ -800,6 +835,7 @@ git commit -m "feat: add WarehouseDetailModal with inline edit and delete"
 ## Task 4: Create VariantDetailModal
 
 **Files:**
+
 - Create: `src/components/entity/VariantDetailModal.tsx`
 
 - [ ] **Step 1: Create VariantDetailModal.tsx**
@@ -856,8 +892,16 @@ const VARIANT_FIELDS: FieldConfig[] = [
   { key: 'variant_name', label: 'entity.variant.name', type: 'text' },
   { key: 'uom_id', label: 'entity.variant.uom', type: 'text' },
   { key: 'retail_price', label: 'entity.variant.retailPrice', type: 'number' },
-  { key: 'wholesale_price', label: 'entity.variant.wholesalePrice', type: 'number' },
-  { key: 'distribution_price', label: 'entity.variant.distributionPrice', type: 'number' },
+  {
+    key: 'wholesale_price',
+    label: 'entity.variant.wholesalePrice',
+    type: 'number',
+  },
+  {
+    key: 'distribution_price',
+    label: 'entity.variant.distributionPrice',
+    type: 'number',
+  },
   { key: 'created_at', label: 'entity.common.createdAt', type: 'date' },
   { key: 'updated_at', label: 'entity.common.updatedAt', type: 'date' },
 ]
@@ -1027,7 +1071,11 @@ export function VariantDetailModal({
             {/* Tab Content */}
             <div className="flex-1 overflow-auto">
               {activeTab === 'details' && (
-                <div id="details-panel" role="tabpanel" aria-labelledby="details-tab">
+                <div
+                  id="details-panel"
+                  role="tabpanel"
+                  aria-labelledby="details-tab"
+                >
                   {isLoading ? (
                     <div className="grid grid-cols-2 gap-4">
                       {Array.from({ length: 8 }).map((_, i) => (
@@ -1046,12 +1094,17 @@ export function VariantDetailModal({
                               {t(field.label)}
                             </label>
                             {isEditing &&
-                            (field.type === 'text' || field.type === 'number') ? (
+                            (field.type === 'text' ||
+                              field.type === 'number') ? (
                               <input
-                                type={field.type === 'number' ? 'number' : 'text'}
+                                type={
+                                  field.type === 'number' ? 'number' : 'text'
+                                }
                                 className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
                                 value={
-                                  editForm[field.key as keyof EditForm] as string
+                                  editForm[
+                                    field.key as keyof EditForm
+                                  ] as string
                                 }
                                 onChange={e =>
                                   setEditForm(prev => ({
@@ -1064,16 +1117,23 @@ export function VariantDetailModal({
                             ) : (
                               <p className="text-body-md text-on-surface">
                                 {field.type === 'date'
-                                  ? entity[field.key as 'created_at' | 'updated_at']
+                                  ? entity[
+                                      field.key as 'created_at' | 'updated_at'
+                                    ]
                                     ? new Date(
-                                        entity[field.key as 'created_at' | 'updated_at']!
+                                        entity[
+                                          field.key as
+                                            | 'created_at'
+                                            | 'updated_at'
+                                        ]!
                                       ).toLocaleString()
                                     : '—'
                                   : field.type === 'number'
                                     ? Number(
                                         entity[field.key as keyof Variant]
                                       ).toLocaleString()
-                                    : entity[field.key as keyof Variant] ?? '—'}
+                                    : (entity[field.key as keyof Variant] ??
+                                      '—')}
                               </p>
                             )}
                           </div>
@@ -1135,7 +1195,11 @@ export function VariantDetailModal({
               )}
 
               {activeTab === 'insights' && (
-                <div id="insights-panel" role="tabpanel" aria-labelledby="insights-tab">
+                <div
+                  id="insights-panel"
+                  role="tabpanel"
+                  aria-labelledby="insights-tab"
+                >
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4">
                       {Array.from({ length: 3 }).map((_, i) => (
@@ -1151,7 +1215,11 @@ export function VariantDetailModal({
               )}
 
               {activeTab === 'audits' && (
-                <div id="audits-panel" role="tabpanel" aria-labelledby="audits-tab">
+                <div
+                  id="audits-panel"
+                  role="tabpanel"
+                  aria-labelledby="audits-tab"
+                >
                   <div className="space-y-3">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <div key={i} className="flex items-center gap-3">
@@ -1198,6 +1266,7 @@ git commit -m "feat: add VariantDetailModal with inline edit and delete"
 ## Task 5: Create entity components index and wire DataTable
 
 **Files:**
+
 - Create: `src/components/entity/index.ts`
 - Modify: `src/components/entity/DataTable.tsx:159-186`
 
@@ -1333,6 +1402,7 @@ git commit -m "feat: wire DataTable actions to typed detail modals"
 ## Task 6: Delete old EntityDetailModal
 
 **Files:**
+
 - Delete: `src/components/entity/EntityDetailModal.tsx`
 
 - [ ] **Step 1: Remove EntityDetailModal.tsx**
@@ -1361,6 +1431,7 @@ git commit -m "refactor: remove skeleton EntityDetailModal, replaced by typed mo
 ## Task 7: Add i18n translation keys
 
 **Files:**
+
 - Modify: `locales/en.json`, `locales/ar.json` (if exists)
 
 Add the translation keys listed in Task 5 Step 3 to all locale files.

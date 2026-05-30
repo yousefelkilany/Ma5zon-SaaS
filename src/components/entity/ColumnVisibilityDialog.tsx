@@ -38,13 +38,8 @@ interface SortableRowProps {
 }
 
 function SortableRow({ col, onToggle, t }: SortableRowProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: col.id })
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: col.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -64,13 +59,19 @@ function SortableRow({ col, onToggle, t }: SortableRowProps) {
         className="cursor-grab active:cursor-grabbing"
         aria-label="Drag to reorder"
       >
-        <GripVertical aria-hidden="true" className="text-on-surface-variant" size={16} />
+        <GripVertical
+          aria-hidden="true"
+          className="text-on-surface-variant"
+          size={16}
+        />
       </button>
       <input
         type="checkbox"
         checked={col.visible}
         onChange={onToggle}
-        aria-label={t('entity.workspace.columns.toggleVisibility', { column: col.label })}
+        aria-label={t('entity.workspace.columns.toggleVisibility', {
+          column: col.label,
+        })}
         className="w-4 h-4"
       />
       <span className="flex-1 text-on-surface text-body-sm">{col.label}</span>
@@ -128,9 +129,7 @@ export function ColumnVisibilityDialog({
 
   const toggleColumn = (id: string) => {
     setLocalColumns(cols =>
-      cols.map(col =>
-        col.id === id ? { ...col, visible: !col.visible } : col
-      )
+      cols.map(col => (col.id === id ? { ...col, visible: !col.visible } : col))
     )
   }
 
@@ -171,7 +170,11 @@ export function ColumnVisibilityDialog({
           <DragOverlay>
             {activeId ? (
               <div className="flex items-center gap-3 p-2 rounded bg-surface-container-high shadow-lg">
-                <GripVertical aria-hidden="true" className="text-on-surface-variant" size={16} />
+                <GripVertical
+                  aria-hidden="true"
+                  className="text-on-surface-variant"
+                  size={16}
+                />
                 <span className="flex-1 text-on-surface text-body-sm">
                   {localColumns.find(c => c.id === activeId)?.label}
                 </span>
@@ -183,7 +186,9 @@ export function ColumnVisibilityDialog({
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleSave}>{t('entity.workspace.columns.saveChanges')}</Button>
+          <Button onClick={handleSave}>
+            {t('entity.workspace.columns.saveChanges')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

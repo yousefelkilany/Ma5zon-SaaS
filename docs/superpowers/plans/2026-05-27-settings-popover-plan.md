@@ -21,6 +21,7 @@
 ### Task 1: Create SettingsPopover component
 
 **Files:**
+
 - Create: `src/components/layout/SettingsPopover.tsx`
 - Check: `src/components/ui/popover.tsx` (Radix Popover API)
 - Check: `src/hooks/use-theme.ts` (theme hook API)
@@ -51,7 +52,10 @@ export function SettingsPopover() {
   const handleLanguageChange = (lang: string) => {
     i18n.changeLanguage(lang)
     if (preferences) {
-      savePreferences.mutate({ ...preferences, language: lang === 'system' ? null : lang })
+      savePreferences.mutate({
+        ...preferences,
+        language: lang === 'system' ? null : lang,
+      })
     }
   }
 
@@ -59,7 +63,10 @@ export function SettingsPopover() {
     <Popover.Popover>
       <Popover.PopoverTrigger asChild>
         <button className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full">
-          <span className="material-symbols-outlined" style={{ fontSize: '1.75em' }}>
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: '1.75em' }}
+          >
             settings
           </span>
         </button>
@@ -85,7 +92,9 @@ export function SettingsPopover() {
               }`}
             >
               <span className="material-symbols-outlined">light_mode</span>
-              <span className="text-xs">{t('preferences.appearance.theme.light')}</span>
+              <span className="text-xs">
+                {t('preferences.appearance.theme.light')}
+              </span>
             </button>
             <button
               onClick={() => handleThemeChange('dark')}
@@ -96,7 +105,9 @@ export function SettingsPopover() {
               }`}
             >
               <span className="material-symbols-outlined">dark_mode</span>
-              <span className="text-xs">{t('preferences.appearance.theme.dark')}</span>
+              <span className="text-xs">
+                {t('preferences.appearance.theme.dark')}
+              </span>
             </button>
             <button
               onClick={() => handleThemeChange('system')}
@@ -107,7 +118,9 @@ export function SettingsPopover() {
               }`}
             >
               <span className="material-symbols-outlined">desktop_windows</span>
-              <span className="text-xs">{t('preferences.appearance.theme.system')}</span>
+              <span className="text-xs">
+                {t('preferences.appearance.theme.system')}
+              </span>
             </button>
           </div>
         </div>
@@ -127,7 +140,9 @@ export function SettingsPopover() {
               }`}
             >
               <span className="text-lg font-medium">عربي</span>
-              <span className="text-xs">{t('preferences.appearance.language.arabic')}</span>
+              <span className="text-xs">
+                {t('preferences.appearance.language.arabic')}
+              </span>
             </button>
             <button
               onClick={() => handleLanguageChange('en')}
@@ -138,7 +153,9 @@ export function SettingsPopover() {
               }`}
             >
               <span className="text-lg font-medium">EN</span>
-              <span className="text-xs">{t('preferences.appearance.language.english')}</span>
+              <span className="text-xs">
+                {t('preferences.appearance.language.english')}
+              </span>
             </button>
             <button
               onClick={() => handleLanguageChange('system')}
@@ -149,7 +166,9 @@ export function SettingsPopover() {
               }`}
             >
               <span className="material-symbols-outlined">desktop_windows</span>
-              <span className="text-xs">{t('preferences.appearance.theme.system')}</span>
+              <span className="text-xs">
+                {t('preferences.appearance.theme.system')}
+              </span>
             </button>
           </div>
         </div>
@@ -176,11 +195,13 @@ git commit -m "feat: add SettingsPopover component"
 ### Task 2: Export from layout index
 
 **Files:**
+
 - Modify: `src/components/layout/index.ts`
 
 - [ ] **Step 1: Add export**
 
 In `src/components/layout/index.ts`, add:
+
 ```ts
 export { SettingsPopover } from './SettingsPopover'
 ```
@@ -197,28 +218,29 @@ git commit -m "feat: export SettingsPopover from layout"
 ### Task 3: Wire up in Navbar
 
 **Files:**
+
 - Modify: `src/components/layout/Navbar.tsx:41-51`
 
 - [ ] **Step 1: Replace gear button with SettingsPopover**
 
 Replace the current gear icon button:
+
 ```tsx
 <button className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full">
-  <span
-    className="material-symbols-outlined"
-    style={{ fontSize: '1.75em' }}
-  >
+  <span className="material-symbols-outlined" style={{ fontSize: '1.75em' }}>
     settings
   </span>
 </button>
 ```
 
 With:
+
 ```tsx
 <SettingsPopover />
 ```
 
 And add import at top:
+
 ```tsx
 import { SettingsPopover } from './SettingsPopover'
 ```

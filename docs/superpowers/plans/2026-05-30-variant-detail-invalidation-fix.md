@@ -3,6 +3,7 @@
 ## Problem
 
 When editing a variant from the expanded row (product view), `VariantDetailModal` invalidates `['entity', 'variants']` but:
+
 1. The expanded row data is cached in local `variantsCache` state in EntityWorkspace
 2. The query key `['entity', 'product_variants']` is not invalidated
 3. The `variantsCache` is not updated with the edited data
@@ -12,6 +13,7 @@ Result: The expanded row shows stale data after editing.
 ## Solution
 
 Add an `onSaved` callback to `VariantDetailModal` that EntityWorkspace uses to:
+
 1. Refetch variants for the product via `commands.variantsGetByProduct(productId)`
 2. Update the `variantsCache`
 
@@ -44,7 +46,7 @@ Pass `onSaved={(variant) => handleVariantSaved(variant.product_id)}` to VariantD
 
 ## File Manifest
 
-| File | Change |
-|------|--------|
-| `src/components/entity/VariantDetailModal.tsx` | Add `onSaved` prop, call on save success |
-| `src/components/entity/EntityWorkspace.tsx` | Add `handleVariantSaved`, pass to VariantDetailModal |
+| File                                           | Change                                               |
+| ---------------------------------------------- | ---------------------------------------------------- |
+| `src/components/entity/VariantDetailModal.tsx` | Add `onSaved` prop, call on save success             |
+| `src/components/entity/EntityWorkspace.tsx`    | Add `handleVariantSaved`, pass to VariantDetailModal |

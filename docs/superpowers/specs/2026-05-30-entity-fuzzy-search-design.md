@@ -24,6 +24,7 @@ export function normalizeArabic(text: string): string {
 ```
 
 This function normalizes Arabic text by:
+
 - Collapsing all Alif variants (أ, إ, آ) to ا
 - Converting Ta Marbuta (ة) to Ha (ه)
 - Converting Alif Maksura (ى) to Ya (ي)
@@ -32,6 +33,7 @@ This function normalizes Arabic text by:
 ### 2. Search Logic in `DataTableShell`
 
 **State:**
+
 - `searchValue` is already declared as local state (line 72)
 - `searchValue` is already passed to `Toolbar` and updated via `onSearchChange`
 
@@ -70,10 +72,12 @@ const filteredData = useMemo(() => {
 ```
 
 **Debouncing:**
+
 - Wrap the `setSearchValue` call in a debounce (200ms) before passing to `Toolbar`
 - Or use `useDeferredValue` from React if debounce adds complexity
 
 **Render:**
+
 - Replace `data` prop on `DataTable` with `filteredData`
 
 ### 3. Dependencies
@@ -116,8 +120,8 @@ No changes to `EntityWorkspace` required — all logic stays within `DataTableSh
 
 ## File Changes
 
-| File | Change |
-|------|--------|
-| `src/lib/utils.ts` | Add `normalizeArabic` export |
+| File                                       | Change                                                                                       |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `src/lib/utils.ts`                         | Add `normalizeArabic` export                                                                 |
 | `src/components/entity/DataTableShell.tsx` | Add Fuse filtering with `useMemo`, debounce search input, pass `filteredData` to `DataTable` |
-| `package.json` | Add `fuse.js` dependency |
+| `package.json`                             | Add `fuse.js` dependency                                                                     |

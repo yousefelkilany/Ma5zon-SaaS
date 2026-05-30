@@ -3,6 +3,7 @@
 ## Overview
 
 Two read-only UI surfaces for viewing stock levels:
+
 1. **WarehousesSubTable** — expandable rows in the Warehouses DataTable
 2. **Stock Tab** — new tab in VariantDetailModal and ProductDetailModal
 
@@ -87,6 +88,7 @@ Existing `stock_levels_get_by_variant` remains unchanged for single-variant quer
 Mirrors `VariantsSubTable` pattern.
 
 Props:
+
 ```typescript
 interface WarehousesSubTableProps {
   stockLevels: StockLevelWithVariant[]
@@ -102,6 +104,7 @@ Columns: Variant Name | SKU | Quantity (all read-only, no add/edit/delete)
 Reusable stock table component for modal tabs.
 
 Props:
+
 ```typescript
 interface StockLevelsTableProps {
   stockLevels: StockLevelWithVariant[]

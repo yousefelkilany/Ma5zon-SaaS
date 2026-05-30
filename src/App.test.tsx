@@ -7,9 +7,7 @@ import App from './App'
 describe('App', () => {
   it('renders main window layout', () => {
     render(<App />)
-    expect(
-      screen.getByRole('heading', { name: /Ma5zon/i })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Ma5zon/i })).toBeInTheDocument()
   })
 
   it('renders sidebar navigation', () => {

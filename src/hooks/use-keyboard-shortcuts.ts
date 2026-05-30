@@ -20,8 +20,7 @@ export function useKeyboardShortcuts() {
           }
           case '1': {
             e.preventDefault()
-            const { sidebarVisible, setSidebarVisible } =
-              useUIStore.getState()
+            const { sidebarVisible, setSidebarVisible } = useUIStore.getState()
             setSidebarVisible(!sidebarVisible)
             break
           }

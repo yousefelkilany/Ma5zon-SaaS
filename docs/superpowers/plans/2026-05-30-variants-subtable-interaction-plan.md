@@ -23,6 +23,7 @@
 ## Task 1: Update Types
 
 **Files:**
+
 - Modify: `src/lib/types/entity.ts:100-103`
 
 - [ ] **Step 1: Add VariantsSubTableProps interface**
@@ -51,6 +52,7 @@ git commit -m "feat: add VariantsSubTableProps interface"
 ## Task 2: Update DataTableShell
 
 **Files:**
+
 - Modify: `src/components/entity/DataTableShell.tsx:28-31` (props interface)
 - Modify: `src/components/entity/DataTableShell.tsx:51-54` (props destructuring)
 - Modify: `src/components/entity/DataTableShell.tsx:122-124` (pass to DataTable)
@@ -112,6 +114,7 @@ git commit -m "feat: add onVariantClick and onAddVariant props to DataTableShell
 ## Task 3: Update DataTable
 
 **Files:**
+
 - Modify: `src/components/entity/DataTable.tsx:66-71` (ExpandedRowProps interface)
 - Modify: `src/components/entity/DataTable.tsx:84-88` (function props destructuring)
 - Modify: `src/components/entity/DataTable.tsx:386-394` (VariantsSubTable render)
@@ -126,8 +129,8 @@ interface ExpandedRowProps {
   variantsCache?: Map<string, VariantRow[]>
   onRowToggleExpand?: (id: string) => void
   isLoadingVariants?: (id: string) => boolean
-  onVariantClick?: (variantId: string, productId: string) => void  // NEW
-  onAddVariant?: (productId: string) => void  // NEW
+  onVariantClick?: (variantId: string, productId: string) => void // NEW
+  onAddVariant?: (productId: string) => void // NEW
 }
 ```
 
@@ -146,19 +149,21 @@ onAddVariant,    // NEW
 In the expanded row render (around line 386-394), update:
 
 ```tsx
-{expandedRowIds?.has(row.original.id) && (
-  <tr>
-    <td colSpan={columns.length + 2} className="p-0">
-      <VariantsSubTable
-        variants={variantsCache?.get(row.original.id) ?? []}
-        isLoading={isLoadingVariants?.(row.original.id)}
-        productId={row.original.id}
-        onVariantClick={onVariantClick}
-        onAddVariant={onAddVariant}
-      />
-    </td>
-  </tr>
-)}
+{
+  expandedRowIds?.has(row.original.id) && (
+    <tr>
+      <td colSpan={columns.length + 2} className="p-0">
+        <VariantsSubTable
+          variants={variantsCache?.get(row.original.id) ?? []}
+          isLoading={isLoadingVariants?.(row.original.id)}
+          productId={row.original.id}
+          onVariantClick={onVariantClick}
+          onAddVariant={onAddVariant}
+        />
+      </td>
+    </tr>
+  )
+}
 ```
 
 - [ ] **Step 4: Commit**
@@ -173,6 +178,7 @@ git commit -m "feat: wire onVariantClick and onAddVariant to VariantsSubTable"
 ## Task 4: Update EntityWorkspace
 
 **Files:**
+
 - Modify: `src/components/entity/EntityWorkspace.tsx:116-123` (add state)
 - Modify: `src/components/entity/EntityWorkspace.tsx:125-128` (add handlers)
 - Modify: `src/components/entity/EntityWorkspace.tsx:234-235` (pass to DataTableShell)
@@ -193,10 +199,13 @@ const [variantDetailOpen, setVariantDetailOpen] = useState(false)
 After `handleModalOpenChange` (around line 128), add:
 
 ```typescript
-const handleVariantClick = useCallback((variantId: string, _productId: string) => {
-  setSelectedVariantId(variantId)
-  setVariantDetailOpen(true)
-}, [])
+const handleVariantClick = useCallback(
+  (variantId: string, _productId: string) => {
+    setSelectedVariantId(variantId)
+    setVariantDetailOpen(true)
+  },
+  []
+)
 
 const handleAddVariant = useCallback((productId: string) => {
   setCreateModalType('product_variants')
@@ -255,18 +264,20 @@ Update the VariantCreateModal render (around line 248):
 After the VariantDetailModal at line 426 (for variants entity), add:
 
 ```tsx
-{entityType === 'products' && selectedVariantId && (
-  <VariantDetailModal
-    open={variantDetailOpen}
-    onOpenChange={setVariantDetailOpen}
-    entityId={selectedVariantId}
-    queryClient={queryClient}
-    onDeleted={() => {
-      setVariantDetailOpen(false)
-      setSelectedVariantId(null)
-    }}
-  />
-)}
+{
+  entityType === 'products' && selectedVariantId && (
+    <VariantDetailModal
+      open={variantDetailOpen}
+      onOpenChange={setVariantDetailOpen}
+      entityId={selectedVariantId}
+      queryClient={queryClient}
+      onDeleted={() => {
+        setVariantDetailOpen(false)
+        setSelectedVariantId(null)
+      }}
+    />
+  )
+}
 ```
 
 - [ ] **Step 7: Commit**
@@ -281,6 +292,7 @@ git commit -m "feat: add variant click and add handlers to EntityWorkspace"
 ## Task 5: Update VariantsSubTable
 
 **Files:**
+
 - Modify: `src/components/entity/VariantsSubTable.tsx`
 
 - [ ] **Step 1: Update interface and destructuring**
@@ -386,7 +398,10 @@ return (
                 }`}
               >
                 {col.type === 'currency'
-                  ? formatCurrency(variant[col.id as keyof VariantRow] as number, locale)
+                  ? formatCurrency(
+                      variant[col.id as keyof VariantRow] as number,
+                      locale
+                    )
                   : String(variant[col.id as keyof VariantRow] ?? '-')}
               </td>
             ))}

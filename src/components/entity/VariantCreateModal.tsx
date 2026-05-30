@@ -4,7 +4,13 @@ import { toast } from 'sonner'
 import type { QueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 import type { NewVariant } from '@/lib/bindings'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 
@@ -65,7 +71,9 @@ export function VariantCreateModal({
       }
       const result = await commands.variantsCreate(variant)
       if (result.status === 'ok') {
-        queryClient.invalidateQueries({ queryKey: ['entity', 'product_variants'] })
+        queryClient.invalidateQueries({
+          queryKey: ['entity', 'product_variants'],
+        })
         onOpenChange(false)
         resetForm()
       } else {

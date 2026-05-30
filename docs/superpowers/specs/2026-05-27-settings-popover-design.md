@@ -10,6 +10,7 @@ A lightweight settings popover attached to the gear icon in the Navbar, providin
 ## Design
 
 ### Appearance
+
 - **Component**: Radix UI Popover — appears attached to gear icon (not centered)
 - **Styling**: `bg-surface-container`, `border-outline-variant`, `rounded-lg`, shadow
 - **Size**: ~280px wide, max ~320px height with overflow scroll if needed
@@ -36,11 +37,13 @@ A lightweight settings popover attached to the gear icon in the Navbar, providin
 ### Icon Buttons
 
 **Theme toggles:**
+
 - ☀️ Light (`light` mode)
 - 🌙 Dark (`dark` mode)
 - 💻 System (`system` mode — follows device preference)
 
 **Language toggles:**
+
 - AR Arabic (العربية) — first, since it's the default
 - EN English
 - 💻 System (follows device locale)

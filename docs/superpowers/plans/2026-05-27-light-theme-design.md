@@ -19,6 +19,7 @@
 ## Task 1: Add `.light` CSS Override Block
 
 **Files:**
+
 - Modify: `src/theme-variables.css:179-212` (append new rule after existing `.dark` block)
 
 - [ ] **Step 1: Append `.light` class block after the `.dark` block**
@@ -61,8 +62,11 @@ Open `src/theme-variables.css` and add the following after line 212 (after the `
   --sidebar-ring: #4edea3;
 }
 ```
+
 **Verification:** The `.light` class mirrors the `.dark` class structure using the light palette values from the spec.
+
 - [ ] **Step 2: Commit**
+
 ```bash
 git add src/theme-variables.css
 git commit -m "feat: add light theme CSS override block with warm paper white palette"
@@ -73,6 +77,7 @@ git commit -m "feat: add light theme CSS override block with warm paper white pa
 ## Self-Review Checklist
 
 **1. Spec coverage:**
+
 - Base colors (`--background`, `--foreground`, `--surface`, `--on-surface`): covered
 - Primary/brand (`--primary`, `--secondary`): covered
 - Sidebar theme overrides: covered

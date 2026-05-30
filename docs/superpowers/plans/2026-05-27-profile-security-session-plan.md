@@ -13,6 +13,7 @@
 ## Task 1: Add Sessions Table to Database
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/user.rs:33-51`
 
 - [ ] **Step 1: Add sessions table creation to init_db**
@@ -47,11 +48,13 @@ git commit -m "feat: add sessions table to database schema"
 ## Task 2: Modify Authenticate to Create Session Token
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/user.rs:94-138`
 
 - [ ] **Step 1: Modify authenticate to return (User, sessionToken) tuple**
 
 Replace the `authenticate` function. On successful password verification:
+
 1. Generate a random session token (UUID)
 2. Insert into sessions table with user_id and timestamp
 3. Return (User, session_token) instead of just User
@@ -118,6 +121,7 @@ Expected: Compile errors if chrono/uuid not in Cargo.toml
 - [ ] **Step 2: Add chrono and uuid to Cargo.toml dependencies**
 
 Check current versions in Cargo.toml, add if missing:
+
 ```toml
 chrono = "0.4"
 uuid = { version = "1", features = ["v4"] }
@@ -138,6 +142,7 @@ git commit -m "feat: authenticate creates session token and returns (User, token
 ## Task 3: Implement validate_session and invalidate_session
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/user.rs:189-199`
 
 - [ ] **Step 1: Implement validate_session to check session token**
@@ -201,6 +206,7 @@ git commit -m "feat: implement validate_session and invalidate_session"
 ## Task 4: Add updatePassword Rust Command
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/user.rs`
 - Add to bindings: `src-tauri/src/bindings.rs`
 
@@ -264,6 +270,7 @@ git commit -m "feat: add update_password Rust command"
 ## Task 5: Update TypeScript Bindings for New Command Signatures
 
 **Files:**
+
 - Modify: `src/lib/bindings.ts`
 
 - [ ] **Step 1: Update authenticate to return (User, sessionToken)**
@@ -310,6 +317,7 @@ git commit -m "feat: update bindings for new authenticate signature and updatePa
 ## Task 6: Implement Security Tab UI in ProfileModal
 
 **Files:**
+
 - Modify: `src/components/auth/ProfileModal.tsx:352-371`
 
 - [ ] **Step 1: Replace skeleton security tab with actual UI**
@@ -317,160 +325,202 @@ git commit -m "feat: update bindings for new authenticate signature and updatePa
 Replace lines 352-371 (the security tab skeleton) with:
 
 ```tsx
-{activeTab === 'security' && (
-  <div
-    id="security-panel"
-    role="tabpanel"
-    aria-labelledby="security-tab"
-    className="p-cozy-padding bg-surface-container grid grid-cols-1 md:grid-cols-12 gap-cozy-gap"
-  >
-    {/* Left Panel - Password Policy & Security Status */}
-    <aside className="md:col-span-4 space-y-cozy-gap">
-      <div className="p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
-        <h3 className="font-headline-sm text-headline-sm text-primary mb-cozy-gap">
-          Password Policy
-        </h3>
-        <ul className="space-y-3 font-body-sm text-body-sm text-on-surface-variant">
-          <li className="flex items-start gap-2">
-            <span className="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-            Minimum 12 characters
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-            One uppercase letter
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-            One numeric digit
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="material-symbols-outlined text-secondary text-[18px]">check_circle</span>
-            One special character (@, #, $)
-          </li>
-        </ul>
-      </div>
-      <div className="p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant text-center">
-        <span className="font-label-caps text-label-caps text-on-surface-variant">Last Login: Just now</span>
-        <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">IP: 192.168.1.1</p>
-      </div>
-    </aside>
+{
+  activeTab === 'security' && (
+    <div
+      id="security-panel"
+      role="tabpanel"
+      aria-labelledby="security-tab"
+      className="p-cozy-padding bg-surface-container grid grid-cols-1 md:grid-cols-12 gap-cozy-gap"
+    >
+      {/* Left Panel - Password Policy & Security Status */}
+      <aside className="md:col-span-4 space-y-cozy-gap">
+        <div className="p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
+          <h3 className="font-headline-sm text-headline-sm text-primary mb-cozy-gap">
+            Password Policy
+          </h3>
+          <ul className="space-y-3 font-body-sm text-body-sm text-on-surface-variant">
+            <li className="flex items-start gap-2">
+              <span className="material-symbols-outlined text-secondary text-[18px]">
+                check_circle
+              </span>
+              Minimum 12 characters
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="material-symbols-outlined text-secondary text-[18px]">
+                check_circle
+              </span>
+              One uppercase letter
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="material-symbols-outlined text-secondary text-[18px]">
+                check_circle
+              </span>
+              One numeric digit
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="material-symbols-outlined text-secondary text-[18px]">
+                check_circle
+              </span>
+              One special character (@, #, $)
+            </li>
+          </ul>
+        </div>
+        <div className="p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant text-center">
+          <span className="font-label-caps text-label-caps text-on-surface-variant">
+            Last Login: Just now
+          </span>
+          <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
+            IP: 192.168.1.1
+          </p>
+        </div>
+      </aside>
 
-    {/* Right Panel - Password Update Form */}
-    <section className="md:col-span-8 p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
-      <div className="mb-gutter">
-        <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">
-          Update Password
-        </h2>
-        <p className="font-body-md text-body-md text-on-surface-variant">
-          Changing your password will log you out of all other active sessions.
-        </p>
-      </div>
-      <form className="space-y-gutter" onSubmit={(e) => { e.preventDefault(); handlePasswordUpdate(); }}>
-        {/* Current Password */}
-        <div className="space-y-2">
-          <label className="block font-label-caps text-label-caps text-on-surface-variant" htmlFor="current-password">
-            Current Password
-          </label>
-          <div className="relative group">
-            <input
-              className="w-full bg-surface-container-high border border-outline-variant rounded-lg px-cozy-padding py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none pr-12"
-              id="current-password"
-              type={showCurrentPassword ? 'text' : 'password'}
-              bind:value={passwordForm.current}
-              disabled={isUpdatingPassword}
-            />
-            <button
-              type="button"
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
-              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+      {/* Right Panel - Password Update Form */}
+      <section className="md:col-span-8 p-cozy-padding bg-surface-container-low rounded-lg border border-outline-variant">
+        <div className="mb-gutter">
+          <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">
+            Update Password
+          </h2>
+          <p className="font-body-md text-body-md text-on-surface-variant">
+            Changing your password will log you out of all other active
+            sessions.
+          </p>
+        </div>
+        <form
+          className="space-y-gutter"
+          onSubmit={e => {
+            e.preventDefault()
+            handlePasswordUpdate()
+          }}
+        >
+          {/* Current Password */}
+          <div className="space-y-2">
+            <label
+              className="block font-label-caps text-label-caps text-on-surface-variant"
+              htmlFor="current-password"
             >
-              <span className="material-symbols-outlined">{showCurrentPassword ? 'visibility_off' : 'visibility'}</span>
+              Current Password
+            </label>
+            <div className="relative group">
+              <input
+                className="w-full bg-surface-container-high border border-outline-variant rounded-lg px-cozy-padding py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none pr-12"
+                id="current-password"
+                type={showCurrentPassword ? 'text' : 'password'}
+                bind:value={passwordForm.current}
+                disabled={isUpdatingPassword}
+              />
+              <button
+                type="button"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+              >
+                <span className="material-symbols-outlined">
+                  {showCurrentPassword ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
+            {passwordErrors.current && (
+              <p className="font-body-sm text-error">
+                {passwordErrors.current}
+              </p>
+            )}
+          </div>
+
+          {/* New Password */}
+          <div className="space-y-2">
+            <label
+              className="block font-label-caps text-label-caps text-on-surface-variant"
+              htmlFor="new-password"
+            >
+              New Password
+            </label>
+            <div className="relative group">
+              <input
+                className={`w-full bg-surface-container-high border rounded-lg px-cozy-padding py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none pr-12 ${passwordErrors.new ? 'border-error' : 'border-outline-variant'}`}
+                id="new-password"
+                type={showNewPassword ? 'text' : 'password'}
+                bind:value={passwordForm.new}
+                disabled={isUpdatingPassword}
+              />
+              <button
+                type="button"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+              >
+                <span className="material-symbols-outlined">
+                  {showNewPassword ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
+            {passwordErrors.new && (
+              <p className="font-body-sm text-error">{passwordErrors.new}</p>
+            )}
+          </div>
+
+          {/* Confirm Password */}
+          <div className="space-y-2">
+            <label
+              className="block font-label-caps text-label-caps text-on-surface-variant"
+              htmlFor="confirm-password"
+            >
+              Confirm New Password
+            </label>
+            <div className="relative group">
+              <input
+                className={`w-full bg-surface-container-high border rounded-lg px-cozy-padding py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none pr-12 ${passwordErrors.confirm ? 'border-error' : 'border-outline-variant'}`}
+                id="confirm-password"
+                type={showConfirmPassword ? 'text' : 'password'}
+                bind:value={passwordForm.confirm}
+                disabled={isUpdatingPassword}
+              />
+              <button
+                type="button"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                <span className="material-symbols-outlined">
+                  {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
+            {passwordErrors.confirm && (
+              <p className="font-body-sm text-error">
+                {passwordErrors.confirm}
+              </p>
+            )}
+          </div>
+
+          {passwordUpdateError && (
+            <div className="p-compact-padding bg-error-container rounded-lg border border-error">
+              <p className="font-body-sm text-on-error-container">
+                {passwordUpdateError}
+              </p>
+            </div>
+          )}
+
+          <div className="pt-cozy-padding flex flex-col sm:flex-row items-center gap-gutter border-t border-outline-variant">
+            <button
+              className="w-full sm:w-auto px-10 py-3 bg-primary text-on-primary font-label-caps text-label-caps rounded-lg hover:bg-primary-fixed-dim active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              type="submit"
+              disabled={isUpdatingPassword}
+            >
+              {isUpdatingPassword ? 'Updating...' : 'Update Password'}
+            </button>
+            <button
+              className="w-full sm:w-auto text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface transition-colors disabled:opacity-50"
+              type="button"
+              onClick={handleCancelPassword}
+              disabled={isUpdatingPassword}
+            >
+              Cancel Changes
             </button>
           </div>
-          {passwordErrors.current && (
-            <p className="font-body-sm text-error">{passwordErrors.current}</p>
-          )}
-        </div>
-
-        {/* New Password */}
-        <div className="space-y-2">
-          <label className="block font-label-caps text-label-caps text-on-surface-variant" htmlFor="new-password">
-            New Password
-          </label>
-          <div className="relative group">
-            <input
-              className={`w-full bg-surface-container-high border rounded-lg px-cozy-padding py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none pr-12 ${passwordErrors.new ? 'border-error' : 'border-outline-variant'}`}
-              id="new-password"
-              type={showNewPassword ? 'text' : 'password'}
-              bind:value={passwordForm.new}
-              disabled={isUpdatingPassword}
-            />
-            <button
-              type="button"
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
-              onClick={() => setShowNewPassword(!showNewPassword)}
-            >
-              <span className="material-symbols-outlined">{showNewPassword ? 'visibility_off' : 'visibility'}</span>
-            </button>
-          </div>
-          {passwordErrors.new && (
-            <p className="font-body-sm text-error">{passwordErrors.new}</p>
-          )}
-        </div>
-
-        {/* Confirm Password */}
-        <div className="space-y-2">
-          <label className="block font-label-caps text-label-caps text-on-surface-variant" htmlFor="confirm-password">
-            Confirm New Password
-          </label>
-          <div className="relative group">
-            <input
-              className={`w-full bg-surface-container-high border rounded-lg px-cozy-padding py-3 text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none pr-12 ${passwordErrors.confirm ? 'border-error' : 'border-outline-variant'}`}
-              id="confirm-password"
-              type={showConfirmPassword ? 'text' : 'password'}
-              bind:value={passwordForm.confirm}
-              disabled={isUpdatingPassword}
-            />
-            <button
-              type="button"
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              <span className="material-symbols-outlined">{showConfirmPassword ? 'visibility_off' : 'visibility'}</span>
-            </button>
-          </div>
-          {passwordErrors.confirm && (
-            <p className="font-body-sm text-error">{passwordErrors.confirm}</p>
-          )}
-        </div>
-
-        {passwordUpdateError && (
-          <div className="p-compact-padding bg-error-container rounded-lg border border-error">
-            <p className="font-body-sm text-on-error-container">{passwordUpdateError}</p>
-          </div>
-        )}
-
-        <div className="pt-cozy-padding flex flex-col sm:flex-row items-center gap-gutter border-t border-outline-variant">
-          <button
-            className="w-full sm:w-auto px-10 py-3 bg-primary text-on-primary font-label-caps text-label-caps rounded-lg hover:bg-primary-fixed-dim active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-            type="submit"
-            disabled={isUpdatingPassword}
-          >
-            {isUpdatingPassword ? 'Updating...' : 'Update Password'}
-          </button>
-          <button
-            className="w-full sm:w-auto text-on-surface-variant font-label-caps text-label-caps hover:text-on-surface transition-colors disabled:opacity-50"
-            type="button"
-            onClick={handleCancelPassword}
-            disabled={isUpdatingPassword}
-          >
-            Cancel Changes
-          </button>
-        </div>
-      </form>
-    </section>
-  </div>
-)}
+        </form>
+      </section>
+    </div>
+  )
+}
 ```
 
 - [ ] **Step 2: Add state for password form**
@@ -478,11 +528,19 @@ Replace lines 352-371 (the security tab skeleton) with:
 Add these state declarations after the existing state (after line 52):
 
 ```tsx
-const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' })
+const [passwordForm, setPasswordForm] = useState({
+  current: '',
+  new: '',
+  confirm: '',
+})
 const [showCurrentPassword, setShowCurrentPassword] = useState(false)
 const [showNewPassword, setShowNewPassword] = useState(false)
 const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-const [passwordErrors, setPasswordErrors] = useState({ current: '', new: '', confirm: '' })
+const [passwordErrors, setPasswordErrors] = useState({
+  current: '',
+  new: '',
+  confirm: '',
+})
 const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
 const [passwordUpdateError, setPasswordUpdateError] = useState('')
 ```
@@ -514,7 +572,8 @@ const validatePassword = (): boolean => {
     errors.new = 'Password must contain at least one numeric digit'
     valid = false
   } else if (!/[@#$]/.test(passwordForm.new)) {
-    errors.new = 'Password must contain at least one special character (@, #, $)'
+    errors.new =
+      'Password must contain at least one special character (@, #, $)'
     valid = false
   }
 
@@ -534,7 +593,11 @@ const handlePasswordUpdate = async () => {
   setIsUpdatingPassword(true)
   setPasswordUpdateError('')
 
-  const result = await commands.updatePassword(user.id, passwordForm.current, passwordForm.new)
+  const result = await commands.updatePassword(
+    user.id,
+    passwordForm.current,
+    passwordForm.new
+  )
 
   setIsUpdatingPassword(false)
 
@@ -584,6 +647,7 @@ git commit -m "feat: implement security tab UI with password change form"
 ## Task 7: Update useAuth Login to Handle Session Token
 
 **Files:**
+
 - Modify: `src/hooks/useAuth.ts`
 
 - [ ] **Step 1: Update login to store session token**
@@ -624,6 +688,7 @@ git commit -m "feat: useAuth stores session token on login"
 ## Task 8: Update LoginModal to Pass Session Token
 
 **Files:**
+
 - Modify: `src/components/auth/LoginModal.tsx`
 
 - [ ] **Step 1: Update handleSubmit to pass session token to login**
@@ -634,7 +699,16 @@ Find where `onLoginSuccess` is called in LoginModal. The authenticate now return
 const result = await commands.authenticate(username, password)
 if (result.status === 'ok' && result.data) {
   const { user, sessionToken } = result.data
-  onLoginSuccess(user.id, { id: user.id, name: user.name, role: user.role, avatar_url: user.avatar_url }, sessionToken)
+  onLoginSuccess(
+    user.id,
+    {
+      id: user.id,
+      name: user.name,
+      role: user.role,
+      avatar_url: user.avatar_url,
+    },
+    sessionToken
+  )
 }
 ```
 
@@ -653,6 +727,7 @@ git commit -m "feat: LoginModal passes session token to login"
 ## Task 9: Integration Testing
 
 **Files:**
+
 - Test: Manual verification steps
 
 - [ ] **Step 1: Verify app builds**
@@ -681,12 +756,12 @@ Open another terminal, run `npm run tauri-dev` and check for any Rust compilatio
 
 ## File Summary
 
-| File | Change |
-|------|--------|
-| `src-tauri/src/commands/user.rs` | Add sessions table, modify authenticate, implement validate/invalidate, add update_password |
-| `src-tauri/Cargo.toml` | Add chrono, uuid dependencies |
-| `src-tauri/src/bindings.rs` | Register update_password |
-| `src/lib/bindings.ts` | Update authenticate signature, add updatePassword |
-| `src/components/auth/ProfileModal.tsx` | Implement Security tab UI |
-| `src/hooks/useAuth.ts` | Store session token on login |
-| `src/components/auth/LoginModal.tsx` | Pass session token to login |
+| File                                   | Change                                                                                      |
+| -------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `src-tauri/src/commands/user.rs`       | Add sessions table, modify authenticate, implement validate/invalidate, add update_password |
+| `src-tauri/Cargo.toml`                 | Add chrono, uuid dependencies                                                               |
+| `src-tauri/src/bindings.rs`            | Register update_password                                                                    |
+| `src/lib/bindings.ts`                  | Update authenticate signature, add updatePassword                                           |
+| `src/components/auth/ProfileModal.tsx` | Implement Security tab UI                                                                   |
+| `src/hooks/useAuth.ts`                 | Store session token on login                                                                |
+| `src/components/auth/LoginModal.tsx`   | Pass session token to login                                                                 |

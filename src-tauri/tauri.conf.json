@@ -40,9 +40,7 @@
             "core:default",
             {
               "identifier": "fs:allow-write-text-file",
-              "allow": [
-                "$HOME/*"
-              ]
+              "allow": ["$HOME/*"]
             }
           ]
         }

@@ -33,6 +33,7 @@ src/lib/types/
 ## Task 1: Add Rust Types for Products/Variants
 
 **Files:**
+
 - Modify: `src-tauri/src/types.rs`
 
 - [ ] **Step 1: Add new types to types.rs**
@@ -109,6 +110,7 @@ git commit -m "feat: add Product, Variant, VariantPrice, TableLayout types"
 ## Task 2: Create products.rs Commands
 
 **Files:**
+
 - Create: `src-tauri/src/commands/products.rs`
 - Modify: `src-tauri/src/commands/mod.rs`
 - Modify: `src-tauri/src/bindings.rs`
@@ -219,6 +221,7 @@ pub async fn delete(app: AppHandle, id: i64) -> Result<(), String> {
 - [ ] **Step 2: Update mod.rs to export products module**
 
 Add to `src-tauri/src/commands/mod.rs`:
+
 ```rust
 pub mod products;
 ```
@@ -226,6 +229,7 @@ pub mod products;
 - [ ] **Step 3: Update bindings.rs**
 
 Add to the commands list in `generate_bindings()`:
+
 ```rust
 products::get_all,
 products::get_by_id,
@@ -246,6 +250,7 @@ git commit -m "feat: add products CRUD commands"
 ## Task 3: Create variants.rs Commands
 
 **Files:**
+
 - Create: `src-tauri/src/commands/variants.rs`
 - Modify: `src-tauri/src/commands/mod.rs`
 - Modify: `src-tauri/src/bindings.rs`
@@ -408,6 +413,7 @@ pub async fn delete(app: AppHandle, id: i64) -> Result<(), String> {
 - [ ] **Step 2: Update mod.rs to export variants module**
 
 Add to `src-tauri/src/commands/mod.rs`:
+
 ```rust
 pub mod variants;
 ```
@@ -415,6 +421,7 @@ pub mod variants;
 - [ ] **Step 3: Update bindings.rs**
 
 Add to the commands list in `generate_bindings()`:
+
 ```rust
 variants::get_all,
 variants::get_by_product,
@@ -436,6 +443,7 @@ git commit -m "feat: add variants CRUD commands with get_by_product"
 ## Task 4: Create prices.rs Commands
 
 **Files:**
+
 - Create: `src-tauri/src/commands/prices.rs`
 - Modify: `src-tauri/src/commands/mod.rs`
 - Modify: `src-tauri/src/bindings.rs`
@@ -553,6 +561,7 @@ pub async fn delete(app: AppHandle, variant_id: i64, price_list_id: i64) -> Resu
 - [ ] **Step 2: Update mod.rs to export prices module**
 
 Add to `src-tauri/src/commands/mod.rs`:
+
 ```rust
 pub mod prices;
 ```
@@ -560,6 +569,7 @@ pub mod prices;
 - [ ] **Step 3: Update bindings.rs**
 
 Add to the commands list in `generate_bindings()`:
+
 ```rust
 prices::get_all,
 prices::get_by_variant,
@@ -580,6 +590,7 @@ git commit -m "feat: add prices CRUD commands with get_by_variant"
 ## Task 5: Create schema.rs Commands
 
 **Files:**
+
 - Create: `src-tauri/src/commands/schema.rs`
 - Modify: `src-tauri/src/commands/mod.rs`
 - Modify: `src-tauri/src/bindings.rs`
@@ -703,6 +714,7 @@ pub async fn init_product_tables(app: AppHandle) -> Result<(), String> {
 - [ ] **Step 2: Update mod.rs to export schema module**
 
 Add to `src-tauri/src/commands/mod.rs`:
+
 ```rust
 pub mod schema;
 ```
@@ -710,6 +722,7 @@ pub mod schema;
 - [ ] **Step 3: Update bindings.rs**
 
 Add to the commands list in `generate_bindings()`:
+
 ```rust
 schema::get_table_layout,
 schema::init_product_tables,
@@ -727,6 +740,7 @@ git commit -m "feat: add schema commands for table layout and initialization"
 ## Task 6: Add Frontend Types
 
 **Files:**
+
 - Modify: `src/lib/types/entity.ts`
 
 - [ ] **Step 1: Add new interfaces**
@@ -776,6 +790,7 @@ git commit -m "feat: add ProductRow, VariantRow, TableLayout types to entity"
 ## Task 7: Create VariantsSubTable Component
 
 **Files:**
+
 - Create: `src/components/entity/VariantsSubTable.tsx`
 
 - [ ] **Step 1: Create VariantsSubTable.tsx**
@@ -795,7 +810,10 @@ function formatPrice(price: number | undefined): string {
   return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
 }
 
-export function VariantsSubTable({ variants, isLoading }: VariantsSubTableProps) {
+export function VariantsSubTable({
+  variants,
+  isLoading,
+}: VariantsSubTableProps) {
   const { t } = useTranslation()
 
   if (isLoading) {
@@ -851,17 +869,21 @@ export function VariantsSubTable({ variants, isLoading }: VariantsSubTableProps)
               <td className="px-3 py-2 text-on-surface">
                 {variant.variant_name}
               </td>
-              <td className="px-3 py-2 text-on-surface">
-                {variant.uom_id}
+              <td className="px-3 py-2 text-on-surface">{variant.uom_id}</td>
+              <td className="px-3 py-2 text-right text-on-surface font-data-tabular tabular-nums">
+                {formatPrice(
+                  (variant as Record<string, unknown>).retail_price as number
+                )}
               </td>
               <td className="px-3 py-2 text-right text-on-surface font-data-tabular tabular-nums">
-                {formatPrice((variant as Record<string, unknown>).retail_price as number)}
+                {formatPrice(
+                  (variant as Record<string, unknown>).wholesale_price as number
+                )}
               </td>
               <td className="px-3 py-2 text-right text-on-surface font-data-tabular tabular-nums">
-                {formatPrice((variant as Record<string, unknown>).wholesale_price as number)}
-              </td>
-              <td className="px-3 py-2 text-right text-on-surface font-data-tabular tabular-nums">
-                {formatPrice((variant as Record<string, unknown>).dist_price as number)}
+                {formatPrice(
+                  (variant as Record<string, unknown>).dist_price as number
+                )}
               </td>
             </tr>
           ))}
@@ -884,11 +906,13 @@ git commit -m "feat: add VariantsSubTable component for expanded rows"
 ## Task 8: Update DataTable with Expanded Row Support
 
 **Files:**
+
 - Modify: `src/components/entity/DataTable.tsx`
 
 - [ ] **Step 1: Add expanded row props and rendering**
 
 Add to props interface:
+
 ```typescript
 expandedRowIds?: Set<string>
 variantsCache?: Map<string, VariantRow[]>
@@ -897,6 +921,7 @@ isLoadingVariants?: (id: string) => boolean
 ```
 
 Add expand chevron to select column header and cells, render detail panel:
+
 ```tsx
 // Add expand chevron column
 {
@@ -962,11 +987,13 @@ git commit -m "feat: add expanded row support to DataTable"
 ## Task 9: Update DataTableShell with Expansion State
 
 **Files:**
+
 - Modify: `src/components/entity/DataTableShell.tsx`
 
 - [ ] **Step 1: Add expanded row props**
 
 Add to props:
+
 ```typescript
 expandedRowIds?: Set<string>
 variantsCache?: Map<string, VariantRow[]>
@@ -988,11 +1015,13 @@ git commit -m "feat: add expanded row state props to DataTableShell"
 ## Task 10: Wire EntityWorkspace to Use Commands
 
 **Files:**
+
 - Modify: `src/components/entity/EntityWorkspace.tsx`
 
 - [ ] **Step 1: Update EntityWorkspace to use TanStack Query**
 
 Replace mock data with:
+
 ```tsx
 import { useQuery } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'

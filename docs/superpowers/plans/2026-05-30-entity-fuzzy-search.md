@@ -13,6 +13,7 @@
 ## Task 1: Add `normalizeArabic` to utils
 
 **Files:**
+
 - Modify: `src/lib/utils.ts:1-32`
 
 - [ ] **Step 1: Add normalizeArabic export to utils.ts**
@@ -42,6 +43,7 @@ git commit -m "feat: add normalizeArabic utility for Arabic text normalization"
 ## Task 2: Install fuse.js
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Install fuse.js**
@@ -62,6 +64,7 @@ git commit -m "deps: add fuse.js for fuzzy search"
 ## Task 3: Add Fuse filtering in DataTableShell
 
 **Files:**
+
 - Modify: `src/components/entity/DataTableShell.tsx:1-180`
 
 - [ ] **Step 1: Add Fuse import**
@@ -112,13 +115,13 @@ const filteredData = useMemo(() => {
 In the DataTable component call (around line 138), change:
 
 ```tsx
-data={data}
+data = { data }
 ```
 
 to:
 
 ```tsx
-data={filteredData}
+data = { filteredData }
 ```
 
 - [ ] **Step 4: Commit**
@@ -133,6 +136,7 @@ git commit -m "feat: add client-side fuzzy search with Arabic normalization in D
 ## Task 4: Verify and run checks
 
 **Files:**
+
 - Modify: none (verification only)
 
 - [ ] **Step 1: Run typecheck and lint**

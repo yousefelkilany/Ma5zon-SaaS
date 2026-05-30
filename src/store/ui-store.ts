@@ -33,11 +33,7 @@ export const useUIStore = create<UIState>()(
         ),
 
       setSidebarVisible: visible =>
-        set(
-          { sidebarVisible: visible },
-          undefined,
-          'setSidebarVisible'
-        ),
+        set({ sidebarVisible: visible }, undefined, 'setSidebarVisible'),
 
       toggleCommandPalette: () =>
         set(

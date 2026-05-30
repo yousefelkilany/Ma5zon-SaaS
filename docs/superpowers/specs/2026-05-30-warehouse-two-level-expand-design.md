@@ -58,9 +58,9 @@ interface VariantWithStock {
 
 ## New Commands
 
-| Command | Parameters | Returns |
-|---------|------------|---------|
-| `productsGetByWarehouseWithStock` | `warehouseId: string` | `ProductWithStock[]` |
+| Command                            | Parameters                                 | Returns              |
+| ---------------------------------- | ------------------------------------------ | -------------------- |
+| `productsGetByWarehouseWithStock`  | `warehouseId: string`                      | `ProductWithStock[]` |
 | `variantsGetByProductAndWarehouse` | `productId: string`, `warehouseId: string` | `VariantWithStock[]` |
 
 ## Component Changes

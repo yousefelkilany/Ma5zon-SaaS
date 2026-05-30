@@ -11,6 +11,6 @@ export function useWarehousesPagination(page: number, pageSize: number) {
       }
       throw new Error(result.error)
     },
-    placeholderData: (prev) => prev,
+    placeholderData: prev => prev,
   })
 }

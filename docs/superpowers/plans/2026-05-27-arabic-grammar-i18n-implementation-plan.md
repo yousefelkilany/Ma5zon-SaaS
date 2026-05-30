@@ -13,6 +13,7 @@
 ## Task 1: Update Locale Files with New Translation Keys
 
 **Files:**
+
 - Modify: `locales/en.json`
 - Modify: `locales/ar.json`
 
@@ -220,6 +221,7 @@ git commit -m "feat(i18n): add translation keys for ProfileModal, LoginModal, Fi
 ## Task 2: Convert entity.workspace.selected to ICU Plural Format
 
 **Files:**
+
 - Modify: `locales/en.json`
 - Modify: `locales/ar.json`
 - Modify: `src/components/entity/Toolbar.tsx`
@@ -229,11 +231,13 @@ git commit -m "feat(i18n): add translation keys for ProfileModal, LoginModal, Fi
 - [ ] **Step 1: Update entity.workspace.selected in en.json**
 
 Replace:
+
 ```json
 "entity.workspace.selected": "{{count}} selected"
 ```
 
 With:
+
 ```json
 "entity.workspace.selected": "{count, plural, one {# selected} other {# selected}}"
 ```
@@ -241,11 +245,13 @@ With:
 - [ ] **Step 2: Update entity.workspace.selected in ar.json**
 
 Replace:
+
 ```json
 "entity.workspace.selected": "تم تحديد {{count}}"
 ```
 
 With:
+
 ```json
 "entity.workspace.selected": "{count, plural, =0 {لا توجد محددات} =1 {محدد واحد} =2 {محددان} few {# محددات} many {# محدد} other {# محدد}}"
 ```
@@ -262,6 +268,7 @@ git commit -m "feat(i18n): convert entity.workspace.selected to ICU plural forma
 ## Task 3: Update ProfileModal.tsx to Use Translations
 
 **Files:**
+
 - Modify: `src/components/auth/ProfileModal.tsx`
 
 ### Steps
@@ -269,11 +276,13 @@ git commit -m "feat(i18n): convert entity.workspace.selected to ICU plural forma
 - [ ] **Step 1: Add useTranslation import**
 
 Find:
+
 ```tsx
 import { useState } from 'react'
 ```
 
 Replace:
+
 ```tsx
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -282,11 +291,13 @@ import { useTranslation } from 'react-i18next'
 - [ ] **Step 2: Add t function to component**
 
 Find inside component:
+
 ```tsx
 const [activeTab, setActiveTab] = useState<TabId>('account')
 ```
 
 Add after:
+
 ```tsx
 const { t } = useTranslation()
 ```
@@ -294,6 +305,7 @@ const { t } = useTranslation()
 - [ ] **Step 3: Update tabs array to use translations**
 
 Find:
+
 ```tsx
 const tabs: { id: TabId; label: string }[] = [
   { id: 'account', label: 'Account' },
@@ -303,6 +315,7 @@ const tabs: { id: TabId; label: string }[] = [
 ```
 
 Replace:
+
 ```tsx
 const tabs: { id: TabId; label: string }[] = [
   { id: 'account', label: t('profile.tabs.account') },
@@ -314,6 +327,7 @@ const tabs: { id: TabId; label: string }[] = [
 - [ ] **Step 4: Replace hardcoded Account tab strings**
 
 Replace each hardcoded string with `t('profile.account.*')`:
+
 - `"User Profile & Security"` → `t('profile.account.header')`
 - `"Manage your enterprise account settings..."` → `t('profile.account.description')`
 - `"User"` → `t('profile.account.defaultUserName')`
@@ -332,6 +346,7 @@ Replace each hardcoded string with `t('profile.account.*')`:
 - [ ] **Step 5: Replace hardcoded Security tab strings**
 
 Replace each hardcoded string with `t('profile.security.*')`:
+
 - `"Password Policy"` → `t('profile.security.passwordPolicy')`
 - `"Minimum 8 characters"` → `t('profile.security.minLength')`
 - `"One uppercase letter"` → `t('profile.security.uppercase')`
@@ -348,6 +363,7 @@ Replace each hardcoded string with `t('profile.security.*')`:
 - [ ] **Step 6: Replace validation error strings**
 
 Replace with `t('profile.security.validation.*')`:
+
 - `"Current password is required"` → `t('profile.security.validation.currentRequired')`
 - `"New password is required"` → `t('profile.security.validation.newRequired')`
 - `"Password must be at least 8 characters"` → `t('profile.security.validation.minLength')`
@@ -369,6 +385,7 @@ git commit -m "feat(i18n): migrate ProfileModal to use translation keys"
 ## Task 4: Update LoginModal.tsx to Use Translations
 
 **Files:**
+
 - Modify: `src/components/auth/LoginModal.tsx`
 
 ### Steps
@@ -376,6 +393,7 @@ git commit -m "feat(i18n): migrate ProfileModal to use translation keys"
 - [ ] **Step 1: Add useTranslation import and t function**
 
 Find the component function and add:
+
 ```tsx
 const { t } = useTranslation()
 ```
@@ -383,21 +401,25 @@ const { t } = useTranslation()
 - [ ] **Step 2: Replace placeholder strings**
 
 Find:
+
 ```tsx
-placeholder="e.g. j.smith"
+placeholder = 'e.g. j.smith'
 ```
 
 Replace:
+
 ```tsx
 placeholder={t('auth.usernamePlaceholder')}
 ```
 
 Find:
+
 ```tsx
-placeholder="••••••••"
+placeholder = '••••••••'
 ```
 
 Replace:
+
 ```tsx
 placeholder={t('auth.passwordPlaceholder')}
 ```
@@ -414,6 +436,7 @@ git commit -m "feat(i18n): migrate LoginModal placeholder strings to translation
 ## Task 5: Update FilterDialog.tsx to Use Translations
 
 **Files:**
+
 - Modify: `src/components/entity/FilterDialog.tsx`
 
 ### Steps
@@ -431,11 +454,13 @@ git commit -m "feat(i18n): migrate LoginModal placeholder strings to translation
 - [ ] **Step 3: Update status options**
 
 Replace hardcoded status array:
+
 ```tsx
 const statusOptions = ['Paid', 'Overdue', 'Draft']
 ```
 
 With:
+
 ```tsx
 const statusOptions = [
   { value: 'paid', label: t('entity.filter.statusPaid') },
@@ -456,6 +481,7 @@ git commit -m "feat(i18n): migrate FilterDialog to use translation keys"
 ## Task 6: Update EntityDetailModal.tsx to Use Translations
 
 **Files:**
+
 - Modify: `src/components/entity/EntityDetailModal.tsx`
 
 ### Steps
@@ -465,6 +491,7 @@ git commit -m "feat(i18n): migrate FilterDialog to use translation keys"
 - [ ] **Step 2: Update tabs array**
 
 Find:
+
 ```tsx
 const tabs: { id: TabId; label: string }[] = [
   { id: 'details', label: 'Details' },
@@ -474,6 +501,7 @@ const tabs: { id: TabId; label: string }[] = [
 ```
 
 Replace:
+
 ```tsx
 const tabs: { id: TabId; label: string }[] = [
   { id: 'details', label: t('entity.detail.tabs.details') },
@@ -494,6 +522,7 @@ git commit -m "feat(i18n): migrate EntityDetailModal tab labels to translation k
 ## Task 7: Update SettingsPopover.tsx to Use Translations
 
 **Files:**
+
 - Modify: `src/components/layout/SettingsPopover.tsx`
 
 ### Steps
@@ -503,23 +532,35 @@ git commit -m "feat(i18n): migrate EntityDetailModal tab labels to translation k
 - [ ] **Step 2: Replace language button labels**
 
 Find:
+
 ```tsx
-<Button variant="ghost" size="sm" className="text-xs">عربي</Button>
+<Button variant="ghost" size="sm" className="text-xs">
+  عربي
+</Button>
 ```
 
 Replace:
+
 ```tsx
-<Button variant="ghost" size="sm" className="text-xs">{t('settingsPopover.language.arabic')}</Button>
+<Button variant="ghost" size="sm" className="text-xs">
+  {t('settingsPopover.language.arabic')}
+</Button>
 ```
 
 Find:
+
 ```tsx
-<Button variant="ghost" size="sm" className="text-xs">EN</Button>
+<Button variant="ghost" size="sm" className="text-xs">
+  EN
+</Button>
 ```
 
 Replace:
+
 ```tsx
-<Button variant="ghost" size="sm" className="text-xs">{t('settingsPopover.language.english')}</Button>
+<Button variant="ghost" size="sm" className="text-xs">
+  {t('settingsPopover.language.english')}
+</Button>
 ```
 
 - [ ] **Step 3: Commit SettingsPopover changes**
@@ -534,6 +575,7 @@ git commit -m "feat(i18n): migrate SettingsPopover language labels to translatio
 ## Task 8: Verify Implementation
 
 **Files:**
+
 - Modify: `src/i18n/i18n.d.ts`
 
 ### Steps
@@ -564,16 +606,16 @@ git commit -m "feat(i18n): complete Arabic grammar support implementation"
 
 ## Summary
 
-| Task | Files Modified | Keys Added |
-|------|----------------|------------|
-| 1 | locales/en.json, locales/ar.json | ~45 new translation keys |
-| 2 | locales/en.json, locales/ar.json, Toolbar.tsx | 1 ICU plural conversion |
-| 3 | ProfileModal.tsx | ~40 strings replaced with t() calls |
-| 4 | LoginModal.tsx | 2 strings replaced with t() calls |
-| 5 | FilterDialog.tsx | 6 strings replaced with t() calls |
-| 6 | EntityDetailModal.tsx | 3 tab labels replaced with t() calls |
-| 7 | SettingsPopover.tsx | 2 language labels replaced with t() calls |
-| 8 | Verification | TypeScript and lint checks |
+| Task | Files Modified                                | Keys Added                                |
+| ---- | --------------------------------------------- | ----------------------------------------- |
+| 1    | locales/en.json, locales/ar.json              | ~45 new translation keys                  |
+| 2    | locales/en.json, locales/ar.json, Toolbar.tsx | 1 ICU plural conversion                   |
+| 3    | ProfileModal.tsx                              | ~40 strings replaced with t() calls       |
+| 4    | LoginModal.tsx                                | 2 strings replaced with t() calls         |
+| 5    | FilterDialog.tsx                              | 6 strings replaced with t() calls         |
+| 6    | EntityDetailModal.tsx                         | 3 tab labels replaced with t() calls      |
+| 7    | SettingsPopover.tsx                           | 2 language labels replaced with t() calls |
+| 8    | Verification                                  | TypeScript and lint checks                |
 
 **Total commits:** 8
 

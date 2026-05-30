@@ -13,6 +13,7 @@
 ## File Structure
 
 **Modify:**
+
 - `src-tauri/src/commands/products.rs` — add columns to init, soft delete, filter queries
 - `src-tauri/src/commands/warehouses.rs` — add columns to init, soft delete, filter queries
 - `src-tauri/src/commands/variants.rs` — add columns to init, soft delete, filter queries
@@ -26,6 +27,7 @@
 ### Task 1: Update products.rs with soft delete schema and behavior
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/products.rs`
 
 **Steps:**
@@ -33,6 +35,7 @@
 - [ ] **Step 1: Update table creation to include timestamp columns**
 
 Replace lines 20-27 with:
+
 ```rust
 conn.execute(
     "CREATE TABLE IF NOT EXISTS products (
@@ -50,6 +53,7 @@ conn.execute(
 - [ ] **Step 2: Add ALTER TABLE migration after table creation**
 
 After the CREATE TABLE block (after line 27), add:
+
 ```rust
 // Migration: Add timestamp columns if they don't exist (for existing databases)
 conn.execute("ALTER TABLE products ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP", [])
@@ -65,6 +69,7 @@ conn.execute("ALTER TABLE products ADD COLUMN deleted_at DATETIME DEFAULT NULL",
 Find the Product struct in types.rs or in the get_all query. Add created_at, updated_at, deleted_at fields to the struct and query.
 
 In products.rs, the Product is used from types.rs. Update types.rs:
+
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct Product {
@@ -79,6 +84,7 @@ pub struct Product {
 - [ ] **Step 4: Update get_all query to filter deleted records and include new columns**
 
 Replace get_all query (around line 71-89):
+
 ```rust
 let mut stmt = conn
     .prepare("SELECT id, name, created_at, updated_at, deleted_at FROM products WHERE deleted_at IS NULL ORDER BY name")
@@ -102,6 +108,7 @@ let products = stmt
 - [ ] **Step 5: Update get_by_id query to filter deleted and include new columns**
 
 Replace get_by_id query (around line 93-109):
+
 ```rust
 let mut stmt = conn
     .prepare("SELECT id, name, created_at, updated_at, deleted_at FROM products WHERE id = ?1 AND deleted_at IS NULL")
@@ -123,6 +130,7 @@ let product = stmt
 - [ ] **Step 6: Update create command to set timestamps**
 
 Replace create command (around line 114-124):
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -149,6 +157,7 @@ pub async fn create(app: AppHandle, name: String) -> Result<Product, String> {
 - [ ] **Step 7: Update update command to set updated_at timestamp**
 
 Replace update command (around line 126-138):
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -175,6 +184,7 @@ pub async fn update(app: AppHandle, id: String, name: String) -> Result<Product,
 - [ ] **Step 8: Update delete command to soft delete**
 
 Replace delete command (around line 140-148):
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -194,6 +204,7 @@ pub async fn delete(app: AppHandle, id: String) -> Result<(), String> {
 - [ ] **Step 9: Add chrono import at top of file**
 
 Verify chrono is available (should be from stock.rs work):
+
 ```rust
 use chrono::Local;
 ```
@@ -215,6 +226,7 @@ git commit -m "feat: add soft delete columns and behavior to products"
 ### Task 2: Update warehouses.rs with soft delete schema and behavior
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/warehouses.rs`
 
 **Steps:**
@@ -222,6 +234,7 @@ git commit -m "feat: add soft delete columns and behavior to products"
 - [ ] **Step 1: Update table creation to include timestamp columns**
 
 Replace lines 19-27 with:
+
 ```rust
 conn.execute(
     "CREATE TABLE IF NOT EXISTS warehouses (
@@ -240,6 +253,7 @@ conn.execute(
 - [ ] **Step 2: Add ALTER TABLE migration after table creation**
 
 After the CREATE TABLE block, add:
+
 ```rust
 // Migration: Add timestamp columns if they don't exist
 conn.execute("ALTER TABLE warehouses ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP", [])
@@ -253,6 +267,7 @@ conn.execute("ALTER TABLE warehouses ADD COLUMN deleted_at DATETIME DEFAULT NULL
 - [ ] **Step 3: Update Warehouse struct to include new fields**
 
 Replace Warehouse struct (around line 62-67):
+
 ```rust
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
 pub struct Warehouse {
@@ -268,6 +283,7 @@ pub struct Warehouse {
 - [ ] **Step 4: Update warehouses_get_all query to filter deleted and include new columns**
 
 Replace query (around line 71-89):
+
 ```rust
 let mut stmt = conn
     .prepare("SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses WHERE deleted_at IS NULL ORDER BY name")
@@ -292,6 +308,7 @@ let warehouses = stmt
 - [ ] **Step 5: Update warehouses_get_by_id query to filter deleted and include new columns**
 
 Replace query (around line 93-112):
+
 ```rust
 let warehouse = stmt
     .query_row(params![id_i64], |row| {
@@ -310,6 +327,7 @@ let warehouse = stmt
 - [ ] **Step 6: Update warehouses_create command to set timestamps**
 
 Replace command (around line 116-126):
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -337,6 +355,7 @@ pub async fn warehouses_create(app: AppHandle, name: String, location: String) -
 - [ ] **Step 7: Update warehouses_update command to set updated_at**
 
 Replace command (around line 130-140):
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -364,6 +383,7 @@ pub async fn warehouses_update(app: AppHandle, id: String, name: String, locatio
 - [ ] **Step 8: Update warehouses_delete command to soft delete**
 
 Replace command (around line 144-150):
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -383,6 +403,7 @@ pub async fn warehouses_delete(app: AppHandle, id: String) -> Result<(), String>
 - [ ] **Step 9: Add chrono import at top of file**
 
 Add after existing imports:
+
 ```rust
 use chrono::Local;
 ```
@@ -404,6 +425,7 @@ git commit -m "feat: add soft delete columns and behavior to warehouses"
 ### Task 3: Update variants.rs with soft delete schema and behavior
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/variants.rs`
 
 **Steps:**
@@ -411,6 +433,7 @@ git commit -m "feat: add soft delete columns and behavior to warehouses"
 - [ ] **Step 1: Update table creation to include timestamp columns**
 
 Replace lines 20-31 with:
+
 ```rust
 conn.execute(
     "CREATE TABLE IF NOT EXISTS product_variants (
@@ -435,6 +458,7 @@ conn.execute(
 - [ ] **Step 2: Add ALTER TABLE migration after table creation**
 
 After the CREATE TABLE block, add:
+
 ```rust
 // Migration: Add timestamp columns if they don't exist
 conn.execute("ALTER TABLE product_variants ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP", [])
@@ -448,6 +472,7 @@ conn.execute("ALTER TABLE product_variants ADD COLUMN deleted_at DATETIME DEFAUL
 - [ ] **Step 3: Update Variant struct in types.rs to include new fields**
 
 Replace Variant struct in types.rs (around line 107-117):
+
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct Variant {
@@ -468,6 +493,7 @@ pub struct Variant {
 - [ ] **Step 4: Update variants_get_all query to filter deleted and include new columns**
 
 Replace query (around line 106-130):
+
 ```rust
 let mut stmt = conn
     .prepare("SELECT id, product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price, created_at, updated_at, deleted_at FROM product_variants WHERE deleted_at IS NULL ORDER BY sku")
@@ -497,6 +523,7 @@ let variants = stmt
 - [ ] **Step 5: Update variants_get_by_product query to filter deleted and include new columns**
 
 Replace query (around line 134-159):
+
 ```rust
 let variants = stmt
     .query_map(params![product_id_i64], |row| {
@@ -522,6 +549,7 @@ let variants = stmt
 - [ ] **Step 6: Update variants_get_by_id query to filter deleted and include new columns**
 
 Replace query (around line 163-186):
+
 ```rust
 let variant = stmt
     .query_row(params![id_i64], |row| {
@@ -545,6 +573,7 @@ let variant = stmt
 - [ ] **Step 7: Update variants_create command to set timestamps**
 
 Replace command (around line 190-209):
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -577,6 +606,7 @@ pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Vari
 - [ ] **Step 8: Update variants_update command to set updated_at**
 
 Replace command (around line 213-244):
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -621,6 +651,7 @@ pub async fn variants_update(app: AppHandle, id: String, variant: UpdateVariant)
 - [ ] **Step 9: Update variants_delete command to soft delete**
 
 Replace command (around line 248-254):
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -640,6 +671,7 @@ pub async fn variants_delete(app: AppHandle, id: String) -> Result<(), String> {
 - [ ] **Step 10: Add chrono import at top of file**
 
 Add after existing imports:
+
 ```rust
 use chrono::Local;
 ```

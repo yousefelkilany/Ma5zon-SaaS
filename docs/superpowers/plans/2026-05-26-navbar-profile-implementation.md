@@ -42,6 +42,7 @@ locales/
 ## Task 1: Add rusqlite to Rust dependencies
 
 **Files:**
+
 - Modify: `src-tauri/Cargo.toml`
 
 - [ ] **Step 1: Add rusqlite dependency**
@@ -57,6 +58,7 @@ rusqlite = { version = "0.32", features = ["bundled"] }
 ## Task 2: Add User type to Rust types.rs
 
 **Files:**
+
 - Modify: `src-tauri/src/types.rs`
 
 - [ ] **Step 1: Add User struct before RecoveryError**
@@ -83,6 +85,7 @@ pub struct User {
 ## Task 3: Create Rust user commands module
 
 **Files:**
+
 - Create: `src-tauri/src/commands/user.rs`
 - Modify: `src-tauri/src/commands/mod.rs`
 
@@ -243,6 +246,7 @@ Expected: Compiles without errors
 ## Task 4: Regenerate TypeScript bindings
 
 **Files:**
+
 - Modify: `src/lib/bindings.ts` (regenerated)
 
 - [ ] **Step 1: Regenerate bindings**
@@ -255,56 +259,57 @@ Expected: "✓ TypeScript bindings exported to ../src/lib/bindings.ts"
 ## Task 5: Create useAuth hook
 
 **Files:**
+
 - Create: `src/hooks/useAuth.ts`
 
 - [ ] **Step 1: Write useAuth hook**
 
 ```typescript
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { commands } from '@/lib/bindings';
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { commands } from '@/lib/bindings'
 
-const AUTH_USER_ID_KEY = 'auth_user_id';
+const AUTH_USER_ID_KEY = 'auth_user_id'
 
 export function getAuthUserId(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(AUTH_USER_ID_KEY);
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem(AUTH_USER_ID_KEY)
 }
 
 function setAuthUserId(userId: string | null): void {
   if (userId === null) {
-    localStorage.removeItem(AUTH_USER_ID_KEY);
+    localStorage.removeItem(AUTH_USER_ID_KEY)
   } else {
-    localStorage.setItem(AUTH_USER_ID_KEY, userId);
+    localStorage.setItem(AUTH_USER_ID_KEY, userId)
   }
 }
 
 export function useAuth() {
-  const queryClient = useQueryClient();
-  const userId = getAuthUserId();
+  const queryClient = useQueryClient()
+  const userId = getAuthUserId()
 
   const userQuery = useQuery({
     queryKey: ['user', userId],
     queryFn: async () => {
-      if (!userId) return null;
-      const result = await commands.loadUser(userId);
-      if (result.status === 'err') return null;
-      return result.data;
+      if (!userId) return null
+      const result = await commands.loadUser(userId)
+      if (result.status === 'err') return null
+      return result.data
     },
     enabled: userId !== null,
     staleTime: Infinity,
     gcTime: Infinity,
-  });
+  })
 
   const login = (userId: string) => {
-    setAuthUserId(userId);
-    queryClient.invalidateQueries({ queryKey: ['user', userId] });
-  };
+    setAuthUserId(userId)
+    queryClient.invalidateQueries({ queryKey: ['user', userId] })
+  }
 
   const logout = () => {
-    const currentUserId = getAuthUserId();
-    setAuthUserId(null);
-    queryClient.removeQueries({ queryKey: ['user', currentUserId] });
-  };
+    const currentUserId = getAuthUserId()
+    setAuthUserId(null)
+    queryClient.removeQueries({ queryKey: ['user', currentUserId] })
+  }
 
   return {
     isLoggedIn: userId !== null,
@@ -312,7 +317,7 @@ export function useAuth() {
     isLoading: userQuery.isLoading,
     login,
     logout,
-  };
+  }
 }
 ```
 
@@ -321,6 +326,7 @@ export function useAuth() {
 ## Task 6: Create LoginModal component
 
 **Files:**
+
 - Create: `src/components/auth/LoginModal.tsx`
 
 - **Based on**: `/mnt/C/Ma5zon-SaaS/stitch-screens/login-modal.html`
@@ -328,6 +334,7 @@ export function useAuth() {
 - [ ] **Step 1: Create LoginModal.tsx**
 
 Components to include:
+
 - Dialog (from `@/components/ui/dialog`)
 - Form with username, password fields
 - Password visibility toggle
@@ -419,6 +426,7 @@ Apply existing design tokens from the HTML mockup (colors, spacing, typography).
 ## Task 7: Create ProfileSection component
 
 **Files:**
+
 - Create: `src/components/auth/ProfileSection.tsx`
 
 - [ ] **Step 1: Write ProfileSection component**
@@ -494,8 +502,8 @@ export function ProfileSection() {
 Add to `src/components/auth/index.ts` (create if not exists):
 
 ```typescript
-export { LoginModal } from './LoginModal';
-export { ProfileSection } from './ProfileSection';
+export { LoginModal } from './LoginModal'
+export { ProfileSection } from './ProfileSection'
 ```
 
 ---
@@ -503,6 +511,7 @@ export { ProfileSection } from './ProfileSection';
 ## Task 8: Update Navbar to use ProfileSection
 
 **Files:**
+
 - Modify: `src/components/layout/Navbar.tsx`
 
 - [ ] **Step 1: Replace hardcoded profile section**
@@ -510,10 +519,10 @@ export { ProfileSection } from './ProfileSection';
 Remove the hardcoded profile div (lines 49-63) and replace with:
 
 ```tsx
-import { ProfileSection } from '@/components/auth';
+import { ProfileSection } from '@/components/auth'
 
 // Inside the right section div (after the settings button):
-<ProfileSection />
+;<ProfileSection />
 ```
 
 ---
@@ -521,6 +530,7 @@ import { ProfileSection } from '@/components/auth';
 ## Task 9: Add translation keys
 
 **Files:**
+
 - Modify: `locales/en.json`
 
 - [ ] **Step 1: Add auth translation keys**
@@ -546,15 +556,23 @@ Add to `locales/en.json` after `"nav.userRole"`:
 ## Task 10: Add shake animation CSS
 
 **Files:**
+
 - Modify: `src/App.css` (or relevant CSS file)
 
 - [ ] **Step 1: Add shake keyframes and class**
 
 ```css
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
 }
 
 .animate-shake {
@@ -580,6 +598,7 @@ Expected: No lint errors
 
 Start the app with `pnpm dev` (or `npm run dev`)
 Expected:
+
 1. Navbar shows "Login" button on the right
 2. Clicking "Login" opens the modal
 3. Filling in credentials and submitting closes modal and shows profile picture/name/role

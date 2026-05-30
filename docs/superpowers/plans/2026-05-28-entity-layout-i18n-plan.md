@@ -25,6 +25,7 @@
 ### Task 1: Add i18n Layouts (English)
 
 **Files:**
+
 - Modify: `locales/en.json`
 
 - [ ] **Step 1: Add `entity.layout` namespace to en.json**
@@ -177,6 +178,7 @@ git commit -m "feat(i18n): add entity layout definitions for all entity types"
 ### Task 2: Add i18n Layouts (Arabic)
 
 **Files:**
+
 - Modify: `locales/ar.json`
 
 - [ ] **Step 1: Add Arabic translations for entity layouts**
@@ -329,6 +331,7 @@ git commit -m "feat(i18n): add Arabic translations for entity layouts"
 ### Task 3: Create entity-layout.ts Resolver
 
 **Files:**
+
 - Create: `src/lib/entity-layout.ts`
 - Test: `src/lib/entity-layout.test.ts`
 
@@ -397,7 +400,9 @@ describe('getEntityLayout', () => {
     const consoleSpy = vi.spyOn(console, 'warn').mockReturnValue()
     const result = getEntityLayout('nonexistent', mockT as never)
     expect(result).toEqual([])
-    expect(consoleSpy).toHaveBeenCalledWith('[entity-layout] No layout found for entity: nonexistent')
+    expect(consoleSpy).toHaveBeenCalledWith(
+      '[entity-layout] No layout found for entity: nonexistent'
+    )
     consoleSpy.mockRestore()
   })
 
@@ -428,10 +433,7 @@ import type { TFunction } from 'i18next'
 
 const SKIP_COLUMNS = ['id', '_id', 'pk', 'fk_']
 
-export function getEntityLayout(
-  entityType: string,
-  t: TFunction
-): ColumnDef[] {
+export function getEntityLayout(entityType: string, t: TFunction): ColumnDef[] {
   const layout = t(`entity.layout.${entityType}`, { returnObjects: true })
 
   if (!layout || typeof layout !== 'object') {
@@ -480,6 +482,7 @@ git commit -m "feat(entity): add getEntityLayout resolver for i18n-backed column
 ### Task 4: Update DataTable for Localized Currency
 
 **Files:**
+
 - Modify: `src/components/entity/DataTable.tsx`
 
 - [ ] **Step 1: Update DataCell to use i18n for currency prefix**
@@ -555,6 +558,7 @@ git commit -m "feat(entity): use i18n for localized currency prefix in DataCell"
 ### Task 5: Update EntityWorkspace to Use getEntityLayout
 
 **Files:**
+
 - Modify: `src/components/entity/EntityWorkspace.tsx`
 
 **Prerequisites:** Ensure `warehouses_get_all` command is exported in Rust and bindings are regenerated (`npm run rust:bindings`). If `commands.warehousesGetAll()` doesn't exist in `src/lib/bindings.ts`, run `npm run rust:bindings` first.
@@ -562,6 +566,7 @@ git commit -m "feat(entity): use i18n for localized currency prefix in DataCell"
 - [ ] **Step 1: Read current EntityWorkspace implementation**
 
 Read the full file at `src/components/entity/EntityWorkspace.tsx`. You need to:
+
 1. Add `useMemo` to the React import
 2. Import `getEntityLayout` from `@/lib/entity-layout`
 3. Remove the `getTableInfo` query and `convertTableLayout` function
@@ -571,16 +576,19 @@ Read the full file at `src/components/entity/EntityWorkspace.tsx`. You need to:
 - [ ] **Step 2: Update imports**
 
 Change the import from:
+
 ```typescript
 import { useState, useCallback } from 'react'
 ```
 
 To:
+
 ```typescript
 import { useState, useCallback, useMemo } from 'react'
 ```
 
 Add the `getEntityLayout` import:
+
 ```typescript
 import { getEntityLayout } from '@/lib/entity-layout'
 ```
@@ -590,6 +598,7 @@ import { getEntityLayout } from '@/lib/entity-layout'
 Remove the `convertTableLayout` function (lines 93-120).
 
 Replace the `tableLayout` query (around lines 178-186):
+
 ```typescript
 const { data: tableLayout } = useQuery({
   queryKey: ['tableLayout', entityType],
@@ -609,6 +618,7 @@ const productColumns: ColumnDef[] = tableLayout
 ```
 
 With:
+
 ```typescript
 // Column layout from i18n (replaces getTableInfo query)
 const columns: ColumnDef[] = useMemo(
@@ -674,11 +684,11 @@ After all tasks:
 
 ## Spec Coverage Check
 
-| Spec Requirement | Task |
-|-----------------|------|
-| i18n column layouts | Task 1, Task 2 |
-| getEntityLayout resolver | Task 3 |
-| DataTable i18n currency | Task 4 |
-| EntityWorkspace integration | Task 5 |
-| Remove convertTableLayout | Task 5 |
-| Keep getTableInfo command | N/A (not removed) |
+| Spec Requirement            | Task              |
+| --------------------------- | ----------------- |
+| i18n column layouts         | Task 1, Task 2    |
+| getEntityLayout resolver    | Task 3            |
+| DataTable i18n currency     | Task 4            |
+| EntityWorkspace integration | Task 5            |
+| Remove convertTableLayout   | Task 5            |
+| Keep getTableInfo command   | N/A (not removed) |

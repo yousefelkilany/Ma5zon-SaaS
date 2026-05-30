@@ -13,13 +13,15 @@
 ## Task 1: Remove Actions Column from DataTable
 
 **Files:**
+
 - Modify: `src/components/entity/DataTable.tsx:171-240`
 
 **Context:** The `_actionsColumn` renders edit/delete pencil icons that we need to remove. Also remove `onEditClick` and `onDeleteClick` from props since they won't be used anymore.
 
-- [ ] **Step 1: Remove _actionsColumn useMemo**
+- [ ] **Step 1: Remove \_actionsColumn useMemo**
 
 Find lines 171-218:
+
 ```typescript
 const _actionsColumn = useMemo<TanstackColumnDef<EntityRow>>(
   () => ({
@@ -74,9 +76,10 @@ const _actionsColumn = useMemo<TanstackColumnDef<EntityRow>>(
 
 Delete this entire block.
 
-- [ ] **Step 2: Remove _actionsColumn from tableColumns**
+- [ ] **Step 2: Remove \_actionsColumn from tableColumns**
 
 Find line 237:
+
 ```typescript
 cols.push(_actionsColumn)
 ```
@@ -86,11 +89,13 @@ Delete this line.
 - [ ] **Step 3: Update tableColumns useMemo dependency array**
 
 Find line 240:
+
 ```typescript
 }, [selectColumn, expandColumn, entityType, visibleColumns, _actionsColumn])
 ```
 
 Change to:
+
 ```typescript
 }, [selectColumn, expandColumn, entityType, visibleColumns])
 ```
@@ -98,6 +103,7 @@ Change to:
 - [ ] **Step 4: Remove onEditClick and onDeleteClick from DataTableProps**
 
 Find in `DataTableProps & ExpandedRowProps` (lines 84-85):
+
 ```typescript
   onEditClick?: (id: string, row: EntityRow) => void
   onDeleteClick?: (id: string, row: EntityRow) => void
@@ -108,21 +114,22 @@ Delete both lines.
 - [ ] **Step 5: Remove handleEditClick and handleDeleteClick from component**
 
 Find lines 97-110:
-```typescript
-  const handleEditClick = useCallback(
-    (id: string, row: EntityRow) => {
-      onEditClick?.(id, row)
-      setSelectedEntityId(id)
-      setEditModalOpen(true)
-    },
-    [onEditClick]
-  )
 
-  const handleDeleteClick = useCallback((id: string, row: EntityRow) => {
+```typescript
+const handleEditClick = useCallback(
+  (id: string, row: EntityRow) => {
+    onEditClick?.(id, row)
     setSelectedEntityId(id)
-    setSelectedRow(row)
-    setDeleteModalOpen(true)
-  }, [])
+    setEditModalOpen(true)
+  },
+  [onEditClick]
+)
+
+const handleDeleteClick = useCallback((id: string, row: EntityRow) => {
+  setSelectedEntityId(id)
+  setSelectedRow(row)
+  setDeleteModalOpen(true)
+}, [])
 ```
 
 Delete this entire block.
@@ -130,21 +137,24 @@ Delete this entire block.
 - [ ] **Step 6: Remove delete modal state and ConfirmationDialog**
 
 Find lines 93-95:
+
 ```typescript
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
-  const [selectedRow, setSelectedRow] = useState<EntityRow | null>(null)
+const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
+const [selectedRow, setSelectedRow] = useState<EntityRow | null>(null)
 ```
 
 Change to:
+
 ```typescript
-  const [editModalOpen, setEditModalOpen] = useState(false)
-  const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
+const [editModalOpen, setEditModalOpen] = useState(false)
+const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
 ```
 
 Also remove `selectedRow` since we don't need it anymore.
 
 Find lines 488-503 (ConfirmationDialog block):
+
 ```typescript
       {selectedEntityId && (
         <ConfirmationDialog
@@ -169,6 +179,7 @@ Delete this entire block.
 - [ ] **Step 7: Remove onDeleteClick from component destructuring**
 
 Find line 85:
+
 ```typescript
   onDeleteClick,
 ```
@@ -192,6 +203,7 @@ git commit -m "refactor: remove actions column and delete modal from DataTable"
 ## Task 2: Pass queryClient to DataTableShell for Direct Invalidation
 
 **Files:**
+
 - Modify: `src/components/entity/DataTableShell.tsx`
 - Modify: `src/components/entity/EntityWorkspace.tsx`
 
@@ -200,6 +212,7 @@ git commit -m "refactor: remove actions column and delete modal from DataTable"
 - [ ] **Step 1: Add queryClient prop to DataTableShellProps**
 
 Find line 17-30:
+
 ```typescript
 interface DataTableShellProps {
   entityType: string
@@ -218,6 +231,7 @@ interface DataTableShellProps {
 ```
 
 Add `queryClient` to the interface:
+
 ```typescript
 interface DataTableShellProps {
   entityType: string
@@ -241,6 +255,7 @@ Import `QueryClient` from `@tanstack/react-query`.
 - [ ] **Step 2: Add queryClient to DataTableShell destructuring**
 
 Find lines 39-52:
+
 ```typescript
 export function DataTableShell({
   entityType,
@@ -259,6 +274,7 @@ export function DataTableShell({
 ```
 
 Add `queryClient` to destructuring:
+
 ```typescript
 export function DataTableShell({
   entityType,
@@ -280,16 +296,19 @@ export function DataTableShell({
 - [ ] **Step 3: Wire onFiltersApply to trigger refetch**
 
 Find line 55:
+
 ```typescript
-  const [filters] = useState<FilterState[]>([])
+const [filters] = useState<FilterState[]>([])
 ```
 
 Change to:
+
 ```typescript
-  const [filters, setFilters] = useState<FilterState[]>([])
+const [filters, setFilters] = useState<FilterState[]>([])
 ```
 
 Find the FilterDialog (lines 128-134):
+
 ```typescript
       <FilterDialog
         open={filterDialogOpen}
@@ -301,6 +320,7 @@ Find the FilterDialog (lines 128-134):
 ```
 
 The `onFiltersApply` callback needs to both:
+
 1. Update local filters state
 2. Trigger query invalidation
 
@@ -317,28 +337,30 @@ For now in DataTableShell, just remove the unused `filters` state since FilterDi
 Actually wait — looking at line 55, `filters` state in DataTableShell is NEVER used (line 132 passes `filters={filters}` but that's from state, not from FilterDialog's response). And `onApply={onFiltersApply}` on line 133 just passes the no-op up.
 
 The `handleColumnSave` at line 83-89:
+
 ```typescript
-  const handleColumnSave = useCallback(
-    (newColumns: ColumnDef[]) => {
-      onSaveColumnPrefs(newColumns)
-      setColumnDialogOpen(false)
-    },
-    [onSaveColumnPrefs]
-  )
+const handleColumnSave = useCallback(
+  (newColumns: ColumnDef[]) => {
+    onSaveColumnPrefs(newColumns)
+    setColumnDialogOpen(false)
+  },
+  [onSaveColumnPrefs]
+)
 ```
 
 This calls `onSaveColumnPrefs` (the no-op from EntityWorkspace). We need to add `queryClient.invalidateQueries` here directly.
 
 Change `handleColumnSave` to:
+
 ```typescript
-  const handleColumnSave = useCallback(
-    (newColumns: ColumnDef[]) => {
-      onSaveColumnPrefs(newColumns)
-      queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
-      setColumnDialogOpen(false)
-    },
-    [onSaveColumnPrefs, queryClient, entityType]
-  )
+const handleColumnSave = useCallback(
+  (newColumns: ColumnDef[]) => {
+    onSaveColumnPrefs(newColumns)
+    queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
+    setColumnDialogOpen(false)
+  },
+  [onSaveColumnPrefs, queryClient, entityType]
+)
 ```
 
 - [ ] **Step 4: Remove unused state and handlers from DataTableShell**
@@ -374,6 +396,7 @@ git commit -m "feat: pass queryClient to DataTableShell for direct invalidation"
 ## Task 3: Wire EntityWorkspace Callbacks (onFiltersApply, onSaveColumnPrefs, queryClient)
 
 **Files:**
+
 - Modify: `src/components/entity/EntityWorkspace.tsx`
 
 **Context:** EntityWorkspace owns the data and queryClient. It needs to wire `onFiltersApply`, `onSaveColumnPrefs`, and pass `queryClient` to DataTableShell.
@@ -381,11 +404,13 @@ git commit -m "feat: pass queryClient to DataTableShell for direct invalidation"
 - [ ] **Step 1: Import useQueryClient**
 
 Find line 4:
+
 ```typescript
 import { useQuery } from '@tanstack/react-query'
 ```
 
 Change to:
+
 ```typescript
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 ```
@@ -393,35 +418,41 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 - [ ] **Step 2: Add useQueryClient hook**
 
 Find line 140:
+
 ```typescript
   const { data: entityData, isLoading } = useQuery({
 ```
 
 Add before it:
+
 ```typescript
-  const queryClient = useQueryClient()
+const queryClient = useQueryClient()
 ```
 
 - [ ] **Step 3: Add filter state**
 
 Find line 102:
+
 ```typescript
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 ```
 
 Add after:
+
 ```typescript
-  const [activeFilters, setActiveFilters] = useState<FilterState[]>([])
+const [activeFilters, setActiveFilters] = useState<FilterState[]>([])
 ```
 
 - [ ] **Step 4: Wire onSaveColumnPrefs to localStorage + invalidation**
 
 Find line 183:
+
 ```typescript
         onSaveColumnPrefs={x => x}
 ```
 
 Change to:
+
 ```typescript
         onSaveColumnPrefs={(columns) => {
           localStorage.setItem(`user_prefs_columns_${entityType}`, JSON.stringify(columns))
@@ -432,11 +463,13 @@ Change to:
 - [ ] **Step 5: Wire onFiltersApply to update filter state + refetch**
 
 Find line 184:
+
 ```typescript
         onFiltersApply={x => x}
 ```
 
 Change to:
+
 ```typescript
         onFiltersApply={(filters) => {
           setActiveFilters(filters)
@@ -447,47 +480,51 @@ Change to:
 - [ ] **Step 6: Pass queryClient to DataTableShell**
 
 Find line 182 (after isLoading):
+
 ```typescript
-        isLoading={isLoading}
+isLoading = { isLoading }
 ```
 
 Add after:
+
 ```typescript
-        queryClient={queryClient}
+queryClient = { queryClient }
 ```
 
 - [ ] **Step 7: Update queryFn to use activeFilters**
 
 Find the queryFn (lines 144-155):
+
 ```typescript
-      switch (entityType) {
-        case 'products': {
-          const result = await commands.getAll([], [])
-          return result.status === 'ok' ? result.data : []
-        }
-        case 'warehouses': {
-          const result = await commands.warehousesGetAll([], [])
-          return result.status === 'ok' ? result.data : []
-        }
-        default:
-          return []
-      }
+switch (entityType) {
+  case 'products': {
+    const result = await commands.getAll([], [])
+    return result.status === 'ok' ? result.data : []
+  }
+  case 'warehouses': {
+    const result = await commands.warehousesGetAll([], [])
+    return result.status === 'ok' ? result.data : []
+  }
+  default:
+    return []
+}
 ```
 
 Change to:
+
 ```typescript
-      switch (entityType) {
-        case 'products': {
-          const result = await commands.getAll(activeFilters, [])
-          return result.status === 'ok' ? result.data : []
-        }
-        case 'warehouses': {
-          const result = await commands.warehousesGetAll(activeFilters, [])
-          return result.status === 'ok' ? result.data : []
-        }
-        default:
-          return []
-      }
+switch (entityType) {
+  case 'products': {
+    const result = await commands.getAll(activeFilters, [])
+    return result.status === 'ok' ? result.data : []
+  }
+  case 'warehouses': {
+    const result = await commands.warehousesGetAll(activeFilters, [])
+    return result.status === 'ok' ? result.data : []
+  }
+  default:
+    return []
+}
 ```
 
 - [ ] **Step 8: Run TypeScript check**
@@ -507,6 +544,7 @@ git commit -m "feat: wire EntityWorkspace callbacks with queryClient invalidatio
 ## Task 4: Update DetailModal onDeleted to Trigger Parent Callback
 
 **Files:**
+
 - Modify: `src/components/entity/ProductDetailModal.tsx`
 - Modify: `src/components/entity/WarehouseDetailModal.tsx`
 - Modify: `src/components/entity/VariantDetailModal.tsx`
@@ -541,6 +579,7 @@ Actually let me just update the plan: Add `queryClient` to DataTableProps, pass 
 - [ ] **Step 1: Add queryClient to DataTableProps**
 
 Find in `src/lib/types/entity.ts`:
+
 ```typescript
 export interface DataTableProps {
   entityType: string
@@ -558,6 +597,7 @@ export interface DataTableProps {
 ```
 
 We already removed `onEditClick` and `onDeleteClick` in Task 1. Add `queryClient`:
+
 ```typescript
 import type { QueryClient } from '@tanstack/react-query'
 
@@ -578,6 +618,7 @@ export interface DataTableProps {
 - [ ] **Step 2: Pass queryClient from DataTableShell to DataTable**
 
 In DataTableShell, add `queryClient` to DataTable props (after isLoadingVariants):
+
 ```typescript
           <DataTable
             entityType={entityType}
@@ -598,6 +639,7 @@ In DataTableShell, add `queryClient` to DataTable props (after isLoadingVariants
 In DataTable, pass queryClient to ProductDetailModal, WarehouseDetailModal, VariantDetailModal.
 
 Find ProductDetailModal (lines 455-465):
+
 ```typescript
       {entityType === 'products' && selectedEntityId && (
         <ProductDetailModal
@@ -613,6 +655,7 @@ Find ProductDetailModal (lines 455-465):
 ```
 
 Change to:
+
 ```typescript
       {entityType === 'products' && selectedEntityId && (
         <ProductDetailModal
@@ -646,19 +689,20 @@ git commit -m "feat: pass queryClient through to DetailModal for delete invalida
 
 ## Summary of File Changes
 
-| File | Change |
-|------|--------|
-| `src/components/entity/DataTable.tsx` | Remove actions column, remove onEditClick/onDeleteClick props, pass queryClient to DetailModal |
-| `src/components/entity/DataTableShell.tsx` | Add queryClient prop, wire handleColumnSave with invalidation |
-| `src/components/entity/EntityWorkspace.tsx` | Wire onFiltersApply, onSaveColumnPrefs, pass queryClient, use activeFilters in queryFn |
-| `src/lib/types/entity.ts` | Add queryClient to DataTableProps |
-| `src/components/entity/ProductDetailModal.tsx` | Call queryClient.invalidateQueries on onDeleted |
-| `src/components/entity/WarehouseDetailModal.tsx` | Call queryClient.invalidateQueries on onDeleted |
-| `src/components/entity/VariantDetailModal.tsx` | Call queryClient.invalidateQueries on onDeleted |
+| File                                             | Change                                                                                         |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `src/components/entity/DataTable.tsx`            | Remove actions column, remove onEditClick/onDeleteClick props, pass queryClient to DetailModal |
+| `src/components/entity/DataTableShell.tsx`       | Add queryClient prop, wire handleColumnSave with invalidation                                  |
+| `src/components/entity/EntityWorkspace.tsx`      | Wire onFiltersApply, onSaveColumnPrefs, pass queryClient, use activeFilters in queryFn         |
+| `src/lib/types/entity.ts`                        | Add queryClient to DataTableProps                                                              |
+| `src/components/entity/ProductDetailModal.tsx`   | Call queryClient.invalidateQueries on onDeleted                                                |
+| `src/components/entity/WarehouseDetailModal.tsx` | Call queryClient.invalidateQueries on onDeleted                                                |
+| `src/components/entity/VariantDetailModal.tsx`   | Call queryClient.invalidateQueries on onDeleted                                                |
 
 ## Verification
 
 After all tasks complete:
+
 1. `pnpm run check:all` — TypeScript and lint pass
 2. Delete a product/warehouse — table refetches and shows updated data
 3. Apply a filter — table shows filtered results

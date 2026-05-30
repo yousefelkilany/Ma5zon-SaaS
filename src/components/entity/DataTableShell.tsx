@@ -111,14 +111,20 @@ export function DataTableShell({
     }
   }, [externalSort])
 
-  const handleSortChange = useCallback((newSort: SortState | null) => {
-    setSort(newSort)
-    onSortChange?.(newSort)
-  }, [onSortChange])
+  const handleSortChange = useCallback(
+    (newSort: SortState | null) => {
+      setSort(newSort)
+      onSortChange?.(newSort)
+    },
+    [onSortChange]
+  )
 
-  const handlePageChange = useCallback((page: number, pageSize: number) => {
-    onPageChange?.(page, pageSize)
-  }, [onPageChange])
+  const handlePageChange = useCallback(
+    (page: number, pageSize: number) => {
+      onPageChange?.(page, pageSize)
+    },
+    [onPageChange]
+  )
 
   const handleRowSelect = useCallback((ids: Set<string>) => {
     setSelectedIds(ids)

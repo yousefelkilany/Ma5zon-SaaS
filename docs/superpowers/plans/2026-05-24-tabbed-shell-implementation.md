@@ -37,6 +37,7 @@ src/
 ## Task 1: Install react-router-dom
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Install react-router-dom**
@@ -57,6 +58,7 @@ git commit -m "feat: add react-router-dom for tab routing"
 ## Task 2: Create Tab Store
 
 **Files:**
+
 - Create: `src/store/tab-store.ts`
 - Test: `src/store/tab-store.test.ts`
 
@@ -66,7 +68,11 @@ Add `Tab` and `TabType` to the utility file for type reuse:
 
 ```typescript
 // Add after existing exports in lib/utils.ts
-export type TabType = 'dashboard' | 'new-tab' | 'sales-invoice' | 'purchase-invoice'
+export type TabType =
+  | 'dashboard'
+  | 'new-tab'
+  | 'sales-invoice'
+  | 'purchase-invoice'
 
 export interface Tab {
   id: string
@@ -113,7 +119,7 @@ export const useTabStore = create<TabState>()(
       tabs: [DEFAULT_DASHBOARD_TAB],
       activeTabId: 'dashboard',
 
-      addTab: (tabData) => {
+      addTab: tabData => {
         const newTab: Tab = {
           ...tabData,
           id: generateId(),
@@ -125,7 +131,7 @@ export const useTabStore = create<TabState>()(
         return newTab.id
       },
 
-      removeTab: (tabId) => {
+      removeTab: tabId => {
         const { tabs, activeTabId } = get()
         const tab = tabs.find(t => t.id === tabId)
         if (!tab || !tab.closable) return
@@ -135,18 +141,22 @@ export const useTabStore = create<TabState>()(
         // Enforce dashboard at index 0
         const dashboardTab = newTabs.find(t => t.type === 'dashboard')
         const otherTabs = newTabs.filter(t => t.type !== 'dashboard')
-        const reorderedTabs = dashboardTab ? [dashboardTab, ...otherTabs] : newTabs
+        const reorderedTabs = dashboardTab
+          ? [dashboardTab, ...otherTabs]
+          : newTabs
 
         let newActiveId = activeTabId
         if (activeTabId === tabId) {
           const closedIndex = tabs.findIndex(t => t.id === tabId)
-          newActiveId = reorderedTabs[Math.min(closedIndex, reorderedTabs.length - 1)]?.id || 'dashboard'
+          newActiveId =
+            reorderedTabs[Math.min(closedIndex, reorderedTabs.length - 1)]
+              ?.id || 'dashboard'
         }
 
         set({ tabs: reorderedTabs, activeTabId: newActiveId })
       },
 
-      setActiveTab: (tabId) => {
+      setActiveTab: tabId => {
         set({ activeTabId: tabId })
       },
 
@@ -155,7 +165,7 @@ export const useTabStore = create<TabState>()(
         return tabs.find(t => t.id === activeTabId)
       },
 
-      getTabByType: (type) => {
+      getTabByType: type => {
         const { tabs } = get()
         return tabs.find(t => t.type === type)
       },
@@ -177,12 +187,14 @@ describe('useTabStore', () => {
   beforeEach(() => {
     // Reset store before each test
     useTabStore.setState({
-      tabs: [{
-        id: 'dashboard',
-        title: 'Dashboard',
-        type: 'dashboard',
-        closable: false,
-      }],
+      tabs: [
+        {
+          id: 'dashboard',
+          title: 'Dashboard',
+          type: 'dashboard',
+          closable: false,
+        },
+      ],
       activeTabId: 'dashboard',
     })
   })
@@ -253,6 +265,7 @@ git commit -m "feat: add tab store with dashboard invariant"
 ## Task 3: Create Navbar Component
 
 **Files:**
+
 - Create: `src/components/layout/Navbar.tsx`
 - Modify: `src/components/layout/MainWindow.tsx` (import Navbar)
 
@@ -363,6 +376,7 @@ git commit -m "feat: add Navbar component with logo, search, profile"
 ## Task 4: Create TabBar Component
 
 **Files:**
+
 - Create: `src/components/layout/TabBar.tsx`
 - Modify: `src/components/layout/MainWindow.tsx` (add TabBar below Navbar)
 
@@ -467,6 +481,7 @@ git commit -m "feat: add TabBar component with add/close functionality"
 ## Task 5: Update LeftSideBar with Collapse/Expand
 
 **Files:**
+
 - Modify: `src/components/layout/LeftSideBar.tsx`
 
 - [ ] **Step 1: Update LeftSideBar with collapse logic**
@@ -645,6 +660,7 @@ git commit -m "feat: enhance LeftSideBar with collapse/expand functionality"
 ## Task 6: Create Tab Content Components
 
 **Files:**
+
 - Create: `src/components/tabs/DashboardContent.tsx`
 - Create: `src/components/tabs/NewTabContent.tsx`
 - Create: `src/components/tabs/index.ts`
@@ -1039,6 +1055,7 @@ git commit -m "feat: add DashboardContent and NewTabContent components"
 ## Task 7: Update MainWindow with Routing
 
 **Files:**
+
 - Modify: `src/main.tsx` (add BrowserRouter)
 - Modify: `src/components/layout/MainWindowContent.tsx` (add Routes)
 
@@ -1224,6 +1241,7 @@ git commit -m "feat: integrate routing with tab system"
 ## Task 8: Verify and Run Tests
 
 **Files:**
+
 - Run: `pnpm typecheck && pnpm test:run && pnpm lint`
 
 - [ ] **Step 1: Run typecheck**
@@ -1259,6 +1277,7 @@ If any fixes were made, commit them.
 ## Task 9: Create Implementation Summary
 
 **Files:**
+
 - Create: `docs/superpowers/plans/2026-05-24-tabbed-shell-implementation.md` (this file)
 
 ---

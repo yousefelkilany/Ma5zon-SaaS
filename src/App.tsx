@@ -26,7 +26,8 @@ function App() {
 
       try {
         const result = await commands.loadPreferences()
-        const savedLanguage = result.status === 'ok' ? result.data.language : null
+        const savedLanguage =
+          result.status === 'ok' ? result.data.language : null
         await initializeLanguage(savedLanguage)
       } catch (error) {
         logger.warn('Failed to initialize language', { error })

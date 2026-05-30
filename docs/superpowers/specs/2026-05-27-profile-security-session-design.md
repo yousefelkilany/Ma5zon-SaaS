@@ -18,10 +18,12 @@ Implement the Security tab in the ProfileModal with password change functionalit
 The Security tab replaces skeleton placeholders with a two-column layout matching the reference HTML:
 
 **Left Panel (col-span-4):**
+
 - Password Policy card with checklist of requirements (min 12 chars, uppercase, numeric, special char)
 - Security status card showing last login timestamp and IP
 
 **Right Panel (col-span-8):**
+
 - Update Password form with three password fields:
   - Current Password
   - New Password
@@ -31,11 +33,11 @@ The Security tab replaces skeleton placeholders with a two-column layout matchin
 
 ### 2.2 Form Behavior
 
-| Field | Validation | Error Display |
-|-------|------------|---------------|
-| Current Password | Required, non-empty | Inline below field |
-| New Password | Required, min 12 chars, 1 uppercase, 1 numeric, 1 special (@#$) | Inline below field, red border |
-| Confirm Password | Must match New Password | Inline below field |
+| Field            | Validation                                                      | Error Display                  |
+| ---------------- | --------------------------------------------------------------- | ------------------------------ |
+| Current Password | Required, non-empty                                             | Inline below field             |
+| New Password     | Required, min 12 chars, 1 uppercase, 1 numeric, 1 special (@#$) | Inline below field, red border |
+| Confirm Password | Must match New Password                                         | Inline below field             |
 
 ### 2.3 Password Visibility Toggle
 
@@ -65,11 +67,13 @@ The Security tab replaces skeleton placeholders with a two-column layout matchin
 **Current behavior:** `invalidate_session` is called but the Rust command is a no-op.
 
 **Required behavior:**
+
 1. On `beforeunload`, call `commands.invalidateSession()`
 2. Rust handler must invalidate the user's session server-side (clear session token from DB)
 3. Fire-and-forget: don't block the unload event
 
 **Implementation:**
+
 - Rust: `invalidate_session` must remove the user's session record from the database
 - The session token should be stored/retrieved to identify which session to invalidate
 
@@ -78,6 +82,7 @@ The Security tab replaces skeleton placeholders with a two-column layout matchin
 **Current behavior:** `validateSession` always returns `true`.
 
 **Required behavior:**
+
 1. On app start, if `auth_user_id` exists in localStorage:
    - Call `commands.validateSession(storedUserId)` to verify session is still valid
 2. Rust handler must check if the user's session token in DB matches the stored token
@@ -90,6 +95,7 @@ The Security tab replaces skeleton placeholders with a two-column layout matchin
 ### 3.3 Session Data Model
 
 Sessions stored in SQLite should include:
+
 - `user_id` (string)
 - `session_token` (string, randomly generated on login)
 - `created_at` (timestamp)
@@ -119,6 +125,7 @@ App Close:
 ## 4. Design Tokens
 
 All components use existing design tokens:
+
 - `bg-surface-container`, `bg-surface-container-low`, `bg-surface-container-high`
 - `border-outline-variant`, `text-on-surface`, `text-on-surface-variant`
 - `font-label-caps`, `font-body-md`, `font-headline-sm`
@@ -130,11 +137,11 @@ No new tokens required.
 
 ## 5. File Changes
 
-| File | Change |
-|------|--------|
-| `src/components/auth/ProfileModal.tsx` | Implement Security tab UI |
-| `src-tauri/src/commands/user.rs` | Implement actual `invalidate_session` and `validate_session` |
-| `src/hooks/useAuth.ts` | Ensure session validation on mount |
+| File                                   | Change                                                       |
+| -------------------------------------- | ------------------------------------------------------------ |
+| `src/components/auth/ProfileModal.tsx` | Implement Security tab UI                                    |
+| `src-tauri/src/commands/user.rs`       | Implement actual `invalidate_session` and `validate_session` |
+| `src/hooks/useAuth.ts`                 | Ensure session validation on mount                           |
 
 ---
 

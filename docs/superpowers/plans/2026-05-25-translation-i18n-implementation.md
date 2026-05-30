@@ -43,6 +43,7 @@ src/components/titlebar/
 ## Task 1: Create Translation Detection Script
 
 **Files:**
+
 - Create: `scripts/generate-translations.ts`
 - Create: `locales/generated/.gitkeep`
 
@@ -81,8 +82,13 @@ const FEATURE_PREFIXES = {
 } as const
 
 function generateKey(str: string, feature: string): string {
-  const words = str.toLowerCase().split(/[\s\-_]+/).filter(Boolean)
-  const camelCase = words.map((w, i) => i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1)).join('')
+  const words = str
+    .toLowerCase()
+    .split(/[\s\-_]+/)
+    .filter(Boolean)
+  const camelCase = words
+    .map((w, i) => (i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1)))
+    .join('')
   return `${feature}.${camelCase}`
 }
 
@@ -105,9 +111,15 @@ function extractStringsFromAST(code: string): ExtractedString[] {
 
     if (node.type === 'JSXAttribute') {
       const name = node.name?.name
-      if ((name === 'aria-label' || name === 'title' || name === 'placeholder') &&
-          node.value?.value?.trim()) {
-        strings.push({ value: node.value.value.trim(), key: '', location: name })
+      if (
+        (name === 'aria-label' || name === 'title' || name === 'placeholder') &&
+        node.value?.value?.trim()
+      ) {
+        strings.push({
+          value: node.value.value.trim(),
+          key: '',
+          location: name,
+        })
       }
     }
 
@@ -125,13 +137,18 @@ function extractStringsFromAST(code: string): ExtractedString[] {
 function main() {
   const inputPath = process.argv[2]
   if (!inputPath) {
-    console.error('Usage: npx tsx scripts/generate-translations.ts <file-or-directory>')
+    console.error(
+      'Usage: npx tsx scripts/generate-translations.ts <file-or-directory>'
+    )
     process.exit(1)
   }
 
   const stats = fs.statSync(inputPath)
   const files = stats.isDirectory()
-    ? fs.readdirSync(inputPath).filter(f => f.endsWith('.tsx') || f.endsWith('.ts')).map(f => path.join(inputPath, f))
+    ? fs
+        .readdirSync(inputPath)
+        .filter(f => f.endsWith('.tsx') || f.endsWith('.ts'))
+        .map(f => path.join(inputPath, f))
     : [inputPath]
 
   const allStrings: Record<string, string> = {}
@@ -139,9 +156,13 @@ function main() {
   for (const file of files) {
     const code = fs.readFileSync(file, 'utf-8')
     const strings = extractStringsFromAST(code)
-    const feature = file.includes('sidebar') ? 'sidebar' :
-                    file.includes('dashboard') ? 'dashboard' :
-                    file.includes('titlebar') ? 'titlebar' : 'common'
+    const feature = file.includes('sidebar')
+      ? 'sidebar'
+      : file.includes('dashboard')
+        ? 'dashboard'
+        : file.includes('titlebar')
+          ? 'titlebar'
+          : 'common'
 
     for (const str of strings) {
       if (!allStrings[str.value]) {
@@ -153,7 +174,9 @@ function main() {
   const outputPath = path.join('locales/generated/pending-keys.json')
   fs.mkdirSync(path.dirname(outputPath), { recursive: true })
   fs.writeFileSync(outputPath, JSON.stringify(allStrings, null, 2))
-  console.log(`Generated ${Object.keys(allStrings).length} keys to ${outputPath}`)
+  console.log(
+    `Generated ${Object.keys(allStrings).length} keys to ${outputPath}`
+  )
 }
 
 main()
@@ -201,6 +224,7 @@ git commit -m "feat: add translation detection script"
 ## Task 2: Migrate LeftSideBar Component
 
 **Files:**
+
 - Modify: `src/components/layout/LeftSideBar.tsx`
 - Modify: `locales/en.json` - Add new keys
 - Modify: `locales/ar.json` - Add Arabic translations
@@ -232,6 +256,7 @@ export function LeftSideBar({ className }: LeftSideBarProps) {
 ```
 
 Apply to all NAV_SECTIONS:
+
 - `sidebar.nav.sales` = "Sales"
 - `sidebar.nav.purchases` = "Purchases"
 - `sidebar.nav.inventory` = "Inventory"
@@ -249,6 +274,7 @@ Apply to all NAV_SECTIONS:
 ```
 
 Apply to all nav items:
+
 - `sidebar.nav.invoices` = "Invoices"
 - `sidebar.nav.customers` = "Customers"
 - `sidebar.nav.bills` = "Bills"
@@ -346,6 +372,7 @@ git commit -m "feat(i18n): migrate LeftSideBar to use translations"
 ## Task 3: Migrate NewTabContent Component
 
 **Files:**
+
 - Modify: `src/components/tabs/NewTabContent.tsx`
 
 - [ ] **Step 1: Add useTranslation to NewTabContent.tsx**
@@ -481,9 +508,11 @@ actions={[
 ## Task 4: Migrate DashboardContent Component
 
 **Files:**
+
 - Modify: `src/components/tabs/DashboardContent.tsx`
 
 Similar pattern to Task 3. Replace hardcoded strings in:
+
 - KPI card labels
 - Section headings (Cash Flow Trends, Revenue by Category)
 - Button labels (Download Report)
@@ -494,6 +523,7 @@ Similar pattern to Task 3. Replace hardcoded strings in:
 ## Task 5: Migrate Remaining Layout Components
 
 **Files:**
+
 - Modify: `src/components/layout/Navbar.tsx`
 - Modify: `src/components/layout/RightSideBar.tsx`
 - Modify: `src/components/layout/TabBar.tsx`
@@ -507,6 +537,7 @@ Apply same pattern: add `useTranslation`, replace strings with `t()` calls, add 
 ## Task 6: Migrate TitleBarContent Component
 
 **Files:**
+
 - Modify: `src/components/titlebar/TitleBarContent.tsx`
 
 - [ ] **Step 1: Add useTranslation**
@@ -524,6 +555,7 @@ Apply same pattern: add `useTranslation`, replace strings with `t()` calls, add 
 ## Task 7: Run Full Script and Generate All Keys
 
 **Files:**
+
 - Modify: `locales/en.json` - Merge all generated keys
 - Modify: `locales/ar.json` - Merge all generated keys
 

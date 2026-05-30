@@ -8,7 +8,13 @@ interface LoginModalProps {
   onOpenChange: (open: boolean) => void
   onLoginSuccess: (
     userId: string,
-    user: { id: string; name: string; email: string; role: string; avatar_url: string | null },
+    user: {
+      id: string
+      name: string
+      email: string
+      role: string
+      avatar_url: string | null
+    }
     // sessionToken: string
   ) => void
 }
@@ -91,7 +97,7 @@ export function LoginModal({
         email: user.email,
         role: user.role,
         avatar_url: user.avatar_url,
-      },
+      }
       // sessionToken
     )
     onOpenChange(false)

@@ -13,7 +13,7 @@ Replace dynamic schema fetching (backend `getTableInfo`) with frontend-defined e
 - Full control over column order, visibility, type, and width
 - No duplicate translation files between backend and frontend
 - Backend returns all columns; frontend layout decides what to display
-- Hidden columns (id, fk_, pk) available for edit operations but not shown
+- Hidden columns (id, fk\_, pk) available for edit operations but not shown
 
 ## Non-Goals
 
@@ -164,12 +164,12 @@ Add `entity.layout` namespace:
 
 ### Column Type Mappings
 
-| i18n type  | TanStack Column Type | Display |
-|-------------|---------------------|---------|
-| `text`      | `text`              | Plain string |
-| `number`    | `number`            | Right-aligned tabular nums |
-| `currency`  | `currency`          | Localized currency prefix (e.g., "EGP" / "جنيه مصري"), 2 decimal places |
-| `status`    | `status`            | Colored badge |
+| i18n type  | TanStack Column Type | Display                                                                 |
+| ---------- | -------------------- | ----------------------------------------------------------------------- |
+| `text`     | `text`               | Plain string                                                            |
+| `number`   | `number`             | Right-aligned tabular nums                                              |
+| `currency` | `currency`           | Localized currency prefix (e.g., "EGP" / "جنيه مصري"), 2 decimal places |
+| `status`   | `status`             | Colored badge                                                           |
 
 **Currency prefix:** The `common.currency` i18n key is used for the currency symbol. In `DataTable`, the currency cell renderer looks up `t('common.currency')` at render time, so it automatically uses the correct localized prefix.
 
@@ -237,10 +237,7 @@ import type { TFunction } from 'i18next'
 
 const SKIP_COLUMNS = ['id', '_id', 'pk', 'fk_']
 
-export function getEntityLayout(
-  entityType: string,
-  t: TFunction
-): ColumnDef[] {
+export function getEntityLayout(entityType: string, t: TFunction): ColumnDef[] {
   const layout = t(`entity.layout.${entityType}`, { returnObjects: true })
 
   if (!layout || typeof layout !== 'object') {
@@ -286,7 +283,11 @@ import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 import { getEntityLayout } from '@/lib/entity-layout'
-import type { EntityWorkspaceProps, ColumnDef, VariantRow } from '@/lib/types/entity'
+import type {
+  EntityWorkspaceProps,
+  ColumnDef,
+  VariantRow,
+} from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
 
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
@@ -352,6 +353,7 @@ Keep the Rust command and TypeScript binding — it may be useful for admin/debu
 ## Scope
 
 This spec covers only the entity table layout system. It does not include:
+
 - Editing individual entity rows (detail modal)
 - Filtering or sorting logic (server-side, unchanged)
 - Pagination (unchanged)

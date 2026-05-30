@@ -21,6 +21,6 @@ export function useProductsByWarehouse(
       throw new Error(result.error)
     },
     enabled,
-    placeholderData: (prev) => prev,
+    placeholderData: prev => prev,
   })
 }

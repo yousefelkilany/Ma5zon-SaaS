@@ -13,6 +13,7 @@
 ## Task 1: Create ProfileModal Component
 
 **Files:**
+
 - Create: `src/components/auth/ProfileModal.tsx`
 - Reference: `src/components/entity/EntityDetailModal.tsx` (tab pattern + skeleton)
 
@@ -128,7 +129,11 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
         {/* Tab Content */}
         <div className="p-cozy-padding bg-surface-container">
           {activeTab === 'account' && (
-            <div id="account-panel" role="tabpanel" aria-labelledby="account-tab">
+            <div
+              id="account-panel"
+              role="tabpanel"
+              aria-labelledby="account-tab"
+            >
               <div className="grid grid-cols-1 md:grid-cols-12 gap-cozy-gap">
                 {/* Avatar Section */}
                 <aside className="md:col-span-4 flex flex-col items-center justify-start space-y-gutter border-r border-outline-variant/30 pr-cozy-padding">
@@ -141,7 +146,9 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                       />
                     </div>
                     <button className="absolute bottom-0 right-0 p-2 bg-secondary text-on-secondary rounded-full shadow-lg hover:bg-secondary-fixed transition-transform active:scale-95 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-sm">edit</span>
+                      <span className="material-symbols-outlined text-sm">
+                        edit
+                      </span>
                     </button>
                   </div>
                   <div className="text-center">
@@ -166,35 +173,54 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                   <div className="space-y-compact-gap">
                     {/* Full Name */}
                     <div className="flex flex-col space-y-1">
-                      <label className="font-label-caps text-label-caps text-on-surface-variant px-1" htmlFor="fullName">
+                      <label
+                        className="font-label-caps text-label-caps text-on-surface-variant px-1"
+                        htmlFor="fullName"
+                      >
                         Full Name
                       </label>
                       <input
                         id="fullName"
                         type="text"
                         value={formData.name}
-                        onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={e =>
+                          setFormData(prev => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
                         className="w-full bg-surface-container-highest border border-outline-variant text-on-surface font-body-md text-body-md px-gutter py-compact-padding focus:border-secondary focus:ring-1 focus:ring-secondary transition-all outline-none"
                       />
                     </div>
 
                     {/* Email */}
                     <div className="flex flex-col space-y-1">
-                      <label className="font-label-caps text-label-caps text-on-surface-variant px-1" htmlFor="email">
+                      <label
+                        className="font-label-caps text-label-caps text-on-surface-variant px-1"
+                        htmlFor="email"
+                      >
                         Email Address
                       </label>
                       <input
                         id="email"
                         type="email"
                         value={formData.email}
-                        onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                        onChange={e =>
+                          setFormData(prev => ({
+                            ...prev,
+                            email: e.target.value,
+                          }))
+                        }
                         className="w-full bg-surface-container-highest border border-outline-variant text-on-surface font-body-md text-body-md px-gutter py-compact-padding focus:border-secondary focus:ring-1 focus:ring-secondary transition-all outline-none"
                       />
                     </div>
 
                     {/* Role (Read-only) */}
                     <div className="flex flex-col space-y-1">
-                      <label className="font-label-caps text-label-caps text-on-surface-variant px-1" htmlFor="role">
+                      <label
+                        className="font-label-caps text-label-caps text-on-surface-variant px-1"
+                        htmlFor="role"
+                      >
                         Enterprise Role
                       </label>
                       <div className="relative">
@@ -258,17 +284,23 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
                       >
                         {isSaving ? (
                           <>
-                            <span className="material-symbols-outlined text-sm animate-spin">sync</span>
+                            <span className="material-symbols-outlined text-sm animate-spin">
+                              sync
+                            </span>
                             <span>Processing...</span>
                           </>
                         ) : saveSuccess ? (
                           <>
-                            <span className="material-symbols-outlined text-sm">check_circle</span>
+                            <span className="material-symbols-outlined text-sm">
+                              check_circle
+                            </span>
                             <span>Saved Successfully</span>
                           </>
                         ) : (
                           <>
-                            <span className="material-symbols-outlined text-sm">save</span>
+                            <span className="material-symbols-outlined text-sm">
+                              save
+                            </span>
                             <span>Save Changes</span>
                           </>
                         )}
@@ -281,7 +313,11 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
           )}
 
           {activeTab === 'security' && (
-            <div id="security-panel" role="tabpanel" aria-labelledby="security-tab">
+            <div
+              id="security-panel"
+              role="tabpanel"
+              aria-labelledby="security-tab"
+            >
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   {Array.from({ length: 4 }).map((_, i) => (
@@ -297,7 +333,11 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
           )}
 
           {activeTab === 'activity' && (
-            <div id="activity-panel" role="tabpanel" aria-labelledby="activity-tab">
+            <div
+              id="activity-panel"
+              role="tabpanel"
+              aria-labelledby="activity-tab"
+            >
               <div className="space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-3">
@@ -334,6 +374,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
 - [ ] **Step 2: Update index.ts to export ProfileModal**
 
 Modify `src/components/auth/index.ts`:
+
 ```ts
 export { LoginModal } from './LoginModal'
 export { ProfileSection } from './ProfileSection'
@@ -345,12 +386,14 @@ export { ProfileModal } from './ProfileModal'
 ## Task 2: Update ProfileSection to Trigger Modal
 
 **Files:**
+
 - Modify: `src/components/auth/ProfileSection.tsx`
 - Modify: `src/components/auth/index.ts`
 
 - [ ] **Step 1: Add ProfileModal state and render to ProfileSection**
 
 Modify `src/components/auth/ProfileSection.tsx`:
+
 ```tsx
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -370,7 +413,15 @@ export function ProfileSection({ className }: ProfileSectionProps) {
   const [loginModalOpen, setLoginModalOpen] = useState(false)
   const [profileModalOpen, setProfileModalOpen] = useState(false)
 
-  const handleLoginSuccess = (userId: string, userData: { id: string; name: string; role: string; avatar_url: string | null }) => {
+  const handleLoginSuccess = (
+    userId: string,
+    userData: {
+      id: string
+      name: string
+      role: string
+      avatar_url: string | null
+    }
+  ) => {
     login(userId, userData)
   }
 
@@ -409,8 +460,12 @@ export function ProfileSection({ className }: ProfileSectionProps) {
           className="w-9 h-9 rounded-full border border-secondary"
         />
         <div className="hidden lg:block leading-tight">
-          <p className="font-body-sm text-body-lg font-bold text-primary">{user.name}</p>
-          <p className="font-label-caps text-[12px] text-on-surface-variant uppercase">{user.role}</p>
+          <p className="font-body-sm text-body-lg font-bold text-primary">
+            {user.name}
+          </p>
+          <p className="font-label-caps text-[12px] text-on-surface-variant uppercase">
+            {user.role}
+          </p>
         </div>
       </button>
       <ProfileModal
@@ -427,6 +482,7 @@ export function ProfileSection({ className }: ProfileSectionProps) {
 ## Task 3: Add Rust Commands for Session Management
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/user.rs`
 - Modify: `src-tauri/src/bindings.rs`
 - Modify: `src-tauri/src/commands/mod.rs`
@@ -494,6 +550,7 @@ pub async fn update_user(
 - [ ] **Step 2: Register new commands in bindings.rs**
 
 Modify `src-tauri/src/bindings.rs`:
+
 ```rust
 use crate::commands::{notifications, preferences, quick_pane, recovery, user};
 
@@ -516,6 +573,7 @@ Expected: "✓ TypeScript bindings exported to ../src/lib/bindings.ts"
 ## Task 4: Update useAuth Hook for Session Security
 
 **Files:**
+
 - Modify: `src/hooks/useAuth.ts`
 
 - [ ] **Step 1: Add session validation on init and cleanup on unload**
@@ -524,85 +582,88 @@ Modify `src/hooks/useAuth.ts` - add beforeunload handler and stale credential cl
 
 ```typescript
 import { useState, useEffect } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { commands } from '@/lib/bindings';
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { commands } from '@/lib/bindings'
 
-const AUTH_USER_ID_KEY = 'auth_user_id';
-const REQUEST_LOGIN_EVENT = 'auth:request-login';
+const AUTH_USER_ID_KEY = 'auth_user_id'
+const REQUEST_LOGIN_EVENT = 'auth:request-login'
 
 export function getAuthUserId(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(AUTH_USER_ID_KEY);
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem(AUTH_USER_ID_KEY)
 }
 
 function setAuthUserId(userId: string | null): void {
   if (userId === null) {
-    localStorage.removeItem(AUTH_USER_ID_KEY);
+    localStorage.removeItem(AUTH_USER_ID_KEY)
   } else {
-    localStorage.setItem(AUTH_USER_ID_KEY, userId);
+    localStorage.setItem(AUTH_USER_ID_KEY, userId)
   }
 }
 
 export function requestLogin() {
-  window.dispatchEvent(new CustomEvent(REQUEST_LOGIN_EVENT));
+  window.dispatchEvent(new CustomEvent(REQUEST_LOGIN_EVENT))
 }
 
 export function useAuth() {
-  const queryClient = useQueryClient();
-  const [userId, setUserId] = useState<string | null>(() => getAuthUserId());
+  const queryClient = useQueryClient()
+  const [userId, setUserId] = useState<string | null>(() => getAuthUserId())
 
   // Validate and cleanup stale credentials on init
   useEffect(() => {
-    const storedUserId = getAuthUserId();
+    const storedUserId = getAuthUserId()
     if (storedUserId) {
       // Validate session with server
-      commands.validateSession(storedUserId).then(result => {
-        if (result.status === 'error' || result.data === false) {
-          // Session invalid - clear credentials
-          setAuthUserId(null);
-          setUserId(null);
-          const userData = localStorage.getItem(`user_${storedUserId}`);
-          if (userData) localStorage.removeItem(`user_${storedUserId}`);
-        }
-      }).catch(() => {
-        // Network error - clear credentials
-        setAuthUserId(null);
-        setUserId(null);
-      });
+      commands
+        .validateSession(storedUserId)
+        .then(result => {
+          if (result.status === 'error' || result.data === false) {
+            // Session invalid - clear credentials
+            setAuthUserId(null)
+            setUserId(null)
+            const userData = localStorage.getItem(`user_${storedUserId}`)
+            if (userData) localStorage.removeItem(`user_${storedUserId}`)
+          }
+        })
+        .catch(() => {
+          // Network error - clear credentials
+          setAuthUserId(null)
+          setUserId(null)
+        })
     }
-  }, []);
+  }, [])
 
   // Cleanup on window close
   useEffect(() => {
     const handleBeforeUnload = () => {
-      const currentUserId = getAuthUserId();
+      const currentUserId = getAuthUserId()
       if (currentUserId) {
         // Fire and forget - we don't want to block the unload
-        commands.invalidateSession().catch(() => {});
+        commands.invalidateSession().catch(() => {})
       }
-    };
+    }
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, []);
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [])
 
   // Sync with localStorage on mount and when storage changes
   useEffect(() => {
     const handleStorageChange = () => {
-      const storedUserId = getAuthUserId();
+      const storedUserId = getAuthUserId()
       if (storedUserId !== userId) {
-        setUserId(storedUserId);
+        setUserId(storedUserId)
       }
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    const interval = setInterval(handleStorageChange, 100);
-    
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    const interval = setInterval(handleStorageChange, 100)
+
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
-    };
-  }, [userId]);
+      window.removeEventListener('storage', handleStorageChange)
+      clearInterval(interval)
+    }
+  }, [userId])
 
   // ... existing userQuery, login, logout code ...
 }
@@ -617,6 +678,7 @@ The existing `userQuery` should continue to work. The `login` and `logout` funct
 ## Task 5: Update ProfileModal to Use Real Save
 
 **Files:**
+
 - Modify: `src/components/auth/ProfileModal.tsx`
 
 - [ ] **Step 1: Update handleSave to call commands.updateUser**
@@ -625,15 +687,20 @@ The existing `userQuery` should continue to work. The `login` and `logout` funct
 const handleSave = async () => {
   if (!user) return
   setIsSaving(true)
-  
-  const result = await commands.updateUser(user.id, formData.name, formData.email, user.avatar_url)
-  
+
+  const result = await commands.updateUser(
+    user.id,
+    formData.name,
+    formData.email,
+    user.avatar_url
+  )
+
   if (result.status === 'error') {
     setIsSaving(false)
     // Could show error toast here
     return
   }
-  
+
   setIsSaving(false)
   setSaveSuccess(true)
   setTimeout(() => setSaveSuccess(false), 2000)
@@ -660,15 +727,15 @@ Expected: All checks pass
 
 ## File Summary
 
-| File | Action |
-|------|--------|
-| `src/components/auth/ProfileModal.tsx` | Create |
-| `src/components/auth/ProfileSection.tsx` | Modify |
-| `src/components/auth/index.ts` | Modify |
-| `src/hooks/useAuth.ts` | Modify |
-| `src-tauri/src/commands/user.rs` | Modify |
-| `src-tauri/src/bindings.rs` | Modify |
-| `src/lib/bindings.ts` | Auto-generated |
+| File                                     | Action         |
+| ---------------------------------------- | -------------- |
+| `src/components/auth/ProfileModal.tsx`   | Create         |
+| `src/components/auth/ProfileSection.tsx` | Modify         |
+| `src/components/auth/index.ts`           | Modify         |
+| `src/hooks/useAuth.ts`                   | Modify         |
+| `src-tauri/src/commands/user.rs`         | Modify         |
+| `src-tauri/src/bindings.rs`              | Modify         |
+| `src/lib/bindings.ts`                    | Auto-generated |
 
 ---
 

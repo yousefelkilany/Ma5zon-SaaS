@@ -34,7 +34,7 @@ describe('getEntityLayout', () => {
 
   it('filters out id, _id, pk, fk_ columns', () => {
     const result = getEntityLayout('products', mockT as never)
-    const ids = result.map((c) => c.id)
+    const ids = result.map(c => c.id)
     expect(ids).not.toContain('id')
     expect(ids).not.toContain('_id')
   })
@@ -51,7 +51,7 @@ describe('getEntityLayout', () => {
 
   it('maps currency type correctly', () => {
     const result = getEntityLayout('products', mockT as never)
-    const priceCol = result.find((c) => c.id === 'unit_price')
+    const priceCol = result.find(c => c.id === 'unit_price')
     expect(priceCol?.type).toBe('currency')
   })
 

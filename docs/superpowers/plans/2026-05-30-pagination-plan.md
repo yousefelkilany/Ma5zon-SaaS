@@ -12,27 +12,28 @@
 
 ## File Structure
 
-| Layer | File | Responsibility |
-|-------|------|----------------|
-| Rust SQL | `src-tauri/src/sql/warehouses.rs` | LIMIT/OFFSET pagination for warehouses |
-| Rust SQL | `src-tauri/src/sql/products.rs` | LIMIT/OFFSET pagination for products (main) |
-| Rust SQL | `src-tauri/src/sql/stocks.rs` | LIMIT/OFFSET pagination for products by warehouse |
-| Rust Commands | `src-tauri/src/commands/warehouses.rs` | Paginated warehouse command |
-| Rust Commands | `src-tauri/src/commands/products.rs` | Paginated products command (main) |
-| Rust Commands | `src-tauri/src/commands/stocks.rs` | Paginated product by warehouse command |
-| Bindings | `src/lib/bindings.ts` | specta generated types |
-| Hook | `src/hooks/useWarehousesPagination.ts` | Paginated warehouse query |
-| Hook | `src/hooks/useProductsPagination.ts` | Paginated products query (main) |
-| Hook | `src/hooks/useProductsByWarehouse.ts` | Paginated products by warehouse query |
-| Component | `src/components/entity/DataTableShell.tsx` | Connect pagination to query |
-| Component | `src/components/entity/WarehousesSubTable.tsx` | Add pagination footer |
-| Types | `src/lib/types/entity.ts` | PaginatedResponse type |
+| Layer         | File                                           | Responsibility                                    |
+| ------------- | ---------------------------------------------- | ------------------------------------------------- |
+| Rust SQL      | `src-tauri/src/sql/warehouses.rs`              | LIMIT/OFFSET pagination for warehouses            |
+| Rust SQL      | `src-tauri/src/sql/products.rs`                | LIMIT/OFFSET pagination for products (main)       |
+| Rust SQL      | `src-tauri/src/sql/stocks.rs`                  | LIMIT/OFFSET pagination for products by warehouse |
+| Rust Commands | `src-tauri/src/commands/warehouses.rs`         | Paginated warehouse command                       |
+| Rust Commands | `src-tauri/src/commands/products.rs`           | Paginated products command (main)                 |
+| Rust Commands | `src-tauri/src/commands/stocks.rs`             | Paginated product by warehouse command            |
+| Bindings      | `src/lib/bindings.ts`                          | specta generated types                            |
+| Hook          | `src/hooks/useWarehousesPagination.ts`         | Paginated warehouse query                         |
+| Hook          | `src/hooks/useProductsPagination.ts`           | Paginated products query (main)                   |
+| Hook          | `src/hooks/useProductsByWarehouse.ts`          | Paginated products by warehouse query             |
+| Component     | `src/components/entity/DataTableShell.tsx`     | Connect pagination to query                       |
+| Component     | `src/components/entity/WarehousesSubTable.tsx` | Add pagination footer                             |
+| Types         | `src/lib/types/entity.ts`                      | PaginatedResponse type                            |
 
 ---
 
 ## Task 1: Add PaginatedResponse Type
 
 **Files:**
+
 - Modify: `src/lib/types/entity.ts`
 
 - [ ] **Step 1: Add PaginatedResponse type**
@@ -59,6 +60,7 @@ git commit -m "feat: add PaginatedResponse type"
 ## Task 2: Rust SQL - Warehouses Pagination
 
 **Files:**
+
 - Modify: `src-tauri/src/sql/warehouses.rs`
 
 - [ ] **Step 1: Read current warehouse fetch function**
@@ -120,6 +122,7 @@ git commit -m "feat: add LIMIT/OFFSET pagination to warehouses SQL"
 ## Task 3: Rust Commands - Warehouses Paginated
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/warehouses.rs`
 
 - [ ] **Step 1: Read current warehouses_get_all command**
@@ -162,6 +165,7 @@ git commit -m "feat: add warehouses_get_paginated command"
 ## Task 4: Rust SQL - Products by Warehouse Pagination
 
 **Files:**
+
 - Modify: `src-tauri/src/sql/stocks.rs`
 
 - [ ] **Step 1: Find products by warehouse function**
@@ -233,6 +237,7 @@ git commit -m "feat: add LIMIT/OFFSET pagination to products by warehouse SQL"
 ## Task 4a: Rust SQL - Products Main Table Pagination
 
 **Files:**
+
 - Modify: `src-tauri/src/sql/products.rs`
 
 - [ ] **Step 1: Read current products fetch function**
@@ -292,6 +297,7 @@ git commit -m "feat: add LIMIT/OFFSET pagination to products SQL"
 ## Task 5: Rust Commands - Products by Warehouse Paginated
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/stocks.rs`
 
 - [ ] **Step 1: Find existing command**
@@ -340,6 +346,7 @@ git commit -m "feat: add products_get_by_warehouse_paginated command"
 ## Task 5a: Rust Commands - Products Main Table Paginated
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/products.rs`
 
 - [ ] **Step 1: Find existing products_get_all command**
@@ -382,6 +389,7 @@ git commit -m "feat: add products_get_paginated command"
 ## Task 6: Update specta bindings
 
 **Files:**
+
 - Modify: `src/lib/bindings.ts` (regenerate via specta)
 
 - [ ] **Step 1: Regenerate bindings**
@@ -406,6 +414,7 @@ git commit -m "feat: regenerate specta bindings with paginated commands"
 ## Task 7: Create useWarehousesPagination hook
 
 **Files:**
+
 - Create: `src/hooks/useWarehousesPagination.ts`
 
 - [ ] **Step 1: Write the hook**
@@ -424,7 +433,7 @@ export function useWarehousesPagination(page: number, pageSize: number) {
       }
       throw new Error(result.error)
     },
-    placeholderData: (prev) => prev,
+    placeholderData: prev => prev,
   })
 }
 ```
@@ -441,6 +450,7 @@ git commit -m "feat: add useWarehousesPagination hook"
 ## Task 7a: Create useProductsPagination hook
 
 **Files:**
+
 - Create: `src/hooks/useProductsPagination.ts`
 
 - [ ] **Step 1: Write the hook**
@@ -459,7 +469,7 @@ export function useProductsPagination(page: number, pageSize: number) {
       }
       throw new Error(result.error)
     },
-    placeholderData: (prev) => prev,
+    placeholderData: prev => prev,
   })
 }
 ```
@@ -476,6 +486,7 @@ git commit -m "feat: add useProductsPagination hook"
 ## Task 8: Create useProductsByWarehouse hook
 
 **Files:**
+
 - Modify: `src/hooks/useProductsByWarehouse.ts` (or create if doesn't exist)
 
 - [ ] **Step 1: Write/update the hook**
@@ -504,7 +515,7 @@ export function useProductsByWarehouse(
       throw new Error(result.error)
     },
     enabled,
-    placeholderData: (prev) => prev,
+    placeholderData: prev => prev,
   })
 }
 ```
@@ -521,6 +532,7 @@ git commit -m "feat: add pagination support to useProductsByWarehouse hook"
 ## Task 9: Update DataTableShell
 
 **Files:**
+
 - Modify: `src/components/entity/DataTableShell.tsx`
 
 - [ ] **Step 1: Read current DataTableShell**
@@ -536,9 +548,12 @@ Replace local state update with prop callback:
 // const [paginationState, setPaginationState] = useState<PaginationState>(...)
 
 // Update handlePageChange
-const handlePageChange = useCallback((page: number, pageSize: number) => {
-  onPageChange?.(page, pageSize)
-}, [onPageChange])
+const handlePageChange = useCallback(
+  (page: number, pageSize: number) => {
+    onPageChange?.(page, pageSize)
+  },
+  [onPageChange]
+)
 
 // Update paginationState to come from props
 const paginationState: PaginationState = {
@@ -561,6 +576,7 @@ git commit -m "feat: wire DataTableShell pagination to onPageChange callback"
 ## Task 10: Update WarehousesSubTable with PaginationFooter
 
 **Files:**
+
 - Modify: `src/components/entity/WarehousesSubTable.tsx`
 
 - [ ] **Step 1: Read current WarehousesSubTable**

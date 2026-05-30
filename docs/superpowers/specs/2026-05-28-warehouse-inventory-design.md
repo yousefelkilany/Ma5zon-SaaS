@@ -7,10 +7,12 @@ Add warehouse inventory management tables (warehouses, stock_levels, stock_movem
 ## Module Structure
 
 ### New Files
+
 - `src-tauri/src/commands/warehouses.rs` — warehouses table + CRUD commands + seeder
 - `src-tauri/src/commands/stock.rs` — stock_levels + stock_movements tables + CRUD commands + seeders
 
 ### Modified Files
+
 - `src-tauri/src/commands/products.rs` — update seed data to Arabic
 - `src-tauri/src/commands/variants.rs` — update variant options to Arabic
 - `src-tauri/src/commands/mod.rs` — register new initializers
@@ -44,6 +46,7 @@ struct StockMovement {
 ## Database Tables
 
 ### warehouses
+
 ```sql
 CREATE TABLE warehouses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -53,6 +56,7 @@ CREATE TABLE warehouses (
 ```
 
 ### stock_levels
+
 ```sql
 CREATE TABLE stock_levels (
     variant_id INTEGER NOT NULL,
@@ -65,6 +69,7 @@ CREATE TABLE stock_levels (
 ```
 
 ### stock_movements
+
 ```sql
 CREATE TABLE stock_movements (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -80,15 +85,17 @@ CREATE TABLE stock_movements (
 ## Seed Data (Arabic/Egyptian)
 
 ### Warehouses (5)
-| Name | Location |
-|------|----------|
-| مركز التوزيع المركزي | القاهرة |
-| منشأة الساحل الشمالي | الإسكندرية |
-| المخزن الإقليمي الشمالي | المنصورة |
-| المستودع الجنوبي | أسيوط |
-| مركز الصعيد | سوهاج |
+
+| Name                    | Location   |
+| ----------------------- | ---------- |
+| مركز التوزيع المركزي    | القاهرة    |
+| منشأة الساحل الشمالي    | الإسكندرية |
+| المخزن الإقليمي الشمالي | المنصورة   |
+| المستودع الجنوبي        | أسيوط      |
+| مركز الصعيد             | سوهاج      |
 
 ### Products (40 items)
+
 ```rust
 let products = vec![
     "محرك كهربائي صناعي", "وحدة تحكم إلكترونية", "وحدة هيدروليكية",
@@ -109,6 +116,7 @@ let products = vec![
 ```
 
 ### Variants Options
+
 ```rust
 let variants_data = vec![
     (vec!["درجة أولى", "درجة صناعية", "درجة اقتصادية", "درجة ممتازة"], "درجة"),
@@ -125,10 +133,12 @@ let variants_data = vec![
 ```
 
 ### Stock Levels
+
 - Each variant gets stock in 2-5 random warehouses
 - Quantity: random 50-2000 units per (variant_id, warehouse_id) pair
 
 ### Stock Movements (30-35 total)
+
 - 25% each type: TRANSFER (تحويل), PURCHASE (شراء), SALE (بيع), ADJUST (تعديل) — approximately 8-9 each
 - Dates spanning last 90 days from 2026-05-28
 - Transfer: both from_warehouse_id and to_warehouse_id set
@@ -139,6 +149,7 @@ let variants_data = vec![
 ## Commands
 
 ### warehouses.rs
+
 - `warehouses_get_all` — list all warehouses
 - `warehouses_get_by_id` — single warehouse by ID
 - `warehouses_create` — create new warehouse (name, location)
@@ -146,6 +157,7 @@ let variants_data = vec![
 - `warehouses_delete` — delete warehouse
 
 ### stock.rs
+
 - `stock_levels_get_all` — all stock levels
 - `stock_levels_get_by_variant` — stock for a variant across warehouses
 - `stock_levels_get_by_warehouse` — all stock in a warehouse

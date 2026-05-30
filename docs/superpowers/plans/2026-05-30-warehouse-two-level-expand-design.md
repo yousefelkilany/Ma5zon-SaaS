@@ -13,11 +13,13 @@
 ## File Map
 
 ### Backend (Rust)
+
 - `src-tauri/src/sql/stocks.rs` — Add two new SQL queries
 - `src-tauri/src/commands/stocks.rs` — Add new structs and two commands
 - `src-tauri/src/commands/mod.rs` — Export new commands
 
 ### Frontend (React/TypeScript)
+
 - `src/lib/types/entity.ts` — Add `ProductWithStock` and `VariantWithStock` types
 - `src/components/entity/WarehousesSubTable.tsx` — Rewrite with react-table + expanding rows
 
@@ -26,6 +28,7 @@
 ## Task 1: Backend — SQL Queries
 
 **Files:**
+
 - Modify: `src-tauri/src/sql/stocks.rs`
 
 - [ ] **Step 1: Add SQL queries**
@@ -67,6 +70,7 @@ git commit -m "feat(stocks): add products and variants queries for two-level exp
 ## Task 2: Backend — Rust Commands and Types
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/stocks.rs`
 
 - [ ] **Step 1: Add new structs after `StockLevelWithVariant` (line ~198)**
@@ -174,6 +178,7 @@ git commit -m "feat(stocks): add products_get_by_warehouse_with_stock and varian
 ## Task 3: TypeScript Types
 
 **Files:**
+
 - Modify: `src/lib/types/entity.ts`
 
 - [ ] **Step 1: Add new interfaces after `StockLevelWithVariant` (line ~97)**
@@ -221,6 +226,7 @@ git commit -m "feat(types): add ProductWithStock, VariantWithStock, and updated 
 ## Task 4: Rewrite WarehousesSubTable with react-table
 
 **Files:**
+
 - Modify: `src/components/entity/WarehousesSubTable.tsx`
 
 - [ ] **Step 1: Write failing test**
@@ -298,25 +304,35 @@ git commit -m "feat(stock-table): add WarehousesSubTable with react-table base"
 ## Task 5: Add Two-Level Expand Functionality
 
 **Files:**
+
 - Modify: `src/components/entity/WarehousesSubTable.tsx`
 
 - [ ] **Step 1: Update imports and add state management**
 
 ```typescript
-import { useState, useCallback, useMemo } from "react"
-import type { StockLevelWithVariant, ProductWithStock, VariantWithStock } from "@/lib/types/entity"
-import { useTranslation } from "react-i18next"
-import { Skeleton } from "@/components/ui/skeleton"
-import { formatCurrency } from "@/lib/utils"
-import i18n from "@/i18n/config"
-import { useReactTable, getCoreRowModel, type ColumnDef } from "@tanstack/react-table"
-import { ChevronRightIcon, ChevronDownIcon } from "lucide-react"
-import { commands } from "@/lib/tauri-bindings"
+import { useState, useCallback, useMemo } from 'react'
+import type {
+  StockLevelWithVariant,
+  ProductWithStock,
+  VariantWithStock,
+} from '@/lib/types/entity'
+import { useTranslation } from 'react-i18next'
+import { Skeleton } from '@/components/ui/skeleton'
+import { formatCurrency } from '@/lib/utils'
+import i18n from '@/i18n/config'
+import {
+  useReactTable,
+  getCoreRowModel,
+  type ColumnDef,
+} from '@tanstack/react-table'
+import { ChevronRightIcon, ChevronDownIcon } from 'lucide-react'
+import { commands } from '@/lib/tauri-bindings'
 ```
 
 - [ ] **Step 2: Replace component with full two-level expand implementation**
 
 Full implementation includes:
+
 - `expandedWarehouses` state for warehouse expand tracking
 - `localProductsCache` / `localVariantsCache` for caching
 - `handleWarehouseExpand` - fetches products when warehouse expanded
@@ -345,11 +361,13 @@ git commit -m "feat(stock-table): add two-level expanding rows to WarehousesSubT
 ## Task 6: Add Translation Keys
 
 **Files:**
+
 - Modify: `locales/en.json`
 
 - [ ] **Step 1: Add translation keys**
 
 Add to `entity.stock` section:
+
 ```json
 "warehouseProduct": "Product",
 "noProductsInWarehouse": "No stock in this warehouse",

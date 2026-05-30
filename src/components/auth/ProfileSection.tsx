@@ -19,7 +19,16 @@ export function ProfileSection({ className }: ProfileSectionProps) {
   // Remove the useEffect that causes extra saveUser calls - handled in handleLoginSuccess
   // The backend sync on login is already done in handleLoginSuccess
 
-  const handleLoginSuccess = (userId: string, userData: { id: string; name: string; email: string; role: string; avatar_url: string | null }) => {
+  const handleLoginSuccess = (
+    userId: string,
+    userData: {
+      id: string
+      name: string
+      email: string
+      role: string
+      avatar_url: string | null
+    }
+  ) => {
     login(userId, userData)
   }
 
@@ -58,8 +67,12 @@ export function ProfileSection({ className }: ProfileSectionProps) {
           className="w-9 h-9 rounded-full border border-secondary"
         />
         <div className="hidden lg:block leading-tight">
-          <p className="font-body-sm text-body-lg font-bold text-primary">{user.name}</p>
-          <p className="font-label-caps text-[12px] text-on-surface-variant uppercase">{user.role}</p>
+          <p className="font-body-sm text-body-lg font-bold text-primary">
+            {user.name}
+          </p>
+          <p className="font-label-caps text-[12px] text-on-surface-variant uppercase">
+            {user.role}
+          </p>
         </div>
       </button>
       <ProfileModal

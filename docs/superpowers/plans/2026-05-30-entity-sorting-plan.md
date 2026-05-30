@@ -12,15 +12,15 @@
 
 ## File Map
 
-| File | Responsibility |
-|------|----------------|
-| `src-tauri/src/types.rs` | Add `SortState` struct |
-| `src-tauri/src/sql/products.rs` | Modify `build_get_all` to accept sort |
-| `src-tauri/src/sql/warehouses.rs` | Modify `build_get_all` to accept sort |
-| `src-tauri/src/commands/products.rs` | Add `sort` param to `get_all` |
-| `src-tauri/src/commands/warehouses.rs` | Add `sort` param to `warehousesGetAll` |
-| `src/lib/types/entity.ts` | Add `BindingSortState` interface |
-| `src/components/entity/DataTableShell.tsx` | Add `onSortChange` prop |
+| File                                        | Responsibility                               |
+| ------------------------------------------- | -------------------------------------------- |
+| `src-tauri/src/types.rs`                    | Add `SortState` struct                       |
+| `src-tauri/src/sql/products.rs`             | Modify `build_get_all` to accept sort        |
+| `src-tauri/src/sql/warehouses.rs`           | Modify `build_get_all` to accept sort        |
+| `src-tauri/src/commands/products.rs`        | Add `sort` param to `get_all`                |
+| `src-tauri/src/commands/warehouses.rs`      | Add `sort` param to `warehousesGetAll`       |
+| `src/lib/types/entity.ts`                   | Add `BindingSortState` interface             |
+| `src/components/entity/DataTableShell.tsx`  | Add `onSortChange` prop                      |
 | `src/components/entity/EntityWorkspace.tsx` | Wire sort into query state and command calls |
 
 ---
@@ -28,6 +28,7 @@
 ## Task 1: Add SortState Type to Rust Backend
 
 **Files:**
+
 - Modify: `src-tauri/src/types.rs:276`
 
 - [ ] **Step 1: Add SortState struct to types.rs**
@@ -63,6 +64,7 @@ git commit -m "feat: add SortState type for entity sorting"
 ## Task 2: Update products.rs SQL Builder
 
 **Files:**
+
 - Modify: `src-tauri/src/sql/products.rs`
 
 - [ ] **Step 1: Add SortState import to products.rs**
@@ -110,6 +112,7 @@ git commit -m "feat: add sort parameter to products build_get_all"
 ## Task 3: Update warehouses.rs SQL Builder
 
 **Files:**
+
 - Modify: `src-tauri/src/sql/warehouses.rs`
 
 - [ ] **Step 1: Add SortState import**
@@ -157,6 +160,7 @@ git commit -m "feat: add sort parameter to warehouses build_get_all"
 ## Task 4: Update products.rs Command
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/products.rs`
 
 - [ ] **Step 1: Add SortState to imports**
@@ -215,6 +219,7 @@ git commit -m "feat: add sort parameter to products get_all command"
 ## Task 5: Update warehouses.rs Command
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/warehouses.rs`
 
 - [ ] **Step 1: Add SortState to imports**
@@ -273,6 +278,7 @@ git commit -m "feat: add sort parameter to warehouses_get_all command"
 ## Task 6: Add Frontend BindingSortState Type
 
 **Files:**
+
 - Modify: `src/lib/types/entity.ts`
 
 - [ ] **Step 1: Add BindingSortState interface**
@@ -303,6 +309,7 @@ git commit -m "feat: add BindingSortState type for frontend"
 ## Task 7: Update DataTableShell to Export Sort State
 
 **Files:**
+
 - Modify: `src/components/entity/DataTableShell.tsx`
 
 - [ ] **Step 1: Add onSortChange to DataTableShellProps interface**
@@ -318,10 +325,13 @@ onSortChange?: (sort: SortState | null) => void
 Change `handleSort` (line 80) to:
 
 ```typescript
-const handleSortChange = useCallback((newSort: SortState | null) => {
+const handleSortChange = useCallback(
+  (newSort: SortState | null) => {
     setSort(newSort)
     onSortChange?.(newSort)
-}, [onSortChange])
+  },
+  [onSortChange]
+)
 ```
 
 - [ ] **Step 3: Update onSort prop name in DataTable call**
@@ -329,7 +339,7 @@ const handleSortChange = useCallback((newSort: SortState | null) => {
 Find `onSort={handleSort}` (line 131) and change to:
 
 ```typescript
-onSort={handleSortChange}
+onSort = { handleSortChange }
 ```
 
 - [ ] **Step 4: Verify TypeScript compiles**
@@ -349,6 +359,7 @@ git commit -m "feat: add onSortChange prop to DataTableShell"
 ## Task 8: Wire Sort into EntityWorkspace
 
 **Files:**
+
 - Modify: `src/components/entity/EntityWorkspace.tsx`
 
 - [ ] **Step 1: Add sort state**
@@ -365,7 +376,7 @@ Find `const handleFiltersApply = useCallback(` (around line 297) and add before 
 
 ```typescript
 const handleSortChange = useCallback((newSort: SortState | null) => {
-    setSort(newSort)
+  setSort(newSort)
 }, [])
 ```
 

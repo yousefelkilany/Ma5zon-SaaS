@@ -4,12 +4,14 @@ import { useTabStore } from './tab-store'
 describe('useTabStore', () => {
   beforeEach(() => {
     useTabStore.setState({
-      tabs: [{
-        id: 'dashboard',
-        title: 'Dashboard',
-        type: 'dashboard',
-        closable: false,
-      }],
+      tabs: [
+        {
+          id: 'dashboard',
+          title: 'Dashboard',
+          type: 'dashboard',
+          closable: false,
+        },
+      ],
       activeTabId: 'dashboard',
     })
   })

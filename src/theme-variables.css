@@ -59,7 +59,10 @@
   --color-tertiary: var(--tertiary, var(--primary));
   --color-on-tertiary: var(--on-tertiary, var(--primary-foreground));
   --color-tertiary-container: var(--tertiary, var(--primary));
-  --color-on-tertiary-container: var(--on-tertiary-container, var(--primary-foreground));
+  --color-on-tertiary-container: var(
+    --on-tertiary-container,
+    var(--primary-foreground)
+  );
   --color-error: var(--error);
   --color-on-error: var(--on-error);
   --color-error-container: var(--error-container);
@@ -87,12 +90,21 @@
   --color-primary-fixed-dim: var(--primary-fixed-dim, var(--primary));
   --color-on-primary-fixed-variant: var(--on-primary-fixed-variant);
   --color-secondary-fixed: var(--secondary-fixed, var(--secondary));
-  --color-on-secondary-fixed: var(--on-secondary-fixed, var(--secondary-foreground));
+  --color-on-secondary-fixed: var(
+    --on-secondary-fixed,
+    var(--secondary-foreground)
+  );
   --color-secondary-fixed-dim: var(--secondary-fixed-dim, var(--secondary));
   --color-on-secondary-fixed-variant: var(--on-secondary-fixed-variant);
-  --color-tertiary-fixed: var(--tertiary-fixed, var(--tertiary, var(--primary)));
+  --color-tertiary-fixed: var(
+    --tertiary-fixed,
+    var(--tertiary, var(--primary))
+  );
   --color-on-tertiary-fixed: var(--on-tertiary-fixed, var(--on-tertiary));
-  --color-tertiary-fixed-dim: var(--tertiary-fixed-dim, var(--tertiary, var(--primary)));
+  --color-tertiary-fixed-dim: var(
+    --tertiary-fixed-dim,
+    var(--tertiary, var(--primary))
+  );
   --color-on-tertiary-fixed-variant: var(--on-tertiary-fixed-variant);
 
   /* Custom spacing tokens */
@@ -186,7 +198,7 @@
   --sidebar-ring: #4edea3;
 }
 
-html[dir="rtl"] *:not(.material-symbols-outlined) {
+html[dir='rtl'] *:not(.material-symbols-outlined) {
   font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif !important;
 }
 

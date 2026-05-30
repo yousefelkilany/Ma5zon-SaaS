@@ -11,6 +11,7 @@ Fix delete not refreshing UI, wire callbacks properly, remove the actions column
 **Root cause:** `DataTableShell` defines `handleEditClick` and `handleDeleteClick` (lines 97-110) but **never passes them** to `DataTable`. The `onEditClick` and `onDeleteClick` props exist in `DataTableProps` but DataTableShell doesn't wire them.
 
 **Flow:**
+
 1. User clicks delete icon → `handleDeleteClick` fires → `ConfirmationDialog` shows
 2. User confirms delete → `onDeleteClick?.(selectedEntityId, selectedRow)` fires
 3. But `onDeleteClick` is never provided by DataTableShell, so nothing happens
@@ -78,6 +79,7 @@ EntityWorkspace
 - Remove `onEditClick` and `onDeleteClick` from `DataTableProps` — no longer needed since we're not using row-level edit/delete buttons
 
 **Result:** `tableColumns` becomes:
+
 ```typescript
 const tableColumns = useMemo<TanstackColumnDef<EntityRow>[]>(() => {
   const cols: TanstackColumnDef<EntityRow>[] = [selectColumn]
@@ -114,6 +116,7 @@ Note: No more `onEditClick` or `onDeleteClick` props on DataTable.
 **File:** `src/components/entity/DataTableShell.tsx`
 
 Currently `handleRowClick` is a no-op:
+
 ```typescript
 const handleRowClick = useCallback((_id: string) => {
   // Row click handling is done in DataTable with typed modals
@@ -123,6 +126,7 @@ const handleRowClick = useCallback((_id: string) => {
 This needs to be removed since DataTable handles it directly. But wait — DataTable renders its own modals (ProductDetailModal, WarehouseDetailModal, VariantDetailModal). The parent doesn't need to do anything.
 
 So the current architecture is:
+
 - `DataTable` handles `onRowClick` to open DetailModal
 - DetailModal has edit/delete inside it
 
@@ -151,6 +155,7 @@ Add `onDelete` callback to DataTableShell props. The flow:
 So the DataTable's `onDeleted` callback (passed to DetailModal) should trigger a query invalidation in EntityWorkspace.
 
 Looking at DataTable lines 460-463:
+
 ```typescript
 onDeleted={() => {
   setEditModalOpen(false)
@@ -161,6 +166,7 @@ onDeleted={() => {
 This only closes the modal — it doesn't trigger any refresh. The DetailModal's `handleDelete` (lines 168 for Variant, similar for Product/Warehouse) calls the delete command and then calls `onDeleted`.
 
 So the fix is:
+
 1. EntityWorkspace passes an `onDeleted` callback to DataTableShell
 2. DataTableShell passes it to DataTable
 3. DataTable's `onDeleted` (in DetailModal) calls the parent callback
@@ -175,11 +181,13 @@ Actually simpler: just pass `queryClient` to DataTableShell via context, or add 
 **File:** `src/components/entity/EntityWorkspace.tsx`
 
 Currently:
+
 ```typescript
 onFiltersApply={x => x}
 ```
 
 Change to:
+
 ```typescript
 onFiltersApply={(filters) => {
   // Trigger refetch with filters — TanStack Query key includes filters
@@ -188,8 +196,13 @@ onFiltersApply={(filters) => {
 ```
 
 The cleanest approach: add `filters` to the queryKey:
+
 ```typescript
-const { data: entityData, isLoading, refetch } = useQuery({
+const {
+  data: entityData,
+  isLoading,
+  refetch,
+} = useQuery({
   queryKey: ['entity', entityType, { filters }],
   queryFn: async () => {
     // pass filters to commands.getAll([], []) → commands.getAll(filters, [])
@@ -206,6 +219,7 @@ So the fix: when `onFiltersApply` is called, store filters in state and include 
 **File:** `src/components/entity/EntityWorkspace.tsx`
 
 Save to localStorage and refetch:
+
 ```typescript
 onSaveColumnPrefs={(columns) => {
   localStorage.setItem(`columns_${entityType}`, JSON.stringify(columns))
@@ -215,15 +229,16 @@ onSaveColumnPrefs={(columns) => {
 
 ## 6. Files to Modify
 
-| File | Change |
-|------|--------|
-| `src/components/entity/DataTable.tsx` | Remove `_actionsColumn`, remove `onEditClick`/`onDeleteClick` props |
-| `src/components/entity/DataTableShell.tsx` | Pass `onEntityDeleted` callback chain, remove unused `handleEditClick`/`handleDeleteClick` |
+| File                                        | Change                                                                                                                                       |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/entity/DataTable.tsx`       | Remove `_actionsColumn`, remove `onEditClick`/`onDeleteClick` props                                                                          |
+| `src/components/entity/DataTableShell.tsx`  | Pass `onEntityDeleted` callback chain, remove unused `handleEditClick`/`handleDeleteClick`                                                   |
 | `src/components/entity/EntityWorkspace.tsx` | Add `onEntityDeleted` → `queryClient.invalidateQueries`, wire `onFiltersApply` with filter state, wire `onSaveColumnPrefs` with localStorage |
 
 ## 7. Data Flow Summary
 
 ### Delete Flow
+
 ```
 User clicks row name → DataTable opens DetailModal
 User clicks delete in modal → ConfirmationDialog shows
@@ -233,6 +248,7 @@ User confirms → delete command fires → onDeleted callback
 ```
 
 ### Filter Flow
+
 ```
 User clicks filter button → FilterDialog opens
 User sets filters, clicks Apply → onFiltersApply(filters)
@@ -242,6 +258,7 @@ User sets filters, clicks Apply → onFiltersApply(filters)
 ```
 
 ### Column Preference Flow
+
 ```
 User clicks columns button → ColumnVisibilityDialog opens
 User reorders/hides columns, clicks Save → onSaveColumnPrefs(columns)

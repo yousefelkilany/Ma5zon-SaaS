@@ -10,10 +10,10 @@ rule:
     # Ban the official Tauri SQL plugin
     - pattern: import { $$$ } from '@tauri-apps/plugin-sql'
     - pattern: import $IMPORT from '@tauri-apps/plugin-sql'
-    
+
     # Ban common WASM-based SQL libraries
     - pattern: import { $$$ } from 'sql.js'
     - pattern: import $IMPORT from 'sql.js'
-    
+
     # Ban any other custom database driver you might be using
     - pattern: import { $$$ } from 'better-sqlite3'

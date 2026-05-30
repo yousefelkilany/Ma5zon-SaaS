@@ -20,6 +20,7 @@ pub struct SortState {
 Modify `build_get_all` to accept optional `SortState`:
 
 **`src-tauri/src/sql/products.rs`**
+
 ```rust
 pub fn build_get_all(where_clause: &str, sort: Option<&SortState>) -> String {
     let base = "SELECT id, company, name, category, created_at, updated_at, deleted_at FROM active_products";
@@ -48,6 +49,7 @@ pub fn build_get_all(where_clause: &str, sort: Option<&SortState>) -> String {
 Add `sort: Option<SortState>` parameter after `columns`:
 
 **`src-tauri/src/commands/products.rs`**:
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -60,6 +62,7 @@ pub async fn get_all(
 ```
 
 **`src-tauri/src/commands/warehouses.rs`**:
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -111,20 +114,21 @@ export interface BindingSortState {
 
 ## Files to Modify
 
-| File | Changes |
-|------|---------|
-| `src-tauri/src/types.rs` | Add `SortState` struct |
-| `src-tauri/src/sql/products.rs` | Modify `build_get_all` signature + SQL |
-| `src-tauri/src/sql/warehouses.rs` | Same pattern |
-| `src-tauri/src/commands/products.rs` | Add `sort` param to `get_all` |
-| `src-tauri/src/commands/warehouses.rs` | Add `sort` param to `warehousesGetAll` |
-| `src/lib/types/entity.ts` | Add `BindingSortState` interface |
-| `src/components/entity/DataTableShell.tsx` | Add sort prop + onSortChange callback |
-| `src/components/entity/EntityWorkspace.tsx` | Wire sort state into query |
+| File                                        | Changes                                |
+| ------------------------------------------- | -------------------------------------- |
+| `src-tauri/src/types.rs`                    | Add `SortState` struct                 |
+| `src-tauri/src/sql/products.rs`             | Modify `build_get_all` signature + SQL |
+| `src-tauri/src/sql/warehouses.rs`           | Same pattern                           |
+| `src-tauri/src/commands/products.rs`        | Add `sort` param to `get_all`          |
+| `src-tauri/src/commands/warehouses.rs`      | Add `sort` param to `warehousesGetAll` |
+| `src/lib/types/entity.ts`                   | Add `BindingSortState` interface       |
+| `src/components/entity/DataTableShell.tsx`  | Add sort prop + onSortChange callback  |
+| `src/components/entity/EntityWorkspace.tsx` | Wire sort state into query             |
 
 ## Sort Validation
 
 Backend validates `column_id` against allowed columns:
+
 - Products: `id`, `company`, `name`, `category`, `created_at`, `updated_at`
 - Warehouses: `id`, `name`, `location`, `created_at`, `updated_at`
 

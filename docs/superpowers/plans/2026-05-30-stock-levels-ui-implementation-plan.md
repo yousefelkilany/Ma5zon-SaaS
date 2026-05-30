@@ -13,12 +13,14 @@
 ## File Map
 
 ### Backend (Rust)
+
 - `src-tauri/src/sql/stocks.rs` — Add two new SQL queries
 - `src-tauri/src/commands/stocks.rs` — Add new struct and two commands
 - `src-tauri/src/commands/mod.rs` — Export new commands
 - `src-tauri/src/bindings.rs` — Regenerate bindings
 
 ### Frontend (React/TypeScript)
+
 - `src/lib/types/entity.ts` — Add `StockLevelWithVariant` type
 - `src/lib/bindings.ts` — Add binding methods for new commands
 - `src/components/entity/StockLevelsTable.tsx` — New reusable stock table (variant flat + product pivot)
@@ -34,6 +36,7 @@
 ## Task 1: Backend — SQL Queries
 
 **Files:**
+
 - Modify: `src-tauri/src/sql/stocks.rs`
 
 - [ ] **Step 1: Add `get_stock_levels_by_product` query**
@@ -83,6 +86,7 @@ git commit -m "feat(stocks): add SQL queries for stock levels with variant names
 ## Task 2: Backend — Rust Commands
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/stocks.rs`
 - Modify: `src-tauri/src/commands/mod.rs`
 
@@ -186,6 +190,7 @@ use crate::sql::stocks::{
 - [ ] **Step 5: Export new commands in `src-tauri/src/commands/mod.rs`**
 
 Add to exports:
+
 ```rust
 pub use stocks::{
     StockLevel, StockLevelWithVariant, StockMovement,
@@ -212,6 +217,7 @@ git commit -m "feat(stocks): add Rust commands for stock levels with variant nam
 ## Task 3: Frontend Type Definition
 
 **Files:**
+
 - Modify: `src/lib/types/entity.ts`
 
 - [ ] **Step 1: Add `StockLevelWithVariant` type**
@@ -229,6 +235,7 @@ interface StockLevelWithVariant {
 ```
 
 Also update the `DataTableProps` interface (or wherever props are defined) to include:
+
 ```typescript
 stockLevelsCache?: Map<string, StockLevelWithVariant[]>
 isLoadingStockLevels?: (id: string) => boolean
@@ -246,6 +253,7 @@ git commit -m "feat(types): add StockLevelWithVariant type and stock cache props
 ## Task 4: Frontend Bindings
 
 **Files:**
+
 - Modify: `src/lib/bindings.ts`
 
 - [ ] **Step 1: Add binding methods for new commands**
@@ -274,6 +282,7 @@ git commit -m "feat(bindings): add frontend bindings for new stock level command
 ## Task 5: StockLevelsTable Component
 
 **Files:**
+
 - Create: `src/components/entity/StockLevelsTable.tsx`
 
 - [ ] **Step 1: Create the component**
@@ -479,6 +488,7 @@ function ProductStockPivot({
 - [ ] **Step 2: Add i18n keys**
 
 In `src/i18n/locales/en.json` (or relevant locale file), add:
+
 ```json
 {
   "entity": {
@@ -504,6 +514,7 @@ git commit -m "feat(stock): create StockLevelsTable component with variant and p
 ## Task 6: WarehousesSubTable Component
 
 **Files:**
+
 - Create: `src/components/entity/WarehousesSubTable.tsx`
 
 - [ ] **Step 1: Create the component**
@@ -594,11 +605,13 @@ git commit -m "feat(warehouses): create WarehousesSubTable component for stock l
 ## Task 7: DataTable — Warehouse Expand
 
 **Files:**
+
 - Modify: `src/components/entity/DataTable.tsx`
 
 - [ ] **Step 1: Import WarehousesSubTable**
 
 Add to imports:
+
 ```typescript
 import { WarehousesSubTable } from './WarehousesSubTable'
 import { StockLevelsTable } from './StockLevelsTable'
@@ -607,10 +620,12 @@ import { StockLevelsTable } from './StockLevelsTable'
 - [ ] **Step 2: Update expand column to include warehouses**
 
 Change line ~159:
+
 ```typescript
 const tableColumns = useMemo<TanstackColumnDef<EntityRow>[]>(() => {
   const cols: TanstackColumnDef<EntityRow>[] = [selectColumn]
-  if (entityType === 'products' || entityType === 'warehouses') cols.push(expandColumn)
+  if (entityType === 'products' || entityType === 'warehouses')
+    cols.push(expandColumn)
   // ... rest unchanged
 }, [selectColumn, expandColumn, entityType, visibleColumns])
 ```
@@ -675,16 +690,19 @@ git commit -m "feat(datatable): add warehouse expand with WarehousesSubTable"
 ## Task 8: DataTableShell — Pass Through Props
 
 **Files:**
+
 - Modify: `src/components/entity/DataTableShell.tsx`
 
 - [ ] **Step 1: Update DataTableShellProps interface**
 
 Add to imports from `@/lib/types/entity`:
+
 ```typescript
 StockLevelWithVariant
 ```
 
 Update interface:
+
 ```typescript
 interface DataTableShellProps {
   // ... existing fields
@@ -696,6 +714,7 @@ interface DataTableShellProps {
 - [ ] **Step 2: Pass props to DataTable**
 
 In the `DataTable` component call inside `DataTableShell`, add the new props:
+
 ```typescript
 <DataTable
   // ... existing props
@@ -716,21 +735,26 @@ git commit -m "feat(datatableshell): pass stock levels cache props to DataTable"
 ## Task 9: EntityWorkspace — Stock Cache State
 
 **Files:**
+
 - Modify: `src/components/entity/EntityWorkspace.tsx`
 
 - [ ] **Step 1: Add state and handler for stock levels**
 
 Add new imports:
+
 ```typescript
 import type { StockLevelWithVariant } from '@/lib/types/entity'
 ```
 
 Add new state after `loadingVariants`:
+
 ```typescript
-const [stockLevelsCache, setStockLevelsCache] = useState<Map<string, StockLevelWithVariant[]>>(
-  new Map()
+const [stockLevelsCache, setStockLevelsCache] = useState<
+  Map<string, StockLevelWithVariant[]>
+>(new Map())
+const [loadingStockLevels, setLoadingStockLevels] = useState<Set<string>>(
+  new Set()
 )
-const [loadingStockLevels, setLoadingStockLevels] = useState<Set<string>>(new Set())
 ```
 
 - [ ] **Step 2: Update handleRowToggleExpand to handle warehouse expand**
@@ -767,7 +791,8 @@ const handleRowToggleExpand = useCallback(
       if (entityType === 'warehouses' && !stockLevelsCache.has(id)) {
         setLoadingStockLevels(prev => new Set(prev).add(id))
         try {
-          const result = await commands.stock_levels_get_by_warehouse_with_names(id)
+          const result =
+            await commands.stock_levels_get_by_warehouse_with_names(id)
           if (result.status === 'ok') {
             setStockLevelsCache(prev => new Map(prev).set(id, result.data))
           }
@@ -789,6 +814,7 @@ const handleRowToggleExpand = useCallback(
 - [ ] **Step 3: Pass new props to DataTableShell**
 
 In the `DataTableShell` call, add:
+
 ```typescript
 <DataTableShell
   // ... existing props
@@ -809,18 +835,23 @@ git commit -m "feat(entityworkspace): add stock levels cache state and fetch log
 ## Task 10: VariantDetailModal — Add Stock Tab
 
 **Files:**
+
 - Modify: `src/components/entity/VariantDetailModal.tsx`
 
 - [ ] **Step 1: Add stock tab states and loading**
 
 Add after existing state declarations:
+
 ```typescript
 const [stockLevels, setStockLevels] = useState<StockLevelWithVariant[]>([])
 const [isLoadingStock, setIsLoadingStock] = useState(false)
-const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(new Map())
+const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
+  new Map()
+)
 ```
 
 Add after `loadEntity` callback:
+
 ```typescript
 const loadStockLevels = useCallback(async () => {
   if (!entityId) return
@@ -828,11 +859,13 @@ const loadStockLevels = useCallback(async () => {
   const result = await commands.stock_levels_get_by_variant(entityId)
   setIsLoadingStock(false)
   if (result.status === 'ok') {
-    setStockLevels(result.data.map(l => ({
-      ...l,
-      variant_name: '',
-      sku: '',
-    })))
+    setStockLevels(
+      result.data.map(l => ({
+        ...l,
+        variant_name: '',
+        sku: '',
+      }))
+    )
     // Also load warehouse names for display
     const whResult = await commands.warehousesGetAll([], [])
     if (whResult.status === 'ok') {
@@ -868,6 +901,7 @@ Note: You need to import `StockLevelsTable` and `StockLevelWithVariant`.
 - [ ] **Step 3: Add stock tab to tabs array**
 
 Update `tabs` to include stock:
+
 ```typescript
 const tabs: { id: TabId; label: string }[] = [
   { id: 'details', label: t('entity.detail.tabs.details') },
@@ -878,6 +912,7 @@ const tabs: { id: TabId; label: string }[] = [
 ```
 
 Add `'stock'` to `TabId` type:
+
 ```typescript
 type TabId = 'details' | 'stock' | 'insights' | 'audits'
 ```
@@ -885,6 +920,7 @@ type TabId = 'details' | 'stock' | 'insights' | 'audits'
 - [ ] **Step 4: Load stock on tab activation**
 
 Add effect to load stock when stock tab is first shown:
+
 ```typescript
 useEffect(() => {
   if (activeTab === 'stock' && stockLevels.length === 0 && !isLoadingStock) {
@@ -909,24 +945,30 @@ git commit -m "feat(variantmodal): add Stock tab to VariantDetailModal"
 ## Task 11: ProductDetailModal — Add Stock Tab with Pivot
 
 **Files:**
+
 - Modify: `src/components/entity/ProductDetailModal.tsx`
 
 - [ ] **Step 1: Add stock tab states and loading**
 
 Add imports:
+
 ```typescript
 import type { StockLevelWithVariant } from '@/lib/types/entity'
 import { StockLevelsTable } from './StockLevelsTable'
 ```
 
 Add after existing state declarations:
+
 ```typescript
 const [stockLevels, setStockLevels] = useState<StockLevelWithVariant[]>([])
 const [isLoadingStock, setIsLoadingStock] = useState(false)
-const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(new Map())
+const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
+  new Map()
+)
 ```
 
 Add after `loadEntity` callback:
+
 ```typescript
 const loadStockLevels = useCallback(async () => {
   if (!entityId) return
@@ -951,6 +993,7 @@ const loadStockLevels = useCallback(async () => {
 - [ ] **Step 2: Add stock tab to tabs array**
 
 Update `tabs`:
+
 ```typescript
 const tabs: { id: TabId; label: string }[] = [
   { id: 'details', label: t('entity.detail.tabs.details') },
@@ -961,6 +1004,7 @@ const tabs: { id: TabId; label: string }[] = [
 ```
 
 Add `'stock'` to `TabId`:
+
 ```typescript
 type TabId = 'details' | 'stock' | 'insights' | 'audits'
 ```
@@ -968,6 +1012,7 @@ type TabId = 'details' | 'stock' | 'insights' | 'audits'
 - [ ] **Step 3: Add stock tab content**
 
 Add after `activeTab === 'details'` block:
+
 ```typescript
 {activeTab === 'stock' && (
   <div id="stock-panel" role="tabpanel" aria-labelledby="stock-tab">
@@ -984,6 +1029,7 @@ Add after `activeTab === 'details'` block:
 - [ ] **Step 4: Load stock on tab activation**
 
 Add effect:
+
 ```typescript
 useEffect(() => {
   if (activeTab === 'stock' && stockLevels.length === 0 && !isLoadingStock) {
@@ -995,6 +1041,7 @@ useEffect(() => {
 - [ ] **Step 5: Reset stock data when modal closes**
 
 In the existing `useEffect` that resets state on `!open`, also reset stock:
+
 ```typescript
 if (!open) {
   // ... existing resets

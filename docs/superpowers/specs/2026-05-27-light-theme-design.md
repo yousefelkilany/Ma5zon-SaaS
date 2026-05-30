@@ -16,94 +16,94 @@ The application currently ships with a dark-only theme (Ma5zon Dark). Users have
 
 ### Base
 
-| Variable | Value | Purpose |
-|---|---|---|
+| Variable       | Value     | Purpose                        |
+| -------------- | --------- | ------------------------------ |
 | `--background` | `#faf9f7` | Warm paper white (base canvas) |
-| `--foreground` | `#1a1a1a` | Near-black for primary text |
-| `--surface` | `#ffffff` | Pure white for base surfaces |
-| `--on-surface` | `#1a1a1a` | Primary text on surface |
+| `--foreground` | `#1a1a1a` | Near-black for primary text    |
+| `--surface`    | `#ffffff` | Pure white for base surfaces   |
+| `--on-surface` | `#1a1a1a` | Primary text on surface        |
 
 ### Surface Containers
 
 A 6-step elevation scale from background-matched to highest-in-section:
 
-| Variable | Value | Purpose |
-|---|---|---|
-| `--surface-container-low` | `#faf9f7` | Same as background, matched lowest layer |
-| `--surface-container-lowest` | `#ffffff` | Pure white, modal and dialog backgrounds |
-| `--surface-container` | `#f5f4f2` | Warm cream, default container surface |
-| `--surface-container-high` | `#efefea` | Slightly darker cream, elevated headers |
-| `--surface-container-highest` | `#e8e7e2` | Highest surface in group, active states |
-| `--surface-bright` | `#ffffff` | Brightest white overlay (same as lowest) |
-| `--surface-tint` | `#bec6e0` | Brand tint color (unchanged from dark) |
+| Variable                      | Value     | Purpose                                  |
+| ----------------------------- | --------- | ---------------------------------------- |
+| `--surface-container-low`     | `#faf9f7` | Same as background, matched lowest layer |
+| `--surface-container-lowest`  | `#ffffff` | Pure white, modal and dialog backgrounds |
+| `--surface-container`         | `#f5f4f2` | Warm cream, default container surface    |
+| `--surface-container-high`    | `#efefea` | Slightly darker cream, elevated headers  |
+| `--surface-container-highest` | `#e8e7e2` | Highest surface in group, active states  |
+| `--surface-bright`            | `#ffffff` | Brightest white overlay (same as lowest) |
+| `--surface-tint`              | `#bec6e0` | Brand tint color (unchanged from dark)   |
 
 ### On-Surface Variants
 
-| Variable | Value | Purpose |
-|---|---|---|
-| `--surface-variant` | `#f0efe9` | Warm light gray, subtle backgrounds |
-| `--on-surface-variant` | `#5c5c5c` | Warm mid-gray, secondary text |
-| `--outline` | `#909090` | Mid-gray for borders |
-| `--outline-variant` | `#c4c4bc` | Warm light gray for subtle dividers |
+| Variable               | Value     | Purpose                             |
+| ---------------------- | --------- | ----------------------------------- |
+| `--surface-variant`    | `#f0efe9` | Warm light gray, subtle backgrounds |
+| `--on-surface-variant` | `#5c5c5c` | Warm mid-gray, secondary text       |
+| `--outline`            | `#909090` | Mid-gray for borders                |
+| `--outline-variant`    | `#c4c4bc` | Warm light gray for subtle dividers |
 
 ### Primary / Brand
 
-| Variable | Value | Purpose |
-|---|---|---|
-| `--primary` | `#bec6e0` | Cool blue-gray (unchanged) |
-| `--primary-foreground` | `#283044` | Dark blue-gray for text on primary |
-| `--secondary` | `#4edea3` | Soft mint green (slightly muted at 85% saturation) |
-| `--secondary-foreground` | `#003824` | Dark green for text on secondary |
-| `--sidebar-primary` | `#4edea3` | Accent green for the sidebar |
+| Variable                 | Value     | Purpose                                            |
+| ------------------------ | --------- | -------------------------------------------------- |
+| `--primary`              | `#bec6e0` | Cool blue-gray (unchanged)                         |
+| `--primary-foreground`   | `#283044` | Dark blue-gray for text on primary                 |
+| `--secondary`            | `#4edea3` | Soft mint green (slightly muted at 85% saturation) |
+| `--secondary-foreground` | `#003824` | Dark green for text on secondary                   |
+| `--sidebar-primary`      | `#4edea3` | Accent green for the sidebar                       |
 
 ### Tertiary / Status
 
-| Variable | Value | Purpose |
-|---|---|---|
-| `--tertiary` | `#f5a0a5` | Muted coral pink |
-| `--on-tertiary` | `#68001a` | Deep burgundy text |
-| `--error` | `#e57373` | Warm red |
-| `--on-error` | `#ffffff` | White text on error |
-| `--error-container` | `#ffdad6` | Soft red for error backgrounds |
+| Variable               | Value     | Purpose                              |
+| ---------------------- | --------- | ------------------------------------ |
+| `--tertiary`           | `#f5a0a5` | Muted coral pink                     |
+| `--on-tertiary`        | `#68001a` | Deep burgundy text                   |
+| `--error`              | `#e57373` | Warm red                             |
+| `--on-error`           | `#ffffff` | White text on error                  |
+| `--error-container`    | `#ffdad6` | Soft red for error backgrounds       |
 | `--on-error-container` | `#410002` | Deep red for text on error container |
 
 ### Inverse
 
-| Variable | Value | Purpose |
-|---|---|---|
-| `--inverse-surface` | `#1a1a2e` | Deep blue for overlays |
-| `--inverse-on-surface` | `#faf9f7` | Light text on inverse |
-| `--inverse-primary` | `#798098` | Muted for inverse states |
+| Variable               | Value     | Purpose                  |
+| ---------------------- | --------- | ------------------------ |
+| `--inverse-surface`    | `#1a1a2e` | Deep blue for overlays   |
+| `--inverse-on-surface` | `#faf9f7` | Light text on inverse    |
+| `--inverse-primary`    | `#798098` | Muted for inverse states |
 
 ### Shadcn/ui Mapped Tokens
 
 These map to the custom tokens above:
 
-| Shadcn Token | Maps To |
-|---|---|
-| `--color-background` | `--background` |
-| `--color-foreground` | `--foreground` |
-| `--color-card` | `--surface-container-lowest` |
-| `--color-card-foreground` | `--on-surface` |
-| `--color-popover` | `--surface-container` |
-| `--color-popover-foreground` | `--on-surface` |
-| `--color-primary` | `--primary` |
-| `--color-primary-foreground` | `--primary-foreground` |
-| `--color-secondary` | `--secondary` |
-| `--color-secondary-foreground` | `--secondary-foreground` |
-| `--color-muted` | `--surface-variant` |
-| `--color-muted-foreground` | `--on-surface-variant` |
-| `--color-accent` | `--surface-container-high` |
-| `--color-accent-foreground` | `--on-surface` |
-| `--color-destructive` | `--error` |
-| `--color-border` | `--outline-variant` |
-| `--color-input` | `--outline` |
-| `--color-ring` | `--secondary` |
+| Shadcn Token                   | Maps To                      |
+| ------------------------------ | ---------------------------- |
+| `--color-background`           | `--background`               |
+| `--color-foreground`           | `--foreground`               |
+| `--color-card`                 | `--surface-container-lowest` |
+| `--color-card-foreground`      | `--on-surface`               |
+| `--color-popover`              | `--surface-container`        |
+| `--color-popover-foreground`   | `--on-surface`               |
+| `--color-primary`              | `--primary`                  |
+| `--color-primary-foreground`   | `--primary-foreground`       |
+| `--color-secondary`            | `--secondary`                |
+| `--color-secondary-foreground` | `--secondary-foreground`     |
+| `--color-muted`                | `--surface-variant`          |
+| `--color-muted-foreground`     | `--on-surface-variant`       |
+| `--color-accent`               | `--surface-container-high`   |
+| `--color-accent-foreground`    | `--on-surface`               |
+| `--color-destructive`          | `--error`                    |
+| `--color-border`               | `--outline-variant`          |
+| `--color-input`                | `--outline`                  |
+| `--color-ring`                 | `--secondary`                |
 
 ### Chart Colors (unchanged from dark mode)
 
-| Variable | Value |
-|---|---|
+| Variable    | Value     |
+| ----------- | --------- |
 | `--chart-1` | `#4edea3` |
 | `--chart-2` | `#bec6e0` |
 | `--chart-3` | `#ffb3b6` |
@@ -116,15 +116,15 @@ These map to the custom tokens above:
 
 The sidebar in the light theme should use slightly darker warm tints to remain distinct from the main content area, avoiding the "floating card" effect that occurs when adjacent panels share identical background values.
 
-| Variable | Value |
-|---|---|
-| `--sidebar` | `#f0efe9` |
-| `--sidebar-foreground` | `#1a1a1a` |
-| `--sidebar-accent` | `#e8e7e2` |
-| `--sidebar-accent-foreground` | `#1a1a1a` |
-| `--sidebar-border` | `#c8c7c0` |
-| `--sidebar-ring` | `#4edea3` |
-| `--sidebar-primary` | `#4edea3` |
+| Variable                       | Value     |
+| ------------------------------ | --------- |
+| `--sidebar`                    | `#f0efe9` |
+| `--sidebar-foreground`         | `#1a1a1a` |
+| `--sidebar-accent`             | `#e8e7e2` |
+| `--sidebar-accent-foreground`  | `#1a1a1a` |
+| `--sidebar-border`             | `#c8c7c0` |
+| `--sidebar-ring`               | `#4edea3` |
+| `--sidebar-primary`            | `#4edea3` |
 | `--sidebar-primary-foreground` | `#003824` |
 
 ---

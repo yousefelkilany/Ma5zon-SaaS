@@ -30,7 +30,13 @@ src/components/entity/
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { QueryClient } from '@tanstack/react-query'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
 
@@ -119,12 +125,18 @@ export function ProductCreateModal({
         </div>
         {error && <p className="text-body-sm text-error">{error}</p>}
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isSubmitting}
+          >
             {t('common.cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? (
-              <span className="material-symbols-outlined text-sm animate-spin">sync</span>
+              <span className="material-symbols-outlined text-sm animate-spin">
+                sync
+              </span>
             ) : (
               <span className="material-symbols-outlined text-sm">add</span>
             )}
@@ -149,7 +161,13 @@ export function ProductCreateModal({
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { QueryClient } from '@tanstack/react-query'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
 
@@ -227,12 +245,18 @@ export function WarehouseCreateModal({
         </div>
         {error && <p className="text-body-sm text-error">{error}</p>}
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isSubmitting}
+          >
             {t('common.cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? (
-              <span className="material-symbols-outlined text-sm animate-spin">sync</span>
+              <span className="material-symbols-outlined text-sm animate-spin">
+                sync
+              </span>
             ) : (
               <span className="material-symbols-outlined text-sm">add</span>
             )}
@@ -259,7 +283,13 @@ export function WarehouseCreateModal({
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { QueryClient } from '@tanstack/react-query'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
 import type { NewVariant } from '@/lib/bindings'
@@ -308,9 +338,18 @@ export function VariantCreateModal({
     const result = await commands.variantsCreate(variant)
     setIsSubmitting(false)
     if (result.status === 'ok') {
-      queryClient.invalidateQueries({ queryKey: ['entity', 'product_variants'] })
+      queryClient.invalidateQueries({
+        queryKey: ['entity', 'product_variants'],
+      })
       onOpenChange(false)
-      setForm({ sku: '', variant_name: '', uom_id: '', retail_price: '', wholesale_price: '', distribution_price: '' })
+      setForm({
+        sku: '',
+        variant_name: '',
+        uom_id: '',
+        retail_price: '',
+        wholesale_price: '',
+        distribution_price: '',
+      })
     } else {
       setError(result.error ?? t('entity.create.error.failed'))
     }
@@ -318,7 +357,14 @@ export function VariantCreateModal({
 
   const handleClose = (open: boolean) => {
     if (!open) {
-      setForm({ sku: '', variant_name: '', uom_id: '', retail_price: '', wholesale_price: '', distribution_price: '' })
+      setForm({
+        sku: '',
+        variant_name: '',
+        uom_id: '',
+        retail_price: '',
+        wholesale_price: '',
+        distribution_price: '',
+      })
       setError('')
     }
     onOpenChange(open)
@@ -349,7 +395,9 @@ export function VariantCreateModal({
             <input
               className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
               value={form.variant_name}
-              onChange={e => setForm(p => ({ ...p, variant_name: e.target.value }))}
+              onChange={e =>
+                setForm(p => ({ ...p, variant_name: e.target.value }))
+              }
               disabled={isSubmitting}
             />
           </div>
@@ -372,7 +420,9 @@ export function VariantCreateModal({
               type="number"
               className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
               value={form.retail_price}
-              onChange={e => setForm(p => ({ ...p, retail_price: e.target.value }))}
+              onChange={e =>
+                setForm(p => ({ ...p, retail_price: e.target.value }))
+              }
               disabled={isSubmitting}
             />
           </div>
@@ -384,7 +434,9 @@ export function VariantCreateModal({
               type="number"
               className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
               value={form.wholesale_price}
-              onChange={e => setForm(p => ({ ...p, wholesale_price: e.target.value }))}
+              onChange={e =>
+                setForm(p => ({ ...p, wholesale_price: e.target.value }))
+              }
               disabled={isSubmitting}
             />
           </div>
@@ -396,19 +448,27 @@ export function VariantCreateModal({
               type="number"
               className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
               value={form.distribution_price}
-              onChange={e => setForm(p => ({ ...p, distribution_price: e.target.value }))}
+              onChange={e =>
+                setForm(p => ({ ...p, distribution_price: e.target.value }))
+              }
               disabled={isSubmitting}
             />
           </div>
         </div>
         {error && <p className="text-body-sm text-error">{error}</p>}
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isSubmitting}
+          >
             {t('common.cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? (
-              <span className="material-symbols-outlined text-sm animate-spin">sync</span>
+              <span className="material-symbols-outlined text-sm animate-spin">
+                sync
+              </span>
             ) : (
               <span className="material-symbols-outlined text-sm">add</span>
             )}
@@ -428,6 +488,7 @@ export function VariantCreateModal({
 **File:** Modify `src/components/entity/EntityWorkspace.tsx`
 
 **Changes:**
+
 1. Import the three create modals
 2. Add state for controlling which modal is open
 3. Add state for `selectedProductId` (needed for variant creation)
@@ -436,6 +497,7 @@ export function VariantCreateModal({
 6. Render the modals at the bottom of the component
 
 **Add imports (after existing imports):**
+
 ```tsx
 import { ProductCreateModal } from './ProductCreateModal'
 import { WarehouseCreateModal } from './WarehouseCreateModal'
@@ -443,9 +505,12 @@ import { VariantCreateModal } from './VariantCreateModal'
 ```
 
 **Add state in EntityWorkspace component:**
+
 ```tsx
 const [createModalOpen, setCreateModalOpen] = useState(false)
-const [createModalType, setCreateModalType] = useState<'products' | 'warehouses' | 'product_variants' | null>(null)
+const [createModalType, setCreateModalType] = useState<
+  'products' | 'warehouses' | 'product_variants' | null
+>(null)
 const [selectedProductId, setSelectedProductId] = useState<string>('')
 ```
 
@@ -453,8 +518,15 @@ const [selectedProductId, setSelectedProductId] = useState<string>('')
 The EntityHeader receives `entityType` and needs to communicate back. Option: pass `onAddNewClick` callback from parent.
 
 **EntityHeader change:**
+
 ```tsx
-function EntityHeader({ entityType, onAddNewClick }: { entityType: string; onAddNewClick?: () => void }) {
+function EntityHeader({
+  entityType,
+  onAddNewClick,
+}: {
+  entityType: string
+  onAddNewClick?: () => void
+}) {
   // ... existing code ...
 
   return (
@@ -475,19 +547,24 @@ function EntityHeader({ entityType, onAddNewClick }: { entityType: string; onAdd
 ```
 
 **In EntityWorkspace, add handler:**
+
 ```tsx
 const handleAddNewClick = useCallback(() => {
-  setCreateModalType(entityType as 'products' | 'warehouses' | 'product_variants')
+  setCreateModalType(
+    entityType as 'products' | 'warehouses' | 'product_variants'
+  )
   setCreateModalOpen(true)
 }, [entityType])
 ```
 
 **Update EntityHeader usage:**
+
 ```tsx
 <EntityHeader entityType={entityType} onAddNewClick={handleAddNewClick} />
 ```
 
 **Render modals before closing div:**
+
 ```tsx
 <ProductCreateModal
   open={createModalOpen && createModalType === 'products'}
@@ -516,6 +593,7 @@ const handleAddNewClick = useCallback(() => {
 **Files to update:** `src/locales/*.json`
 
 **New keys needed:**
+
 ```json
 {
   "entity": {
@@ -554,17 +632,17 @@ const handleAddNewClick = useCallback(() => {
 
 ## Spec Coverage Check
 
-| Spec Requirement | Task |
-|-----------------|------|
-| ProductCreateModal | Task 1 |
-| WarehouseCreateModal | Task 2 |
-| VariantCreateModal | Task 3 |
-| Wire button to open modals | Task 4 |
+| Spec Requirement                 | Task      |
+| -------------------------------- | --------- |
+| ProductCreateModal               | Task 1    |
+| WarehouseCreateModal             | Task 2    |
+| VariantCreateModal               | Task 3    |
+| Wire button to open modals       | Task 4    |
 | Fields from entity-layout-config | Tasks 1-3 |
-| Call existing create commands | Tasks 1-3 |
-| Invalidate query cache | Tasks 1-3 |
-| i18n keys | Task 5 |
-| Testing | Task 6 |
+| Call existing create commands    | Tasks 1-3 |
+| Invalidate query cache           | Tasks 1-3 |
+| i18n keys                        | Task 5    |
+| Testing                          | Task 6    |
 
 ---
 

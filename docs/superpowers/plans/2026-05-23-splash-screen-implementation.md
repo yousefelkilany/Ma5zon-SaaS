@@ -13,6 +13,7 @@
 ### Task 1: Create SplashScreen Component
 
 **Files:**
+
 - Create: `src/components/splash/SplashScreen.tsx`
 - Create: `src/components/splash/index.ts`
 
@@ -105,6 +106,7 @@ git commit -m "feat: add SplashScreen component"
 ### Task 2: Add Logo Image with Fallback
 
 **Files:**
+
 - Create: `src/assets/logo.png` (user will add actual file)
 - Modify: `src/components/splash/SplashScreen.tsx`
 
@@ -212,6 +214,7 @@ git commit -m "feat: add logo fallback to SplashScreen"
 ### Task 3: Integrate SplashScreen into App
 
 **Files:**
+
 - Modify: `src/App.tsx`
 
 - [ ] **Step 1: Update App.tsx to track app ready state and render SplashScreen**
@@ -290,7 +293,7 @@ function App() {
 
           if (shouldUpdate) {
             try {
-              await update.downloadAndInstall((event) => {
+              await update.downloadAndInstall(event => {
                 switch (event.event) {
                   case 'Started':
                     logger.info(`Downloading ${event.data.contentLength} bytes`)
@@ -392,23 +395,23 @@ Expected: App window opens showing splash screen for minimum 3 seconds, then tra
 
 ## Spec Coverage
 
-| Spec Requirement | Task |
-|------------------|------|
-| Logo from src/assets/logo.png with fallback | Task 2 |
-| Ma5zon brand name | Task 1 |
-| Spinner instead of progress bar | Task 1 |
-| Minimum 3 second display | Task 1 (minDuration prop) |
-| Disappears after initialization | Task 3 (isReady state) |
-| Dark theme colors | Task 1 (uses theme variables) |
-| Centered layout | Task 1 |
-| Footer with copyright | Task 1 |
+| Spec Requirement                            | Task                          |
+| ------------------------------------------- | ----------------------------- |
+| Logo from src/assets/logo.png with fallback | Task 2                        |
+| Ma5zon brand name                           | Task 1                        |
+| Spinner instead of progress bar             | Task 1                        |
+| Minimum 3 second display                    | Task 1 (minDuration prop)     |
+| Disappears after initialization             | Task 3 (isReady state)        |
+| Dark theme colors                           | Task 1 (uses theme variables) |
+| Centered layout                             | Task 1                        |
+| Footer with copyright                       | Task 1                        |
 
 ## Files Changed Summary
 
-| File | Action |
-|------|--------|
+| File                                     | Action |
+| ---------------------------------------- | ------ |
 | `src/components/splash/SplashScreen.tsx` | Create |
-| `src/components/splash/index.ts` | Create |
-| `src/App.tsx` | Modify |
+| `src/components/splash/index.ts`         | Create |
+| `src/App.tsx`                            | Modify |
 
 **Total: 2 new files, 1 modified**

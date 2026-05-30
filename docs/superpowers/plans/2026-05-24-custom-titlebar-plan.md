@@ -13,6 +13,7 @@
 ## Task 1: Add TitleBarLogo, TitleBarAppName, TitleBarTabTitle to TitleBarContent.tsx
 
 **Files:**
+
 - Modify: `src/components/titlebar/TitleBarContent.tsx:1-125`
 
 - [ ] **Step 1: Add new components to TitleBarContent.tsx**
@@ -39,11 +40,7 @@ export function TitleBarLogo() {
  * Fixed text "Ma5zon".
  */
 export function TitleBarAppName() {
-  return (
-    <span className="text-sm font-medium text-foreground/80">
-      Ma5zon
-    </span>
-  )
+  return <span className="text-sm font-medium text-foreground/80">Ma5zon</span>
 }
 
 interface TitleBarTabTitleProps {
@@ -55,11 +52,7 @@ interface TitleBarTabTitleProps {
  * Displays the title of the currently active tab.
  */
 export function TitleBarTabTitle({ title }: TitleBarTabTitleProps) {
-  return (
-    <span className="text-sm text-foreground/60">
-      {title}
-    </span>
-  )
+  return <span className="text-sm text-foreground/60">{title}</span>
 }
 ```
 
@@ -80,6 +73,7 @@ git commit -m "feat(titlebar): add Logo, AppName, TabTitle components"
 ## Task 2: Update TitleBar.tsx with new 4-section layout
 
 **Files:**
+
 - Modify: `src/components/titlebar/TitleBar.tsx:1-98`
 - Read: `src/store/tab-store.ts:69-72` (for getActiveTab reference)
 
@@ -161,6 +155,7 @@ git commit -m "feat(titlebar): update layout with Logo, AppName, TabTitle, Windo
 ## Task 3: Update WindowsWindowControls.tsx with outline hover effects
 
 **Files:**
+
 - Modify: `src/components/titlebar/WindowsWindowControls.tsx:84-127`
 
 - [ ] **Step 1: Update button hover styles**
@@ -279,6 +274,7 @@ git commit -m "feat(titlebar): add outline hover effects to WindowsWindowControl
 ## Task 4: Update MacOSWindowControls.tsx with outline hover effects
 
 **Files:**
+
 - Modify: `src/components/titlebar/MacOSWindowControls.tsx:124-187`
 
 - [ ] **Step 1: Update MacOS button hover styles**
@@ -401,6 +397,7 @@ git commit -m "feat(titlebar): add outline hover effects to MacOSWindowControls"
 ## Task 5: Verify implementation against spec
 
 **Files:**
+
 - Read: `docs/superpowers/specs/2026-05-24-custom-titlebar-design.md`
 
 - [ ] **Step 1: Run full typecheck**

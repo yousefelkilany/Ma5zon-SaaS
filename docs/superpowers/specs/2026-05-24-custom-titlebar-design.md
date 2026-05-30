@@ -11,12 +11,14 @@
 Replace the existing titlebar with a custom theme-aware titlebar that sits above the Navbar. The titlebar displays logo, app name, current tab name (from tab store), and window controls — all styled to match the selected theme.
 
 **Scope:**
+
 - Modify `TitleBar.tsx` and `TitleBarContent.tsx` in `src/components/titlebar/`
 - Add hover effects and state-aware maximize icon to window control components
 - Theme-aware styling using existing CSS variables
 - Read active tab from `useTabStore` directly
 
 **Out of Scope:**
+
 - Changing Navbar (stays as-is)
 - Changing TabBar (stays as-is)
 - Creating new components (modify existing)
@@ -43,13 +45,21 @@ Add to `TitleBarContent.tsx`:
 
 ```tsx
 interface TitleBarLogoProps {}
-export function TitleBarLogo() { /* renders logo image */ }
+export function TitleBarLogo() {
+  /* renders logo image */
+}
 
 interface TitleBarAppNameProps {}
-export function TitleBarAppName() { /* renders "Ma5zon" text */ }
+export function TitleBarAppName() {
+  /* renders "Ma5zon" text */
+}
 
-interface TitleBarTabTitleProps { title: string }
-export function TitleBarTabTitle({ title }: TitleBarTabTitleProps) { /* renders dynamic tab title */ }
+interface TitleBarTabTitleProps {
+  title: string
+}
+export function TitleBarTabTitle({ title }: TitleBarTabTitleProps) {
+  /* renders dynamic tab title */
+}
 ```
 
 ---
@@ -57,6 +67,7 @@ export function TitleBarTabTitle({ title }: TitleBarTabTitleProps) { /* renders 
 ## 3. Layout Structure
 
 ### TitleBar Height
+
 - **Height:** 40px (standard)
 - **Vertical alignment:** All elements vertically centered
 
@@ -70,13 +81,16 @@ export function TitleBarTabTitle({ title }: TitleBarTabTitleProps) { /* renders 
 ```
 
 **Left section (items-center, gap-2, pl-2):**
+
 - TitleBarLogo (logo image, h-6 w-6)
 
 **Center section (absolute, -translate-x-1/2, flex, items-center, gap-4):**
+
 - TitleBarAppName (fixed text "Ma5zon")
 - TitleBarTabTitle (dynamic, reads from tab store)
 
 **Right section (flex items-center, pr-2):**
+
 - TitleBarRightActions (settings, sidebar toggles)
 - Window controls
 
@@ -117,14 +131,18 @@ export function TitleBarTabTitle({ title }: TitleBarTabTitleProps) { /* renders 
 **Background:** `bg-surface-container-low` (matches Navbar)
 **Border:** `border-b border-outline-variant`
 **Text colors:**
+
 - App name: `text-foreground/80`
 - Tab title: `text-foreground/60`
 
 **Window button hover:**
+
 ```css
 .window-control-btn {
   opacity: 0.7;
-  transition: opacity 0.15s, filter 0.15s;
+  transition:
+    opacity 0.15s,
+    filter 0.15s;
 }
 .window-control-btn:hover {
   opacity: 1;
@@ -151,6 +169,7 @@ async function getMaximizeIcon() {
 ```
 
 **Icon display:**
+
 - When NOT maximized: show `window-maximize` icon (□)
 - When IS maximized: show `window-restore` icon (⧉)
 

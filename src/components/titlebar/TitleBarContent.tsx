@@ -41,9 +41,5 @@ interface TitleBarTabTitleProps {
  * Displays the title of the currently active tab.
  */
 export function TitleBarTabTitle({ title }: TitleBarTabTitleProps) {
-  return (
-    <span className="text-sm text-foreground/60">
-      {title}
-    </span>
-  )
+  return <span className="text-sm text-foreground/60">{title}</span>
 }

@@ -3,7 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import type { QueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 

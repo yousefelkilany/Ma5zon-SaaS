@@ -13,15 +13,16 @@ Implement a profile settings modal accessible from the Navbar when a user is log
 
 A Dialog-based modal with 3 tabs:
 
-| Tab | Content | State |
-|-----|---------|-------|
-| Account | Full profile form with editable name, email, profile pic, and read-only role/department/location | Active/default |
-| Security | Skeleton placeholder | Placeholder |
-| Activity Logs | Skeleton placeholder | Placeholder |
+| Tab           | Content                                                                                          | State          |
+| ------------- | ------------------------------------------------------------------------------------------------ | -------------- |
+| Account       | Full profile form with editable name, email, profile pic, and read-only role/department/location | Active/default |
+| Security      | Skeleton placeholder                                                                             | Placeholder    |
+| Activity Logs | Skeleton placeholder                                                                             | Placeholder    |
 
 **File:** `src/components/auth/ProfileModal.tsx`
 
 **Props:**
+
 ```typescript
 interface ProfileModalProps {
   open: boolean
@@ -30,11 +31,13 @@ interface ProfileModalProps {
 ```
 
 **Layout (matching `profile-settings-details-tab.html`):**
+
 - Left column (col-span-4): Avatar with edit button, user name/role, last login badge
 - Right column (col-span-8): Form fields for Full Name, Email, read-only Role, Department, Location
 - Footer: System status bar with version and timezone
 
 **Behavior:**
+
 - Tab switching via keyboard (ArrowLeft/ArrowRight) and click
 - Active tab indicated by `border-b-2 border-secondary text-secondary`
 - Save button shows loading spinner → success state → resets (matching existing micro-interaction pattern)
@@ -46,6 +49,7 @@ interface ProfileModalProps {
 When logged in, clicking the avatar button opens the ProfileModal instead of doing nothing.
 
 **Changes:**
+
 - Add state for `profileModalOpen: boolean`
 - Render `<ProfileModal>` when logged in
 - Clicking profile button sets `profileModalOpen(true)`
@@ -55,11 +59,13 @@ When logged in, clicking the avatar button opens the ProfileModal instead of doi
 **File:** `src/hooks/useAuth.ts`
 
 **Session Invalidation on App Close:**
+
 - Listen for `beforeunload` event
 - On window close, call `commands.invalidateSession()` to invalidate server-side session
 - Clear localStorage auth data
 
 **Stale Credential Cleanup on App Start:**
+
 - On hook initialization, check for existing `auth_user_id` in localStorage
 - If found, validate with backend via `commands.validateSession(userId)`
 - If invalid or call fails, clear all auth data and treat as logged out
@@ -120,6 +126,7 @@ pub async fn update_user(user_id: String, updates: UserUpdates) -> Result<User, 
 Follow the pattern in `EntityDetailModal.tsx`:
 
 **Security Tab Skeleton:**
+
 ```tsx
 <div className="space-y-4">
   <div className="grid grid-cols-2 gap-4">
@@ -135,6 +142,7 @@ Follow the pattern in `EntityDetailModal.tsx`:
 ```
 
 **Activity Logs Tab Skeleton:**
+
 ```tsx
 <div className="space-y-3">
   {Array.from({ length: 5 }).map((_, i) => (
@@ -151,15 +159,15 @@ Follow the pattern in `EntityDetailModal.tsx`:
 
 ## 7. Files to Modify/Create
 
-| File | Action |
-|------|--------|
-| `src/components/auth/ProfileModal.tsx` | Create |
-| `src/components/auth/ProfileSection.tsx` | Modify - add modal state and render |
-| `src/components/auth/index.ts` | Modify - export ProfileModal |
-| `src/hooks/useAuth.ts` | Modify - add session validation and cleanup |
-| `src/App.tsx` | Modify - add beforeunload handler |
-| `src/lib/bindings.ts` | Modify - add new commands |
-| `src/commands/auth_commands.rs` (Rust) | Modify - add invalidate/validate/update commands |
+| File                                     | Action                                           |
+| ---------------------------------------- | ------------------------------------------------ |
+| `src/components/auth/ProfileModal.tsx`   | Create                                           |
+| `src/components/auth/ProfileSection.tsx` | Modify - add modal state and render              |
+| `src/components/auth/index.ts`           | Modify - export ProfileModal                     |
+| `src/hooks/useAuth.ts`                   | Modify - add session validation and cleanup      |
+| `src/App.tsx`                            | Modify - add beforeunload handler                |
+| `src/lib/bindings.ts`                    | Modify - add new commands                        |
+| `src/commands/auth_commands.rs` (Rust)   | Modify - add invalidate/validate/update commands |
 
 ## 8. Success Criteria
 

@@ -7,11 +7,13 @@ Entity workspaces are the default screen displayed when a user clicks a sidebar 
 ## 2. Routing Architecture
 
 ### URL Structure
+
 - `/dashboard` - Dashboard page (standalone, no entity context)
 - `/entity/:entityType` - Entity workspace (e.g., `/entity/customers`, `/entity/vendors`)
 - Future deep link: `/entity/:entityType/:id` - Specific entity record modal tab
 
 ### Route Definitions (MainWindowContent.tsx)
+
 ```
 /dashboard          → DashboardContent
 /entity/:entityType → EntityWorkspace
@@ -23,11 +25,16 @@ Entity workspaces are the default screen displayed when a user clicks a sidebar 
 
 ```typescript
 // src/lib/utils.ts
-type TabType = 'dashboard' | 'new-tab' | 'sales-invoice' | 'purchase-invoice' | 'entity'
+type TabType =
+  | 'dashboard'
+  | 'new-tab'
+  | 'sales-invoice'
+  | 'purchase-invoice'
+  | 'entity'
 
 interface Tab {
   id: string
-  title: string       // Display name: "Customers", "Vendors", etc.
+  title: string // Display name: "Customers", "Vendors", etc.
   type: TabType
   closable: boolean
   entityType?: string // "customers", "vendors", "invoices" - for URL and tab lookup
@@ -35,6 +42,7 @@ interface Tab {
 ```
 
 ### Tab Behavior
+
 - **Dashboard tab**: Not closable, always present as first tab
 - **Entity tabs**: Closable, created on demand when clicking sidebar entity links
 - **Tab lookup**: When clicking sidebar, check if entity tab already exists → activate it, otherwise create new tab
@@ -42,16 +50,20 @@ interface Tab {
 ## 4. Sidebar Navigation Enhancement
 
 ### Current Behavior
+
 Sidebar items use plain `<a href="#">` links causing full page reloads.
 
 ### New Behavior
+
 Sidebar items use click handlers that:
+
 1. Check tab store for existing entity tab (by `entityType`)
 2. If found → activate that tab (set activeTabId)
 3. If not found → create new closable tab with entity info, then activate
 4. Navigate to `/entity/:entityType`
 
 ### Implementation Pattern
+
 ```typescript
 // SideBar.tsx - NavItem receives onClick handler
 <NavItem
@@ -62,6 +74,7 @@ Sidebar items use click handlers that:
 ```
 
 ### Sidebar Sections (unchanged)
+
 - Sales: Invoices, Customers
 - Purchases: Bills, Vendors
 - Inventory: Stock, Warehouses
@@ -72,6 +85,7 @@ Note: "Dashboard" is the default first tab, not part of sidebar entity navigatio
 ## 5. Entity Workspace Component
 
 ### Layout Structure
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ HEADER (immediate render)                                   │
@@ -94,24 +108,29 @@ Note: "Dashboard" is the default first tab, not part of sidebar entity navigatio
 ```
 
 ### Skeleton Design
+
 - **Toolbar skeleton**: Mimics the toolbar layout - search input, select dropdowns, action buttons
 - **Content skeleton**: Full height (flex-1), fills horizontally. Shows 8-10 rows of skeleton cells matching the future table column structure
 - **Footer skeleton**: Mimics pagination layout - rows per page selector, showing count, pagination controls
 
 ### Skeleton Implementation
+
 Use existing `Skeleton` component from `@/components/ui/skeleton`. Structure skeleton rows to match future table columns (8 columns based on reference design).
 
 ## 6. Breadcrumb Behavior
 
 ### Dashboard Breadcrumb
+
 ```
 DASHBOARD / Executive Overview
 ```
 
 ### Entity Workspace Breadcrumb
+
 ```
 PARTNERS / Customers
 ```
+
 (Does NOT include Dashboard - entities have their own navigation context)
 
 Note: "PARTNERS" section name is derived from sidebar section grouping (Sales entities under PARTNERS, etc.). This is TBD based on final sidebar section labels.
@@ -119,6 +138,7 @@ Note: "PARTNERS" section name is derived from sidebar section grouping (Sales en
 ## 7. Entity Type Mapping
 
 Sidebar links map to entity types:
+
 - Invoices → `invoices`
 - Customers → `customers`
 - Bills → `bills`
@@ -155,10 +175,12 @@ Each entityType generates a URL `/entity/:entityType`.
 ## 9. Files to Create/Modify
 
 ### New Files
+
 - `src/components/entity/EntityWorkspace.tsx` - Entity workspace with skeleton
 - `src/hooks/use-entity-tabs.ts` - Hook for entity tab management (optional, can be inline)
 
 ### Modified Files
+
 - `src/lib/utils.ts` - Extend TabType, Tab interface
 - `src/store/tab-store.ts` - Update addTab to handle entity tabs
 - `src/components/layout/SideBar.tsx` - Click handlers for entity navigation

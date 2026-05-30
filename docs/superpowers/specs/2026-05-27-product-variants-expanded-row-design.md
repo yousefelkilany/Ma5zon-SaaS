@@ -98,6 +98,7 @@ src-tauri/src/commands/
 ### 4.2 Module Structure
 
 **`products.rs`**
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -121,6 +122,7 @@ pub async fn delete(app: AppHandle, id: i64) -> Result<(), String>
 ```
 
 **`variants.rs`**
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -148,6 +150,7 @@ pub async fn delete(app: AppHandle, id: i64) -> Result<(), String>
 ```
 
 **`prices.rs`**
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -171,6 +174,7 @@ pub async fn delete(app: AppHandle, variant_id: i64, price_list_id: i64) -> Resu
 ```
 
 **`schema.rs`**
+
 ```rust
 #[tauri::command]
 #[specta::specta]
@@ -216,6 +220,7 @@ pub struct TableLayout {
 ### 4.4 Database Initialization
 
 `init_product_tables` creates tables if not exist:
+
 ```rust
 conn.execute("CREATE TABLE IF NOT EXISTS products (...)", [])?;
 conn.execute("CREATE TABLE IF NOT EXISTS product_variants (...)", [])?;
@@ -229,6 +234,7 @@ conn.execute("CREATE TABLE IF NOT EXISTS price_lists (id INTEGER PRIMARY KEY, na
 ### 5.1 Types (`src/lib/types/entity.ts`)
 
 Add interfaces for products/variants:
+
 ```typescript
 export interface ProductRow {
   id: string
@@ -342,6 +348,7 @@ const table = useReactTable({
 ### 5.4 DataTableShell Changes
 
 Add props for expanded rows:
+
 ```typescript
 interface DataTableShellProps {
   // ... existing
@@ -400,29 +407,30 @@ function VariantsSubTable({ variants, isLoading }: VariantsSubTableProps) {
 
 ### New Files
 
-| File | Purpose |
-|------|---------|
-| `src-tauri/src/commands/products.rs` | Product CRUD commands |
-| `src-tauri/src/commands/variants.rs` | Variant CRUD + get_by_product |
-| `src-tauri/src/commands/prices.rs` | Price CRUD + get_by_variant |
-| `src-tauri/src/commands/schema.rs` | Table layout + init tables |
+| File                                         | Purpose                               |
+| -------------------------------------------- | ------------------------------------- |
+| `src-tauri/src/commands/products.rs`         | Product CRUD commands                 |
+| `src-tauri/src/commands/variants.rs`         | Variant CRUD + get_by_product         |
+| `src-tauri/src/commands/prices.rs`           | Price CRUD + get_by_variant           |
+| `src-tauri/src/commands/schema.rs`           | Table layout + init tables            |
 | `src/components/entity/VariantsSubTable.tsx` | Nested variants table in expanded row |
 
 ### Modified Files
 
-| File | Change |
-|------|--------|
-| `src-tauri/src/commands/mod.rs` | Export new command modules |
-| `src-tauri/src/bindings.rs` | Add new commands to specta builder |
-| `src-tauri/src/types.rs` | Add Product, Variant, VariantPrice, TableLayout types |
-| `src/lib/types/entity.ts` | Add ProductRow, VariantRow, VariantPriceRow, TableLayout interfaces |
-| `src/components/entity/DataTable.tsx` | Add expanded row rendering |
-| `src/components/entity/DataTableShell.tsx` | Add expanded row state management |
-| `src/components/entity/EntityWorkspace.tsx` | Connect to TanStack Query, fetch data, handle expansion |
+| File                                        | Change                                                              |
+| ------------------------------------------- | ------------------------------------------------------------------- |
+| `src-tauri/src/commands/mod.rs`             | Export new command modules                                          |
+| `src-tauri/src/bindings.rs`                 | Add new commands to specta builder                                  |
+| `src-tauri/src/types.rs`                    | Add Product, Variant, VariantPrice, TableLayout types               |
+| `src/lib/types/entity.ts`                   | Add ProductRow, VariantRow, VariantPriceRow, TableLayout interfaces |
+| `src/components/entity/DataTable.tsx`       | Add expanded row rendering                                          |
+| `src/components/entity/DataTableShell.tsx`  | Add expanded row state management                                   |
+| `src/components/entity/EntityWorkspace.tsx` | Connect to TanStack Query, fetch data, handle expansion             |
 
 ## 7. Implementation Phases
 
 ### Phase 1: Rust Commands
+
 - [ ] Create `products.rs` with full CRUD
 - [ ] Create `variants.rs` with CRUD + `get_by_product`
 - [ ] Create `prices.rs` with CRUD + `get_by_variant`
@@ -432,6 +440,7 @@ function VariantsSubTable({ variants, isLoading }: VariantsSubTableProps) {
 - [ ] Test commands with Tauri dev console
 
 ### Phase 2: Frontend Integration
+
 - [ ] Update types in `entity.ts`
 - [ ] Wire `EntityWorkspace` to use queries instead of mock data
 - [ ] Add expanded row state to `DataTableShell`
@@ -439,6 +448,7 @@ function VariantsSubTable({ variants, isLoading }: VariantsSubTableProps) {
 - [ ] Add expansion toggle to `DataTable`
 
 ### Phase 3: Polish
+
 - [ ] Loading states for expanded rows
 - [ ] Error handling for failed variant fetches
 - [ ] Cache invalidation on create/update/delete

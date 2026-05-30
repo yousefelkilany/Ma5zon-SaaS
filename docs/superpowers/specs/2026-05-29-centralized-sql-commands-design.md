@@ -76,65 +76,66 @@ pub fn soft_delete() -> &'static str {
 
 ### sql/products.rs
 
-| Function | Purpose |
-|----------|---------|
-| `create_table()` | CREATE TABLE for products |
-| `get_all()` | SELECT all non-deleted products |
-| `get_by_id()` | SELECT by id |
-| `create()` | INSERT new product |
-| `update()` | UPDATE existing product |
-| `soft_delete()` | UPDATE deleted_at timestamp |
+| Function         | Purpose                         |
+| ---------------- | ------------------------------- |
+| `create_table()` | CREATE TABLE for products       |
+| `get_all()`      | SELECT all non-deleted products |
+| `get_by_id()`    | SELECT by id                    |
+| `create()`       | INSERT new product              |
+| `update()`       | UPDATE existing product         |
+| `soft_delete()`  | UPDATE deleted_at timestamp     |
 
 ### sql/warehouses.rs
 
-| Function | Purpose |
-|----------|---------|
-| `create_table()` | CREATE TABLE for warehouses |
-| `get_all()` | SELECT all non-deleted warehouses |
-| `get_by_id()` | SELECT by id |
-| `create()` | INSERT new warehouse |
-| `update()` | UPDATE existing warehouse |
-| `soft_delete()` | UPDATE deleted_at timestamp |
+| Function         | Purpose                           |
+| ---------------- | --------------------------------- |
+| `create_table()` | CREATE TABLE for warehouses       |
+| `get_all()`      | SELECT all non-deleted warehouses |
+| `get_by_id()`    | SELECT by id                      |
+| `create()`       | INSERT new warehouse              |
+| `update()`       | UPDATE existing warehouse         |
+| `soft_delete()`  | UPDATE deleted_at timestamp       |
 
 ### sql/variants.rs
 
-| Function | Purpose |
-|----------|---------|
-| `create_table()` | CREATE TABLE for product_variants |
-| `get_all()` | SELECT all non-deleted variants |
-| `get_by_id()` | SELECT by id |
-| `get_by_product()` | SELECT by product_id |
-| `create()` | INSERT new variant |
-| `update()` | UPDATE existing variant |
-| `soft_delete()` | UPDATE deleted_at timestamp |
+| Function           | Purpose                           |
+| ------------------ | --------------------------------- |
+| `create_table()`   | CREATE TABLE for product_variants |
+| `get_all()`        | SELECT all non-deleted variants   |
+| `get_by_id()`      | SELECT by id                      |
+| `get_by_product()` | SELECT by product_id              |
+| `create()`         | INSERT new variant                |
+| `update()`         | UPDATE existing variant           |
+| `soft_delete()`    | UPDATE deleted_at timestamp       |
 
 ### sql/stock.rs
 
-| Function | Purpose |
-|----------|---------|
-| `create_levels_table()` | CREATE TABLE for stock_levels |
-| `create_movements_table()` | CREATE TABLE for stock_movements |
-| `get_levels_all()` | SELECT all stock_levels |
-| `get_levels_by_variant()` | SELECT stock_levels by variant_id |
-| `get_levels_by_warehouse()` | SELECT stock_levels by warehouse_id |
-| `get_movements_all()` | SELECT all stock_movements |
+| Function                     | Purpose                              |
+| ---------------------------- | ------------------------------------ |
+| `create_levels_table()`      | CREATE TABLE for stock_levels        |
+| `create_movements_table()`   | CREATE TABLE for stock_movements     |
+| `get_levels_all()`           | SELECT all stock_levels              |
+| `get_levels_by_variant()`    | SELECT stock_levels by variant_id    |
+| `get_levels_by_warehouse()`  | SELECT stock_levels by warehouse_id  |
+| `get_movements_all()`        | SELECT all stock_movements           |
 | `get_movements_by_variant()` | SELECT stock_movements by variant_id |
 
 ### sql/users.rs
 
-| Function | Purpose |
-|----------|---------|
-| `create_table()` | CREATE TABLE for users |
-| `get_by_name()` | SELECT user by name (for auth) |
-| `get_by_id()` | SELECT user by id |
-| `upsert()` | INSERT or UPDATE user |
-| `delete()` | DELETE user |
+| Function              | Purpose                               |
+| --------------------- | ------------------------------------- |
+| `create_table()`      | CREATE TABLE for users                |
+| `get_by_name()`       | SELECT user by name (for auth)        |
+| `get_by_id()`         | SELECT user by id                     |
+| `upsert()`            | INSERT or UPDATE user                 |
+| `delete()`            | DELETE user                           |
 | `get_password_hash()` | SELECT password_hash for verification |
-| `update_password()` | UPDATE password_hash |
+| `update_password()`   | UPDATE password_hash                  |
 
 ## Command File Refactoring
 
 **Before:**
+
 ```rust
 // commands/products.rs
 conn.execute(
@@ -144,6 +145,7 @@ conn.execute(
 ```
 
 **After:**
+
 ```rust
 // commands/products.rs
 use crate::sql::products::create_table;
@@ -152,12 +154,14 @@ conn.execute(create_table(), []).map_err(...)
 ```
 
 **Before:**
+
 ```rust
 // commands/products.rs
 conn.prepare("SELECT id, company, name, category, ... FROM products WHERE deleted_at IS NULL ORDER BY name")
 ```
 
 **After:**
+
 ```rust
 // commands/products.rs
 use crate::sql::products::{get_all, get_by_id, create, update, soft_delete};

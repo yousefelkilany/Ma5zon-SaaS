@@ -30,6 +30,7 @@
 ### Task 1: Create db_utils.rs (shared database utilities)
 
 **Files:**
+
 - Create: `src-tauri/src/commands/db_utils.rs`
 
 - [ ] **Step 1: Write db_utils.rs**
@@ -71,6 +72,7 @@ git commit -m "feat(db): add shared db_utils module"
 ### Task 2: Update user.rs with DatabaseInitializable
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/user.rs:1-304`
 
 - [ ] **Step 1: Add imports and trait implementation at top of user.rs**
@@ -136,6 +138,7 @@ impl commands::DatabaseInitializable for UserInitializer {
 Replace `init_db(&app)?` with `get_conn(&app)?` in `authenticate`, `load_user`, `save_user`, `delete_user`, `update_password`, `update_user` functions.
 
 For example, in `authenticate` (line 125):
+
 ```rust
 let conn = get_conn(&app)?;  // was: let conn = init_db(&app)?;
 ```
@@ -157,6 +160,7 @@ Expected: Should show errors about missing `init_db` calls in commands. We'll fi
 Each command that called `init_db(&app)?` should now call `get_conn(&app)?`. Search for `init_db` in user.rs and replace all occurrences.
 
 Specifically:
+
 - `authenticate` line 125: `let conn = init_db(&app)?` → `let conn = get_conn(&app)?`
 - `load_user` line 188: `let conn = init_db(&app)?` → `let conn = get_conn(&app)?`
 - `save_user` line 212: `let conn = init_db(&app)?` → `let conn = get_conn(&app)?`
@@ -178,6 +182,7 @@ git commit -m "feat(db): implement DatabaseInitializable for user module"
 ### Task 3: Update products.rs with DatabaseInitializable
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/products.rs:1-101`
 
 - [ ] **Step 1: Add imports and initializer at top of products.rs**
@@ -275,6 +280,7 @@ git commit -m "feat(db): implement DatabaseInitializable for products module"
 ### Task 4: Update variants.rs with DatabaseInitializable
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/variants.rs:1-154`
 
 - [ ] **Step 1: Update Variant type in types.rs first**
@@ -551,6 +557,7 @@ git commit -m "feat(db): implement DatabaseInitializable for variants module wit
 ### Task 5: Update commands/mod.rs (trait and registry)
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/mod.rs:1-14`
 
 - [ ] **Step 1: Add trait, registry, and update module list**
@@ -606,6 +613,7 @@ git commit -m "feat(db): add DatabaseInitializable trait and registry"
 ### Task 6: Update lib.rs (startup initialization)
 
 **Files:**
+
 - Modify: `src-tauri/src/lib.rs:104-143`
 
 - [ ] **Step 1: Add initialize_databases function**
@@ -694,6 +702,7 @@ git commit -m "feat(db): add database initialization on startup"
 ### Task 7: Delete prices.rs
 
 **Files:**
+
 - Delete: `src-tauri/src/commands/prices.rs`
 
 - [ ] **Step 1: Delete prices.rs**
@@ -709,6 +718,7 @@ git commit -m "feat(db): remove prices module (variant_prices table obsolete)"
 ### Task 8: Clean up schema.rs
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/schema.rs`
 
 - [ ] **Step 1: Remove init_product_tables, seed_product_tables, get_table_layout**
@@ -745,6 +755,7 @@ npm run tauri dev
 - [ ] **Step 2: Check logs for initialization messages**
 
 Look for:
+
 - `[UserInitializer] Seeding default admin`
 - `[ProductsInitializer] Seeding sample products`
 - `[VariantsInitializer] Seeding sample variants`
@@ -756,6 +767,7 @@ sqlite3 ~/.local/share/com.tauri.ma5zon/ma5zon.db "SELECT COUNT(*) FROM users; S
 ```
 
 Expected output:
+
 - users: 1 (admin)
 - products: 40
 - product_variants: varies (~80-160 based on seeding logic)

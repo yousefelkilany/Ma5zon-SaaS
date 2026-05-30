@@ -31,7 +31,7 @@ export const useTabStore = create<TabState>()(
       tabs: [DEFAULT_DASHBOARD_TAB],
       activeTabId: 'dashboard',
 
-      addTab: (tabData) => {
+      addTab: tabData => {
         const newTab: Tab = {
           ...tabData,
           id: generateId(),
@@ -43,7 +43,7 @@ export const useTabStore = create<TabState>()(
         return newTab.id
       },
 
-      removeTab: (tabId) => {
+      removeTab: tabId => {
         const { tabs, activeTabId } = get()
         const tab = tabs.find(t => t.id === tabId)
         if (!tab || !tab.closable) return
@@ -52,18 +52,22 @@ export const useTabStore = create<TabState>()(
 
         const dashboardTab = newTabs.find(t => t.type === 'dashboard')
         const otherTabs = newTabs.filter(t => t.type !== 'dashboard')
-        const reorderedTabs = dashboardTab ? [dashboardTab, ...otherTabs] : newTabs
+        const reorderedTabs = dashboardTab
+          ? [dashboardTab, ...otherTabs]
+          : newTabs
 
         let newActiveId = activeTabId
         if (activeTabId === tabId) {
           const closedIndex = tabs.findIndex(t => t.id === tabId)
-          newActiveId = reorderedTabs[Math.min(closedIndex, reorderedTabs.length - 1)]?.id || 'dashboard'
+          newActiveId =
+            reorderedTabs[Math.min(closedIndex, reorderedTabs.length - 1)]
+              ?.id || 'dashboard'
         }
 
         set({ tabs: reorderedTabs, activeTabId: newActiveId })
       },
 
-      setActiveTab: (tabId) => {
+      setActiveTab: tabId => {
         set({ activeTabId: tabId })
       },
 
@@ -72,12 +76,12 @@ export const useTabStore = create<TabState>()(
         return tabs.find(t => t.id === activeTabId)
       },
 
-      getTabByType: (type) => {
+      getTabByType: type => {
         const { tabs } = get()
         return tabs.find(t => t.type === type)
       },
 
-      getTabByEntityType: (entityType) => {
+      getTabByEntityType: entityType => {
         const { tabs } = get()
         return tabs.find(t => t.entityType === entityType)
       },

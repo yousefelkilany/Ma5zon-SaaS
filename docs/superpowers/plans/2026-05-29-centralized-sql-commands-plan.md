@@ -34,6 +34,7 @@ src-tauri/src/
 ## Task 1: Create sql/ Module Structure
 
 **Files:**
+
 - Create: `src-tauri/src/sql/mod.rs`
 
 - [ ] **Step 1: Create sql/mod.rs**
@@ -62,6 +63,7 @@ git commit -m "feat(sql): create sql module structure"
 ## Task 2: Create sql/products.rs
 
 **Files:**
+
 - Create: `src-tauri/src/sql/products.rs`
 
 - [ ] **Step 1: Write sql/products.rs**
@@ -106,6 +108,7 @@ git commit -m "feat(sql): add products SQL statements"
 ## Task 3: Create sql/warehouses.rs
 
 **Files:**
+
 - Create: `src-tauri/src/sql/warehouses.rs`
 
 - [ ] **Step 1: Write sql/warehouses.rs**
@@ -150,6 +153,7 @@ git commit -m "feat(sql): add warehouses SQL statements"
 ## Task 4: Create sql/variants.rs
 
 **Files:**
+
 - Create: `src-tauri/src/sql/variants.rs`
 
 - [ ] **Step 1: Write sql/variants.rs**
@@ -206,6 +210,7 @@ git commit -m "feat(sql): add variants SQL statements"
 ## Task 5: Create sql/stock.rs
 
 **Files:**
+
 - Create: `src-tauri/src/sql/stock.rs`
 
 - [ ] **Step 1: Write sql/stock.rs**
@@ -262,6 +267,7 @@ git commit -m "feat(sql): add stock SQL statements"
 ## Task 6: Create sql/users.rs
 
 **Files:**
+
 - Create: `src-tauri/src/sql/users.rs`
 
 - [ ] **Step 1: Write sql/users.rs**
@@ -312,16 +318,19 @@ git commit -m "feat(sql): add users SQL statements"
 ## Task 7: Update commands/products.rs
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/products.rs`
 
 - [ ] **Step 1: Add import and replace SQL strings**
 
 Add import at top of file:
+
 ```rust
 use crate::sql::products::{get_all, get_by_id, create, update, soft_delete};
 ```
 
 Replace each SQL string literal with function call:
+
 - Line 108: `"SELECT ...` → `get_all()`
 - Line 136: `"SELECT ... WHERE id = "` → `get_by_id()`
 - Line 167: `"INSERT INTO products ...` → `create()`
@@ -346,16 +355,19 @@ git commit -m "refactor(products): use centralized SQL from sql::products"
 ## Task 8: Update commands/warehouses.rs
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/warehouses.rs`
 
 - [ ] **Step 1: Add import and replace SQL strings**
 
 Add import at top of file:
+
 ```rust
 use crate::sql::warehouses::{get_all, get_by_id, create, update, soft_delete};
 ```
 
 Replace each SQL string literal with function call:
+
 - Line 82: `"SELECT ...` → `get_all()`
 - Line 109: `"SELECT ... WHERE id = "` → `get_by_id()`
 - Line 138: `"INSERT INTO warehouses ...` → `create()`
@@ -380,16 +392,19 @@ git commit -m "refactor(warehouses): use centralized SQL from sql::warehouses"
 ## Task 9: Update commands/variants.rs
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/variants.rs`
 
 - [ ] **Step 1: Add import and replace SQL strings**
 
 Add import at top of file:
+
 ```rust
 use crate::sql::variants::{get_all, get_by_id, get_by_product, create, update, soft_delete};
 ```
 
 Replace each SQL string literal with function call:
+
 - Line 153: `"SELECT ...` → `get_all()`
 - Line 190: `"SELECT ... WHERE product_id = "` → `get_by_product()`
 - Line 222: `"SELECT ... WHERE id = "` → `get_by_id()`
@@ -415,11 +430,13 @@ git commit -m "refactor(variants): use centralized SQL from sql::variants"
 ## Task 10: Update commands/stock.rs
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/stock.rs`
 
 - [ ] **Step 1: Add import and replace SQL strings**
 
 Add import at top of file:
+
 ```rust
 use crate::sql::stock::{
     get_levels_all, get_levels_by_variant, get_levels_by_warehouse,
@@ -428,6 +445,7 @@ use crate::sql::stock::{
 ```
 
 Replace each SQL string literal with function call:
+
 - Line 216: `"SELECT variant_id, warehouse_id, quantity FROM stock_levels ...` → `get_levels_all()`
 - Line 245: `"SELECT variant_id, warehouse_id, quantity FROM stock_levels WHERE variant_id = "` → `get_levels_by_variant()`
 - Line 274: `"SELECT variant_id, warehouse_id, quantity FROM stock_levels WHERE warehouse_id = "` → `get_levels_by_warehouse()`
@@ -452,11 +470,13 @@ git commit -m "refactor(stock): use centralized SQL from sql::stock"
 ## Task 11: Update commands/user.rs
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/user.rs`
 
 - [ ] **Step 1: Add import and replace SQL strings**
 
 Add import at top of file:
+
 ```rust
 use crate::sql::users::{
     get_by_name, get_by_id, upsert, delete, get_password_hash, update_password, update_user,
@@ -464,6 +484,7 @@ use crate::sql::users::{
 ```
 
 Replace each SQL string literal with function call:
+
 - Line 106: `"SELECT id, name, email, role, avatar_url, password_hash FROM users WHERE name = "` → `get_by_name()`
 - Line 163: `"SELECT id, name, email, role, avatar_url FROM users WHERE id = "` → `get_by_id()`
 - Line 187: `"INSERT INTO users ... ON CONFLICT(id) DO UPDATE SET ...` → `upsert()`
@@ -490,6 +511,7 @@ git commit -m "refactor(user): use centralized SQL from sql::users"
 ## Task 12: Final Verification
 
 **Files:**
+
 - None (verification only)
 
 - [ ] **Step 1: Run full build**
@@ -507,6 +529,7 @@ cd src-tauri && cargo clippy -- -D warnings 2>&1 | head -50
 - [ ] **Step 3: Verify all SQL imports are used**
 
 Check that no raw SQL string literals remain in the command files after refactoring:
+
 ```bash
 rg '"SELECT|"INSERT|"UPDATE|"DELETE|"CREATE' src-tauri/src/commands/ -l
 ```
@@ -517,19 +540,19 @@ Expected: Only files in `src-tauri/src/sql/` should contain SQL.
 
 ## Summary
 
-| Task | Description |
-|------|-------------|
-| 1 | Create sql/mod.rs |
-| 2 | Create sql/products.rs |
-| 3 | Create sql/warehouses.rs |
-| 4 | Create sql/variants.rs |
-| 5 | Create sql/stock.rs |
-| 6 | Create sql/users.rs |
-| 7 | Update commands/products.rs |
-| 8 | Update commands/warehouses.rs |
-| 9 | Update commands/variants.rs |
-| 10 | Update commands/stock.rs |
-| 11 | Update commands/user.rs |
-| 12 | Final verification |
+| Task | Description                   |
+| ---- | ----------------------------- |
+| 1    | Create sql/mod.rs             |
+| 2    | Create sql/products.rs        |
+| 3    | Create sql/warehouses.rs      |
+| 4    | Create sql/variants.rs        |
+| 5    | Create sql/stock.rs           |
+| 6    | Create sql/users.rs           |
+| 7    | Update commands/products.rs   |
+| 8    | Update commands/warehouses.rs |
+| 9    | Update commands/variants.rs   |
+| 10   | Update commands/stock.rs      |
+| 11   | Update commands/user.rs       |
+| 12   | Final verification            |
 
 **Total: 12 tasks, 12 commits**

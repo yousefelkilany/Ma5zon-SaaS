@@ -12,6 +12,7 @@
 Extend the existing i18n infrastructure to support full Arabic grammatical forms (6 plural categories + dual) while maintaining compatibility with English's singular/plural system. This includes definite/indefinite article handling.
 
 **Requirements:**
+
 - Support Arabic's 6 plural forms: zero, one, two, few, many, other
 - Support English's 2 forms: singular, plural
 - Handle dual form (2) in Arabic
@@ -23,14 +24,14 @@ Extend the existing i18n infrastructure to support full Arabic grammatical forms
 
 ### Arabic Plural Rules ( jam' س/ jam')
 
-| Form | Count | Arabic Term | Example |
-|------|-------|-------------|---------|
-| **zero** | 0 | صفر | لا توجد فواتير |
-| **one** | 1 | مفرد | فاتورة واحدة |
-| **two** | 2 | مثنى | فاتورتان |
-| **few** | 3-10 | قلة | 3-10 فاتورات |
-| **many** | 11-99 | كثرة | 11-99 فاتورة |
-| **other** | 100+ | غير محدود | 100+ فاتورة |
+| Form      | Count | Arabic Term | Example        |
+| --------- | ----- | ----------- | -------------- |
+| **zero**  | 0     | صفر         | لا توجد فواتير |
+| **one**   | 1     | مفرد        | فاتورة واحدة   |
+| **two**   | 2     | مثنى        | فاتورتان       |
+| **few**   | 3-10  | قلة         | 3-10 فاتورات   |
+| **many**  | 11-99 | كثرة        | 11-99 فاتورة   |
+| **other** | 100+  | غير محدود   | 100+ فاتورة    |
 
 ### Implementation Strategy
 
@@ -130,7 +131,7 @@ export const arabicFormatter = {
     }
     // English fallback
     return count === 1 ? 'one' : 'other'
-  }
+  },
 }
 ```
 
@@ -180,22 +181,23 @@ interface TranslationOptions {
 ## 7. Comprehensive Component Analysis
 
 All screens and components listed below must be audited for:
+
 1. **Hardcoded strings** - Currently missing from translation files
 2. **Static translations** - Present but need ICU plural format for grammatical correctness
 3. **Definite/indefinite handling** - Strings where article context matters
 
 ### 7.1 Navbar
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `nav.appName` | Static string | No change |
-| `nav.appTagline` | Static string | No change |
-| `nav.globalSearchPlaceholder` | Static string | No change |
-| `nav.userName` | Static string | No change |
-| `nav.userRole` | Static string | No change |
-| `nav.newTab` | Static string | No change |
-| `nav.login` | Static string | No change |
-| `nav.logout` | Static string | No change |
+| Key Pattern                   | Current State | Action Required |
+| ----------------------------- | ------------- | --------------- |
+| `nav.appName`                 | Static string | No change       |
+| `nav.appTagline`              | Static string | No change       |
+| `nav.globalSearchPlaceholder` | Static string | No change       |
+| `nav.userName`                | Static string | No change       |
+| `nav.userRole`                | Static string | No change       |
+| `nav.newTab`                  | Static string | No change       |
+| `nav.login`                   | Static string | No change       |
+| `nav.logout`                  | Static string | No change       |
 
 **Analysis:** Navbar uses static strings with no plural context. Current translations are sufficient.
 
@@ -203,20 +205,20 @@ All screens and components listed below must be audited for:
 
 ### 7.2 Login Modal (LoginModal.tsx)
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `auth.signIn` | Static | No change |
-| `auth.signInToMa5zon` | Static | No change |
-| `auth.enterpriseFinancial` | Static | No change |
-| `auth.username` | Static | No change |
-| `auth.usernamePlaceholder` | **Hardcoded** | Add to en.json/ar.json |
-| `auth.password` | Static | No change |
-| `auth.passwordPlaceholder` | **Hardcoded** | Add to en.json/ar.json |
-| `auth.forgot` | Static | No change |
-| `auth.invalidCredentials` | Static | No change |
-| `auth.authenticating` | Static | No change |
-| `auth.login.dialogTitle` | Static | No change |
-| `auth.login.dialogDescription` | Static | No change |
+| Key Pattern                    | Current State | Action Required        |
+| ------------------------------ | ------------- | ---------------------- |
+| `auth.signIn`                  | Static        | No change              |
+| `auth.signInToMa5zon`          | Static        | No change              |
+| `auth.enterpriseFinancial`     | Static        | No change              |
+| `auth.username`                | Static        | No change              |
+| `auth.usernamePlaceholder`     | **Hardcoded** | Add to en.json/ar.json |
+| `auth.password`                | Static        | No change              |
+| `auth.passwordPlaceholder`     | **Hardcoded** | Add to en.json/ar.json |
+| `auth.forgot`                  | Static        | No change              |
+| `auth.invalidCredentials`      | Static        | No change              |
+| `auth.authenticating`          | Static        | No change              |
+| `auth.login.dialogTitle`       | Static        | No change              |
+| `auth.login.dialogDescription` | Static        | No change              |
 
 **Status:** 2 hardcoded strings need translation keys.
 
@@ -226,58 +228,58 @@ All screens and components listed below must be audited for:
 
 #### Account Tab
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `profile.tabs.account` | **Hardcoded** | Add ICU plural |
-| `profile.tabs.security` | **Hardcoded** | Add ICU plural |
-| `profile.tabs.activity` | **Hardcoded** | Add ICU plural |
-| `profile.account.header` | **Hardcoded** | Add to locale |
-| `profile.account.description` | **Hardcoded** | Add to locale |
-| `profile.account.defaultUserName` | **Hardcoded** | Add to locale |
-| `profile.account.loading` | **Hardcoded** | Add to locale |
-| `profile.account.fullName` | **Hardcoded** | Add to locale |
-| `profile.account.email` | **Hardcoded** | Add to locale |
-| `profile.account.enterpriseRole` | **Hardcoded** | Add to locale |
-| `profile.account.roleAdminNote` | **Hardcoded** | Add to locale |
-| `profile.account.department` | **Hardcoded** | Add to locale |
-| `profile.account.location` | **Hardcoded** | Add to locale |
-| `profile.account.cancel` | **Hardcoded** | Add to locale |
-| `profile.account.processing` | **Hardcoded** | Add to locale |
-| `profile.account.savedSuccessfully` | **Hardcoded** | Add to locale |
-| `profile.account.saveChanges` | **Hardcoded** | Add to locale |
+| Key Pattern                         | Current State | Action Required |
+| ----------------------------------- | ------------- | --------------- |
+| `profile.tabs.account`              | **Hardcoded** | Add ICU plural  |
+| `profile.tabs.security`             | **Hardcoded** | Add ICU plural  |
+| `profile.tabs.activity`             | **Hardcoded** | Add ICU plural  |
+| `profile.account.header`            | **Hardcoded** | Add to locale   |
+| `profile.account.description`       | **Hardcoded** | Add to locale   |
+| `profile.account.defaultUserName`   | **Hardcoded** | Add to locale   |
+| `profile.account.loading`           | **Hardcoded** | Add to locale   |
+| `profile.account.fullName`          | **Hardcoded** | Add to locale   |
+| `profile.account.email`             | **Hardcoded** | Add to locale   |
+| `profile.account.enterpriseRole`    | **Hardcoded** | Add to locale   |
+| `profile.account.roleAdminNote`     | **Hardcoded** | Add to locale   |
+| `profile.account.department`        | **Hardcoded** | Add to locale   |
+| `profile.account.location`          | **Hardcoded** | Add to locale   |
+| `profile.account.cancel`            | **Hardcoded** | Add to locale   |
+| `profile.account.processing`        | **Hardcoded** | Add to locale   |
+| `profile.account.savedSuccessfully` | **Hardcoded** | Add to locale   |
+| `profile.account.saveChanges`       | **Hardcoded** | Add to locale   |
 
 **Status:** ~18 hardcoded strings in Account tab.
 
 #### Security Tab
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `profile.security.passwordPolicy` | **Hardcoded** | Add to locale |
-| `profile.security.minLength` | **Hardcoded** | Add to locale |
-| `profile.security.uppercase` | **Hardcoded** | Add to locale |
-| `profile.security.numeric` | **Hardcoded** | Add to locale |
-| `profile.security.special` | **Hardcoded** | Add to locale |
-| `profile.security.match` | **Hardcoded** | Add to locale |
-| `profile.security.updatePassword` | **Hardcoded** | Add to locale |
-| `profile.security.currentPassword` | **Hardcoded** | Add to locale |
-| `profile.security.newPassword` | **Hardcoded** | Add to locale |
-| `profile.security.confirmPassword` | **Hardcoded** | Add to locale |
-| `profile.security.updating` | **Hardcoded** | Add to locale |
-| `profile.security.updateButton` | **Hardcoded** | Add to locale |
-| `profile.security.cancelChanges` | **Hardcoded** | Add to locale |
+| Key Pattern                        | Current State | Action Required |
+| ---------------------------------- | ------------- | --------------- |
+| `profile.security.passwordPolicy`  | **Hardcoded** | Add to locale   |
+| `profile.security.minLength`       | **Hardcoded** | Add to locale   |
+| `profile.security.uppercase`       | **Hardcoded** | Add to locale   |
+| `profile.security.numeric`         | **Hardcoded** | Add to locale   |
+| `profile.security.special`         | **Hardcoded** | Add to locale   |
+| `profile.security.match`           | **Hardcoded** | Add to locale   |
+| `profile.security.updatePassword`  | **Hardcoded** | Add to locale   |
+| `profile.security.currentPassword` | **Hardcoded** | Add to locale   |
+| `profile.security.newPassword`     | **Hardcoded** | Add to locale   |
+| `profile.security.confirmPassword` | **Hardcoded** | Add to locale   |
+| `profile.security.updating`        | **Hardcoded** | Add to locale   |
+| `profile.security.updateButton`    | **Hardcoded** | Add to locale   |
+| `profile.security.cancelChanges`   | **Hardcoded** | Add to locale   |
 
 #### Security Validation Messages
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `profile.security.validation.currentRequired` | **Hardcoded** | Add to locale |
-| `profile.security.validation.newRequired` | **Hardcoded** | Add to locale |
-| `profile.security.validation.minLength` | **Hardcoded** | Add to locale |
-| `profile.security.validation.uppercase` | **Hardcoded** | Add to locale |
-| `profile.security.validation.numeric` | **Hardcoded** | Add to locale |
-| `profile.security.validation.special` | **Hardcoded** | Add to locale |
-| `profile.security.validation.noMatch` | **Hardcoded** | Add to locale |
-| `profile.security.validation.updateFailed` | **Hardcoded** | Add to locale |
+| Key Pattern                                   | Current State | Action Required |
+| --------------------------------------------- | ------------- | --------------- |
+| `profile.security.validation.currentRequired` | **Hardcoded** | Add to locale   |
+| `profile.security.validation.newRequired`     | **Hardcoded** | Add to locale   |
+| `profile.security.validation.minLength`       | **Hardcoded** | Add to locale   |
+| `profile.security.validation.uppercase`       | **Hardcoded** | Add to locale   |
+| `profile.security.validation.numeric`         | **Hardcoded** | Add to locale   |
+| `profile.security.validation.special`         | **Hardcoded** | Add to locale   |
+| `profile.security.validation.noMatch`         | **Hardcoded** | Add to locale   |
+| `profile.security.validation.updateFailed`    | **Hardcoded** | Add to locale   |
 
 **Status:** ~22 hardcoded strings in Security tab.
 
@@ -285,10 +287,10 @@ All screens and components listed below must be audited for:
 
 ### 7.4 Settings Modal (SettingsPopover.tsx)
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `settingsPopover.language.arabic` | **Hardcoded** ("عربي") | Add to locale |
-| `settingsPopover.language.english` | **Hardcoded** ("EN") | Add to locale |
+| Key Pattern                        | Current State          | Action Required |
+| ---------------------------------- | ---------------------- | --------------- |
+| `settingsPopover.language.arabic`  | **Hardcoded** ("عربي") | Add to locale   |
+| `settingsPopover.language.english` | **Hardcoded** ("EN")   | Add to locale   |
 
 **Status:** 2 hardcoded strings. Note: Arabic string "عربي" needs proper translation entry.
 
@@ -296,35 +298,35 @@ All screens and components listed below must be audited for:
 
 ### 7.5 Sidebar (LeftSideBar.tsx / RightSideBar.tsx)
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `sidebar.nav.sales` | Translated | No change |
-| `sidebar.nav.invoices` | Translated | No change |
-| `sidebar.nav.customers` | Translated | No change |
-| `sidebar.nav.purchases` | Translated | No change |
-| `sidebar.nav.bills` | Translated | No change |
-| `sidebar.nav.vendors` | Translated | No change |
-| `sidebar.nav.inventory` | Translated | No change |
-| `sidebar.nav.system` | Translated | No change |
-| `sidebar.nav.stock` | Translated | No change |
-| `sidebar.nav.warehouses` | Translated | No change |
-| `sidebar.nav.finance` | Translated | No change |
-| `sidebar.nav.ledgers` | Translated | No change |
-| `sidebar.nav.plReport` | Translated | No change |
-| `sidebar.nav.reports` | Translated | No change |
-| `sidebar.nav.settings` | Translated | No change |
-| `sidebar.actions.logout` | Translated | No change |
+| Key Pattern              | Current State | Action Required |
+| ------------------------ | ------------- | --------------- |
+| `sidebar.nav.sales`      | Translated    | No change       |
+| `sidebar.nav.invoices`   | Translated    | No change       |
+| `sidebar.nav.customers`  | Translated    | No change       |
+| `sidebar.nav.purchases`  | Translated    | No change       |
+| `sidebar.nav.bills`      | Translated    | No change       |
+| `sidebar.nav.vendors`    | Translated    | No change       |
+| `sidebar.nav.inventory`  | Translated    | No change       |
+| `sidebar.nav.system`     | Translated    | No change       |
+| `sidebar.nav.stock`      | Translated    | No change       |
+| `sidebar.nav.warehouses` | Translated    | No change       |
+| `sidebar.nav.finance`    | Translated    | No change       |
+| `sidebar.nav.ledgers`    | Translated    | No change       |
+| `sidebar.nav.plReport`   | Translated    | No change       |
+| `sidebar.nav.reports`    | Translated    | No change       |
+| `sidebar.nav.settings`   | Translated    | No change       |
+| `sidebar.actions.logout` | Translated    | No change       |
 
 **Singular Forms (for "a/an" context):**
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `sidebar.nav.singular.invoices` | Translated | No change |
-| `sidebar.nav.singular.customers` | Translated | No change |
-| `sidebar.nav.singular.bills` | Translated | No change |
-| `sidebar.nav.singular.vendors` | Translated | No change |
-| `sidebar.nav.singular.stock` | Translated | No change |
-| `sidebar.nav.singular.warehouses` | Translated | No change |
+| Key Pattern                       | Current State | Action Required |
+| --------------------------------- | ------------- | --------------- |
+| `sidebar.nav.singular.invoices`   | Translated    | No change       |
+| `sidebar.nav.singular.customers`  | Translated    | No change       |
+| `sidebar.nav.singular.bills`      | Translated    | No change       |
+| `sidebar.nav.singular.vendors`    | Translated    | No change       |
+| `sidebar.nav.singular.stock`      | Translated    | No change       |
+| `sidebar.nav.singular.warehouses` | Translated    | No change       |
 
 **Status:** Fully translated, no action required.
 
@@ -332,10 +334,10 @@ All screens and components listed below must be audited for:
 
 ### 7.6 Tabbar (TabBar.tsx)
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `titlebar.expandSidebar` | Translated | No change |
-| `titlebar.collapseSidebar` | Translated | No change |
+| Key Pattern                | Current State | Action Required |
+| -------------------------- | ------------- | --------------- |
+| `titlebar.expandSidebar`   | Translated    | No change       |
+| `titlebar.collapseSidebar` | Translated    | No change       |
 
 **Status:** Fully translated, no action required.
 
@@ -343,20 +345,20 @@ All screens and components listed below must be audited for:
 
 ### 7.7 Dashboard Screen (DashboardContent.tsx)
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `dashboard.breadcrumb.finance` | Translated | No change |
-| `dashboard.breadcrumb.executiveOverview` | Translated | No change |
-| `dashboard.kpi.grossRevenue` | Translated | No change |
-| `dashboard.kpi.totalExpenses` | Translated | No change |
-| `dashboard.kpi.netProfit` | Translated | No change |
-| `dashboard.kpi.cashPosition` | Translated | No change |
-| `dashboard.workflow.*` | Translated | No change |
-| `dashboard.actions.*` | Translated | No change |
-| `dashboard.status.*` | Translated | No change |
-| `dashboard.badge.*` | Translated | No change |
-| `dashboard.chart.*` | Translated | No change |
-| `common.currency` | **Hardcoded** ("USD") | Add to locale |
+| Key Pattern                              | Current State         | Action Required |
+| ---------------------------------------- | --------------------- | --------------- |
+| `dashboard.breadcrumb.finance`           | Translated            | No change       |
+| `dashboard.breadcrumb.executiveOverview` | Translated            | No change       |
+| `dashboard.kpi.grossRevenue`             | Translated            | No change       |
+| `dashboard.kpi.totalExpenses`            | Translated            | No change       |
+| `dashboard.kpi.netProfit`                | Translated            | No change       |
+| `dashboard.kpi.cashPosition`             | Translated            | No change       |
+| `dashboard.workflow.*`                   | Translated            | No change       |
+| `dashboard.actions.*`                    | Translated            | No change       |
+| `dashboard.status.*`                     | Translated            | No change       |
+| `dashboard.badge.*`                      | Translated            | No change       |
+| `dashboard.chart.*`                      | Translated            | No change       |
+| `common.currency`                        | **Hardcoded** ("USD") | Add to locale   |
 
 **Status:** 1 hardcoded string (currency symbol).
 
@@ -364,10 +366,10 @@ All screens and components listed below must be audited for:
 
 ### 7.8 New Tab Screen (NewTabContent.tsx)
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `nav.newTab` | Translated | No change |
-| `dashboard.workflow.*` | Translated | No change |
+| Key Pattern            | Current State | Action Required |
+| ---------------------- | ------------- | --------------- |
+| `nav.newTab`           | Translated    | No change       |
+| `dashboard.workflow.*` | Translated    | No change       |
 
 **Status:** Fully translated, no action required.
 
@@ -375,21 +377,21 @@ All screens and components listed below must be audited for:
 
 ### 7.9 Entity Workspace Screen (EntityWorkspace.tsx)
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `entity.workspace.section.*` | Translated | No change |
-| `entity.workspace.addNew` | Translated | No change |
-| `entity.workspace.rowsPerPage` | Translated | No change |
-| `entity.workspace.showing` | Translated | ICU plural format |
-| `entity.workspace.toolbar.*` | Translated | No change |
-| `entity.workspace.columns.*` | Translated | No change |
-| `entity.workspace.edit` | Translated | No change |
-| `entity.workspace.delete` | Translated | No change |
-| `entity.workspace.page` | Translated | No change |
-| `entity.workspace.of` | Translated | No change |
-| `entity.workspace.selectAll` | Translated | No change |
-| `entity.workspace.selectRow` | Translated | No change |
-| `entity.workspace.selected` | **Needs ICU plural** | Convert to ICU format |
+| Key Pattern                    | Current State        | Action Required       |
+| ------------------------------ | -------------------- | --------------------- |
+| `entity.workspace.section.*`   | Translated           | No change             |
+| `entity.workspace.addNew`      | Translated           | No change             |
+| `entity.workspace.rowsPerPage` | Translated           | No change             |
+| `entity.workspace.showing`     | Translated           | ICU plural format     |
+| `entity.workspace.toolbar.*`   | Translated           | No change             |
+| `entity.workspace.columns.*`   | Translated           | No change             |
+| `entity.workspace.edit`        | Translated           | No change             |
+| `entity.workspace.delete`      | Translated           | No change             |
+| `entity.workspace.page`        | Translated           | No change             |
+| `entity.workspace.of`          | Translated           | No change             |
+| `entity.workspace.selectAll`   | Translated           | No change             |
+| `entity.workspace.selectRow`   | Translated           | No change             |
+| `entity.workspace.selected`    | **Needs ICU plural** | Convert to ICU format |
 
 **Status:** `entity.workspace.selected` and `entity.workspace.showing` need ICU plural conversion for proper Arabic grammar.
 
@@ -397,14 +399,14 @@ All screens and components listed below must be audited for:
 
 ### 7.10 Filtering Modal (FilterDialog.tsx)
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `entity.filter.min` | **Hardcoded** | Add to locale |
-| `entity.filter.max` | **Hardcoded** | Add to locale |
+| Key Pattern                   | Current State       | Action Required        |
+| ----------------------------- | ------------------- | ---------------------- |
+| `entity.filter.min`           | **Hardcoded**       | Add to locale          |
+| `entity.filter.max`           | **Hardcoded**       | Add to locale          |
 | `entity.filter.statusOptions` | **Hardcoded** array | Add as array to locale |
-| `entity.filter.clearAll` | **Hardcoded** | Add to locale |
-| `entity.filter.cancel` | **Hardcoded** | Add to locale |
-| `entity.filter.apply` | **Hardcoded** | Add to locale |
+| `entity.filter.clearAll`      | **Hardcoded**       | Add to locale          |
+| `entity.filter.cancel`        | **Hardcoded**       | Add to locale          |
+| `entity.filter.apply`         | **Hardcoded**       | Add to locale          |
 
 **Status:** 6 hardcoded strings need locale entries.
 
@@ -412,11 +414,11 @@ All screens and components listed below must be audited for:
 
 ### 7.11 Columns Modal (ColumnsModal.tsx)
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `entity.workspace.columns.manage` | Translated | No change |
-| `entity.workspace.columns.saveChanges` | Translated | No change |
-| `entity.workspace.columns.toggleVisibility` | Translated | ICU plural for `{{column}}` interpolation |
+| Key Pattern                                 | Current State | Action Required                           |
+| ------------------------------------------- | ------------- | ----------------------------------------- |
+| `entity.workspace.columns.manage`           | Translated    | No change                                 |
+| `entity.workspace.columns.saveChanges`      | Translated    | No change                                 |
+| `entity.workspace.columns.toggleVisibility` | Translated    | ICU plural for `{{column}}` interpolation |
 
 **Status:** `toggleVisibility` needs ICU plural format for count-based column references.
 
@@ -426,16 +428,16 @@ All screens and components listed below must be audited for:
 
 #### Details Tab
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
-| `entity.detail.tabs.details` | **Hardcoded** | Add to locale |
-| `entity.detail.tabs.insights` | **Hardcoded** | Add to locale |
-| `entity.detail.tabs.audits` | **Hardcoded** | Add to locale |
+| Key Pattern                   | Current State | Action Required |
+| ----------------------------- | ------------- | --------------- |
+| `entity.detail.tabs.details`  | **Hardcoded** | Add to locale   |
+| `entity.detail.tabs.insights` | **Hardcoded** | Add to locale   |
+| `entity.detail.tabs.audits`   | **Hardcoded** | Add to locale   |
 
 #### All Tabs Content
 
-| Key Pattern | Current State | Action Required |
-|-------------|--------------|-----------------|
+| Key Pattern       | Current State | Action Required       |
+| ----------------- | ------------- | --------------------- |
 | `entity.detail.*` | **Hardcoded** | Audit all tab content |
 
 **Status:** 3 tab labels hardcoded. Full tab content audit required.
@@ -444,12 +446,12 @@ All screens and components listed below must be audited for:
 
 ### 7.13 Summary of Required Changes
 
-| Category | Count | Action |
-|----------|-------|--------|
-| Hardcoded strings requiring locale entries | ~45 | Add to en.json/ar.json |
-| Existing translations needing ICU plural conversion | ~5 | Convert to ICU format |
-| Static translations (no change needed) | ~100+ | Verify existing |
-| **Total strings to review** | **~150** | |
+| Category                                            | Count    | Action                 |
+| --------------------------------------------------- | -------- | ---------------------- |
+| Hardcoded strings requiring locale entries          | ~45      | Add to en.json/ar.json |
+| Existing translations needing ICU plural conversion | ~5       | Convert to ICU format  |
+| Static translations (no change needed)              | ~100+    | Verify existing        |
+| **Total strings to review**                         | **~150** |                        |
 
 ---
 
@@ -541,48 +543,49 @@ Run `npm run check:all` to ensure no type errors.
 ## 11. Files to Modify
 
 ### New Files
+
 - `src/i18n/formatters.ts` - Arabic plural rule helper (optional, for morphological extensions)
 
 ### Modified Files (by priority)
 
 #### High Priority (User-facing hardcoded strings)
 
-| File | Changes |
-|------|---------|
-| `src/components/auth/ProfileModal.tsx` | Add `useTranslation`, replace ~40 hardcoded strings |
-| `src/components/auth/LoginModal.tsx` | Add `useTranslation`, replace 2 hardcoded strings |
-| `src/components/entity/FilterDialog.tsx` | Add `useTranslation`, replace 6 hardcoded strings |
+| File                                          | Changes                                             |
+| --------------------------------------------- | --------------------------------------------------- |
+| `src/components/auth/ProfileModal.tsx`        | Add `useTranslation`, replace ~40 hardcoded strings |
+| `src/components/auth/LoginModal.tsx`          | Add `useTranslation`, replace 2 hardcoded strings   |
+| `src/components/entity/FilterDialog.tsx`      | Add `useTranslation`, replace 6 hardcoded strings   |
 | `src/components/entity/EntityDetailModal.tsx` | Add `useTranslation`, replace ~10 hardcoded strings |
-| `src/components/layout/SettingsPopover.tsx` | Add `useTranslation`, replace 2 hardcoded strings |
+| `src/components/layout/SettingsPopover.tsx`   | Add `useTranslation`, replace 2 hardcoded strings   |
 
 #### Medium Priority (ICU plural conversions)
 
-| File | Changes |
-|------|---------|
-| `src/components/entity/Toolbar.tsx` | Convert `entity.workspace.selected` to ICU format |
-| `src/components/entity/ColumnsModal.tsx` | Convert `toggleVisibility` to ICU format |
+| File                                     | Changes                                           |
+| ---------------------------------------- | ------------------------------------------------- |
+| `src/components/entity/Toolbar.tsx`      | Convert `entity.workspace.selected` to ICU format |
+| `src/components/entity/ColumnsModal.tsx` | Convert `toggleVisibility` to ICU format          |
 
 #### Low Priority (Already translated, verify)
 
-| File | Status |
-|------|--------|
-| `src/components/layout/Navbar.tsx` | Already uses i18n |
-| `src/components/layout/LeftSideBar.tsx` | Already uses i18n |
-| `src/components/layout/RightSideBar.tsx` | Already uses i18n |
-| `src/components/tabs/TabBar.tsx` | Already uses i18n |
+| File                                       | Status                                       |
+| ------------------------------------------ | -------------------------------------------- |
+| `src/components/layout/Navbar.tsx`         | Already uses i18n                            |
+| `src/components/layout/LeftSideBar.tsx`    | Already uses i18n                            |
+| `src/components/layout/RightSideBar.tsx`   | Already uses i18n                            |
+| `src/components/tabs/TabBar.tsx`           | Already uses i18n                            |
 | `src/components/tabs/DashboardContent.tsx` | Already uses i18n (except `common.currency`) |
-| `src/components/tabs/NewTabContent.tsx` | Already uses i18n |
+| `src/components/tabs/NewTabContent.tsx`    | Already uses i18n                            |
 
 #### Locale Files
 
-| File | Changes |
-|------|---------|
-| `locales/en.json` | Add ~45 new translation keys, convert ~5 to ICU format |
-| `locales/ar.json` | Add ~45 Arabic translations, convert ~5 to ICU format |
-| `locales/generated/pending-keys.json` | Update with complete audit results |
+| File                                  | Changes                                                |
+| ------------------------------------- | ------------------------------------------------------ |
+| `locales/en.json`                     | Add ~45 new translation keys, convert ~5 to ICU format |
+| `locales/ar.json`                     | Add ~45 Arabic translations, convert ~5 to ICU format  |
+| `locales/generated/pending-keys.json` | Update with complete audit results                     |
 
 ### Type Definition Updates
 
-| File | Changes |
-|------|---------|
+| File                 | Changes                               |
+| -------------------- | ------------------------------------- |
 | `src/i18n/i18n.d.ts` | Extended types for ICU plural support |

@@ -61,7 +61,9 @@ export function TitleBar({ className, forcePlatform }: TitleBarProps) {
     document.title = tabTitle ? `${appName} - ${tabTitle}` : appName
     const win = tryGetWindow()
     if (win) {
-      win.setTitle(document.title).catch(e => console.warn('Failed to set window title:', e))
+      win
+        .setTitle(document.title)
+        .catch(e => console.warn('Failed to set window title:', e))
     }
   }, [tabTitle])
 

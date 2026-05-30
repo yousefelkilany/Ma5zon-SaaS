@@ -61,6 +61,7 @@ interface SortState {
 ## Task 1: Add Interfaces to entity.ts
 
 **Files:**
+
 - Modify: `src/lib/types/entity.ts`
 
 - [ ] **Step 1: Add interface definitions**
@@ -136,6 +137,7 @@ git commit -m "feat: add entity data table interfaces"
 ## Task 2: Create PaginationFooter Component
 
 **Files:**
+
 - Create: `src/components/entity/PaginationFooter.tsx`
 - Modify: `src/components/entity/index.ts`
 
@@ -168,7 +170,9 @@ export function PaginationFooter({
     <footer className="h-12 bg-surface-container-low border-t border-outline-variant px-6 flex items-center justify-between shrink-0">
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2">
-          <span className="text-on-surface-variant text-body-sm">Rows per page</span>
+          <span className="text-on-surface-variant text-body-sm">
+            Rows per page
+          </span>
           <select
             className="bg-surface-bright border border-outline-variant rounded px-2 py-1 text-on-surface text-body-sm"
             value={pageSize}
@@ -216,7 +220,9 @@ export function PaginationFooter({
             className="w-12 bg-surface-bright border border-outline-variant rounded px-2 py-1 text-center text-on-surface text-body-sm"
             disabled={isLoading}
           />
-          <span className="text-on-surface-variant text-body-sm">of {totalPages}</span>
+          <span className="text-on-surface-variant text-body-sm">
+            of {totalPages}
+          </span>
         </div>
         <button
           className="p-1 rounded hover:bg-surface-bright transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -268,6 +274,7 @@ git commit -m "feat: add PaginationFooter component"
 ## Task 3: Create Toolbar Component
 
 **Files:**
+
 - Create: `src/components/entity/Toolbar.tsx`
 
 - [ ] **Step 1: Create Toolbar.tsx**
@@ -305,14 +312,18 @@ export function Toolbar({
           className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded border border-outline-variant text-body-sm"
           onClick={onFiltersClick}
         >
-          <span className="material-symbols-outlined text-[18px]">filter_list</span>
+          <span className="material-symbols-outlined text-[18px]">
+            filter_list
+          </span>
           Filters
         </button>
         <button
           className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded border border-outline-variant text-body-sm"
           onClick={onColumnsClick}
         >
-          <span className="material-symbols-outlined text-[18px]">view_column</span>
+          <span className="material-symbols-outlined text-[18px]">
+            view_column
+          </span>
           Columns
         </button>
       </div>
@@ -326,7 +337,9 @@ export function Toolbar({
               className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded text-body-sm"
               onClick={() => onBulkAction('delete')}
             >
-              <span className="material-symbols-outlined text-[18px]">delete</span>
+              <span className="material-symbols-outlined text-[18px]">
+                delete
+              </span>
               Delete
             </button>
           </div>
@@ -336,7 +349,9 @@ export function Toolbar({
           className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded text-body-sm"
           onClick={onExport}
         >
-          <span className="material-symbols-outlined text-[18px]">file_download</span>
+          <span className="material-symbols-outlined text-[18px]">
+            file_download
+          </span>
           Export
         </button>
       </div>
@@ -357,6 +372,7 @@ git commit -m "feat: add Toolbar component"
 ## Task 4: Create EntityDetailModal (3-tab skeleton)
 
 **Files:**
+
 - Create: `src/components/entity/EntityDetailModal.tsx`
 
 - [ ] **Step 1: Create EntityDetailModal.tsx**
@@ -466,6 +482,7 @@ git commit -m "feat: add EntityDetailModal with 3-tab skeleton"
 ## Task 5: Create DataTableShell Component
 
 **Files:**
+
 - Create: `src/components/entity/DataTableShell.tsx`
 
 - [ ] **Step 1: Create DataTableShell.tsx**
@@ -543,15 +560,21 @@ export function DataTableShell({
     setDetailModalOpen(true)
   }, [])
 
-  const handleBulkAction = useCallback((action: string) => {
-    console.log('Bulk action:', action, Array.from(selectedIds))
-    setSelectedIds(new Set())
-  }, [selectedIds])
+  const handleBulkAction = useCallback(
+    (action: string) => {
+      console.log('Bulk action:', action, Array.from(selectedIds))
+      setSelectedIds(new Set())
+    },
+    [selectedIds]
+  )
 
-  const handleColumnSave = useCallback((newColumns: ColumnDef[]) => {
-    onSaveColumnPrefs(newColumns)
-    setColumnDialogOpen(false)
-  }, [onSaveColumnPrefs])
+  const handleColumnSave = useCallback(
+    (newColumns: ColumnDef[]) => {
+      onSaveColumnPrefs(newColumns)
+      setColumnDialogOpen(false)
+    },
+    [onSaveColumnPrefs]
+  )
 
   return (
     <div className="flex flex-col h-full">
@@ -623,13 +646,20 @@ git commit -m "feat: add DataTableShell wrapper component"
 ## Task 6: Create FilterDialog (Skeleton)
 
 **Files:**
+
 - Create: `src/components/entity/FilterDialog.tsx`
 
 - [ ] **Step 1: Create FilterDialog.tsx**
 
 ```tsx
 import type { ColumnDef, FilterState } from '@/lib/types/entity'
-import { Dialog, DialogContentToo, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContentToo,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -698,7 +728,9 @@ export function FilterDialog({
                   {['Paid', 'Overdue', 'Draft'].map(status => (
                     <label key={status} className="flex items-center gap-2">
                       <input type="checkbox" className="w-4 h-4" />
-                      <span className="text-body-sm text-on-surface">{status}</span>
+                      <span className="text-body-sm text-on-surface">
+                        {status}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -745,6 +777,7 @@ git commit -m "feat: add FilterDialog skeleton"
 ## Task 7: Create ColumnVisibilityDialog (Skeleton)
 
 **Files:**
+
 - Create: `src/components/entity/ColumnVisibilityDialog.tsx`
 
 - [ ] **Step 1: Create ColumnVisibilityDialog.tsx**
@@ -779,9 +812,7 @@ export function ColumnVisibilityDialog({
 
   const toggleColumn = (id: string) => {
     setLocalColumns(cols =>
-      cols.map(col =>
-        col.id === id ? { ...col, visible: !col.visible } : col
-      )
+      cols.map(col => (col.id === id ? { ...col, visible: !col.visible } : col))
     )
   }
 
@@ -804,14 +835,19 @@ export function ColumnVisibilityDialog({
                 key={col.id}
                 className="flex items-center gap-3 p-2 rounded hover:bg-surface-container-low"
               >
-                <GripVertical className="text-on-surface-variant cursor-grab" size={16} />
+                <GripVertical
+                  className="text-on-surface-variant cursor-grab"
+                  size={16}
+                />
                 <input
                   type="checkbox"
                   checked={col.visible}
                   onChange={() => toggleColumn(col.id)}
                   className="w-4 h-4"
                 />
-                <span className="flex-1 text-on-surface text-body-sm">{col.label}</span>
+                <span className="flex-1 text-on-surface text-body-sm">
+                  {col.label}
+                </span>
                 <span className="text-on-surface-variant text-body-sm text-xs">
                   {col.type}
                 </span>
@@ -842,6 +878,7 @@ git commit -m "feat: add ColumnVisibilityDialog skeleton"
 ## Task 8: Create DataTable Component (tanstack-table core)
 
 **Files:**
+
 - Create: `src/components/entity/DataTable.tsx`
 
 - [ ] **Step 1: Create DataTable.tsx**
@@ -1136,6 +1173,7 @@ git commit -m "feat: add DataTable with tanstack-table integration"
 ## Task 9: Wire EntityWorkspace to DataTableShell
 
 **Files:**
+
 - Modify: `src/components/entity/EntityWorkspace.tsx`
 
 - [ ] **Step 1: Update EntityWorkspace.tsx**
@@ -1191,20 +1229,114 @@ function EntityHeader({ entityType }: { entityType: string }) {
 
 // Mock data for demonstration
 const mockColumns = [
-  { id: 'entity', label: 'Entity', type: 'text' as const, width: 180, sortable: true, filterable: true, visible: true, order: 1 },
-  { id: 'doc', label: 'Document #', type: 'text' as const, width: 140, sortable: true, filterable: true, visible: true, order: 2 },
-  { id: 'qty', label: 'Quantity', type: 'number' as const, width: 100, sortable: true, filterable: false, visible: true, order: 3 },
-  { id: 'price', label: 'Unit Price', type: 'currency' as const, width: 100, sortable: true, filterable: false, visible: true, order: 4 },
-  { id: 'total', label: 'Total Amount', type: 'currency' as const, width: 120, sortable: true, filterable: false, visible: true, order: 5 },
-  { id: 'status', label: ' Status', type: 'status' as const, width: 100, sortable: true, filterable: true, visible: true, order: 6 },
+  {
+    id: 'entity',
+    label: 'Entity',
+    type: 'text' as const,
+    width: 180,
+    sortable: true,
+    filterable: true,
+    visible: true,
+    order: 1,
+  },
+  {
+    id: 'doc',
+    label: 'Document #',
+    type: 'text' as const,
+    width: 140,
+    sortable: true,
+    filterable: true,
+    visible: true,
+    order: 2,
+  },
+  {
+    id: 'qty',
+    label: 'Quantity',
+    type: 'number' as const,
+    width: 100,
+    sortable: true,
+    filterable: false,
+    visible: true,
+    order: 3,
+  },
+  {
+    id: 'price',
+    label: 'Unit Price',
+    type: 'currency' as const,
+    width: 100,
+    sortable: true,
+    filterable: false,
+    visible: true,
+    order: 4,
+  },
+  {
+    id: 'total',
+    label: 'Total Amount',
+    type: 'currency' as const,
+    width: 120,
+    sortable: true,
+    filterable: false,
+    visible: true,
+    order: 5,
+  },
+  {
+    id: 'status',
+    label: ' Status',
+    type: 'status' as const,
+    width: 100,
+    sortable: true,
+    filterable: true,
+    visible: true,
+    order: 6,
+  },
 ]
 
 const mockEntityRows = [
-  { id: '1', entity: 'Technovate Systems Inc.', doc: 'INV-2024-00124', qty: 1250, price: 45, total: 56250, status: 'Paid' },
-  { id: '2', entity: 'Global Logistics Corp', doc: 'INV-2024-00132', qty: 480, price: 120, total: 57600, status: 'Overdue' },
-  { id: '3', entity: 'Apex Manufacturing', doc: 'PO-88219-B', qty: 22000, price: 1.15, total: 25300, status: 'Draft' },
-  { id: '4', entity: 'Zync Media Partners', doc: 'INV-2024-00145', qty: 1, price: 12400, total: 12400, status: 'Paid' },
-  { id: '5', entity: 'Skyline Prop', doc: 'INV-2024-1000', qty: 1379, price: 8.16, total: 65633, status: 'Overdue' },
+  {
+    id: '1',
+    entity: 'Technovate Systems Inc.',
+    doc: 'INV-2024-00124',
+    qty: 1250,
+    price: 45,
+    total: 56250,
+    status: 'Paid',
+  },
+  {
+    id: '2',
+    entity: 'Global Logistics Corp',
+    doc: 'INV-2024-00132',
+    qty: 480,
+    price: 120,
+    total: 57600,
+    status: 'Overdue',
+  },
+  {
+    id: '3',
+    entity: 'Apex Manufacturing',
+    doc: 'PO-88219-B',
+    qty: 22000,
+    price: 1.15,
+    total: 25300,
+    status: 'Draft',
+  },
+  {
+    id: '4',
+    entity: 'Zync Media Partners',
+    doc: 'INV-2024-00145',
+    qty: 1,
+    price: 12400,
+    total: 12400,
+    status: 'Paid',
+  },
+  {
+    id: '5',
+    entity: 'Skyline Prop',
+    doc: 'INV-2024-1000',
+    qty: 1379,
+    price: 8.16,
+    total: 65633,
+    status: 'Overdue',
+  },
 ]
 
 const mockPagination = {
@@ -1226,8 +1358,8 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         data={mockEntityRows}
         pagination={mockPagination}
         isLoading={false}
-        onSaveColumnPrefs={(cols) => console.log('Save prefs:', cols)}
-        onFiltersApply={(filters) => console.log('Apply filters:', filters)}
+        onSaveColumnPrefs={cols => console.log('Save prefs:', cols)}
+        onFiltersApply={filters => console.log('Apply filters:', filters)}
         onExport={() => console.log('Export clicked')}
       />
     </div>
@@ -1250,7 +1382,7 @@ git commit=m "feat: wire EntityWorkspace to DataTableShell with mock data"
 
 2. **Placeholder scan**: No "TBD" or "TODO" markers. All components have full implementation code
 
-3. **Type consistency**: 
+3. **Type consistency**:
    - `ColumnDef.type` uses union type `'text' | 'currency' | 'number' | 'date' | 'status' | 'actions'`
    - `PaginationState` has all 4 fields: `page, pageSize, totalRows, totalPages`
    - `DataTableProps` matches all callbacks correctly typed

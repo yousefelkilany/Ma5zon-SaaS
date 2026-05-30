@@ -66,8 +66,8 @@ pub struct User {
 
 ### localStorage Keys
 
-| Key | Type | Description |
-|-----|------|-------------|
+| Key            | Type             | Description               |
+| -------------- | ---------------- | ------------------------- |
 | `auth_user_id` | `string \| null` | Current logged-in user ID |
 
 ### TanStack Query
@@ -89,12 +89,14 @@ pub struct User {
 ### Behavior
 
 **Logged out state:**
+
 - Shows login form (username + password)
 - On submit: mock validation (any credentials work for MVP)
 - On success: save `user_id` to localStorage, close modal
 - On error: shake animation + error message
 
 **Logged in state:**
+
 - Shows profile info with logout button
 - Logout clears localStorage and refetches user data (returns null)
 
@@ -113,13 +115,14 @@ pub struct User {
 
 ```typescript
 interface ProfileSectionProps {
-  className?: string;
+  className?: string
 }
 ```
 
 ### States
 
 **Logged out:**
+
 ```tsx
 <button className="flex items-center gap-2 px-3 py-1 rounded-full hover:bg-surface-container-high">
   <LoginIcon />
@@ -128,12 +131,20 @@ interface ProfileSectionProps {
 ```
 
 **Logged in:**
+
 ```tsx
 <button className="flex items-center gap-compact-gap cursor-pointer hover:bg-surface-container-high p-1 px-3 rounded-full">
-  <img src={user.avatarUrl} className="w-9 h-9 rounded-full border border-secondary" />
+  <img
+    src={user.avatarUrl}
+    className="w-9 h-9 rounded-full border border-secondary"
+  />
   <div className="hidden lg:block">
-    <p className="font-body-sm text-body-lg font-bold text-primary">{user.name}</p>
-    <p className="font-label-caps text-[12px] text-on-surface-variant uppercase">{user.role}</p>
+    <p className="font-body-sm text-body-lg font-bold text-primary">
+      {user.name}
+    </p>
+    <p className="font-label-caps text-[12px] text-on-surface-variant uppercase">
+      {user.role}
+    </p>
   </div>
 </button>
 ```
@@ -145,17 +156,27 @@ interface ProfileSectionProps {
 The profile section in `Navbar.tsx` is replaced by `ProfileSection` component.
 
 **Before** (hardcoded):
+
 ```tsx
 <div className="flex items-center gap-compact-gap cursor-pointer hover:bg-surface-container-high p-1 px-3 rounded-full transition-colors">
-  <img alt="User Profile" className="w-9 h-9 rounded-full border border-secondary" src="..." />
+  <img
+    alt="User Profile"
+    className="w-9 h-9 rounded-full border border-secondary"
+    src="..."
+  />
   <div className="hidden lg:block leading-tight">
-    <p className="font-body-sm text-body-lg font-bold text-primary">{t('nav.userName')}</p>
-    <p className="font-label-caps text-[12px] text-on-surface-variant uppercase">{t('nav.userRole')}</p>
+    <p className="font-body-sm text-body-lg font-bold text-primary">
+      {t('nav.userName')}
+    </p>
+    <p className="font-label-caps text-[12px] text-on-surface-variant uppercase">
+      {t('nav.userRole')}
+    </p>
   </div>
 </div>
 ```
 
 **After**:
+
 ```tsx
 <ProfileSection />
 ```
@@ -209,6 +230,7 @@ src-tauri/src/
 ## 8. Dependencies
 
 **Rust (`Cargo.toml`)**:
+
 ```toml
 rusqlite = { version = "0.32", features = ["bundled"] }
 ```

@@ -13,10 +13,12 @@
 ## File Structure
 
 **Create:**
+
 - `src-tauri/src/commands/warehouses.rs`
 - `src-tauri/src/commands/stock.rs`
 
 **Modify:**
+
 - `src-tauri/src/commands/products.rs:42-67` (seed data in Arabic)
 - `src-tauri/src/commands/variants.rs:64-76` (variant options in Arabic)
 - `src-tauri/src/commands/mod.rs` (register new initializers)
@@ -28,6 +30,7 @@
 ### Task 1: Update products.rs seed data to Arabic
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/products.rs:42-67`
 
 **Steps:**
@@ -35,6 +38,7 @@
 - [ ] **Step 1: Update seed_products function with Arabic product names**
 
 Replace lines 45-59 with:
+
 ```rust
     let products = vec![
         "محرك كهربائي صناعي", "وحدة تحكم إلكترونية", "وحدة هيدروليكية",
@@ -70,6 +74,7 @@ git commit -m "refactor: update products seed data to Arabic"
 ### Task 2: Update variants.rs variant options to Arabic
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/variants.rs:64-76`
 
 **Steps:**
@@ -77,6 +82,7 @@ git commit -m "refactor: update products seed data to Arabic"
 - [ ] **Step 1: Update variants_data with Arabic variant options**
 
 Replace lines 64-76 with:
+
 ```rust
     let variants_data = vec![
         (vec!["درجة أولى", "درجة صناعية", "درجة اقتصادية", "درجة ممتازة"], "درجة"),
@@ -95,10 +101,13 @@ Replace lines 64-76 with:
 - [ ] **Step 2: Update variant_name generation to use Arabic pattern**
 
 Replace line 85 from:
+
 ```rust
 let variant_name = format!("{} {} {}", "Product", variant_type.1, options[v % options.len()]);
 ```
+
 to:
+
 ```rust
 let variant_name = format!("{} {} {}", "منتج", variant_type.1, options[v % options.len()]);
 ```
@@ -120,6 +129,7 @@ git commit -m "refactor: update variants seed data to Arabic"
 ### Task 3: Create warehouses.rs
 
 **Files:**
+
 - Create: `src-tauri/src/commands/warehouses.rs`
 
 **Steps:**
@@ -296,6 +306,7 @@ git commit -m "feat: add warehouses module with CRUD commands and seeder"
 ### Task 4: Create stock.rs
 
 **Files:**
+
 - Create: `src-tauri/src/commands/stock.rs`
 
 **Steps:**
@@ -644,6 +655,7 @@ Expected: No errors related to stock.rs. Note: may need to add chrono to Cargo.t
 
 Check: `grep -n "chrono" src-tauri/Cargo.toml`
 If not found, add to Cargo.toml:
+
 ```toml
 chrono = "0.4"
 ```
@@ -665,6 +677,7 @@ git commit -m "feat: add stock module with stock_levels, stock_movements, seeder
 ### Task 5: Update mod.rs to register new initializers
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/mod.rs`
 
 **Steps:**
@@ -672,6 +685,7 @@ git commit -m "feat: add stock module with stock_levels, stock_movements, seeder
 - [ ] **Step 1: Add warehouses and stock modules to mod.rs**
 
 Replace lines 9-16:
+
 ```rust
 pub mod db_utils;
 pub mod notifications;
@@ -686,6 +700,7 @@ pub mod stock;
 ```
 
 Replace lines 24-28:
+
 ```rust
 use self::{
     products::ProductsInitializer,

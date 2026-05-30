@@ -91,7 +91,6 @@ jobs:
           }
           EOF
 
-
       - name: Build & Publish Standard
         id: tauri-build
         uses: tauri-apps/tauri-action@dev
@@ -104,7 +103,7 @@ jobs:
           releaseName: 'Ma5zon ${{ github.ref_name || inputs.version }}'
           releaseBody: |
             ## Ma5zon ${{ github.ref_name || inputs.version }}
-            
+
             ### Installation Instructions
             - **Standard Installer**: Download the standard `.msi` file.
             - **Offline Installer**: Bundles WebView2; works without active internet.

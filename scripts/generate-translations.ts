@@ -11,8 +11,13 @@ interface ExtractedString {
 }
 
 function generateKey(str: string, feature: string): string {
-  const words = str.toLowerCase().split(/[\s\-_]+/).filter(Boolean)
-  const camelCase = words.map((w, i) => i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1)).join('')
+  const words = str
+    .toLowerCase()
+    .split(/[\s\-_]+/)
+    .filter(Boolean)
+  const camelCase = words
+    .map((w, i) => (i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1)))
+    .join('')
   return `${feature}.${camelCase}`
 }
 
@@ -24,7 +29,8 @@ function isMeaningfulText(value: string): boolean {
   if (trimmed.includes('://')) return false
   if (trimmed.length <= 1) return false
   if (/^[a-z_]+$/.test(trimmed)) return false
-  if (/^[a-z][a-z\-]*[a-z]$/.test(trimmed) && trimmed.includes('-')) return false
+  if (/^[a-z][a-z\-]*[a-z]$/.test(trimmed) && trimmed.includes('-'))
+    return false
   return true
 }
 
@@ -35,10 +41,33 @@ function isLikelyIconName(value: string, propertyName?: string): boolean {
   if (trimmed.includes(' ')) return false
   if (trimmed.length > 20) return false
   const iconIndicators = [
-    /^menu/, /^settings/, /^home/, /^logout/, /^user/, /^search/, /^edit/,
-    /^add/, /^delete/, /^close/, /^arrow/, /^chevron/, /^bar/, /^chart/,
-    /^list/, /^grid/, /^home/, /^warehouse/, /^inventory/, /^store/, /^shopping/,
-    /^cart/, /^receipt/, /^group/, /^analytics/, /^report/, /^account/
+    /^menu/,
+    /^settings/,
+    /^home/,
+    /^logout/,
+    /^user/,
+    /^search/,
+    /^edit/,
+    /^add/,
+    /^delete/,
+    /^close/,
+    /^arrow/,
+    /^chevron/,
+    /^bar/,
+    /^chart/,
+    /^list/,
+    /^grid/,
+    /^home/,
+    /^warehouse/,
+    /^inventory/,
+    /^store/,
+    /^shopping/,
+    /^cart/,
+    /^receipt/,
+    /^group/,
+    /^analytics/,
+    /^report/,
+    /^account/,
   ]
   return iconIndicators.some(r => r.test(trimmed))
 }
@@ -63,7 +92,14 @@ function extractStringsFromAST(code: string): ExtractedString[] {
   })
 
   const seen = new WeakSet()
-  const SKIP_PROPS = new Set(['loc', 'start', 'end', 'range', 'leadingComments', 'trailingComments'])
+  const SKIP_PROPS = new Set([
+    'loc',
+    'start',
+    'end',
+    'range',
+    'leadingComments',
+    'trailingComments',
+  ])
 
   function traverse(node: any) {
     if (!node || typeof node !== 'object') return
@@ -92,7 +128,10 @@ function extractStringsFromAST(code: string): ExtractedString[] {
           }
         }
       }
-      if ((name === 'aria-label' || name === 'aria-labelledby') && node.value?.expression) {
+      if (
+        (name === 'aria-label' || name === 'aria-labelledby') &&
+        node.value?.expression
+      ) {
         extractFromExpression(node.value.expression, name)
       }
     }
@@ -103,7 +142,11 @@ function extractStringsFromAST(code: string): ExtractedString[] {
 
     if (node.type === 'StringLiteral' && node.value?.trim()) {
       const value = node.value.trim()
-      if (isMeaningfulText(value) && !isLikelyIconName(value) && !isLikelyCSSClass(value)) {
+      if (
+        isMeaningfulText(value) &&
+        !isLikelyIconName(value) &&
+        !isLikelyCSSClass(value)
+      ) {
         strings.push({ value, key: '', location: 'js-string' })
       }
     }
@@ -134,7 +177,11 @@ function extractStringsFromAST(code: string): ExtractedString[] {
 
     if (expr.type === 'StringLiteral' && expr.value?.trim()) {
       const value = expr.value.trim()
-      if (isMeaningfulText(value) && !isLikelyIconName(value) && !isLikelyCSSClass(value)) {
+      if (
+        isMeaningfulText(value) &&
+        !isLikelyIconName(value) &&
+        !isLikelyCSSClass(value)
+      ) {
         strings.push({ value, key: '', location })
       }
     }
@@ -157,7 +204,11 @@ function extractStringsFromAST(code: string): ExtractedString[] {
     if (expr.type === 'TemplateLiteral') {
       expr.quasis?.forEach((q: any) => {
         const value = q.value?.cooked?.trim()
-        if (isMeaningfulText(value) && !isLikelyIconName(value) && !isLikelyCSSClass(value)) {
+        if (
+          isMeaningfulText(value) &&
+          !isLikelyIconName(value) &&
+          !isLikelyCSSClass(value)
+        ) {
           strings.push({ value, key: '', location })
         }
       })
@@ -188,7 +239,10 @@ function extractStringsFromAST(code: string): ExtractedString[] {
       if (SKIP_PROPS.has(key)) continue
       const child = expr[key]
       if (Array.isArray(child)) {
-        child.forEach((c: any) => c && typeof c === 'object' && extractFromExpression(c, location))
+        child.forEach(
+          (c: any) =>
+            c && typeof c === 'object' && extractFromExpression(c, location)
+        )
       } else if (child && typeof child === 'object') {
         extractFromExpression(child, location)
       }
@@ -202,13 +256,18 @@ function extractStringsFromAST(code: string): ExtractedString[] {
 function main() {
   const inputPath = process.argv[2]
   if (!inputPath) {
-    console.error('Usage: npx tsx scripts/generate-translations.ts <file-or-directory>')
+    console.error(
+      'Usage: npx tsx scripts/generate-translations.ts <file-or-directory>'
+    )
     process.exit(1)
   }
 
   const stats = fs.statSync(inputPath)
   const files = stats.isDirectory()
-    ? fs.readdirSync(inputPath).filter(f => f.endsWith('.tsx') || f.endsWith('.ts')).map(f => path.join(inputPath, f))
+    ? fs
+        .readdirSync(inputPath)
+        .filter(f => f.endsWith('.tsx') || f.endsWith('.ts'))
+        .map(f => path.join(inputPath, f))
     : [inputPath]
 
   const allStrings: Record<string, string> = {}
@@ -218,9 +277,14 @@ function main() {
     const strings = extractStringsFromAST(code)
     const fileName = path.basename(file).toLowerCase()
     const filePath = file.toLowerCase()
-    const feature = fileName.includes('sidebar') || filePath.includes('/layout/') ? 'sidebar' :
-                    file.includes('dashboard') ? 'dashboard' :
-                    file.includes('titlebar') ? 'titlebar' : 'common'
+    const feature =
+      fileName.includes('sidebar') || filePath.includes('/layout/')
+        ? 'sidebar'
+        : file.includes('dashboard')
+          ? 'dashboard'
+          : file.includes('titlebar')
+            ? 'titlebar'
+            : 'common'
 
     for (const str of strings) {
       if (!allStrings[str.value]) {
@@ -232,7 +296,9 @@ function main() {
   const outputPath = path.join('locales/generated/pending-keys.json')
   fs.mkdirSync(path.dirname(outputPath), { recursive: true })
   fs.writeFileSync(outputPath, JSON.stringify(allStrings, null, 2))
-  console.log(`Generated ${Object.keys(allStrings).length} keys to ${outputPath}`)
+  console.log(
+    `Generated ${Object.keys(allStrings).length} keys to ${outputPath}`
+  )
 }
 
 main()

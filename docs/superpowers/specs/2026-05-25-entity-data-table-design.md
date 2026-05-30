@@ -165,10 +165,10 @@ interface GetEntityColumnsCommand {
 // Fetch paginated entity data
 interface GetEntityDataCommand {
   entityType: string
-  columns: string[]         // visible column IDs
+  columns: string[] // visible column IDs
   page: number
   pageSize: number
-  sort?: { column: string, direction: 'asc' | 'desc' }
+  sort?: { column: string; direction: 'asc' | 'desc' }
   filters?: FilterState[]
 }
 // Returns: { rows: EntityRow[], totalRows: number, totalPages: number }
@@ -203,10 +203,31 @@ interface SaveUserColumnPrefsCommand {
 ```typescript
 const queryKeys = {
   entityColumns: (entityType: string) => ['entity', entityType, 'columns'],
-  userColumnPrefs: (entityType: string, userId: string) => ['entity', entityType, 'prefs', userId],
-  entityData: (entityType: string, columns: string[], page: number, pageSize: number, sort?: SortState, filters?: FilterState[]) =>
-    ['entity', entityType, 'data', { columns, page, pageSize, sort, filters }],
-  entityById: (entityType: string, id: string) => ['entity', entityType, 'item', id],
+  userColumnPrefs: (entityType: string, userId: string) => [
+    'entity',
+    entityType,
+    'prefs',
+    userId,
+  ],
+  entityData: (
+    entityType: string,
+    columns: string[],
+    page: number,
+    pageSize: number,
+    sort?: SortState,
+    filters?: FilterState[]
+  ) => [
+    'entity',
+    entityType,
+    'data',
+    { columns, page, pageSize, sort, filters },
+  ],
+  entityById: (entityType: string, id: string) => [
+    'entity',
+    entityType,
+    'item',
+    id,
+  ],
 }
 ```
 
@@ -229,15 +250,23 @@ const { data: userPrefs } = useQuery({
 
 // Entity data - refetch on filter/sort/page changes
 const { data, isLoading } = useQuery({
-  queryKey: queryKeys.entityData(entityType, visibleColumnIds, page, pageSize, sort, filters),
-  queryFn: () => commands.getEntityData({
+  queryKey: queryKeys.entityData(
     entityType,
-    columns: visibleColumnIds,
+    visibleColumnIds,
     page,
     pageSize,
     sort,
-    filters,
-  }),
+    filters
+  ),
+  queryFn: () =>
+    commands.getEntityData({
+      entityType,
+      columns: visibleColumnIds,
+      page,
+      pageSize,
+      sort,
+      filters,
+    }),
 })
 ```
 
@@ -252,16 +281,18 @@ function mergeColumnDefsWithPrefs(
 
   const prefsMap = new Map(userPrefs.map(p => [p.id, p]))
 
-  return defaults.map(col => {
-    const pref = prefsMap.get(col.id)
-    if (!pref) return col
-    return {
-      ...col,
-      width: pref.width ?? col.width,
-      visible: pref.visible ?? col.visible,
-      order: pref.order ?? col.order,
-    }
-  }).sort((a, b) => a.order - b.order)
+  return defaults
+    .map(col => {
+      const pref = prefsMap.get(col.id)
+      if (!pref) return col
+      return {
+        ...col,
+        width: pref.width ?? col.width,
+        visible: pref.visible ?? col.visible,
+        order: pref.order ?? col.order,
+      }
+    })
+    .sort((a, b) => a.order - b.order)
 }
 ```
 
@@ -299,31 +330,31 @@ interface PersistedUserPrefs {
 
 ### 7.1 Toolbar Actions
 
-| Action | Behavior |
-|--------|----------|
-| **New Entry** | Opens empty form modal/panel |
-| **Filters** | Opens filter dialog with per-column inputs |
-| **Columns** | Opens column visibility/reorder dialog |
+| Action           | Behavior                                    |
+| ---------------- | ------------------------------------------- |
+| **New Entry**    | Opens empty form modal/panel                |
+| **Filters**      | Opens filter dialog with per-column inputs  |
+| **Columns**      | Opens column visibility/reorder dialog      |
 | **Bulk Actions** | Appears when rows selected, shows batch ops |
-| **Export** | Exports visible/filtered data to CSV |
+| **Export**       | Exports visible/filtered data to CSV        |
 
 ### 7.2 Table Interactions
 
-| Interaction | Behavior |
-|-------------|----------|
-| **Row checkbox** | Toggle selection, multi-select enabled |
-| **Header cell click** | Toggle sort (asc → desc → none) |
-| **Row click** | Open EntityDetailModal with 3 tabs |
-| **Row hover** | Reveal action buttons (edit/delete/export) |
-| **Column resize** | Drag handle to resize, persists to prefs |
+| Interaction           | Behavior                                   |
+| --------------------- | ------------------------------------------ |
+| **Row checkbox**      | Toggle selection, multi-select enabled     |
+| **Header cell click** | Toggle sort (asc → desc → none)            |
+| **Row click**         | Open EntityDetailModal with 3 tabs         |
+| **Row hover**         | Reveal action buttons (edit/delete/export) |
+| **Column resize**     | Drag handle to resize, persists to prefs   |
 
 ### 7.3 Row Actions (hover-visible)
 
-| Action | Behavior |
-|--------|----------|
-| **Edit** | Open entity form with row data pre-filled |
-| **Delete** | Confirmation dialog, then delete command |
-| **Export** | Export single row to CSV |
+| Action     | Behavior                                  |
+| ---------- | ----------------------------------------- |
+| **Edit**   | Open entity form with row data pre-filled |
+| **Delete** | Confirmation dialog, then delete command  |
+| **Export** | Export single row to CSV                  |
 
 ### 7.4 Pagination Controls
 
@@ -343,13 +374,16 @@ interface PersistedUserPrefs {
 Opens on row click. Three tabs with skeleton content:
 
 **Tab 1: Details**
+
 - Full entity data in read-only or edit mode
 - All columns displayed
 
 **Tab 2: Insights**
+
 - Skeleton: chart placeholder, summary stats
 
 **Tab 3: Audits**
+
 - Skeleton: timeline list of changes
 
 ### 8.2 Modal Behavior
@@ -364,6 +398,7 @@ Opens on row click. Three tabs with skeleton content:
 ### 9.1 Structure
 
 Per-column filter inputs:
+
 - Text columns: text input with contains/equals operators
 - Number columns: min/max inputs
 - Date columns: date range picker
@@ -371,26 +406,26 @@ Per-column filter inputs:
 
 ### 9.2 Filter Actions
 
-| Action | Behavior |
-|--------|----------|
-| **Apply** | Execute filter command, close dialog, update table |
-| **Clear All** | Reset all filters, refetch |
-| **Cancel** | Discard changes, close dialog |
+| Action        | Behavior                                           |
+| ------------- | -------------------------------------------------- |
+| **Apply**     | Execute filter command, close dialog, update table |
+| **Clear All** | Reset all filters, refetch                         |
+| **Cancel**    | Discard changes, close dialog                      |
 
 ## 10. Visual Design
 
 ### 10.1 Color Tokens Used
 
-| Token | Usage |
-|-------|-------|
-| `bg-surface-container` | Toolbar background |
-| `bg-surface-container-low` | Table alternate rows |
+| Token                         | Usage                      |
+| ----------------------------- | -------------------------- |
+| `bg-surface-container`        | Toolbar background         |
+| `bg-surface-container-low`    | Table alternate rows       |
 | `bg-surface-container-lowest` | Table container background |
-| `bg-surface-container-high` | Table header, hover state |
-| `border-outline-variant` | Table border, dividers |
-| `text-on-surface` | Primary text |
-| `text-on-surface-variant` | Secondary text |
-| `hover:bg-surface-bright` | Button hover states |
+| `bg-surface-container-high`   | Table header, hover state  |
+| `border-outline-variant`      | Table border, dividers     |
+| `text-on-surface`             | Primary text               |
+| `text-on-surface-variant`     | Secondary text             |
+| `hover:bg-surface-bright`     | Button hover states        |
 
 ### 10.2 Typography
 
@@ -407,69 +442,74 @@ Per-column filter inputs:
 
 ### 10.4 Status Badges
 
-| Status | Classes |
-|--------|---------|
-| Paid | `bg-secondary/15 text-secondary` |
-| Overdue | `bg-error/15 text-error` |
-| Draft | `bg-tertiary-fixed-dim/15 text-tertiary` |
+| Status  | Classes                                  |
+| ------- | ---------------------------------------- |
+| Paid    | `bg-secondary/15 text-secondary`         |
+| Overdue | `bg-error/15 text-error`                 |
+| Draft   | `bg-tertiary-fixed-dim/15 text-tertiary` |
 
 ## 11. Error Handling
 
-| Scenario | Behavior |
-|----------|----------|
-| **Data fetch fails** | Show error toast, retain previous data, retry button |
-| **Command not implemented** | Show "Feature coming soon" placeholder |
-| **Invalid filter** | Inline validation error, prevent submit |
-| **Pagination out of range** | Clamp to valid range |
+| Scenario                    | Behavior                                             |
+| --------------------------- | ---------------------------------------------------- |
+| **Data fetch fails**        | Show error toast, retain previous data, retry button |
+| **Command not implemented** | Show "Feature coming soon" placeholder               |
+| **Invalid filter**          | Inline validation error, prevent submit              |
+| **Pagination out of range** | Clamp to valid range                                 |
 
 ## 12. Files to Create/Modify
 
 ### New Files
 
-| File | Purpose |
-|------|---------|
-| `src/components/entity/DataTable.tsx` | Main table component with tanstack-table |
-| `src/components/entity/DataTableShell.tsx` | Wrapper with toolbar, table, pagination |
-| `src/components/entity/Toolbar.tsx` | Action buttons bar |
-| `src/components/entity/PaginationFooter.tsx` | Pagination controls |
-| `src/components/entity/ColumnVisibilityDialog.tsx` | Column toggle/reorder |
-| `src/components/entity/FilterDialog.tsx` | Filter inputs (skeleton) |
-| `src/components/entity/EntityDetailModal.tsx` | Row detail modal (skeleton) |
-| `src/lib/types/entity.ts` | Adding interface definitions |
+| File                                               | Purpose                                  |
+| -------------------------------------------------- | ---------------------------------------- |
+| `src/components/entity/DataTable.tsx`              | Main table component with tanstack-table |
+| `src/components/entity/DataTableShell.tsx`         | Wrapper with toolbar, table, pagination  |
+| `src/components/entity/Toolbar.tsx`                | Action buttons bar                       |
+| `src/components/entity/PaginationFooter.tsx`       | Pagination controls                      |
+| `src/components/entity/ColumnVisibilityDialog.tsx` | Column toggle/reorder                    |
+| `src/components/entity/FilterDialog.tsx`           | Filter inputs (skeleton)                 |
+| `src/components/entity/EntityDetailModal.tsx`      | Row detail modal (skeleton)              |
+| `src/lib/types/entity.ts`                          | Adding interface definitions             |
 
 ### Modified Files
 
-| File | Change |
-|------|--------|
+| File                                        | Change                               |
+| ------------------------------------------- | ------------------------------------ |
 | `src/components/entity/EntityWorkspace.tsx` | Replace skeleton with DataTableShell |
-| `src/lib/types/entity.ts` | Add new interface definitions |
-| `src/lib/tauri-bindings.ts` | Export new command types (future) |
+| `src/lib/types/entity.ts`                   | Add new interface definitions        |
+| `src/lib/tauri-bindings.ts`                 | Export new command types (future)    |
 
 ## 13. Implementation Phases
 
 ### Phase 1: Skeleton Foundation
+
 - Replace skeleton placeholders with `DataTableShell`
 - Implement `Toolbar` with buttons (show modals)
 - Implement `PaginationFooter` with controls
 - Implement `EntityDetailModal` (3-tab skeleton)
 
 ### Phase 2: TanStack Table Core
+
 - Integrate tanstack-table
 - Implement `DataTable` with column config
 - Sort client-side first, move to server later
 - Row selection checkboxes
 
 ### Phase 3: Server Integration (Mock)
+
 - Implement mock commands returning static data
 - Implement command interfaces in Rust (stub)
 - Connect TanStack Query to commands
 
 ### Phase 4: User Preferences
+
 - Implement localStorage persistence
 - Column visibility toggle
 - Column order persistence
 
 ### Phase 5: Polish
+
 - Row click modal with real data
 - Filter dialog implementation
 - Export functionality

@@ -1,11 +1,4 @@
-import {
-  describe,
-  it,
-  expect,
-  afterEach,
-  beforeEach,
-  vi,
-} from 'vitest'
+import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest'
 import type { CommandContext, AppCommand } from './types'
 
 const mockUIStore = {

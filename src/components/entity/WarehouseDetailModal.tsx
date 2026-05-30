@@ -209,7 +209,11 @@ export function WarehouseDetailModal({
             {/* Tab Content */}
             <div className="flex-1 overflow-auto">
               {activeTab === 'details' && (
-                <div id="details-panel" role="tabpanel" aria-labelledby="details-tab">
+                <div
+                  id="details-panel"
+                  role="tabpanel"
+                  aria-labelledby="details-tab"
+                >
                   {isLoading ? (
                     <div className="grid grid-cols-2 gap-4">
                       {Array.from({ length: 4 }).map((_, i) => (
@@ -319,7 +323,11 @@ export function WarehouseDetailModal({
               )}
 
               {activeTab === 'insights' && (
-                <div id="insights-panel" role="tabpanel" aria-labelledby="insights-tab">
+                <div
+                  id="insights-panel"
+                  role="tabpanel"
+                  aria-labelledby="insights-tab"
+                >
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4">
                       {Array.from({ length: 3 }).map((_, i) => (
@@ -335,7 +343,11 @@ export function WarehouseDetailModal({
               )}
 
               {activeTab === 'audits' && (
-                <div id="audits-panel" role="tabpanel" aria-labelledby="audits-tab">
+                <div
+                  id="audits-panel"
+                  role="tabpanel"
+                  aria-labelledby="audits-tab"
+                >
                   <div className="space-y-3">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <div key={i} className="flex items-center gap-3">

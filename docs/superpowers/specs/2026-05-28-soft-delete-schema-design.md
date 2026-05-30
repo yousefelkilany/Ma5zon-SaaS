@@ -9,6 +9,7 @@ Also fix missing bindings in `bindings.rs` for warehouse and stock commands.
 ## Schema Changes
 
 ### products table
+
 ```sql
 CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,6 +21,7 @@ CREATE TABLE IF NOT EXISTS products (
 ```
 
 ### warehouses table
+
 ```sql
 CREATE TABLE IF NOT EXISTS warehouses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,6 +34,7 @@ CREATE TABLE IF NOT EXISTS warehouses (
 ```
 
 ### product_variants table
+
 ```sql
 CREATE TABLE IF NOT EXISTS product_variants (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -52,14 +55,17 @@ CREATE TABLE IF NOT EXISTS product_variants (
 ## Soft Delete Behavior
 
 ### Delete Command Changes
+
 - `products::delete` → sets `deleted_at = CURRENT_TIMESTAMP` instead of DELETE
 - `warehouses::delete` → sets `deleted_at = CURRENT_TIMESTAMP` instead of DELETE
 - `variants::delete` → sets `deleted_at = CURRENT_TIMESTAMP` instead of DELETE (apply to variants too for consistency)
 
 ### Query Changes (all read commands)
+
 All `get_all`, `get_by_id`, `get_by_product` commands filter: `WHERE deleted_at IS NULL`
 
 Example:
+
 ```rust
 // Before
 "SELECT id, name FROM products ORDER BY name"
@@ -69,6 +75,7 @@ Example:
 ```
 
 ### Create/Update Changes
+
 - `create` commands: set `created_at = CURRENT_TIMESTAMP`, `updated_at = CURRENT_TIMESTAMP`
 - `update` commands: set `updated_at = CURRENT_TIMESTAMP`
 
@@ -99,6 +106,7 @@ conn.execute("ALTER TABLE product_variants ADD COLUMN deleted_at DATETIME DEFAUL
 Add to `bindings.rs`:
 
 **Warehouse commands:**
+
 - `warehouses::warehouses_get_all`
 - `warehouses::warehouses_get_by_id`
 - `warehouses::warehouses_create`
@@ -106,6 +114,7 @@ Add to `bindings.rs`:
 - `warehouses::warehouses_delete`
 
 **Stock commands:**
+
 - `stock::stock_levels_get_all`
 - `stock::stock_levels_get_by_variant`
 - `stock::stock_levels_get_by_warehouse`

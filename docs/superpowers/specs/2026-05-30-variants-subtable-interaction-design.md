@@ -54,9 +54,9 @@ User clicks "Add Variant" → VariantsSubTable → onAddVariant(productId)
 interface VariantsSubTableProps {
   variants: VariantRow[]
   isLoading?: boolean
-  productId: string              // NEW: parent product ID
-  onVariantClick?: (variantId: string, productId: string) => void  // NEW
-  onAddVariant?: (productId: string) => void  // NEW
+  productId: string // NEW: parent product ID
+  onVariantClick?: (variantId: string, productId: string) => void // NEW
+  onAddVariant?: (productId: string) => void // NEW
 }
 ```
 
@@ -65,19 +65,21 @@ interface VariantsSubTableProps {
 In the expanded row render (around line 386-394):
 
 ```tsx
-{expandedRowIds?.has(row.original.id) && (
-  <tr>
-    <td colSpan={columns.length + 2} className="p-0">
-      <VariantsSubTable
-        variants={variantsCache?.get(row.original.id) ?? []}
-        isLoading={isLoadingVariants?.(row.original.id)}
-        productId={row.original.id}
-        onVariantClick={onVariantClick}
-        onAddVariant={onAddVariant}
-      />
-    </td>
-  </tr>
-)}
+{
+  expandedRowIds?.has(row.original.id) && (
+    <tr>
+      <td colSpan={columns.length + 2} className="p-0">
+        <VariantsSubTable
+          variants={variantsCache?.get(row.original.id) ?? []}
+          isLoading={isLoadingVariants?.(row.original.id)}
+          productId={row.original.id}
+          onVariantClick={onVariantClick}
+          onAddVariant={onAddVariant}
+        />
+      </td>
+    </tr>
+  )
+}
 ```
 
 ### 4.3 DataTable Props
@@ -85,9 +87,9 @@ In the expanded row render (around line 386-394):
 ```typescript
 interface ExpandedRowProps {
   // ... existing
-  productId?: string  // NEW (passed when rendering VariantsSubTable)
-  onVariantClick?: (variantId: string, productId: string) => void  // NEW
-  onAddVariant?: (productId: string) => void  // NEW
+  productId?: string // NEW (passed when rendering VariantsSubTable)
+  onVariantClick?: (variantId: string, productId: string) => void // NEW
+  onAddVariant?: (productId: string) => void // NEW
 }
 ```
 
@@ -147,9 +149,7 @@ const handleAddVariant = useCallback((productId: string) => {
 ```tsx
 <div className="pl-8 py-2 bg-surface-container-low">
   <div className="flex justify-between items-center pr-4">
-    <table className="w-full text-body-sm">
-      {/* ... existing thead */}
-    </table>
+    <table className="w-full text-body-sm">{/* ... existing thead */}</table>
     <Button
       size="sm"
       variant="ghost"
@@ -182,13 +182,13 @@ const handleAddVariant = useCallback((productId: string) => {
 
 ## 5. File Manifest
 
-| File | Change |
-|------|--------|
-| `src/components/entity/VariantsSubTable.tsx` | Add productId prop, onVariantClick, onAddVariant; add "Add Variant" button; make rows clickable |
-| `src/components/entity/DataTable.tsx` | Add productId, onVariantClick, onAddVariant to ExpandedRowProps; pass to VariantsSubTable |
-| `src/components/entity/DataTableShell.tsx` | Pass through new props |
-| `src/components/entity/EntityWorkspace.tsx` | Add selectedVariantId, selectedVariantProductId, variantDetailOpen state; add handlers; wire VariantDetailModal for products view |
-| `src/lib/types/entity.ts` | Update VariantsSubTableProps interface |
+| File                                         | Change                                                                                                                            |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/entity/VariantsSubTable.tsx` | Add productId prop, onVariantClick, onAddVariant; add "Add Variant" button; make rows clickable                                   |
+| `src/components/entity/DataTable.tsx`        | Add productId, onVariantClick, onAddVariant to ExpandedRowProps; pass to VariantsSubTable                                         |
+| `src/components/entity/DataTableShell.tsx`   | Pass through new props                                                                                                            |
+| `src/components/entity/EntityWorkspace.tsx`  | Add selectedVariantId, selectedVariantProductId, variantDetailOpen state; add handlers; wire VariantDetailModal for products view |
+| `src/lib/types/entity.ts`                    | Update VariantsSubTableProps interface                                                                                            |
 
 ## 6. Implementation Notes
 

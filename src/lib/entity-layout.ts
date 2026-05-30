@@ -4,11 +4,9 @@ import { entityLayoutConfig } from './entity-layout-config'
 
 const SKIP_COLUMNS = ['id', '_id', 'pk', 'fk_']
 
-export function getEntityLayout(
-  entityType: string,
-  t: TFunction
-): ColumnDef[] {
-  const entityConfig = entityLayoutConfig[entityType as keyof typeof entityLayoutConfig]
+export function getEntityLayout(entityType: string, t: TFunction): ColumnDef[] {
+  const entityConfig =
+    entityLayoutConfig[entityType as keyof typeof entityLayoutConfig]
 
   if (!entityConfig) {
     console.warn(`[entity-layout] No layout found for entity: ${entityType}`)

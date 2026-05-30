@@ -11,10 +11,11 @@ Fix FilterDialog bug, add drag-to-reorder to ColumnVisibilityDialog, and extend 
 **Files:** `src/components/entity/FilterDialog.tsx`
 
 **Problem 1:** `handleApply` passes `filters` prop instead of `localFilters`:
+
 ```typescript
 // BEFORE (buggy)
 const handleApply = () => {
-  onApply(filters)  // ❌ uses prop, ignores local state
+  onApply(filters) // ❌ uses prop, ignores local state
   onOpenChange(false)
 }
 ```
@@ -22,13 +23,21 @@ const handleApply = () => {
 **Problem 2:** `localFilters` initializes as empty `{}` but should sync from `filters` prop when dialog opens.
 
 **Changes:**
+
 1. Add `useEffect` to initialize `localFilters` from `filters` prop when dialog opens:
+
 ```typescript
 useEffect(() => {
   if (open) {
-    const initialized: Record<string, string | string[] | { min?: string; max?: string }> = {}
+    const initialized: Record<
+      string,
+      string | string[] | { min?: string; max?: string }
+    > = {}
     filters.forEach(f => {
-      initialized[f.columnId] = f.value as string | string[] | { min?: string; max?: string }
+      initialized[f.columnId] = f.value as
+        | string
+        | string[]
+        | { min?: string; max?: string }
     })
     setLocalFilters(initialized)
   }
@@ -36,6 +45,7 @@ useEffect(() => {
 ```
 
 2. `handleApply` converts `localFilters` to `FilterState[]` and calls `onApply`:
+
 ```typescript
 const handleApply = () => {
   const appliedFilters: FilterState[] = Object.entries(localFilters)
@@ -46,7 +56,11 @@ const handleApply = () => {
       } else if (Array.isArray(value)) {
         return { columnId, operator: 'eq' as const, value }
       } else {
-        return { columnId, operator: 'between' as const, value: [value.min ?? '', value.max ?? ''] }
+        return {
+          columnId,
+          operator: 'between' as const,
+          value: [value.min ?? '', value.max ?? ''],
+        }
       }
     })
   onApply(appliedFilters)
@@ -55,6 +69,7 @@ const handleApply = () => {
 ```
 
 **Key behavior:**
+
 - `handleClearAll` calls `onApply([])` and closes dialog
 - `handleApply` converts local state to FilterState format, closes dialog
 - Dialog does NOT auto-apply on open — waits for user confirmation
@@ -68,6 +83,7 @@ const handleApply = () => {
 **Behavior:** Each column row has a drag handle (GripVertical icon). Dragging a column updates its `order` in `localColumns`. On save, `onSave(localColumns)` is called with updated order.
 
 **Drag implementation:**
+
 - `DndContext` wraps the sortable list
 - `SortableContext` with `verticalListSortingStrategy`
 - Each row uses `useSortable(col.id)` hook
@@ -75,11 +91,13 @@ const handleApply = () => {
 - On `onDragEnd`, call `arrayMove` to reorder `localColumns`, then update `order` property for each column
 
 **Visual:**
+
 - Drag handle: `cursor-grab`, `cursor grabbing` while dragging
 - Drag preview: elevated card with shadow, same content as original row
 - Drop zone: other items shift up/down as draggable moves
 
 **State update on drag end:**
+
 ```typescript
 const handleDragEnd = (event: DragEndEvent) => {
   const { active, over } = event
@@ -120,6 +138,7 @@ pub struct FilterState {
 ### 3.2 SQL Generation for Filters
 
 Build WHERE clause from `filters`:
+
 - `eq` → `column_id = value`
 - `neq` → `column_id != value`
 - `contains` → `column_id LIKE '%value%'`
@@ -161,12 +180,12 @@ pub async fn warehouses_get_all(
 
 ## 4. Files to Modify
 
-| File | Change |
-|------|--------|
-| `src/components/entity/FilterDialog.tsx` | Fix handleApply, add useEffect for initial sync |
-| `src/components/entity/ColumnVisibilityDialog.tsx` | Add @dnd-kit drag-to-reorder |
-| `src/lib/types/entity.ts` | FilterState already exists, no change needed |
-| Rust command module | Add FilterState type, update getAll/warehousesGetAll signatures |
+| File                                               | Change                                                          |
+| -------------------------------------------------- | --------------------------------------------------------------- |
+| `src/components/entity/FilterDialog.tsx`           | Fix handleApply, add useEffect for initial sync                 |
+| `src/components/entity/ColumnVisibilityDialog.tsx` | Add @dnd-kit drag-to-reorder                                    |
+| `src/lib/types/entity.ts`                          | FilterState already exists, no change needed                    |
+| Rust command module                                | Add FilterState type, update getAll/warehousesGetAll signatures |
 
 ## 5. Data Flow Summary
 
@@ -183,7 +202,7 @@ User clicks "Apply" in FilterDialog
 ## 6. Edge Cases
 
 - **Empty filters** → no WHERE clause, return all rows
-- **Empty columns** → SELECT *, return all columns
+- **Empty columns** → SELECT \*, return all columns
 - **Invalid filter operator** → return error or ignore filter
 - **Column not in table** → ignore in SELECT, no error
 - **Filter on hidden column** → still apply filter (filters work on data, not UI)
