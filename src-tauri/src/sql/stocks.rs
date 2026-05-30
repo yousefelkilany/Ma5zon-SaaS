@@ -80,3 +80,24 @@ pub fn get_levels_by_warehouse_with_names() -> &'static str {
      LEFT JOIN stock_levels s ON v.id = s.variant_id AND s.warehouse_id = ?1
      ORDER BY v.variant_name"
 }
+
+pub fn products_get_by_warehouse_with_stock() -> &'static str {
+    "SELECT DISTINCT p.id, p.name \
+     FROM products p \
+     JOIN product_variants v ON p.id = v.product_id \
+     JOIN stock_levels s ON v.id = s.variant_id \
+     WHERE s.warehouse_id = ?1 AND s.quantity > 0 \
+     ORDER BY p.name"
+}
+
+pub fn variants_get_by_product_and_warehouse() -> &'static str {
+    "SELECT \
+        v.id AS variant_id, \
+        v.variant_name, \
+        v.sku, \
+        COALESCE(s.quantity, 0) AS quantity \
+     FROM product_variants v \
+     LEFT JOIN stock_levels s ON v.id = s.variant_id AND s.warehouse_id = ?2 \
+     WHERE v.product_id = ?1 \
+     ORDER BY v.variant_name"
+}
