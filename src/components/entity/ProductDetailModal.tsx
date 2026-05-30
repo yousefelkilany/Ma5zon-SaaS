@@ -6,6 +6,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
+import type { StockLevelWithVariant } from '@/lib/types/entity'
+import { StockLevelsTable } from './StockLevelsTable'
 
 interface ProductDetailModalProps {
   open: boolean
@@ -25,7 +27,7 @@ interface Product {
   deleted_at: string | null
 }
 
-type TabId = 'details' | 'insights' | 'audits'
+type TabId = 'details' | 'stock' | 'insights' | 'audits'
 
 interface FieldConfig {
   key: keyof Product
@@ -64,9 +66,13 @@ export function ProductDetailModal({
   const [deleteError, setDeleteError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
   const [loadError, setLoadError] = useState('')
+  const [stockLevels, setStockLevels] = useState<StockLevelWithVariant[]>([])
+  const [isLoadingStock, setIsLoadingStock] = useState(false)
+  const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(new Map())
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
+    { id: 'stock', label: t('entity.detail.tabs.stock') },
     { id: 'insights', label: t('entity.detail.tabs.insights') },
     { id: 'audits', label: t('entity.detail.tabs.audits') },
   ]
@@ -103,6 +109,24 @@ export function ProductDetailModal({
     }
   }, [entityId, t])
 
+  const loadStockLevels = useCallback(async () => {
+    if (!entityId) return
+    setIsLoadingStock(true)
+    const result = await commands.stock_levels_get_by_product(entityId)
+    setIsLoadingStock(false)
+    if (result.status === 'ok') {
+      setStockLevels(result.data)
+      const whResult = await commands.warehousesGetAll([], [])
+      if (whResult.status === 'ok') {
+        const names = new Map<string, string>()
+        for (const w of whResult.data) {
+          names.set(w.id, w.name)
+        }
+        setWarehouseNames(names)
+      }
+    }
+  }, [entityId])
+
   useEffect(() => {
     if (!open) {
       setEntity(null)
@@ -111,8 +135,16 @@ export function ProductDetailModal({
       setEditForm({ company: '', name: '', category: '' })
       setActiveTab('details')
       setDeleteError('')
+      setStockLevels([])
+      setWarehouseNames(new Map())
     }
   }, [open])
+
+  useEffect(() => {
+    if (activeTab === 'stock' && stockLevels.length === 0 && !isLoadingStock) {
+      loadStockLevels()
+    }
+  }, [activeTab, stockLevels.length, isLoadingStock, loadStockLevels])
 
   useEffect(() => {
     if (open && entityId) {
@@ -329,6 +361,17 @@ export function ProductDetailModal({
                       {t('entity.detail.notFound')}
                     </p>
                   )}
+                </div>
+              )}
+
+              {activeTab === 'stock' && (
+                <div id="stock-panel" role="tabpanel" aria-labelledby="stock-tab">
+                  <StockLevelsTable
+                    stockLevels={stockLevels}
+                    isLoading={isLoadingStock}
+                    view="product"
+                    warehouseNames={warehouseNames}
+                  />
                 </div>
               )}
 
