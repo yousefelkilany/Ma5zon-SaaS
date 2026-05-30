@@ -79,7 +79,9 @@ export interface ToolbarProps {
   onColumnsClick: () => void
   hasSelection: boolean
   selectedCount: number
-  onBulkAction: (action: string) => void
+  onPrintSelected: () => void
+  onExportSelected: () => void
+  onDelete: () => void
   onExport: () => void
   activeFilterCount?: number
 }
