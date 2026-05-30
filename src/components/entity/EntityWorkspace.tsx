@@ -10,6 +10,7 @@ import type {
   ColumnDef,
   VariantRow,
   FilterState,
+  StockLevelWithVariant,
 } from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
 import { ProductCreateModal } from './ProductCreateModal'
@@ -121,6 +122,10 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     new Map()
   )
   const [loadingVariants, setLoadingVariants] = useState<Set<string>>(new Set())
+  const [stockLevelsCache, setStockLevelsCache] = useState<Map<string, StockLevelWithVariant[]>>(
+    new Map()
+  )
+  const [loadingStockLevels, setLoadingStockLevels] = useState<Set<string>>(new Set())
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [createModalType, setCreateModalType] = useState<
     'products' | 'warehouses' | 'product_variants' | null
@@ -199,7 +204,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         newExpanded.delete(id)
       } else {
         newExpanded.add(id)
-        if (!variantsCache.has(id)) {
+        if (entityType === 'products' && !variantsCache.has(id)) {
           setLoadingVariants(prev => new Set(prev).add(id))
           try {
             const result = await commands.variantsGetByProduct(id)
@@ -218,10 +223,25 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
             })
           }
         }
+        if (entityType === 'warehouses' && !stockLevelsCache.has(id)) {
+          setLoadingStockLevels(prev => new Set(prev).add(id))
+          try {
+            const result = await commands.stock_levels_get_by_warehouse_with_names(id)
+            if (result.status === 'ok') {
+              setStockLevelsCache(prev => new Map(prev).set(id, result.data))
+            }
+          } finally {
+            setLoadingStockLevels(prev => {
+              const next = new Set(prev)
+              next.delete(id)
+              return next
+            })
+          }
+        }
       }
       setExpandedIds(newExpanded)
     },
-    [expandedIds, variantsCache]
+    [expandedIds, variantsCache, stockLevelsCache, entityType]
   )
 
   const { data: entityData, isLoading } = useQuery({
@@ -308,6 +328,8 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         isLoadingVariants={id => loadingVariants.has(id)}
         onVariantClick={handleVariantClick}
         onAddVariant={handleAddVariant}
+        stockLevelsCache={stockLevelsCache}
+        isLoadingStockLevels={id => loadingStockLevels.has(id)}
       />
       <ProductCreateModal
         open={createModalOpen && createModalType === 'products'}
