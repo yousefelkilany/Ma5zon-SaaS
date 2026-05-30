@@ -366,5 +366,10 @@
   "entity.create.error.failed": "Failed to create",
   "entity.stock.noLevels": "No stock levels found",
   "entity.stock.quantity": "Quantity",
-  "entity.stock.total": "Total"
+  "entity.stock.total": "Total",
+  "entity.stock.warehouseProduct": "Product",
+  "entity.stock.noProductsInWarehouse": "No stock in this warehouse",
+  "entity.stock.noVariants": "No variants found",
+  "entity.stock.errorLoadingProducts": "Error loading products",
+  "entity.stock.errorLoadingVariants": "Error loading variants"
 }
