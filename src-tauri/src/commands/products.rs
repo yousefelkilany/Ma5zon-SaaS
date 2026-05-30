@@ -105,7 +105,7 @@ pub async fn get_all(
     let conn = get_conn(&app)?;
 
     let where_clause = build_where_clause(&filters);
-    let query = build_get_all(&where_clause);
+    let query = build_get_all(&where_clause, None);
 
     let mut stmt = conn
         .prepare(&query)
