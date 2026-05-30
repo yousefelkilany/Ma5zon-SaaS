@@ -30,3 +30,12 @@ export interface Tab {
   closable: boolean
   entityType?: string
 }
+
+export function normalizeArabic(text: string): string {
+  if (!text) return ''
+  return text
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/[\u064B-\u065F]/g, '')
+}
