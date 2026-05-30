@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import type { QueryClient } from '@tanstack/react-query'
 import type {
   ColumnDef,
@@ -15,6 +15,8 @@ import { PaginationFooter } from './PaginationFooter'
 
 import { FilterDialog } from './FilterDialog'
 import { ColumnVisibilityDialog } from './ColumnVisibilityDialog'
+import Fuse from 'fuse.js'
+import { normalizeArabic } from '@/lib/utils'
 
 interface DataTableShellProps {
   entityType: string
@@ -68,6 +70,36 @@ export function DataTableShell({
   const [filterDialogOpen, setFilterDialogOpen] = useState(false)
   const [columnDialogOpen, setColumnDialogOpen] = useState(false)
   const [localColumns, setLocalColumns] = useState<ColumnDef[]>(columns)
+
+  const filteredData = useMemo(() => {
+    if (!searchValue.trim() || searchValue.length < 2) {
+      return data
+    }
+
+    const normalizedSearch = normalizeArabic(searchValue.toLowerCase())
+
+    const searchableKeys = columns
+      .filter(col => col.type !== 'actions' && col.visible)
+      .map(col => col.id)
+
+    const fuse = new Fuse(data, {
+      keys: searchableKeys,
+      includeScore: true,
+      threshold: 0.3,
+      minMatchCharLength: 2,
+      getFn: (obj, path) => {
+        const key = path[0]
+        if (!key) return ''
+        const value = obj[key]
+        if (typeof value === 'string') {
+          return normalizeArabic(value.toLowerCase())
+        }
+        return String(value ?? '')
+      },
+    })
+
+    return fuse.search(normalizedSearch).map(result => result.item)
+  }, [data, searchValue, columns])
 
   useEffect(() => {
     setLocalColumns(columns)
@@ -127,7 +159,7 @@ export function DataTableShell({
             entityType={entityType}
             queryClient={queryClient}
             columns={localColumns}
-            data={data}
+            data={filteredData}
             sort={sort}
             isLoading={isLoading}
             selectedIds={selectedIds}
