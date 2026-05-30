@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { invoke } from '@tauri-apps/api/core'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
+import type { FilterState as BindingFilterState } from '@/lib/bindings'
 import { getEntityLayout } from '@/lib/entity-layout'
 import type {
   EntityWorkspaceProps,
   ColumnDef,
   VariantRow,
+  FilterState,
 } from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
 import { cn } from '@/lib/utils'
@@ -101,6 +103,7 @@ async function exportToCSV(
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const queryClient = useQueryClient()
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+  const [activeFilters, setActiveFilters] = useState<FilterState[]>([])
   const [variantsCache, setVariantsCache] = useState<Map<string, VariantRow[]>>(
     new Map()
   )
@@ -139,15 +142,20 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   )
 
   const { data: entityData, isLoading } = useQuery({
-    queryKey: ['entity', entityType],
+    queryKey: ['entity', entityType, activeFilters],
     queryFn: async () => {
+      const bindingFilters: BindingFilterState[] = activeFilters.map(f => ({
+        column_id: f.columnId,
+        operator: f.operator,
+        value: f.value,
+      }))
       switch (entityType) {
         case 'products': {
-          const result = await commands.getAll([], [])
+          const result = await commands.getAll(bindingFilters, [])
           return result.status === 'ok' ? result.data : []
         }
         case 'warehouses': {
-          const result = await commands.warehousesGetAll([], [])
+          const result = await commands.warehousesGetAll(bindingFilters, [])
           return result.status === 'ok' ? result.data : []
         }
         default:
@@ -161,6 +169,25 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const columns: ColumnDef[] = useMemo(
     () => getEntityLayout(entityType, t),
     [entityType, t]
+  )
+
+  const handleSaveColumnPrefs = useCallback(
+    (columns: ColumnDef[]) => {
+      localStorage.setItem(
+        `user_prefs_columns_${entityType}`,
+        JSON.stringify(columns)
+      )
+      queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
+    },
+    [entityType, queryClient]
+  )
+
+  const handleFiltersApply = useCallback(
+    (filters: FilterState[]) => {
+      setActiveFilters(filters)
+      queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
+    },
+    [entityType, queryClient]
   )
 
   const handleExport = async () => {
@@ -182,8 +209,8 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
           totalPages: 1,
         }}
         isLoading={isLoading}
-        onSaveColumnPrefs={x => x}
-        onFiltersApply={x => x}
+        onSaveColumnPrefs={handleSaveColumnPrefs}
+        onFiltersApply={handleFiltersApply}
         onExport={handleExport}
         expandedRowIds={expandedIds}
         variantsCache={variantsCache}
