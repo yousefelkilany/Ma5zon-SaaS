@@ -96,6 +96,31 @@ export interface StockLevelWithVariant {
   quantity: number
 }
 
+export interface ProductWithStock {
+  id: string
+  name: string
+}
+
+export interface VariantWithStock {
+  variant_id: string
+  variant_name: string
+  sku: string
+  quantity: number
+}
+
+export interface WarehousesSubTableProps {
+  stockLevels: StockLevelWithVariant[]
+  isLoading?: boolean
+  warehouseId: string
+  expandedProductIds?: Set<string>
+  productsCache?: Map<string, ProductWithStock[]>
+  variantsCache?: Map<string, VariantWithStock[]>
+  onWarehouseExpand?: (warehouseId: string) => void
+  onProductExpand?: (productId: string) => void
+  isLoadingProducts?: (warehouseId: string) => boolean
+  isLoadingVariants?: (productId: string) => boolean
+}
+
 export interface VariantPriceRow {
   variant_id: string
   price_list_id: number
