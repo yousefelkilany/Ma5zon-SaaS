@@ -7,11 +7,18 @@ use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::sql::products::{
     build_get_all, build_where_clause, create as sql_create, create_table,
-    get_by_id as sql_get_by_id, get_created_at as sql_get_created_at,
+    fetch_all, get_by_id as sql_get_by_id, get_created_at as sql_get_created_at,
     soft_delete as sql_soft_delete, update as sql_update,
 };
 use crate::types::{FilterState, SortState};
 use crate::types::Product;
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
+pub struct PaginatedResponse<T> {
+    pub data: Vec<T>,
+    pub total_count: i64,
+    pub total_pages: i64,
+}
 
 pub struct ProductsInitializer;
 
@@ -129,6 +136,28 @@ pub async fn get_all(
         .map_err(|e| format!("Failed to collect products: {e}"))?;
 
     Ok(products)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn products_get_paginated(
+    app: AppHandle,
+    page: i64,
+    page_size: i64,
+) -> Result<PaginatedResponse<Product>, String> {
+    let offset = (page - 1) * page_size;
+    let conn = get_conn(&app)?;
+
+    let (products, total_count) = fetch_all(&conn, Some(page_size), Some(offset))
+        .map_err(|e| format!("Failed to fetch products: {e}"))?;
+
+    let total_pages = (total_count as f64 / page_size as f64).ceil() as i64;
+
+    Ok(PaginatedResponse {
+        data: products,
+        total_count,
+        total_pages,
+    })
 }
 
 #[tauri::command]
