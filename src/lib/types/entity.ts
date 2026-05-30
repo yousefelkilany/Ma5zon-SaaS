@@ -40,6 +40,11 @@ export interface FilterState {
   value: string | number | [number, number]
 }
 
+export interface BindingSortState {
+  column_id: string
+  direction: 'asc' | 'desc'
+}
+
 export interface DataTableProps {
   entityType: string
   queryClient: QueryClient
