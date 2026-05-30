@@ -12,9 +12,12 @@ import type {
   FilterState,
 } from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
+import { ProductCreateModal } from './ProductCreateModal'
+import { WarehouseCreateModal } from './WarehouseCreateModal'
+import { VariantCreateModal } from './VariantCreateModal'
 import { cn } from '@/lib/utils'
 
-function EntityHeader({ entityType }: { entityType: string }) {
+function EntityHeader({ entityType, onAddNewClick }: { entityType: string; onAddNewClick?: () => void }) {
   const { t } = useTranslation()
 
   const sections: Record<string, string> = {
@@ -56,7 +59,10 @@ function EntityHeader({ entityType }: { entityType: string }) {
             {label}
           </h1>
         </div>
-        <button className="bg-secondary text-on-secondary px-4 py-2 rounded shadow-sm hover:opacity-90 active:scale-95 transition-all font-label-caps text-label-caps flex items-center gap-2">
+        <button
+          className="bg-secondary text-on-secondary px-4 py-2 rounded shadow-sm hover:opacity-90 active:scale-95 transition-all font-label-caps text-label-caps flex items-center gap-2"
+          onClick={onAddNewClick}
+        >
           <span className="material-symbols-outlined">add</span>
           {addNewLabel.toUpperCase()}
         </button>
@@ -108,6 +114,18 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     new Map()
   )
   const [loadingVariants, setLoadingVariants] = useState<Set<string>>(new Set())
+  const [createModalOpen, setCreateModalOpen] = useState(false)
+  const [createModalType, setCreateModalType] = useState<'products' | 'warehouses' | 'product_variants' | null>(null)
+
+  const handleAddNewClick = useCallback(() => {
+    setCreateModalType(entityType as 'products' | 'warehouses' | 'product_variants')
+    setCreateModalOpen(true)
+  }, [entityType])
+
+  const handleModalOpenChange = useCallback((open: boolean) => {
+    setCreateModalOpen(open)
+    if (!open) setCreateModalType(null)
+  }, [])
 
   const handleRowToggleExpand = useCallback(
     async (id: string) => {
@@ -196,7 +214,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
 
   return (
     <div className="px-margin-edge flex flex-col h-full bg-background py-6">
-      <EntityHeader entityType={entityType} />
+      <EntityHeader entityType={entityType} onAddNewClick={handleAddNewClick} />
       <DataTableShell
         entityType={entityType}
         queryClient={queryClient}
@@ -216,6 +234,22 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         variantsCache={variantsCache}
         onRowToggleExpand={handleRowToggleExpand}
         isLoadingVariants={id => loadingVariants.has(id)}
+      />
+      <ProductCreateModal
+        open={createModalOpen && createModalType === 'products'}
+        onOpenChange={handleModalOpenChange}
+        queryClient={queryClient}
+      />
+      <WarehouseCreateModal
+        open={createModalOpen && createModalType === 'warehouses'}
+        onOpenChange={handleModalOpenChange}
+        queryClient={queryClient}
+      />
+      <VariantCreateModal
+        open={createModalOpen && createModalType === 'product_variants'}
+        onOpenChange={handleModalOpenChange}
+        queryClient={queryClient}
+        productId=""
       />
     </div>
   )

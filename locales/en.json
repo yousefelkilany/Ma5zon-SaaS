@@ -350,5 +350,11 @@
   "entity.layout.product_variants.columns.uom": "UOM",
   "entity.layout.product_variants.columns.retail": "Retail",
   "entity.layout.product_variants.columns.wholesale": "Wholesale",
-  "entity.layout.product_variants.columns.distribution": "Distribution"
+  "entity.layout.product_variants.columns.distribution": "Distribution",
+  "entity.create.product.title": "Add New Product",
+  "entity.create.warehouse.title": "Add New Warehouse",
+  "entity.create.variant.title": "Add New Variant",
+  "entity.create.button": "Create",
+  "entity.create.error.required": "All required fields must be filled",
+  "entity.create.error.failed": "Failed to create"
 }

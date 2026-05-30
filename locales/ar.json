@@ -352,5 +352,11 @@
   "entity.layout.product_variants.columns.uom": "الوحدة",
   "entity.layout.product_variants.columns.retail": "المفرد",
   "entity.layout.product_variants.columns.wholesale": "الجملة",
-  "entity.layout.product_variants.columns.distribution": "التوزيع"
+  "entity.layout.product_variants.columns.distribution": "التوزيع",
+  "entity.create.product.title": "إضافة منتج جديد",
+  "entity.create.warehouse.title": "إضافة مستودع جديد",
+  "entity.create.variant.title": "إضافة متغير جديد",
+  "entity.create.button": "إنشاء",
+  "entity.create.error.required": "يجب ملء جميع الحقول المطلوبة",
+  "entity.create.error.failed": "فشل في الإنشاء"
 }
