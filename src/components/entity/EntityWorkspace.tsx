@@ -122,10 +122,12 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     new Map()
   )
   const [loadingVariants, setLoadingVariants] = useState<Set<string>>(new Set())
-  const [stockLevelsCache, setStockLevelsCache] = useState<Map<string, StockLevelWithVariant[]>>(
-    new Map()
+  const [stockLevelsCache, setStockLevelsCache] = useState<
+    Map<string, StockLevelWithVariant[]>
+  >(new Map())
+  const [loadingStockLevels, setLoadingStockLevels] = useState<Set<string>>(
+    new Set()
   )
-  const [loadingStockLevels, setLoadingStockLevels] = useState<Set<string>>(new Set())
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [createModalType, setCreateModalType] = useState<
     'products' | 'warehouses' | 'product_variants' | null
@@ -226,7 +228,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         if (entityType === 'warehouses' && !stockLevelsCache.has(id)) {
           setLoadingStockLevels(prev => new Set(prev).add(id))
           try {
-            const result = await commands.stock_levels_get_by_warehouse_with_names(id)
+            const result = await commands.stockLevelsGetByWarehouseWithNames(id)
             if (result.status === 'ok') {
               setStockLevelsCache(prev => new Map(prev).set(id, result.data))
             }

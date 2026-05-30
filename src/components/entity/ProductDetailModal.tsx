@@ -68,7 +68,9 @@ export function ProductDetailModal({
   const [loadError, setLoadError] = useState('')
   const [stockLevels, setStockLevels] = useState<StockLevelWithVariant[]>([])
   const [isLoadingStock, setIsLoadingStock] = useState(false)
-  const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(new Map())
+  const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
+    new Map()
+  )
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -112,7 +114,7 @@ export function ProductDetailModal({
   const loadStockLevels = useCallback(async () => {
     if (!entityId) return
     setIsLoadingStock(true)
-    const result = await commands.stock_levels_get_by_product(entityId)
+    const result = await commands.stockLevelsGetByProduct(entityId)
     setIsLoadingStock(false)
     if (result.status === 'ok') {
       setStockLevels(result.data)
@@ -365,7 +367,11 @@ export function ProductDetailModal({
               )}
 
               {activeTab === 'stock' && (
-                <div id="stock-panel" role="tabpanel" aria-labelledby="stock-tab">
+                <div
+                  id="stock-panel"
+                  role="tabpanel"
+                  aria-labelledby="stock-tab"
+                >
                   <StockLevelsTable
                     stockLevels={stockLevels}
                     isLoading={isLoadingStock}
