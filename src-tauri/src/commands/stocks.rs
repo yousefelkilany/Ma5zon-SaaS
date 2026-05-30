@@ -197,6 +197,20 @@ pub struct StockLevelWithVariant {
     pub quantity: f64,
 }
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
+pub struct ProductWithStock {
+    pub id: String,
+    pub name: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
+pub struct VariantWithStock {
+    pub variant_id: String,
+    pub variant_name: String,
+    pub sku: String,
+    pub quantity: f64,
+}
+
 #[tauri::command]
 #[specta::specta]
 pub async fn stock_levels_get_all(app: AppHandle) -> Result<Vec<StockLevel>, String> {
@@ -398,4 +412,62 @@ pub async fn stock_levels_get_by_warehouse_with_names(
         .map_err(|e| format!("Failed to collect stock levels: {e}"))?;
 
     Ok(levels)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn products_get_by_warehouse_with_stock(
+    app: AppHandle,
+    warehouse_id: String,
+) -> Result<Vec<ProductWithStock>, String> {
+    let conn = get_conn(&app)?;
+    let warehouse_id_i64: i64 = warehouse_id
+        .parse()
+        .map_err(|e| format!("Invalid warehouse_id: {e}"))?;
+    let mut stmt = conn
+        .prepare(crate::sql::stocks::products_get_by_warehouse_with_stock())
+        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
+    let products = stmt
+        .query_map(params![warehouse_id_i64], |row| {
+            Ok(ProductWithStock {
+                id: row.get::<_, i64>(0)?.to_string(),
+                name: row.get(1)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query products: {e}"))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("Failed to collect products: {e}"))?;
+    Ok(products)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn variants_get_by_product_and_warehouse(
+    app: AppHandle,
+    product_id: String,
+    warehouse_id: String,
+) -> Result<Vec<VariantWithStock>, String> {
+    let conn = get_conn(&app)?;
+    let product_id_i64: i64 = product_id
+        .parse()
+        .map_err(|e| format!("Invalid product_id: {e}"))?;
+    let warehouse_id_i64: i64 = warehouse_id
+        .parse()
+        .map_err(|e| format!("Invalid warehouse_id: {e}"))?;
+    let mut stmt = conn
+        .prepare(crate::sql::stocks::variants_get_by_product_and_warehouse())
+        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
+    let variants = stmt
+        .query_map(params![product_id_i64, warehouse_id_i64], |row| {
+            Ok(VariantWithStock {
+                variant_id: row.get::<_, i64>(0)?.to_string(),
+                variant_name: row.get(1)?,
+                sku: row.get(2)?,
+                quantity: row.get(3)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query variants: {e}"))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("Failed to collect variants: {e}"))?;
+    Ok(variants)
 }
