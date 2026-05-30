@@ -18,7 +18,13 @@ import { VariantCreateModal } from './VariantCreateModal'
 import { VariantDetailModal } from './VariantDetailModal'
 import { cn } from '@/lib/utils'
 
-function EntityHeader({ entityType, onAddNewClick }: { entityType: string; onAddNewClick?: () => void }) {
+function EntityHeader({
+  entityType,
+  onAddNewClick,
+}: {
+  entityType: string
+  onAddNewClick?: () => void
+}) {
   const { t } = useTranslation()
 
   const sections: Record<string, string> = {
@@ -116,13 +122,19 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   )
   const [loadingVariants, setLoadingVariants] = useState<Set<string>>(new Set())
   const [createModalOpen, setCreateModalOpen] = useState(false)
-  const [createModalType, setCreateModalType] = useState<'products' | 'warehouses' | 'product_variants' | null>(null)
+  const [createModalType, setCreateModalType] = useState<
+    'products' | 'warehouses' | 'product_variants' | null
+  >(null)
   const [createModalProductId, setCreateModalProductId] = useState<string>('')
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
+    null
+  )
   const [variantDetailOpen, setVariantDetailOpen] = useState(false)
 
   const handleAddNewClick = useCallback(() => {
-    setCreateModalType(entityType as 'products' | 'warehouses' | 'product_variants')
+    setCreateModalType(
+      entityType as 'products' | 'warehouses' | 'product_variants'
+    )
     setCreateModalOpen(true)
   }, [entityType])
 
@@ -131,10 +143,13 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     if (!open) setCreateModalType(null)
   }, [])
 
-  const handleVariantClick = useCallback((variantId: string, _productId: string) => {
-    setSelectedVariantId(variantId)
-    setVariantDetailOpen(true)
-  }, [])
+  const handleVariantClick = useCallback(
+    (variantId: string, _productId: string) => {
+      setSelectedVariantId(variantId)
+      setVariantDetailOpen(true)
+    },
+    []
+  )
 
   const handleAddVariant = useCallback((productId: string) => {
     setCreateModalType('product_variants')

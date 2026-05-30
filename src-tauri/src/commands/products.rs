@@ -5,7 +5,11 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
-use crate::sql::products::{create_table, get_by_id as sql_get_by_id, create as sql_create, update as sql_update, soft_delete as sql_soft_delete, get_created_at as sql_get_created_at, build_where_clause, build_get_all};
+use crate::sql::products::{
+    build_get_all, build_where_clause, create as sql_create, create_table,
+    get_by_id as sql_get_by_id, get_created_at as sql_get_created_at,
+    soft_delete as sql_soft_delete, update as sql_update,
+};
 use crate::types::FilterState;
 use crate::types::Product;
 
@@ -21,7 +25,7 @@ impl DatabaseInitializable for ProductsInitializer {
         let conn = get_conn(app)?;
 
         conn.execute(create_table(), [])
-        .map_err(|e| format!("Failed to create products table: {e}"))?;
+            .map_err(|e| format!("Failed to create products table: {e}"))?;
 
         let count: i64 = conn
             .query_row("SELECT COUNT(*) FROM products", [], |row| row.get(0))
@@ -99,10 +103,10 @@ pub async fn get_all(
     _columns: Vec<String>,
 ) -> Result<Vec<Product>, String> {
     let conn = get_conn(&app)?;
-    
+
     let where_clause = build_where_clause(&filters);
     let query = build_get_all(&where_clause);
-    
+
     let mut stmt = conn
         .prepare(&query)
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
@@ -162,11 +166,8 @@ pub async fn create(
 ) -> Result<Product, String> {
     let conn = get_conn(&app)?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-    conn.execute(
-        sql_create(),
-        params![company, name, &now, &now],
-    )
-    .map_err(|e| format!("Failed to create product: {e}"))?;
+    conn.execute(sql_create(), params![company, name, category, &now, &now])
+        .map_err(|e| format!("Failed to create product: {e}"))?;
 
     let id = conn.last_insert_rowid().to_string();
     Ok(Product {
@@ -194,18 +195,13 @@ pub async fn update(
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
     let (created_at,): (String,) = conn
-        .query_row(
-            sql_get_created_at(),
-            params![id_i64],
-            |row| Ok((row.get(0)?,)),
-        )
+        .query_row(sql_get_created_at(), params![id_i64], |row| {
+            Ok((row.get(0)?,))
+        })
         .map_err(|e| format!("Product not found: {e}"))?;
 
-conn.execute(
-        sql_update(),
-        params![company, name, category, &now, id_i64],
-    )
-    .map_err(|e| format!("Failed to update product: {e}"))?;
+    conn.execute(sql_update(), params![company, name, category, &now, id_i64])
+        .map_err(|e| format!("Failed to update product: {e}"))?;
 
     Ok(Product {
         id,
@@ -225,10 +221,7 @@ pub async fn delete(app: AppHandle, id: String) -> Result<(), String> {
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     let affected = conn
-        .execute(
-            sql_soft_delete(),
-            params![&now, id_i64],
-        )
+        .execute(sql_soft_delete(), params![&now, id_i64])
         .map_err(|e| format!("Failed to delete product: {e}"))?;
     if affected == 0 {
         return Err("Product not found".to_string());

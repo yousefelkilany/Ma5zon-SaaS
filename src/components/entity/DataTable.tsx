@@ -174,13 +174,10 @@ export function DataTable({
     return cols
   }, [selectColumn, expandColumn, entityType, visibleColumns])
 
-  const handleRowClick = useCallback(
-    (id: string, _row: EntityRow) => {
-      setSelectedEntityId(id)
-      setEditModalOpen(true)
-    },
-    []
-  )
+  const handleRowClick = useCallback((id: string, _row: EntityRow) => {
+    setSelectedEntityId(id)
+    setEditModalOpen(true)
+  }, [])
 
   const internalOnRowClick = useCallback(
     (id: string, row: EntityRow) => {
@@ -375,7 +372,11 @@ export function DataTable({
                           }}
                           onClick={
                             isNameCol
-                              ? () => internalOnRowClick(row.original.id, row.original)
+                              ? () =>
+                                  internalOnRowClick(
+                                    row.original.id,
+                                    row.original
+                                  )
                               : undefined
                           }
                         >
@@ -430,7 +431,7 @@ export function DataTable({
           }}
         />
       )}
-{entityType === 'variants' && selectedEntityId && (
+      {entityType === 'variants' && selectedEntityId && (
         <VariantDetailModal
           open={editModalOpen}
           onOpenChange={setEditModalOpen}

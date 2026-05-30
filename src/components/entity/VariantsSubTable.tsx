@@ -99,7 +99,10 @@ export function VariantsSubTable({
                   }`}
                 >
                   {col.type === 'currency'
-                    ? formatCurrency(variant[col.id as keyof VariantRow] as number, locale)
+                    ? formatCurrency(
+                        variant[col.id as keyof VariantRow] as number,
+                        locale
+                      )
                     : String(variant[col.id as keyof VariantRow] ?? '-')}
                 </td>
               ))}
