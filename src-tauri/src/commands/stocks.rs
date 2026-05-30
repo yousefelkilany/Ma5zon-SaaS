@@ -8,6 +8,7 @@ use crate::commands::DatabaseInitializable;
 use crate::sql::stocks::{
     create_levels_table, create_movements_table, get_levels_all, get_levels_by_variant,
     get_levels_by_warehouse, get_movements_all, get_movements_by_variant,
+    get_stock_levels_by_product, get_levels_by_warehouse_with_names,
 };
 
 pub struct StockInitializer;
@@ -187,6 +188,15 @@ pub struct StockMovement {
     pub created_at: String,
 }
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
+pub struct StockLevelWithVariant {
+    pub variant_id: String,
+    pub variant_name: String,
+    pub sku: String,
+    pub warehouse_id: String,
+    pub quantity: f64,
+}
+
 #[tauri::command]
 #[specta::specta]
 pub async fn stock_levels_get_all(app: AppHandle) -> Result<Vec<StockLevel>, String> {
@@ -326,4 +336,66 @@ pub async fn stock_movements_get_by_variant(
         .map_err(|e| format!("Failed to collect stock movements: {e}"))?;
 
     Ok(movements)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn stock_levels_get_by_product(
+    app: AppHandle,
+    product_id: String,
+) -> Result<Vec<StockLevelWithVariant>, String> {
+    let conn = get_conn(&app)?;
+    let product_id_i64: i64 = product_id
+        .parse()
+        .map_err(|e| format!("Invalid product_id: {e}"))?;
+    let mut stmt = conn
+        .prepare(get_stock_levels_by_product())
+        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
+
+    let levels = stmt
+        .query_map(params![product_id_i64], |row| {
+            Ok(StockLevelWithVariant {
+                variant_id: row.get::<_, i64>(0)?.to_string(),
+                variant_name: row.get::<_, String>(1)?,
+                sku: row.get::<_, String>(2)?,
+                warehouse_id: row.get::<_, i64>(3)?.to_string(),
+                quantity: row.get::<_, f64>(4)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query stock levels: {e}"))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("Failed to collect stock levels: {e}"))?;
+
+    Ok(levels)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn stock_levels_get_by_warehouse_with_names(
+    app: AppHandle,
+    warehouse_id: String,
+) -> Result<Vec<StockLevelWithVariant>, String> {
+    let conn = get_conn(&app)?;
+    let warehouse_id_i64: i64 = warehouse_id
+        .parse()
+        .map_err(|e| format!("Invalid warehouse_id: {e}"))?;
+    let mut stmt = conn
+        .prepare(get_levels_by_warehouse_with_names())
+        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
+
+    let levels = stmt
+        .query_map(params![warehouse_id_i64], |row| {
+            Ok(StockLevelWithVariant {
+                variant_id: row.get::<_, i64>(0)?.to_string(),
+                variant_name: row.get::<_, String>(1)?,
+                sku: row.get::<_, String>(2)?,
+                warehouse_id: row.get::<_, i64>(3)?.to_string(),
+                quantity: row.get::<_, f64>(4)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query stock levels: {e}"))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("Failed to collect stock levels: {e}"))?;
+
+    Ok(levels)
 }
