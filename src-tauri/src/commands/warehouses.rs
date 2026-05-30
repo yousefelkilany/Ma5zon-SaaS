@@ -9,7 +9,7 @@ use crate::sql::warehouses::{
     build_get_all, build_where_clause, create, create_table, get_by_id, get_created_at,
     soft_delete, update,
 };
-use crate::types::FilterState;
+use crate::types::{FilterState, SortState};
 
 pub struct WarehousesInitializer;
 
@@ -77,11 +77,12 @@ pub async fn warehouses_get_all(
     app: AppHandle,
     filters: Vec<FilterState>,
     _columns: Vec<String>,
+    sort: Option<SortState>,
 ) -> Result<Vec<Warehouse>, String> {
     let conn = get_conn(&app)?;
 
     let where_clause = build_where_clause(&filters);
-    let query = build_get_all(&where_clause);
+    let query = build_get_all(&where_clause, sort.as_ref());
 
     let mut stmt = conn
         .prepare(&query)

@@ -10,7 +10,7 @@ use crate::sql::products::{
     get_by_id as sql_get_by_id, get_created_at as sql_get_created_at,
     soft_delete as sql_soft_delete, update as sql_update,
 };
-use crate::types::FilterState;
+use crate::types::{FilterState, SortState};
 use crate::types::Product;
 
 pub struct ProductsInitializer;
@@ -101,11 +101,12 @@ pub async fn get_all(
     app: AppHandle,
     filters: Vec<FilterState>,
     _columns: Vec<String>,
+    sort: Option<SortState>,
 ) -> Result<Vec<Product>, String> {
     let conn = get_conn(&app)?;
 
     let where_clause = build_where_clause(&filters);
-    let query = build_get_all(&where_clause, None);
+    let query = build_get_all(&where_clause, sort.as_ref());
 
     let mut stmt = conn
         .prepare(&query)
