@@ -15,6 +15,7 @@ import { DataTableShell } from './DataTableShell'
 import { ProductCreateModal } from './ProductCreateModal'
 import { WarehouseCreateModal } from './WarehouseCreateModal'
 import { VariantCreateModal } from './VariantCreateModal'
+import { VariantDetailModal } from './VariantDetailModal'
 import { cn } from '@/lib/utils'
 
 function EntityHeader({ entityType, onAddNewClick }: { entityType: string; onAddNewClick?: () => void }) {
@@ -116,6 +117,9 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const [loadingVariants, setLoadingVariants] = useState<Set<string>>(new Set())
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [createModalType, setCreateModalType] = useState<'products' | 'warehouses' | 'product_variants' | null>(null)
+  const [createModalProductId, setCreateModalProductId] = useState<string>('')
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
+  const [variantDetailOpen, setVariantDetailOpen] = useState(false)
 
   const handleAddNewClick = useCallback(() => {
     setCreateModalType(entityType as 'products' | 'warehouses' | 'product_variants')
@@ -125,6 +129,17 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const handleModalOpenChange = useCallback((open: boolean) => {
     setCreateModalOpen(open)
     if (!open) setCreateModalType(null)
+  }, [])
+
+  const handleVariantClick = useCallback((variantId: string, _productId: string) => {
+    setSelectedVariantId(variantId)
+    setVariantDetailOpen(true)
+  }, [])
+
+  const handleAddVariant = useCallback((productId: string) => {
+    setCreateModalType('product_variants')
+    setCreateModalProductId(productId)
+    setCreateModalOpen(true)
   }, [])
 
   const handleRowToggleExpand = useCallback(
@@ -234,6 +249,8 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         variantsCache={variantsCache}
         onRowToggleExpand={handleRowToggleExpand}
         isLoadingVariants={id => loadingVariants.has(id)}
+        onVariantClick={handleVariantClick}
+        onAddVariant={handleAddVariant}
       />
       <ProductCreateModal
         open={createModalOpen && createModalType === 'products'}
@@ -249,8 +266,20 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         open={createModalOpen && createModalType === 'product_variants'}
         onOpenChange={handleModalOpenChange}
         queryClient={queryClient}
-        productId=""
+        productId={createModalProductId}
       />
+      {entityType === 'products' && selectedVariantId && (
+        <VariantDetailModal
+          open={variantDetailOpen}
+          onOpenChange={setVariantDetailOpen}
+          entityId={selectedVariantId}
+          queryClient={queryClient}
+          onDeleted={() => {
+            setVariantDetailOpen(false)
+            setSelectedVariantId(null)
+          }}
+        />
+      )}
     </div>
   )
 }
