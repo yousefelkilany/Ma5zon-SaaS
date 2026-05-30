@@ -18,7 +18,6 @@ import { VariantsSubTable } from './VariantsSubTable'
 import { ProductDetailModal } from './ProductDetailModal'
 import { WarehouseDetailModal } from './WarehouseDetailModal'
 import { VariantDetailModal } from './VariantDetailModal'
-import { ConfirmationDialog } from './ConfirmationDialog'
 
 function StatusBadge({ status }: { status: string }) {
   const badgeClass =
@@ -81,8 +80,6 @@ export function DataTable({
   onSort,
   onRowSelect,
   onRowClick,
-  onEditClick,
-  onDeleteClick,
   expandedRowIds,
   variantsCache,
   onRowToggleExpand,
@@ -90,24 +87,8 @@ export function DataTable({
 }: DataTableProps & ExpandedRowProps) {
   const { t } = useTranslation()
   const [editModalOpen, setEditModalOpen] = useState(false)
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
-  const [selectedRow, setSelectedRow] = useState<EntityRow | null>(null)
 
-  const handleEditClick = useCallback(
-    (id: string, row: EntityRow) => {
-      onEditClick?.(id, row)
-      setSelectedEntityId(id)
-      setEditModalOpen(true)
-    },
-    [onEditClick]
-  )
-
-  const handleDeleteClick = useCallback((id: string, row: EntityRow) => {
-    setSelectedEntityId(id)
-    setSelectedRow(row)
-    setDeleteModalOpen(true)
-  }, [])
   const visibleColumns = useMemo(
     () => columns.filter(col => col.visible).sort((a, b) => a.order - b.order),
     [columns]
@@ -168,56 +149,6 @@ export function DataTable({
     [expandedRowIds, onRowToggleExpand]
   )
 
-  const _actionsColumn = useMemo<TanstackColumnDef<EntityRow>>(
-    () => ({
-      id: 'actions',
-      size: 100,
-      enableResizing: false,
-      header: () => (
-        <span className="text-center">
-          {t('entity.workspace.columns.actions')}
-        </span>
-      ),
-      cell: ({ row }) => (
-        <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button
-            className="p-1 text-on-surface-variant hover:text-primary"
-            title={t('entity.workspace.edit')}
-            aria-label={t('entity.workspace.edit')}
-            onClick={e => {
-              e.stopPropagation()
-              handleEditClick(row.original.id, row.original)
-            }}
-          >
-            <span
-              className="material-symbols-outlined text-[18px]"
-              aria-hidden="true"
-            >
-              edit
-            </span>
-          </button>
-          <button
-            className="p-1 text-on-surface-variant hover:text-error"
-            title={t('entity.workspace.delete')}
-            aria-label={t('entity.workspace.delete')}
-            onClick={e => {
-              e.stopPropagation()
-              handleDeleteClick(row.original.id, row.original)
-            }}
-          >
-            <span
-              className="material-symbols-outlined text-[18px]"
-              aria-hidden="true"
-            >
-              delete
-            </span>
-          </button>
-        </div>
-      ),
-    }),
-    [t, handleEditClick, handleDeleteClick]
-  )
-
   const tableColumns = useMemo<TanstackColumnDef<EntityRow>[]>(() => {
     const cols: TanstackColumnDef<EntityRow>[] = [selectColumn]
     if (entityType === 'products') cols.push(expandColumn)
@@ -234,10 +165,9 @@ export function DataTable({
         ),
       }))
     )
-    cols.push(_actionsColumn)
 
     return cols
-  }, [selectColumn, expandColumn, entityType, visibleColumns, _actionsColumn])
+  }, [selectColumn, expandColumn, entityType, visibleColumns])
 
   const table = useReactTable({
     data,
@@ -484,23 +414,8 @@ export function DataTable({
             setSelectedEntityId(null)
           }}
         />
-      )}
-      {selectedEntityId && (
-        <ConfirmationDialog
-          open={deleteModalOpen}
-          onOpenChange={setDeleteModalOpen}
-          title={t('entity.workspace.deleteConfirmTitle')}
-          description={t('entity.workspace.deleteConfirmMessage')}
-          onConfirm={() => {
-            if (selectedEntityId && selectedRow) {
-              onDeleteClick?.(selectedEntityId, selectedRow)
-            }
-            setDeleteModalOpen(false)
-            setSelectedEntityId(null)
-            setSelectedRow(null)
-          }}
-        />
-      )}
-    </>
+)}
+
+      </>
   )
 }

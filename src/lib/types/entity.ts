@@ -48,8 +48,6 @@ export interface DataTableProps {
   onSort: (sort: SortState | null) => void
   onRowSelect: (ids: Set<string>) => void
   onRowClick: (id: string, row: EntityRow) => void
-  onEditClick?: (id: string, row: EntityRow) => void
-  onDeleteClick?: (id: string, row: EntityRow) => void
 }
 
 export interface PaginationFooterProps {
