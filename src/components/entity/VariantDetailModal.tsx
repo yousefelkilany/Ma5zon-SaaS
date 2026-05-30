@@ -5,7 +5,10 @@ import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
+import type { StockLevelWithVariant } from '@/lib/types/entity'
+import type { StockLevel } from '@/lib/bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
+import { StockLevelsTable } from './StockLevelsTable'
 
 interface VariantDetailModalProps {
   open: boolean
@@ -39,7 +42,7 @@ interface EditForm {
   distribution_price: string
 }
 
-type TabId = 'details' | 'insights' | 'audits'
+type TabId = 'details' | 'stock' | 'insights' | 'audits'
 
 interface FieldConfig {
   key: keyof EditForm | 'created_at' | 'updated_at'
@@ -93,9 +96,13 @@ export function VariantDetailModal({
   const [deleteError, setDeleteError] = useState('')
   const [loadError, setLoadError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
+  const [stockLevels, setStockLevels] = useState<StockLevelWithVariant[]>([])
+  const [isLoadingStock, setIsLoadingStock] = useState(false)
+  const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(new Map())
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
+    { id: 'stock', label: t('entity.detail.tabs.stock') },
     { id: 'insights', label: t('entity.detail.tabs.insights') },
     { id: 'audits', label: t('entity.detail.tabs.audits') },
   ]
@@ -124,6 +131,34 @@ export function VariantDetailModal({
     }
   }, [entityId])
 
+  const loadStockLevels = useCallback(async () => {
+    if (!entityId) return
+    setIsLoadingStock(true)
+    const result = await commands.stockLevelsGetByVariant(entityId)
+    setIsLoadingStock(false)
+    if (result.status === 'ok') {
+      setStockLevels(result.data.map((l: StockLevel) => ({
+        ...l,
+        variant_name: '',
+        sku: '',
+      })))
+      const whResult = await commands.warehousesGetAll([], [])
+      if (whResult.status === 'ok') {
+        const names = new Map<string, string>()
+        for (const w of whResult.data) {
+          names.set(w.id, w.name)
+        }
+        setWarehouseNames(names)
+      }
+    }
+  }, [entityId])
+
+  useEffect(() => {
+    if (activeTab === 'stock' && stockLevels.length === 0 && !isLoadingStock) {
+      loadStockLevels()
+    }
+  }, [activeTab, stockLevels.length, isLoadingStock, loadStockLevels])
+
   useEffect(() => {
     if (!open) {
       setEntity(null)
@@ -141,6 +176,8 @@ export function VariantDetailModal({
       setActiveTab('details')
       setDeleteError('')
       setSaveError('')
+      setStockLevels([])
+      setWarehouseNames(new Map())
     }
   }, [open])
 
@@ -392,6 +429,17 @@ export function VariantDetailModal({
                       {t('entity.detail.notFound')}
                     </p>
                   )}
+                </div>
+              )}
+
+              {activeTab === 'stock' && (
+                <div id="stock-panel" role="tabpanel" aria-labelledby="stock-tab">
+                  <StockLevelsTable
+                    stockLevels={stockLevels}
+                    isLoading={isLoadingStock}
+                    view="variant"
+                    warehouseNames={warehouseNames}
+                  />
                 </div>
               )}
 

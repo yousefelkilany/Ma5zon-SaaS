@@ -290,6 +290,7 @@
   "entity.filter.apply": "Apply Filters",
   "entity.filter.placeholder": "Filter {{column}}...",
   "entity.detail.tabs.details": "Details",
+  "entity.detail.tabs.stock": "Stock",
   "entity.detail.tabs.insights": "Insights",
   "entity.detail.tabs.audits": "Audits",
   "entity.detail.edit": "Edit",
@@ -357,5 +358,8 @@
   "entity.create.variant.title": "Add New Variant",
   "entity.create.button": "Create",
   "entity.create.error.required": "All required fields must be filled",
-  "entity.create.error.failed": "Failed to create"
+  "entity.create.error.failed": "Failed to create",
+  "entity.stock.noLevels": "No stock levels found",
+  "entity.stock.quantity": "Quantity",
+  "entity.stock.total": "Total"
 }
