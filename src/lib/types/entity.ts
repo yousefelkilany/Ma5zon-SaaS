@@ -51,6 +51,8 @@ export interface DataTableProps {
   onSort: (sort: SortState | null) => void
   onRowSelect: (ids: Set<string>) => void
   onRowClick: (id: string, row: EntityRow) => void
+  stockLevelsCache?: Map<string, StockLevelWithVariant[]>
+  isLoadingStockLevels?: (id: string) => boolean
 }
 
 export interface PaginationFooterProps {
@@ -84,6 +86,14 @@ export interface VariantRow {
   variant_name: string
   uom_id: number
   [key: string]: unknown
+}
+
+export interface StockLevelWithVariant {
+  variant_id: string
+  variant_name: string
+  sku: string
+  warehouse_id: string
+  quantity: number
 }
 
 export interface VariantPriceRow {
