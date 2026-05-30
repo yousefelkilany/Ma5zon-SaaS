@@ -24,13 +24,19 @@ export function FilterDialog({
   const [localFilters, setLocalFilters] = useState<Record<string, string | string[] | { min?: string; max?: string }>>({})
 
   useEffect(() => {
-    if (open) {
-      const initialized: Record<string, string | string[] | { min?: string; max?: string }> = {}
-      filters.forEach(f => {
-        initialized[f.columnId] = f.value as string | string[] | { min?: string; max?: string }
-      })
-      setLocalFilters(initialized)
-    }
+    if (!open) return
+    const initialized: Record<string, string | string[] | { min?: string; max?: string }> = {}
+    filters.forEach(f => {
+      const val = f.value
+      if (typeof val === 'string') {
+        initialized[f.columnId] = val
+      } else if (Array.isArray(val)) {
+        initialized[f.columnId] = val as string[]
+      } else {
+        initialized[f.columnId] = { min: String(val[0] ?? ''), max: String(val[1] ?? '') }
+      }
+    })
+    setLocalFilters(initialized)
   }, [open, filters])
 
   const getFilterValue = (columnId: string) => {

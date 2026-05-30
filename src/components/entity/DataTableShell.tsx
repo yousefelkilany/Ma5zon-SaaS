@@ -59,7 +59,7 @@ export function DataTableShell({
 }: DataTableShellProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sort, setSort] = useState<SortState | null>(null)
-  const [filters] = useState<FilterState[]>([])
+  const [filters, setFilters] = useState<FilterState[]>([])
   const [searchValue, setSearchValue] = useState('')
   const [paginationState, setPaginationState] = useState<PaginationState>(
     pagination || defaultPagination
@@ -86,6 +86,11 @@ export function DataTableShell({
   const handleBulkAction = useCallback((_action: string) => {
     setSelectedIds(new Set())
   }, [])
+
+  const handleFiltersApply = useCallback((newFilters: FilterState[]) => {
+    setFilters(newFilters)
+    onFiltersApply(newFilters)
+  }, [onFiltersApply])
 
   const handleColumnSave = useCallback(
     (newColumns: ColumnDef[]) => {
@@ -141,7 +146,7 @@ export function DataTableShell({
         onOpenChange={setFilterDialogOpen}
         columns={columns}
         filters={filters}
-        onApply={onFiltersApply}
+        onApply={handleFiltersApply}
       />
       <ColumnVisibilityDialog
         open={columnDialogOpen}
