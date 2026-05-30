@@ -42,7 +42,7 @@ pub fn get_created_at() -> &'static str {
     "SELECT created_at FROM active_warehouses WHERE id = ?1"
 }
 
-use crate::types::FilterState;
+use crate::types::{FilterState, SortState};
 
 pub fn build_where_clause(filters: &[FilterState]) -> String {
     if filters.is_empty() {
@@ -111,12 +111,16 @@ pub fn build_where_clause(filters: &[FilterState]) -> String {
     }
 }
 
-pub fn build_get_all(where_clause: &str) -> String {
-    let base =
-        "SELECT id, name, location, created_at, updated_at, deleted_at FROM active_warehouses";
-    if where_clause.is_empty() {
-        format!("{base} ORDER BY name")
+pub fn build_get_all(where_clause: &str, sort: Option<&SortState>) -> String {
+    let base = "SELECT id, name, location, created_at, updated_at, deleted_at FROM active_warehouses";
+    let query = if where_clause.is_empty() {
+        base.to_string()
     } else {
-        format!("{base} WHERE {where_clause} ORDER BY name")
+        format!("{base} WHERE {where_clause}")
+    };
+
+    match sort {
+        Some(s) => format!("{query} ORDER BY {} {}", s.column_id, s.direction),
+        None => format!("{query} ORDER BY name"),
     }
 }
