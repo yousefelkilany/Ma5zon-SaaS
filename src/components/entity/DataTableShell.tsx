@@ -34,6 +34,7 @@ interface DataTableShellProps {
   onAddVariant?: (productId: string) => void
   stockLevelsCache?: Map<string, StockLevelWithVariant[]>
   isLoadingStockLevels?: (id: string) => boolean
+  onSortChange?: (sort: SortState | null) => void
 }
 
 const defaultPagination: PaginationState = {
@@ -61,6 +62,7 @@ export function DataTableShell({
   onAddVariant,
   stockLevelsCache,
   isLoadingStockLevels,
+  onSortChange,
 }: DataTableShellProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sort, setSort] = useState<SortState | null>(null)
@@ -77,9 +79,10 @@ export function DataTableShell({
     setLocalColumns(columns)
   }, [columns])
 
-  const handleSort = useCallback((newSort: SortState | null) => {
+  const handleSortChange = useCallback((newSort: SortState | null) => {
     setSort(newSort)
-  }, [])
+    onSortChange?.(newSort)
+  }, [onSortChange])
 
   const handlePageChange = useCallback((page: number, pageSize: number) => {
     setPaginationState(prev => ({ ...prev, page, pageSize }))
@@ -128,7 +131,7 @@ export function DataTableShell({
             sort={sort}
             isLoading={isLoading}
             selectedIds={selectedIds}
-            onSort={handleSort}
+            onSort={handleSortChange}
             onRowSelect={handleRowSelect}
             onRowClick={handleRowClick}
             expandedRowIds={expandedRowIds}
