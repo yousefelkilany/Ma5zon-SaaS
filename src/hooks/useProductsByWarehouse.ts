@@ -5,7 +5,7 @@ export function useProductsByWarehouse(
   warehouseId: number,
   page: number,
   pageSize: number,
-  enabled: boolean = true
+  enabled = true
 ) {
   return useQuery({
     queryKey: ['products', 'warehouse', warehouseId, { page, pageSize }],

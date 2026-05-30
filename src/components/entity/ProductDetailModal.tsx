@@ -184,7 +184,7 @@ export function ProductDetailModal({
     if (!entity) return
     setIsDeleting(true)
     setDeleteError('')
-    const result = await commands.delete(entity.id)
+    const result = await commands.softDelete(entity.id)
     setIsDeleting(false)
     if (result.status === 'ok') {
       setShowDeleteConfirm(false)
