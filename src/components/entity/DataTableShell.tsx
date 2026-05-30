@@ -7,6 +7,7 @@ import type {
   SortState,
   FilterState,
   VariantRow,
+  StockLevelWithVariant,
 } from '@/lib/types/entity'
 import { Toolbar } from './Toolbar'
 import { DataTable } from './DataTable'
@@ -31,6 +32,8 @@ interface DataTableShellProps {
   isLoadingVariants?: (id: string) => boolean
   onVariantClick?: (variantId: string, productId: string) => void
   onAddVariant?: (productId: string) => void
+  stockLevelsCache?: Map<string, StockLevelWithVariant[]>
+  isLoadingStockLevels?: (id: string) => boolean
 }
 
 const defaultPagination: PaginationState = {
@@ -56,6 +59,8 @@ export function DataTableShell({
   isLoadingVariants,
   onVariantClick,
   onAddVariant,
+  stockLevelsCache,
+  isLoadingStockLevels,
 }: DataTableShellProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sort, setSort] = useState<SortState | null>(null)
@@ -129,6 +134,8 @@ export function DataTableShell({
             isLoadingVariants={isLoadingVariants}
             onVariantClick={onVariantClick}
             onAddVariant={onAddVariant}
+            stockLevelsCache={stockLevelsCache}
+            isLoadingStockLevels={isLoadingStockLevels}
           />
         </div>
       </div>
