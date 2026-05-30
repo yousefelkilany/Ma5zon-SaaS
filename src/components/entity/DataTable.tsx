@@ -72,6 +72,7 @@ interface ExpandedRowProps {
 
 export function DataTable({
   entityType,
+  queryClient,
   columns,
   data,
   sort,
@@ -390,6 +391,7 @@ export function DataTable({
           onDeleted={() => {
             setEditModalOpen(false)
             setSelectedEntityId(null)
+            queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
           }}
         />
       )}
@@ -401,10 +403,11 @@ export function DataTable({
           onDeleted={() => {
             setEditModalOpen(false)
             setSelectedEntityId(null)
+            queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
           }}
         />
       )}
-      {entityType === 'variants' && selectedEntityId && (
+{entityType === 'variants' && selectedEntityId && (
         <VariantDetailModal
           open={editModalOpen}
           onOpenChange={setEditModalOpen}
@@ -412,9 +415,10 @@ export function DataTable({
           onDeleted={() => {
             setEditModalOpen(false)
             setSelectedEntityId(null)
+            queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
           }}
         />
-)}
+      )}
 
       </>
   )

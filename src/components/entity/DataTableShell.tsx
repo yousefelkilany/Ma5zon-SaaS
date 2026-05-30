@@ -109,6 +109,7 @@ export function DataTableShell({
         <div className="h-full flex flex-col">
           <DataTable
             entityType={entityType}
+            queryClient={queryClient}
             columns={columns}
             data={data}
             sort={sort}

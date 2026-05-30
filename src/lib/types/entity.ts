@@ -1,3 +1,5 @@
+import { QueryClient } from '@tanstack/react-query'
+
 export interface EntityWorkspaceProps {
   entityType: string
 }
@@ -40,6 +42,7 @@ export interface FilterState {
 
 export interface DataTableProps {
   entityType: string
+  queryClient: QueryClient
   columns: ColumnDef[]
   data: EntityRow[]
   sort: SortState | null
