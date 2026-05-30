@@ -15,11 +15,14 @@
 | Layer | File | Responsibility |
 |-------|------|----------------|
 | Rust SQL | `src-tauri/src/sql/warehouses.rs` | LIMIT/OFFSET pagination for warehouses |
+| Rust SQL | `src-tauri/src/sql/products.rs` | LIMIT/OFFSET pagination for products (main) |
 | Rust SQL | `src-tauri/src/sql/stocks.rs` | LIMIT/OFFSET pagination for products by warehouse |
 | Rust Commands | `src-tauri/src/commands/warehouses.rs` | Paginated warehouse command |
-| Rust Commands | `src-tauri/src/commands/stocks.rs` | Paginated product command |
+| Rust Commands | `src-tauri/src/commands/products.rs` | Paginated products command (main) |
+| Rust Commands | `src-tauri/src/commands/stocks.rs` | Paginated product by warehouse command |
 | Bindings | `src/lib/bindings.ts` | specta generated types |
 | Hook | `src/hooks/useWarehousesPagination.ts` | Paginated warehouse query |
+| Hook | `src/hooks/useProductsPagination.ts` | Paginated products query (main) |
 | Hook | `src/hooks/useProductsByWarehouse.ts` | Paginated products by warehouse query |
 | Component | `src/components/entity/DataTableShell.tsx` | Connect pagination to query |
 | Component | `src/components/entity/WarehousesSubTable.tsx` | Add pagination footer |
@@ -227,6 +230,65 @@ git commit -m "feat: add LIMIT/OFFSET pagination to products by warehouse SQL"
 
 ---
 
+## Task 4a: Rust SQL - Products Main Table Pagination
+
+**Files:**
+- Modify: `src-tauri/src/sql/products.rs`
+
+- [ ] **Step 1: Read current products fetch function**
+
+Find the function that fetches all products.
+
+- [ ] **Step 2: Add limit/offset parameters and return total_count**
+
+```rust
+pub async fn fetch_all(
+    db: &Pool<Sqlite>,
+    limit: Option<i64>,
+    offset: Option<i64>,
+) -> Result<(Vec<Product>, i64), DbErr> {
+    // Get total count
+    let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM products")
+        .fetch_one(db)
+        .await?;
+
+    // Build query with LIMIT/OFFSET
+    let query = match (limit, offset) {
+        (Some(limit), Some(offset)) => {
+            sqlx::query_as::<_, Product>(
+                "SELECT * FROM products LIMIT ? OFFSET ?"
+            )
+            .bind(limit)
+            .bind(offset)
+            .fetch_all(db)
+        }
+        (Some(limit), None) => {
+            sqlx::query_as::<_, Product>(
+                "SELECT * FROM products LIMIT ?"
+            )
+            .bind(limit)
+            .fetch_all(db)
+        }
+        _ => {
+            sqlx::query_as::<_, Product>("SELECT * FROM products")
+            .fetch_all(db)
+        }
+    };
+
+    let products = query.await?;
+    Ok((products, total))
+}
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add src-tauri/src/sql/products.rs
+git commit -m "feat: add LIMIT/OFFSET pagination to products SQL"
+```
+
+---
+
 ## Task 5: Rust Commands - Products by Warehouse Paginated
 
 **Files:**
@@ -271,6 +333,48 @@ pub async fn products_get_by_warehouse_paginated(
 ```bash
 git add src-tauri/src/commands/stocks.rs
 git commit -m "feat: add products_get_by_warehouse_paginated command"
+```
+
+---
+
+## Task 5a: Rust Commands - Products Main Table Paginated
+
+**Files:**
+- Modify: `src-tauri/src/commands/products.rs`
+
+- [ ] **Step 1: Find existing products_get_all command**
+
+Find `products_get_all` function.
+
+- [ ] **Step 2: Add paginated variant**
+
+```rust
+#[specta::command]
+pub async fn products_get_paginated(
+    page: i64,
+    page_size: i64,
+) -> Result<PaginatedResponse<Product>, String> {
+    let offset = (page - 1) * page_size;
+    let db = get_db();
+    let (products, total_count) = products::fetch_all(&db, Some(page_size), Some(offset))
+        .await
+        .map_err(|e| e.to_string())?;
+
+    let total_pages = (total_count as f64 / page_size as f64).ceil() as i64;
+
+    Ok(PaginatedResponse {
+        data: products,
+        total_count,
+        total_pages,
+    })
+}
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add src-tauri/src/commands/products.rs
+git commit -m "feat: add products_get_paginated command"
 ```
 
 ---
@@ -330,6 +434,41 @@ export function useWarehousesPagination(page: number, pageSize: number) {
 ```bash
 git add src/hooks/useWarehousesPagination.ts
 git commit -m "feat: add useWarehousesPagination hook"
+```
+
+---
+
+## Task 7a: Create useProductsPagination hook
+
+**Files:**
+- Create: `src/hooks/useProductsPagination.ts`
+
+- [ ] **Step 1: Write the hook**
+
+```typescript
+import { useQuery } from '@tanstack/react-query'
+import { commands } from '@/lib/tauri-bindings'
+
+export function useProductsPagination(page: number, pageSize: number) {
+  return useQuery({
+    queryKey: ['products', 'paginated', { page, pageSize }],
+    queryFn: async () => {
+      const result = await commands.productsGetPaginated(page, pageSize)
+      if (result.status === 'ok') {
+        return result.data
+      }
+      throw new Error(result.error)
+    },
+    placeholderData: (prev) => prev,
+  })
+}
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add src/hooks/useProductsPagination.ts
+git commit -m "feat: add useProductsPagination hook"
 ```
 
 ---
@@ -499,9 +638,10 @@ git add -A && git commit -m "fix: address check:all issues"
 ## Spec Coverage Check
 
 - [x] Warehouses main table pagination → Task 3, 7
+- [x] Products main table pagination → Task 5a, 7a
 - [x] Products by warehouse pagination → Task 5, 8
 - [x] Page size options (10/25/50/100) → PaginationFooter already supports, passes through
-- [x] Rust LIMIT/OFFSET → Task 2, 4
+- [x] Rust LIMIT/OFFSET → Task 2, 4, 4a
 - [x] DataTableShell onPageChange → Task 9
 - [x] WarehousesSubTable PaginationFooter → Task 10
 - [x] Error handling → TanStack Query handles errors automatically

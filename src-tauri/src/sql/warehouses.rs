@@ -1,5 +1,104 @@
 //! SQL statements for warehouses entity.
 
+use rusqlite::{Connection, Result as DbErr};
+
+#[derive(Debug, Clone)]
+pub struct Warehouse {
+    pub id: i64,
+    pub name: String,
+    pub location: String,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
+    pub deleted_at: Option<String>,
+}
+
+impl Warehouse {
+    pub fn from_row(row:&rusqlite::Row) -> DbErr<Self> {
+        Ok(Warehouse {
+            id: row.get(0)?,
+            name: row.get(1)?,
+            location: row.get(2)?,
+            created_at: row.get(3)?,
+            updated_at: row.get(4)?,
+            deleted_at: row.get(5)?,
+        })
+    }
+}
+
+pub fn fetch_all(
+    conn: &Connection,
+    limit: Option<i64>,
+    offset: Option<i64>,
+) -> DbErr<(Vec<Warehouse>, i64)> {
+    let total: i64 = conn.query_row(
+        "SELECT COUNT(*) FROM warehouses",
+        [],
+        |row| row.get(0),
+    )?;
+
+    let warehouses = match (limit, offset) {
+        (Some(limit), Some(offset)) => {
+            let mut stmt = conn.prepare(
+                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses LIMIT ? OFFSET ?"
+            )?;
+            let rows = stmt.query_map([limit, offset], Warehouse::from_row)?;
+            rows.collect()
+        }
+        (Some(limit), None) => {
+            let mut stmt = conn.prepare(
+                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses LIMIT ?"
+            )?;
+            let rows = stmt.query_map([limit], Warehouse::from_row)?;
+            rows.collect()
+        }
+        _ => {
+            let mut stmt = conn.prepare(
+                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses"
+            )?;
+            let rows = stmt.query_map([], Warehouse::from_row)?;
+            rows.collect()
+        }
+    }?;
+
+    Ok((warehouses, total))
+}
+
+pub async fn fetch_all(
+    db: &Pool<Sqlite>,
+    limit: Option<i64>,
+    offset: Option<i64>,
+) -> Result<(Vec<Warehouse>, i64), DbErr> {
+    let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM warehouses")
+        .fetch_one(db)
+        .await?;
+
+    let warehouses = match (limit, offset) {
+        (Some(limit), Some(offset)) => {
+            sqlx::query_as::<_, Warehouse>(
+                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses LIMIT ? OFFSET ?"
+            )
+            .bind(limit)
+            .bind(offset)
+            .fetch_all(db)
+        }
+        (Some(limit), None) => {
+            sqlx::query_as::<_, Warehouse>(
+                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses LIMIT ?"
+            )
+            .bind(limit)
+            .fetch_all(db)
+        }
+        _ => {
+            sqlx::query_as::<_, Warehouse>(
+                "SELECT id, name, location, created_at, updated_at, deleted_at FROM warehouses"
+            )
+            .fetch_all(db)
+        }
+    }.await?;
+
+    Ok((warehouses, total))
+}
+
 pub fn create_table() -> &'static str {
     "CREATE TABLE IF NOT EXISTS warehouses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
