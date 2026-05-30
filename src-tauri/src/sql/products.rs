@@ -1,6 +1,83 @@
 //! SQL statements for products entity.
 
-pub fn create_table() -> &'static str {
+use rusqlite::{Connection, Result as DbErr};
+use crate::types::Product;
+
+pub fn fetch_all(
+    conn: &Connection,
+    limit: Option<i64>,
+    offset: Option<i64>,
+) -> DbErr<(Vec<Product>, i64)> {
+    let total: i64 = conn.query_row(
+        "SELECT COUNT(*) FROM products",
+        [],
+        |row| row.get(0),
+    )?;
+
+    let products: Vec<Product> = match (limit, offset) {
+        (Some(limit), Some(offset)) => {
+            let mut stmt = conn.prepare(
+                "SELECT id, company, name, category, created_at, updated_at, deleted_at FROM products LIMIT ? OFFSET ?"
+            )?;
+            let mut rows = stmt.query([limit, offset])?;
+            let mut products = Vec::new();
+            while let Some(row) = rows.next()? {
+                products.push(Product {
+                    id: row.get::<_, i64>(0)?.to_string(),
+                    company: row.get(1)?,
+                    name: row.get(2)?,
+                    category: row.get(3)?,
+                    created_at: row.get(4)?,
+                    updated_at: row.get(5)?,
+                    deleted_at: row.get(6)?,
+                });
+            }
+            products
+        }
+        (Some(limit), None) => {
+            let mut stmt = conn.prepare(
+                "SELECT id, company, name, category, created_at, updated_at, deleted_at FROM products LIMIT ?"
+            )?;
+            let mut rows = stmt.query([limit])?;
+            let mut products = Vec::new();
+            while let Some(row) = rows.next()? {
+                products.push(Product {
+                    id: row.get::<_, i64>(0)?.to_string(),
+                    company: row.get(1)?,
+                    name: row.get(2)?,
+                    category: row.get(3)?,
+                    created_at: row.get(4)?,
+                    updated_at: row.get(5)?,
+                    deleted_at: row.get(6)?,
+                });
+            }
+            products
+        }
+        _ => {
+            let mut stmt = conn.prepare(
+                "SELECT id, company, name, category, created_at, updated_at, deleted_at FROM products"
+            )?;
+            let mut rows = stmt.query([])?;
+            let mut products = Vec::new();
+            while let Some(row) = rows.next()? {
+                products.push(Product {
+                    id: row.get::<_, i64>(0)?.to_string(),
+                    company: row.get(1)?,
+                    name: row.get(2)?,
+                    category: row.get(3)?,
+                    created_at: row.get(4)?,
+                    updated_at: row.get(5)?,
+                    deleted_at: row.get(6)?,
+                });
+            }
+            products
+        }
+    };
+
+    Ok((products, total))
+}
+
+pub fn create_table() ->&'static str {
     "CREATE TABLE IF NOT EXISTS products (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         company TEXT NOT NULL,
@@ -45,7 +122,7 @@ pub fn get_created_at() -> &'static str {
 
 use crate::types::{FilterState, SortState};
 
-pub fn build_where_clause(filters: &[FilterState]) -> String {
+pub fn build_where_clause(filters:&[FilterState]) -> String {
     if filters.is_empty() {
         return String::new();
     }
