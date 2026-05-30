@@ -359,6 +359,22 @@ async stockLevelsGetByWarehouse(warehouseId: string) : Promise<Result<StockLevel
     else return { status: "error", error: e  as any };
 }
 },
+async stockLevelsGetByProduct(productId: string) : Promise<Result<StockLevelWithVariant[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("stock_levels_get_by_product", { productId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async stockLevelsGetByWarehouseWithNames(warehouseId: string) : Promise<Result<StockLevelWithVariant[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("stock_levels_get_by_warehouse_with_names", { warehouseId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async stockMovementsGetAll() : Promise<Result<StockMovement[], string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("stock_movements_get_all") };
