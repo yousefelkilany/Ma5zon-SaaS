@@ -68,6 +68,8 @@ interface ExpandedRowProps {
   variantsCache?: Map<string, VariantRow[]>
   onRowToggleExpand?: (id: string) => void
   isLoadingVariants?: (id: string) => boolean
+  onVariantClick?: (variantId: string, productId: string) => void
+  onAddVariant?: (productId: string) => void
 }
 
 export function DataTable({
@@ -85,6 +87,8 @@ export function DataTable({
   variantsCache,
   onRowToggleExpand,
   isLoadingVariants,
+  onVariantClick,
+  onAddVariant,
 }: DataTableProps & ExpandedRowProps) {
   const { t } = useTranslation()
   const [editModalOpen, setEditModalOpen] = useState(false)
@@ -389,6 +393,9 @@ export function DataTable({
                         <VariantsSubTable
                           variants={variantsCache?.get(row.original.id) ?? []}
                           isLoading={isLoadingVariants?.(row.original.id)}
+                          productId={row.original.id}
+                          onVariantClick={onVariantClick}
+                          onAddVariant={onAddVariant}
                         />
                       </td>
                     </tr>
