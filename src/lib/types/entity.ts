@@ -29,6 +29,12 @@ export interface PaginationState {
   totalPages: number
 }
 
+export interface PaginatedResponse<T> {
+  data: T[]
+  totalCount: number
+  totalPages: number
+}
+
 export interface SortState {
   columnId: string
   direction: 'asc' | 'desc'
