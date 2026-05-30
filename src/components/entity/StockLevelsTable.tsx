@@ -177,10 +177,10 @@ function ProductStockPivot({
       <thead>
         <tr className="border-b border-outline-variant">
           <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-            {t('entity.variant.name')}
+            {t('entity.variant.sku')}
           </th>
           <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-            SKU
+            {t('entity.variant.name')}
           </th>
           {columns.map(wId => (
             <th
@@ -201,8 +201,8 @@ function ProductStockPivot({
             key={row.variantId}
             className="border-t border-outline-variant/30"
           >
-            <td className="px-3 py-2 text-on-surface">{row.variantName}</td>
             <td className="px-3 py-2 text-on-surface-variant">{row.sku}</td>
+            <td className="px-3 py-2 text-on-surface">{row.variantName}</td>
             {columns.map(col => (
               <td
                 key={col}

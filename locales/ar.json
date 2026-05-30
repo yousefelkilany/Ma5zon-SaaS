@@ -310,7 +310,7 @@
   "entity.product.category": "الفئة",
   "entity.warehouse.name": "الاسم",
   "entity.warehouse.location": "الموقع",
-  "entity.variant.sku": "رمز المنتج",
+  "entity.variant.sku": "كود المنتج",
   "entity.variant.name": "الاسم الفرعي",
   "entity.variant.uom": "وحدة القياس",
   "entity.variant.retailPrice": "سعر التجزئة",
