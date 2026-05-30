@@ -6,8 +6,8 @@ use tauri::AppHandle;
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::sql::warehouses::{
-    build_get_all, build_where_clause, create, create_table, get_by_id, get_created_at,
-    soft_delete, update,
+    build_get_all, build_where_clause, create, create_table, fetch_all, get_by_id,
+    get_created_at, soft_delete, update,
 };
 use crate::types::{FilterState, SortState};
 
@@ -71,6 +71,13 @@ pub struct Warehouse {
     pub deleted_at: Option<String>,
 }
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
+pub struct PaginatedResponse<T> {
+    pub data: Vec<T>,
+    pub total_count: i64,
+    pub total_pages: i64,
+}
+
 #[tauri::command]
 #[specta::specta]
 pub async fn warehouses_get_all(
@@ -104,6 +111,40 @@ pub async fn warehouses_get_all(
         .map_err(|e| format!("Failed to collect warehouses: {e}"))?;
 
     Ok(warehouses)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn warehouses_get_paginated(
+    app: AppHandle,
+    page: i64,
+    page_size: i64,
+) -> Result<PaginatedResponse<Warehouse>, String> {
+    let offset = (page - 1) * page_size;
+    let conn = get_conn(&app)?;
+
+    let (raw_warehouses, total_count) = fetch_all(&conn, Some(page_size), Some(offset))
+        .map_err(|e| format!("Failed to fetch warehouses: {e}"))?;
+
+    let warehouses: Vec<Warehouse> = raw_warehouses
+        .into_iter()
+        .map(|w| Warehouse {
+            id: w.id.to_string(),
+            name: w.name,
+            location: w.location,
+            created_at: w.created_at,
+            updated_at: w.updated_at,
+            deleted_at: w.deleted_at,
+        })
+        .collect();
+
+    let total_pages = (total_count as f64 / page_size as f64).ceil() as i64;
+
+    Ok(PaginatedResponse {
+        data: warehouses,
+        total_count,
+        total_pages,
+    })
 }
 
 #[tauri::command]
