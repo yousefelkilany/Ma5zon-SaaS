@@ -11,10 +11,12 @@ import type {
   EntityRow,
   DataTableProps,
   VariantRow,
+  StockLevelWithVariant,
 } from '@/lib/types/entity'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsRTL } from '@/hooks/user-is-rtl'
 import { VariantsSubTable } from './VariantsSubTable'
+import { WarehousesSubTable } from './WarehousesSubTable'
 import { ProductDetailModal } from './ProductDetailModal'
 import { WarehouseDetailModal } from './WarehouseDetailModal'
 import { VariantDetailModal } from './VariantDetailModal'
@@ -66,8 +68,10 @@ function DataCell({ column, value }: { column: ColumnDef; value: unknown }) {
 interface ExpandedRowProps {
   expandedRowIds?: Set<string>
   variantsCache?: Map<string, VariantRow[]>
+  stockLevelsCache?: Map<string, StockLevelWithVariant[]>
   onRowToggleExpand?: (id: string) => void
   isLoadingVariants?: (id: string) => boolean
+  isLoadingStockLevels?: (id: string) => boolean
   onVariantClick?: (variantId: string, productId: string) => void
   onAddVariant?: (productId: string) => void
 }
@@ -85,8 +89,10 @@ export function DataTable({
   onRowClick,
   expandedRowIds,
   variantsCache,
+  stockLevelsCache,
   onRowToggleExpand,
   isLoadingVariants,
+  isLoadingStockLevels,
   onVariantClick,
   onAddVariant,
 }: DataTableProps & ExpandedRowProps) {
@@ -156,7 +162,7 @@ export function DataTable({
 
   const tableColumns = useMemo<TanstackColumnDef<EntityRow>[]>(() => {
     const cols: TanstackColumnDef<EntityRow>[] = [selectColumn]
-    if (entityType === 'products') cols.push(expandColumn)
+    if (entityType === 'products' || entityType === 'warehouses') cols.push(expandColumn)
     cols.push(
       ...visibleColumns.map((col, idx) => ({
         id: col.id,
@@ -391,13 +397,22 @@ export function DataTable({
                   {expandedRowIds?.has(row.original.id) && (
                     <tr>
                       <td colSpan={columns.length + 2} className="p-0">
-                        <VariantsSubTable
-                          variants={variantsCache?.get(row.original.id) ?? []}
-                          isLoading={isLoadingVariants?.(row.original.id)}
-                          productId={row.original.id}
-                          onVariantClick={onVariantClick}
-                          onAddVariant={onAddVariant}
-                        />
+                        {entityType === 'products' && (
+                          <VariantsSubTable
+                            variants={variantsCache?.get(row.original.id) ?? []}
+                            isLoading={isLoadingVariants?.(row.original.id)}
+                            productId={row.original.id}
+                            onVariantClick={onVariantClick}
+                            onAddVariant={onAddVariant}
+                          />
+                        )}
+                        {entityType === 'warehouses' && (
+                          <WarehousesSubTable
+                            stockLevels={stockLevelsCache?.get(row.original.id) ?? []}
+                            isLoading={isLoadingStockLevels?.(row.original.id)}
+                            warehouseId={row.original.id}
+                          />
+                        )}
                       </td>
                     </tr>
                   )}
