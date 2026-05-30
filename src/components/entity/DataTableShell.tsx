@@ -26,6 +26,7 @@ interface DataTableShellProps {
   onSaveColumnPrefs: (columns: ColumnDef[]) => void
   onFiltersApply: (filters: FilterState[]) => void
   onExport: () => void
+  onPageChange?: (page: number, pageSize: number) => void
   sort?: SortState | null
   onSortChange?: (sort: SortState | null) => void
   expandedRowIds?: Set<string>
@@ -38,13 +39,6 @@ interface DataTableShellProps {
   isLoadingStockLevels?: (id: string) => boolean
 }
 
-const defaultPagination: PaginationState = {
-  page: 1,
-  pageSize: 10,
-  totalRows: 0,
-  totalPages: 0,
-}
-
 export function DataTableShell({
   entityType,
   queryClient,
@@ -55,6 +49,7 @@ export function DataTableShell({
   onSaveColumnPrefs,
   onFiltersApply,
   onExport,
+  onPageChange,
   sort: externalSort,
   onSortChange,
   expandedRowIds,
@@ -70,9 +65,6 @@ export function DataTableShell({
   const [sort, setSort] = useState<SortState | null>(null)
   const [filters, setFilters] = useState<FilterState[]>([])
   const [searchValue, setSearchValue] = useState('')
-  const [paginationState, setPaginationState] = useState<PaginationState>(
-    pagination || defaultPagination
-  )
   const [filterDialogOpen, setFilterDialogOpen] = useState(false)
   const [columnDialogOpen, setColumnDialogOpen] = useState(false)
   const [localColumns, setLocalColumns] = useState<ColumnDef[]>(columns)
@@ -93,8 +85,8 @@ export function DataTableShell({
   }, [onSortChange])
 
   const handlePageChange = useCallback((page: number, pageSize: number) => {
-    setPaginationState(prev => ({ ...prev, page, pageSize }))
-  }, [])
+    onPageChange?.(page, pageSize)
+  }, [onPageChange])
 
   const handleRowSelect = useCallback((ids: Set<string>) => {
     setSelectedIds(ids)
@@ -154,7 +146,7 @@ export function DataTableShell({
         </div>
       </div>
       <PaginationFooter
-        pagination={paginationState}
+        pagination={pagination}
         onPageChange={handlePageChange}
         isLoading={isLoading}
       />
