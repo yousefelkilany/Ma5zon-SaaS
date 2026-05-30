@@ -69,6 +69,26 @@ export const entityLayoutConfig = {
       },
     },
   },
+  stock_levels: {
+    labelKey: 'entity.layout.stock_levels.label',
+    columns: {
+      variant_name: {
+        labelKey: 'entity.layout.stock_levels.columns.variant_name',
+        type: 'text',
+        width: 275,
+      },
+      sku: {
+        labelKey: 'entity.layout.stock_levels.columns.sku',
+        type: 'text',
+        width: 220,
+      },
+      quantity: {
+        labelKey: 'entity.layout.stock_levels.columns.quantity',
+        type: 'currency',
+        width: 110,
+      },
+    },
+  },
   invoices: {
     labelKey: 'entity.layout.invoices.label',
     columns: {

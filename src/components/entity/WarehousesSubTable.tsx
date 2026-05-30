@@ -1,6 +1,9 @@
 import type { StockLevelWithVariant } from '@/lib/types/entity'
 import { useTranslation } from 'react-i18next'
 import { Skeleton } from '@/components/ui/skeleton'
+import { getEntityLayout } from '@/lib/entity-layout'
+import { formatCurrency } from '@/lib/utils'
+import { useMemo } from 'react'
 import i18n from '@/i18n/config'
 
 interface WarehousesSubTableProps {
@@ -16,6 +19,8 @@ export function WarehousesSubTable({
 }: WarehousesSubTableProps) {
   const { t } = useTranslation()
   const locale = i18n.language
+
+  const columns = useMemo(() => getEntityLayout('stock_levels', t), [t])
 
   if (isLoading) {
     return (
@@ -38,15 +43,16 @@ export function WarehousesSubTable({
       <table className="w-full text-body-sm">
         <thead>
           <tr className="border-b border-outline-variant">
-            <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-              {t('entity.variant.name')}
-            </th>
-            <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-              SKU
-            </th>
-            <th className="px-3 py-2 text-end text-on-surface-variant font-label-caps">
-              {t('entity.stock.quantity')}
-            </th>
+            {columns.map(col => (
+              <th
+                key={col.id}
+                className={`px-3 py-2 text-start text-on-surface-variant font-label-caps ${
+                  col.type === 'currency' ? 'text-end' : ''
+                }`}
+              >
+                {col.label}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -55,15 +61,23 @@ export function WarehousesSubTable({
               key={`${level.variant_id}-${warehouseId}`}
               className="border-t border-outline-variant/30"
             >
-              <td className="px-3 py-2 text-on-surface">
-                {level.variant_name}
-              </td>
-              <td className="px-3 py-2 text-on-surface-variant">{level.sku}</td>
-              <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
-                {level.quantity.toLocaleString(locale, {
-                  minimumFractionDigits: 2,
-                })}
-              </td>
+              {columns.map(col => (
+                <td
+                  key={col.id}
+                  className={`px-3 py-2 text-on-surface ${
+                    col.type === 'currency'
+                      ? 'text-right text-on-surface font-data-tabular tabular-nums'
+                      : ''
+                  }`}
+                >
+                  {col.type === 'currency'
+                    ? formatCurrency(
+                        level[col.id as keyof StockLevelWithVariant] as number,
+                        locale
+                      )
+                    : String(level[col.id as keyof StockLevelWithVariant] ?? '-')}
+                </td>
+              ))}
             </tr>
           ))}
         </tbody>
