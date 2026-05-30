@@ -143,6 +143,10 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   >(null)
   const [columnPrefs, setColumnPrefs] = useState<ColumnDef[] | null>(null)
   const [variantDetailOpen, setVariantDetailOpen] = useState(false)
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [totalCount, setTotalCount] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     const saved = localStorage.getItem(`user_prefs_columns_${entityType}`)
@@ -249,7 +253,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   )
 
   const { data: entityData, isLoading } = useQuery({
-    queryKey: ['entity', entityType, activeFilters, sort],
+    queryKey: ['entity', entityType, activeFilters, sort, page, pageSize],
     queryFn: async () => {
       const bindingFilters: BindingFilterState[] = activeFilters.map(f => ({
         column_id: f.columnId,
@@ -261,16 +265,34 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         : null
       switch (entityType) {
         case 'products': {
-          const result = await commands.getAll(bindingFilters, [], bindingSort)
-          return result.status === 'ok' ? result.data : []
-        }
-        case 'warehouses': {
-          const result = await commands.warehousesGetAll(
+          const result = await commands.productsGetPaginated(
             bindingFilters,
             [],
-            bindingSort
+            bindingSort,
+            page,
+            pageSize
           )
-          return result.status === 'ok' ? result.data : []
+          if (result.status === 'ok') {
+            setTotalCount(result.data.total_count)
+            setTotalPages(result.data.total_pages)
+            return result.data.data
+          }
+          return []
+        }
+        case 'warehouses': {
+          const result = await commands.warehousesGetPaginated(
+            bindingFilters,
+            [],
+            bindingSort,
+            page,
+            pageSize
+          )
+          if (result.status === 'ok') {
+            setTotalCount(result.data.total_count)
+            setTotalPages(result.data.total_pages)
+            return result.data.data
+          }
+          return []
         }
         default:
           return []
@@ -305,11 +327,21 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
 
   const handleSortChange = useCallback((newSort: SortState | null) => {
     setSort(newSort)
+    setPage(1)
   }, [])
+
+  const handlePageChange = useCallback(
+    (newPage: number, newPageSize: number) => {
+      setPage(newPage)
+      setPageSize(newPageSize)
+    },
+    []
+  )
 
   const handleFiltersApply = useCallback(
     (filters: FilterState[]) => {
       setActiveFilters(filters)
+      setPage(1)
       queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
     },
     [entityType, queryClient]
@@ -328,11 +360,12 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         columns={columns}
         data={entityData ?? []}
         pagination={{
-          page: 1,
-          pageSize: 10,
-          totalRows: (entityData ?? []).length,
-          totalPages: 1,
+          page,
+          pageSize,
+          totalRows: totalCount,
+          totalPages,
         }}
+        onPageChange={handlePageChange}
         isLoading={isLoading}
         onSaveColumnPrefs={handleSaveColumnPrefs}
         onFiltersApply={handleFiltersApply}

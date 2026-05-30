@@ -14,7 +14,7 @@ export interface ColumnDef {
   filterable: boolean
   visible: boolean
   order: number
-  isNameColumn?: boolean
+  isDataCol: boolean
 }
 
 export interface EntityRow {

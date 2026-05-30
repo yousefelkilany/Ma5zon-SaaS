@@ -6,9 +6,10 @@ use tauri::AppHandle;
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::sql::products::{
-    build_get_all, build_where_clause, create as sql_create, create_table,
-    fetch_all, get_by_id as sql_get_by_id, get_created_at as sql_get_created_at,
-    soft_delete as sql_soft_delete, update as sql_update,
+    build_get_all, build_get_paginated, build_where_clause, count_query,
+    create as sql_create, create_table, get_by_id as sql_get_by_id,
+    get_created_at as sql_get_created_at, soft_delete as sql_soft_delete,
+    update as sql_update,
 };
 use crate::types::{FilterState, SortState};
 use crate::types::Product;
@@ -137,16 +138,47 @@ pub async fn get_all(
 #[specta::specta]
 pub async fn products_get_paginated(
     app: AppHandle,
+    filters: Vec<FilterState>,
+    _columns: Vec<String>,
+    sort: Option<SortState>,
     page: i32,
     page_size: i32,
 ) -> Result<PaginatedResponse<Product>, String> {
     let offset = (page - 1) * page_size;
     let conn = get_conn(&app)?;
 
-    let (products, total_count) = fetch_all(&conn, Some(page_size), Some(offset))
-        .map_err(|e| format!("Failed to fetch products: {e}"))?;
+    let where_clause = build_where_clause(&filters);
+    let count_sql = count_query(&where_clause);
+    let total_count: i32 = conn
+        .query_row(&count_sql, [], |row| row.get(0))
+        .map_err(|e| format!("Failed to count products: {e}"))?;
 
-    let total_pages = (total_count + page_size - 1) / page_size;
+    let query = build_get_paginated(&where_clause, sort.as_ref(), page_size, offset);
+    let mut stmt = conn
+        .prepare(&query)
+        .map_err(|e| format!("products_get_paginated Failed to prepare: {e}"))?;
+
+    let products = stmt
+        .query_map([], |row| {
+            Ok(Product {
+                id: row.get::<_, i64>(0)?.to_string(),
+                company: row.get(1)?,
+                name: row.get(2)?,
+                category: row.get(3)?,
+                created_at: row.get(4)?,
+                updated_at: row.get(5)?,
+                deleted_at: row.get(6)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query products: {e}"))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("Failed to collect products: {e}"))?;
+
+    let total_pages = if total_count == 0 {
+        1
+    } else {
+        (total_count + page_size - 1) / page_size
+    };
 
     Ok(PaginatedResponse {
         data: products,

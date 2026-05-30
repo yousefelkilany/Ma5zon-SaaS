@@ -342,11 +342,15 @@ export function WarehousesSubTable({
               </>
             )
           })}
-          <PaginationFooter
-            pagination={productPagination}
-            onPageChange={handleProductPageChange}
-            isLoading={isLoadingProducts(warehouseId)}
-          />
+          <tr>
+            <td colSpan={4}>
+              <PaginationFooter
+                pagination={productPagination}
+                onPageChange={handleProductPageChange}
+                isLoading={isLoadingProducts(warehouseId)}
+              />
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>

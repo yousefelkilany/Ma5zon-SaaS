@@ -1,5 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import ICU from 'i18next-icu'
 import en from '../../locales/en.json'
 import ar from '../../locales/ar.json'
 
@@ -8,16 +9,15 @@ const resources = {
   en: { translation: en },
 }
 
-// RTL language detection (includes languages not yet in resources for future expansion)
 const rtlLanguages = ['ar']
 export const defaultLanguage = 'ar'
 
-i18n.use(initReactI18next).init({
+i18n.use(initReactI18next).use(ICU).init({
   resources,
   lng: 'ar',
   fallbackLng: 'ar',
   interpolation: {
-    escapeValue: false, // React already escapes
+    escapeValue: false,
   },
 })
 

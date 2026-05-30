@@ -6,8 +6,8 @@ use tauri::AppHandle;
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::sql::warehouses::{
-    build_get_all, build_where_clause, create, create_table, fetch_all, get_by_id,
-    get_created_at, soft_delete, update,
+    build_get_all, build_get_paginated, build_where_clause, count_query, create,
+    create_table, get_by_id, get_created_at, soft_delete, update,
 };
 use crate::types::{FilterState, SortState};
 
@@ -117,31 +117,50 @@ pub async fn warehouses_get_all(
 #[specta::specta]
 pub async fn warehouses_get_paginated(
     app: AppHandle,
+    filters: Vec<FilterState>,
+    _columns: Vec<String>,
+    sort: Option<SortState>,
     page: i32,
     page_size: i32,
 ) -> Result<PaginatedResponse<Warehouse>, String> {
     let offset = (page - 1) * page_size;
     let conn = get_conn(&app)?;
 
-    let (raw_warehouses, total_count) = fetch_all(&conn, Some(page_size), Some(offset))
-        .map_err(|e| format!("Failed to fetch warehouses: {e}"))?;
+    let where_clause = build_where_clause(&filters);
+    let count_sql = count_query(&where_clause);
+    let total_count: i32 = conn
+        .query_row(&count_sql, [], |row| row.get(0))
+        .map_err(|e| format!("Failed to count warehouses: {e}"))?;
 
-    let warehouses: Vec<Warehouse> = raw_warehouses
-        .into_iter()
-        .map(|w| Warehouse {
-            id: w.id.to_string(),
-            name: w.name,
-            location: w.location,
-            created_at: w.created_at,
-            updated_at: w.updated_at,
-            deleted_at: w.deleted_at,
+    let query =
+        build_get_paginated(&where_clause, sort.as_ref(), page_size, offset);
+    let mut stmt = conn
+        .prepare(&query)
+        .map_err(|e| format!("warehouses_get_paginated Failed to prepare: {e}"))?;
+
+    let raw_warehouses: Vec<Warehouse> = stmt
+        .query_map([], |row| {
+            Ok(Warehouse {
+                id: row.get::<_, i64>(0)?.to_string(),
+                name: row.get(1)?,
+                location: row.get(2)?,
+                created_at: row.get(3)?,
+                updated_at: row.get(4)?,
+                deleted_at: row.get(5)?,
+            })
         })
-        .collect();
+        .map_err(|e| format!("Failed to query warehouses: {e}"))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("Failed to collect warehouses: {e}"))?;
 
-    let total_pages = (total_count + page_size - 1) / page_size;
+    let total_pages = if total_count == 0 {
+        1
+    } else {
+        (total_count + page_size - 1) / page_size
+    };
 
     Ok(PaginatedResponse {
-        data: warehouses,
+        data: raw_warehouses,
         total_count,
         total_pages,
     })

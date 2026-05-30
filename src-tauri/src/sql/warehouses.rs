@@ -186,6 +186,39 @@ pub fn build_where_clause(filters: &[FilterState]) -> String {
     }
 }
 
+pub fn build_get_paginated(
+    where_clause: &str,
+    sort: Option<&SortState>,
+    limit: i32,
+    offset: i32,
+) -> String {
+    let base =
+        "SELECT id, name, location, created_at, updated_at, deleted_at FROM active_warehouses";
+    let query = if where_clause.is_empty() {
+        base.to_string()
+    } else {
+        format!("{base} WHERE {where_clause}")
+    };
+
+    let ordered = match sort {
+        Some(s) => format!("{query} ORDER BY {} {}", s.column_id, s.direction),
+        None => format!("{query} ORDER BY name"),
+    };
+
+    format!("{ordered} LIMIT {limit} OFFSET {offset}")
+}
+
+pub fn count_query(where_clause: &str) -> String {
+    if where_clause.is_empty() {
+        "SELECT COUNT(*) FROM active_warehouses".to_string()
+    } else {
+        format!(
+            "SELECT COUNT(*) FROM active_warehouses WHERE {}",
+            where_clause
+        )
+    }
+}
+
 pub fn build_get_all(where_clause: &str, sort: Option<&SortState>) -> String {
     let base = "SELECT id, name, location, created_at, updated_at, deleted_at FROM active_warehouses";
     let query = if where_clause.is_empty() {

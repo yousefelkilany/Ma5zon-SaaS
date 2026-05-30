@@ -247,9 +247,9 @@ async softDelete(id: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async productsGetPaginated(page: number, pageSize: number) : Promise<Result<PaginatedResponse<Product>, string>> {
+async productsGetPaginated(filters: FilterState[], columns: string[], sort: SortState | null, page: number, pageSize: number) : Promise<Result<PaginatedResponse<Product>, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("products_get_paginated", { page, pageSize }) };
+    return { status: "ok", data: await TAURI_INVOKE("products_get_paginated", { filters, columns, sort, page, pageSize }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -343,9 +343,9 @@ async warehousesDelete(id: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async warehousesGetPaginated(page: number, pageSize: number) : Promise<Result<PaginatedResponse<Warehouse>, string>> {
+async warehousesGetPaginated(filters: FilterState[], columns: string[], sort: SortState | null, page: number, pageSize: number) : Promise<Result<PaginatedResponse<Warehouse>, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("warehouses_get_paginated", { page, pageSize }) };
+    return { status: "ok", data: await TAURI_INVOKE("warehouses_get_paginated", { filters, columns, sort, page, pageSize }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };

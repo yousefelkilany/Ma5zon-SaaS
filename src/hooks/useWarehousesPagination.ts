@@ -1,11 +1,33 @@
 import { useQuery } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
+import type { FilterState, SortState } from '@/lib/types/entity'
+import type { FilterState as BindingFilterState, SortState as BindingSortState } from '@/lib/bindings'
 
-export function useWarehousesPagination(page: number, pageSize: number) {
+export function useWarehousesPagination(
+  filters: FilterState[],
+  _columns: string[],
+  sort: SortState | null,
+  page: number,
+  pageSize: number
+) {
   return useQuery({
-    queryKey: ['warehouses', 'paginated', { page, pageSize }],
+    queryKey: ['warehouses', 'paginated', { filters, sort, page, pageSize }],
     queryFn: async () => {
-      const result = await commands.warehousesGetPaginated(page, pageSize)
+      const bindingFilters: BindingFilterState[] = filters.map(f => ({
+        column_id: f.columnId,
+        operator: f.operator,
+        value: f.value,
+      }))
+      const bindingSort: BindingSortState | null = sort
+        ? { column_id: sort.columnId, direction: sort.direction }
+        : null
+      const result = await commands.warehousesGetPaginated(
+        bindingFilters,
+        _columns,
+        bindingSort,
+        page,
+        pageSize
+      )
       if (result.status === 'ok') {
         return result.data
       }

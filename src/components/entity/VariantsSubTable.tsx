@@ -68,48 +68,49 @@ export function VariantsSubTable({
                   {col.label}
                 </th>
               ))}
+              <th className="size-0.5 py-2 text-start text-on-surface-variant font-label-caps">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => onAddVariant?.(productId)}
+                  className="text-secondary"
+                >
+                  <span className="material-symbols-outlined text-sm">add</span>
+                  {t('entity.create.variant.button')}
+                </Button>
+              </th>
             </tr>
           </thead>
+
+          <tbody>
+            {variants.map(variant => (
+              <tr
+                key={variant.id}
+                className="border-t border-outline-variant/30 hover:bg-surface-container-high transition-colors cursor-pointer"
+                onClick={() => onVariantClick?.(variant.id, productId)}
+              >
+                {columns.map(col => (
+                  <td
+                    key={col.id}
+                    className={`px-3 py-2 text-on-surface ${
+                      col.type === 'currency'
+                        ? 'text-right text-on-surface font-data-tabular tabular-nums'
+                        : ''
+                    }`}
+                  >
+                    {col.type === 'currency'
+                      ? formatCurrency(
+                          variant[col.id as keyof VariantRow] as number,
+                          locale
+                        )
+                      : String(variant[col.id as keyof VariantRow] ?? '-')}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
         </table>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => onAddVariant?.(productId)}
-          className="text-secondary"
-        >
-          <span className="material-symbols-outlined text-sm">add</span>
-          {t('entity.create.variant.button')}
-        </Button>
       </div>
-      <table className="w-full text-body-sm">
-        <tbody>
-          {variants.map(variant => (
-            <tr
-              key={variant.id}
-              className="border-t border-outline-variant/30 hover:bg-surface-container-high transition-colors cursor-pointer"
-              onClick={() => onVariantClick?.(variant.id, productId)}
-            >
-              {columns.map(col => (
-                <td
-                  key={col.id}
-                  className={`px-3 py-2 text-on-surface ${
-                    col.type === 'currency'
-                      ? 'text-right text-on-surface font-data-tabular tabular-nums'
-                      : ''
-                  }`}
-                >
-                  {col.type === 'currency'
-                    ? formatCurrency(
-                        variant[col.id as keyof VariantRow] as number,
-                        locale
-                      )
-                    : String(variant[col.id as keyof VariantRow] ?? '-')}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   )
 }

@@ -109,6 +109,7 @@ export function DataTable({
 
   const selectColumn = useMemo<TanstackColumnDef<EntityRow>>(
     () => ({
+      isUtil: true,
       id: 'select',
       size: 10,
       enableResizing: false,
@@ -137,6 +138,7 @@ export function DataTable({
 
   const expandColumn = useMemo<TanstackColumnDef<EntityRow>>(
     () => ({
+      isUtil: true,
       id: 'expand',
       size: 10,
       enableResizing: false,
@@ -297,13 +299,7 @@ export function DataTable({
     <>
       <div className="flex-1 overflow-auto border border-outline-variant rounded-lg bg-surface-container-lowest">
         <div className="min-w-0">
-          <table
-            className="w-full border-collapse text-body-sm"
-            style={{
-              tableLayout: 'fixed',
-              width: table.getTotalSize(),
-            }}
-          >
+          <table className="w-full border-collapse text-body-sm">
             <thead className="sticky top-0 z-10 bg-surface-container-high border-b border-outline-variant shadow-sm">
               {table.getHeaderGroups().map(headerGroup => {
                 const headers = headerGroup.headers
@@ -369,16 +365,16 @@ export function DataTable({
                       const columnDef = columns.find(
                         c => c.id === cell.column.id
                       )
-                      const isNameCol = columnDef?.isNameColumn
+                      const isDataCol = columnDef?.isDataCol
                       return (
                         <td
                           key={cell.id}
-                          className={`px-compact-padding py-2 text-on-surface ${isNameCol ? 'cursor-pointer hover:bg-surface-container-highest' : ''}`}
+                          className={`px-compact-padding py-2 text-on-surface ${isDataCol ? 'cursor-pointer hover:bg-surface-container-highest' : ''}`}
                           style={{
                             width: cell.column.getSize(),
                           }}
                           onClick={
-                            isNameCol
+                            isDataCol
                               ? () =>
                                   internalOnRowClick(
                                     row.original.id,
