@@ -134,7 +134,15 @@ export function DataTableShell({
     // Row click handling is done in DataTable with typed modals
   }, [])
 
-  const handleBulkAction = useCallback((_action: string) => {
+  const handlePrintSelected = useCallback(() => {
+    setSelectedIds(new Set())
+  }, [])
+
+  const handleExportSelected = useCallback(() => {
+    setSelectedIds(new Set())
+  }, [])
+
+  const handleDelete = useCallback(() => {
     setSelectedIds(new Set())
   }, [])
 
@@ -156,7 +164,9 @@ export function DataTableShell({
         onColumnsClick={() => setColumnDialogOpen(true)}
         hasSelection={selectedIds.size > 0}
         selectedCount={selectedIds.size}
-        onBulkAction={handleBulkAction}
+        onPrintSelected={handlePrintSelected}
+        onExportSelected={handleExportSelected}
+        onDelete={handleDelete}
         onExport={onExport}
       />
       <div className="flex-1 overflow-hidden">

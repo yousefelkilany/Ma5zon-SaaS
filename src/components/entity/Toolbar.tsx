@@ -1,5 +1,12 @@
 import type { ToolbarProps } from '@/lib/types/entity'
 import { useTranslation } from 'react-i18next'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 export function Toolbar({
   searchValue,
@@ -8,7 +15,9 @@ export function Toolbar({
   onColumnsClick,
   hasSelection,
   selectedCount,
-  onBulkAction,
+  onPrintSelected,
+  onExportSelected,
+  onDelete,
   onExport,
 }: ToolbarProps) {
   const { t } = useTranslation()
@@ -61,16 +70,45 @@ export function Toolbar({
             <span className="text-on-surface-variant text-body-sm">
               {t('entity.workspace.selected', { count: selectedCount })}
             </span>
-            <button
-              type="button"
-              className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded text-body-sm"
-              onClick={() => onBulkAction('delete')}
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                delete
-              </span>
-              {t('entity.workspace.delete')}
-            </button>
+            <DropdownMenu>
+              <div className="flex">
+                <button
+                  type="button"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-secondary text-on-secondary hover:bg-secondary/90 transition-colors rounded-s text-body-sm"
+                  onClick={onPrintSelected}
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    print
+                  </span>
+                  {t('entity.workspace.toolbar.print')}
+                </button>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex items-center px-2 py-1.5 bg-secondary text-on-secondary hover:bg-secondary/90 transition-colors rounded-e border-s border-on-secondary/20"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      expand_more
+                    </span>
+                  </button>
+                </DropdownMenuTrigger>
+              </div>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={onExportSelected}>
+                  <span className="material-symbols-outlined text-[18px]">
+                    file_download
+                  </span>
+                  {t('entity.workspace.toolbar.exportSelected')}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" onClick={onDelete}>
+                  <span className="material-symbols-outlined text-[18px]">
+                    delete
+                  </span>
+                  {t('entity.workspace.delete')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
         {hasSelection && <div className="h-6 w-px bg-outline-variant" />}
