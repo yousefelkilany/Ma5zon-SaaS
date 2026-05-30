@@ -45,3 +45,4 @@ pub use stocks::{
     products_get_by_warehouse_with_stock, products_get_by_warehouse_paginated,
     variants_get_by_product_and_warehouse,
 };
+pub use warehouses::PaginatedResponse;

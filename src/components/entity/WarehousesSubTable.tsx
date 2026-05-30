@@ -35,7 +35,6 @@ export interface WarehousesSubTableProps {
   expandedProductIds?: Set<string>
   productsCache?: Map<string, ProductWithStock[]>
   variantsCache?: Map<string, VariantWithStock[]>
-  onWarehouseExpand?: (warehouseId: string) => void
   onProductExpand?: (productId: string) => void
   isLoadingProducts?: (warehouseId: string) => boolean
   isLoadingVariants?: (productId: string) => boolean
@@ -97,8 +96,11 @@ export function WarehousesSubTable({
             return next
           })
           try {
-            const result =
-              await typedCommands.productsGetByWarehouseWithStock(whId)
+            const result = await typedCommands.productsGetByWarehouseWithStock(
+              whId,
+              productPagination.pageSize,
+              (productPagination.page - 1) * productPagination.pageSize
+            )
             if (result.status === 'ok') {
               setLocalProductsCache(prev =>
                 new Map(prev).set(whId, result.data)
@@ -126,12 +128,17 @@ export function WarehousesSubTable({
       localProductsCache,
       onWarehouseExpand,
       typedCommands,
+      productPagination.page,
+      productPagination.pageSize,
     ]
   )
 
-  const handleProductPageChange = useCallback((page: number, pageSize: number) => {
-    setProductPagination(prev => ({ ...prev, page, pageSize }))
-  }, [])
+  const handleProductPageChange = useCallback(
+    (page: number, pageSize: number) => {
+      setProductPagination(prev => ({ ...prev, page, pageSize }))
+    },
+    []
+  )
 
   const handleProductExpand = useCallback(
     async (productId: string, whId: string) => {

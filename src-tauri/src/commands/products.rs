@@ -13,12 +13,7 @@ use crate::sql::products::{
 use crate::types::{FilterState, SortState};
 use crate::types::Product;
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
-pub struct PaginatedResponse<T> {
-    pub data: Vec<T>,
-    pub total_count: i32,
-    pub total_pages: i32,
-}
+use crate::commands::warehouses::PaginatedResponse;
 
 pub struct ProductsInitializer;
 

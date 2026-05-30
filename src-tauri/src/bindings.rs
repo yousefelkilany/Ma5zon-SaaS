@@ -54,6 +54,7 @@ pub fn generate_bindings() -> Builder<tauri::Wry> {
         stocks::stock_movements_get_all,
         stocks::stock_movements_get_by_variant,
         stocks::products_get_by_warehouse_paginated,
+        stocks::products_get_by_warehouse_with_stock,
     ])
 }
 

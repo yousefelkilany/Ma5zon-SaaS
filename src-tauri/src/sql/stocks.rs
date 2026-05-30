@@ -5,20 +5,18 @@ use rusqlite::{Connection, Result as DbErr};
 #[derive(Debug, Clone)]
 pub struct ProductWithStock {
     pub id: String,
+    pub company: String,
     pub name: String,
-    pub sku: String,
-    pub price: f64,
-    pub quantity: f64,
+    pub category: String,
 }
 
 impl ProductWithStock {
     pub fn from_row(row: &rusqlite::Row) -> DbErr<Self> {
         Ok(ProductWithStock {
             id: row.get::<usize, i64>(0)?.to_string(),
-            name: row.get(1)?,
-            sku: row.get(2)?,
-            price: row.get(3)?,
-            quantity: row.get(4)?,
+            company: row.get(1)?,
+            name: row.get(2)?,
+            category: row.get(3)?,
         })
     }
 }
@@ -41,7 +39,7 @@ pub fn fetch_products_by_warehouse_with_stock(
     let products: Vec<ProductWithStock> = match (limit, offset) {
         (Some(limit), Some(offset)) => {
             let mut stmt = conn.prepare(
-                "SELECT p.id, p.name, p.sku, p.price, sl.quantity
+                "SELECT p.id, p.company, p.name, p.category
                  FROM products p
                  INNER JOIN product_variants v ON p.id = v.product_id
                  INNER JOIN stock_levels sl ON v.id = sl.variant_id
@@ -57,7 +55,7 @@ pub fn fetch_products_by_warehouse_with_stock(
         }
         (Some(limit), None) => {
             let mut stmt = conn.prepare(
-                "SELECT p.id, p.name, p.sku, p.price, sl.quantity
+                "SELECT p.id, p.company, p.name, p.category
                  FROM products p
                  INNER JOIN product_variants v ON p.id = v.product_id
                  INNER JOIN stock_levels sl ON v.id = sl.variant_id
@@ -73,7 +71,7 @@ pub fn fetch_products_by_warehouse_with_stock(
         }
         _ => {
             let mut stmt = conn.prepare(
-                "SELECT p.id, p.name, p.sku, p.price, sl.quantity
+                "SELECT p.id, p.company, p.name, p.category
                  FROM products p
                  INNER JOIN product_variants v ON p.id = v.product_id
                  INNER JOIN stock_levels sl ON v.id = sl.variant_id
@@ -156,16 +154,12 @@ pub fn get_stock_levels_by_product() -> &'static str {
 }
 
 pub fn get_levels_by_warehouse_with_names() -> &'static str {
-    // update this statement and corresponding UI table to be expanding rows
     "SELECT
         v.id AS variant_id,
-        p.company,
-        p.category,
-        p.name,
         v.variant_name,
         v.sku,
         COALESCE(s.warehouse_id, 0) AS warehouse_id,
-        COALESCE(s.quantity, 0) AS current_qty
+        COALESCE(s.quantity, 0) AS quantity
      FROM product_variants v
      JOIN products p ON v.product_id = p.id
      LEFT JOIN stock_levels s ON v.id = s.variant_id AND s.warehouse_id = ?1

@@ -175,9 +175,8 @@ fn seed_stock_movements(conn: &Connection) -> Result<(), String> {
 pub struct StockLevel {
     pub variant_id: String,
     pub warehouse_id: String,
-    pub quantity: f64,
+    pub quantity: i32,
 }
-
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
 pub struct StockMovement {
     pub id: String,
@@ -195,9 +194,8 @@ pub struct StockLevelWithVariant {
     pub variant_name: String,
     pub sku: String,
     pub warehouse_id: String,
-    pub quantity: f64,
+    pub quantity: i32,
 }
-
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
 pub struct ProductWithStock {
     pub id: String,
@@ -209,9 +207,8 @@ pub struct VariantWithStock {
     pub variant_id: String,
     pub variant_name: String,
     pub sku: String,
-    pub quantity: f64,
+    pub quantity: i32,
 }
-
 #[tauri::command]
 #[specta::specta]
 pub async fn stock_levels_get_all(app: AppHandle) -> Result<Vec<StockLevel>, String> {
@@ -374,7 +371,7 @@ pub async fn stock_levels_get_by_product(
                 variant_name: row.get::<_, String>(1)?,
                 sku: row.get::<_, String>(2)?,
                 warehouse_id: row.get::<_, i64>(3)?.to_string(),
-                quantity: row.get::<_, f64>(4)?,
+                quantity: row.get::<_, i32>(4)?,
             })
         })
         .map_err(|e| format!("Failed to query stock levels: {e}"))?
@@ -405,7 +402,7 @@ pub async fn stock_levels_get_by_warehouse_with_names(
                 variant_name: row.get::<_, String>(1)?,
                 sku: row.get::<_, String>(2)?,
                 warehouse_id: row.get::<_, i64>(3)?.to_string(),
-                quantity: row.get::<_, f64>(4)?,
+                quantity: row.get::<_, i32>(4)?,
             })
         })
         .map_err(|e| format!("Failed to query stock levels: {e}"))?
@@ -420,25 +417,28 @@ pub async fn stock_levels_get_by_warehouse_with_names(
 pub async fn products_get_by_warehouse_with_stock(
     app: AppHandle,
     warehouse_id: String,
+    limit: Option<i32>,
+    offset: Option<i32>,
 ) -> Result<Vec<ProductWithStock>, String> {
     let conn = get_conn(&app)?;
     let warehouse_id_i64: i64 = warehouse_id
         .parse()
         .map_err(|e| format!("Invalid warehouse_id: {e}"))?;
-    let mut stmt = conn
-        .prepare(crate::sql::stocks::products_get_by_warehouse_with_stock())
-        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
-    let products = stmt
-        .query_map(params![warehouse_id_i64], |row| {
-            Ok(ProductWithStock {
-                id: row.get::<_, i64>(0)?.to_string(),
-                name: row.get(1)?,
-            })
+    let (products, _total) = fetch_products_by_warehouse_with_stock(
+        &conn,
+        warehouse_id_i64,
+        limit.map(|l| l as i64),
+        offset.map(|o| o as i64),
+    )
+    .map_err(|e| format!("Failed to query products: {e}"))?;
+    let result = products
+        .into_iter()
+        .map(|p| ProductWithStock {
+            id: p.id,
+            name: p.name,
         })
-        .map_err(|e| format!("Failed to query products: {e}"))?
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| format!("Failed to collect products: {e}"))?;
-    Ok(products)
+        .collect();
+    Ok(result)
 }
 
 #[tauri::command]
