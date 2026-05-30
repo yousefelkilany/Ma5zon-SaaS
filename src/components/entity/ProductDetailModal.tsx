@@ -221,7 +221,7 @@ export function ProductDetailModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="min-w-xl max-w-fit">
           <div className="flex flex-col h-full">
             {/* Tab Bar */}
             <div
