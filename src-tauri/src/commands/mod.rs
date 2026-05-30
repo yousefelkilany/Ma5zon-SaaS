@@ -42,5 +42,6 @@ pub use stocks::{
     stock_levels_get_by_product, stock_levels_get_by_warehouse_with_names,
     stock_movements_get_all, stock_movements_get_by_variant,
     ProductWithStock, VariantWithStock,
-    products_get_by_warehouse_with_stock, variants_get_by_product_and_warehouse,
+    products_get_by_warehouse_with_stock, products_get_by_warehouse_paginated,
+    variants_get_by_product_and_warehouse,
 };

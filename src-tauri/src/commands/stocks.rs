@@ -5,10 +5,11 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
+use crate::commands::warehouses::PaginatedResponse;
 use crate::sql::stocks::{
-    create_levels_table, create_movements_table, get_levels_all, get_levels_by_variant,
-    get_levels_by_warehouse, get_movements_all, get_movements_by_variant,
-    get_stock_levels_by_product, get_levels_by_warehouse_with_names,
+    create_levels_table, create_movements_table, fetch_products_by_warehouse_with_stock,
+    get_levels_all, get_levels_by_variant, get_levels_by_warehouse, get_movements_all,
+    get_movements_by_variant, get_stock_levels_by_product, get_levels_by_warehouse_with_names,
 };
 
 pub struct StockInitializer;
@@ -438,6 +439,41 @@ pub async fn products_get_by_warehouse_with_stock(
         .collect::<Result<Vec<_>, _>>()
         .map_err(|e| format!("Failed to collect products: {e}"))?;
     Ok(products)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn products_get_by_warehouse_paginated(
+    app: AppHandle,
+    warehouse_id: i64,
+    page: i64,
+    page_size: i64,
+) -> Result<PaginatedResponse<ProductWithStock>, String> {
+    let offset = (page - 1) * page_size;
+    let conn = get_conn(&app)?;
+    let (sql_products, total_count) = fetch_products_by_warehouse_with_stock(
+       &conn,
+        warehouse_id,
+        Some(page_size),
+        Some(offset),
+    )
+    .map_err(|e| e.to_string())?;
+
+    let products: Vec<ProductWithStock> = sql_products
+        .into_iter()
+        .map(|p| ProductWithStock {
+            id: p.id,
+            name: p.name,
+        })
+        .collect();
+
+    let total_pages = (total_count as f64 / page_size as f64).ceil() as i64;
+
+    Ok(PaginatedResponse {
+        data: products,
+        total_count,
+        total_pages,
+    })
 }
 
 #[tauri::command]
