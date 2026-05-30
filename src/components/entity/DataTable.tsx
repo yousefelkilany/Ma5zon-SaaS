@@ -170,6 +170,22 @@ export function DataTable({
     return cols
   }, [selectColumn, expandColumn, entityType, visibleColumns])
 
+  const handleRowClick = useCallback(
+    (id: string, _row: EntityRow) => {
+      setSelectedEntityId(id)
+      setEditModalOpen(true)
+    },
+    []
+  )
+
+  const internalOnRowClick = useCallback(
+    (id: string, row: EntityRow) => {
+      handleRowClick(id, row)
+      onRowClick?.(id, row)
+    },
+    [handleRowClick, onRowClick]
+  )
+
   const table = useReactTable({
     data,
     columns: tableColumns,
@@ -355,7 +371,7 @@ export function DataTable({
                           }}
                           onClick={
                             isNameCol
-                              ? () => onRowClick(row.original.id, row.original)
+                              ? () => internalOnRowClick(row.original.id, row.original)
                               : undefined
                           }
                         >
