@@ -274,3 +274,13 @@ pub struct FilterState {
     pub operator: String,
     pub value: serde_json::Value,
 }
+
+// ============================================================================
+// Sort State
+// ============================================================================
+
+#[derive(Debug, Clone, Deserialize, Type)]
+pub struct SortState {
+    pub column_id: String,
+    pub direction: String,
+}
