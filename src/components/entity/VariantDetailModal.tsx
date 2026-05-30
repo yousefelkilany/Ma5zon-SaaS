@@ -13,6 +13,7 @@ interface VariantDetailModalProps {
   entityId: string
   queryClient: QueryClient
   onDeleted?: () => void
+  onSaved?: (variant: Variant) => void
 }
 
 interface Variant {
@@ -51,8 +52,16 @@ const VARIANT_FIELDS: FieldConfig[] = [
   { key: 'variant_name', label: 'entity.variant.name', type: 'text' },
   { key: 'uom_id', label: 'entity.variant.uom', type: 'text' },
   { key: 'retail_price', label: 'entity.variant.retailPrice', type: 'number' },
-  { key: 'wholesale_price', label: 'entity.variant.wholesalePrice', type: 'number' },
-  { key: 'distribution_price', label: 'entity.variant.distributionPrice', type: 'number' },
+  {
+    key: 'wholesale_price',
+    label: 'entity.variant.wholesalePrice',
+    type: 'number',
+  },
+  {
+    key: 'distribution_price',
+    label: 'entity.variant.distributionPrice',
+    type: 'number',
+  },
   { key: 'created_at', label: 'entity.common.createdAt', type: 'date' },
   { key: 'updated_at', label: 'entity.common.updatedAt', type: 'date' },
 ]
@@ -63,6 +72,7 @@ export function VariantDetailModal({
   entityId,
   queryClient,
   onDeleted,
+  onSaved,
 }: VariantDetailModalProps) {
   const { t } = useTranslation()
   const [entity, setEntity] = useState<Variant | null>(null)
@@ -161,6 +171,7 @@ export function VariantDetailModal({
       setEntity(result.data)
       setIsEditing(false)
       queryClient.invalidateQueries({ queryKey: ['entity', 'variants'] })
+      onSaved?.(result.data)
     } else {
       setSaveError(result.error ?? 'Save failed')
     }
@@ -256,7 +267,11 @@ export function VariantDetailModal({
             {/* Tab Content */}
             <div className="flex-1 overflow-auto">
               {activeTab === 'details' && (
-                <div id="details-panel" role="tabpanel" aria-labelledby="details-tab">
+                <div
+                  id="details-panel"
+                  role="tabpanel"
+                  aria-labelledby="details-tab"
+                >
                   {isLoading ? (
                     <div className="grid grid-cols-2 gap-4">
                       {Array.from({ length: 8 }).map((_, i) => (
@@ -275,12 +290,17 @@ export function VariantDetailModal({
                               {t(field.label)}
                             </label>
                             {isEditing &&
-                            (field.type === 'text' || field.type === 'number') ? (
+                            (field.type === 'text' ||
+                              field.type === 'number') ? (
                               <input
-                                type={field.type === 'number' ? 'number' : 'text'}
+                                type={
+                                  field.type === 'number' ? 'number' : 'text'
+                                }
                                 className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
                                 value={
-                                  editForm[field.key as keyof EditForm] as string
+                                  editForm[
+                                    field.key as keyof EditForm
+                                  ] as string
                                 }
                                 onChange={e =>
                                   setEditForm(prev => ({
@@ -293,16 +313,23 @@ export function VariantDetailModal({
                             ) : (
                               <p className="text-body-md text-on-surface">
                                 {field.type === 'date'
-                                  ? entity[field.key as 'created_at' | 'updated_at']
+                                  ? entity[
+                                      field.key as 'created_at' | 'updated_at'
+                                    ]
                                     ? new Date(
-                                        entity[field.key as 'created_at' | 'updated_at'] ?? ''
+                                        entity[
+                                          field.key as
+                                            | 'created_at'
+                                            | 'updated_at'
+                                        ] ?? ''
                                       ).toLocaleString()
                                     : '—'
                                   : field.type === 'number'
                                     ? Number(
                                         entity[field.key as keyof Variant]
                                       ).toLocaleString()
-                                    : entity[field.key as keyof Variant] ?? '—'}
+                                    : (entity[field.key as keyof Variant] ??
+                                      '—')}
                               </p>
                             )}
                           </div>
@@ -369,7 +396,11 @@ export function VariantDetailModal({
               )}
 
               {activeTab === 'insights' && (
-                <div id="insights-panel" role="tabpanel" aria-labelledby="insights-tab">
+                <div
+                  id="insights-panel"
+                  role="tabpanel"
+                  aria-labelledby="insights-tab"
+                >
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4">
                       {Array.from({ length: 3 }).map((_, i) => (
@@ -385,7 +416,11 @@ export function VariantDetailModal({
               )}
 
               {activeTab === 'audits' && (
-                <div id="audits-panel" role="tabpanel" aria-labelledby="audits-tab">
+                <div
+                  id="audits-panel"
+                  role="tabpanel"
+                  aria-labelledby="audits-tab"
+                >
                   <div className="space-y-3">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <div key={i} className="flex items-center gap-3">

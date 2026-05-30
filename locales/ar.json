@@ -355,6 +355,7 @@
   "entity.layout.product_variants.columns.distribution": "التوزيع",
   "entity.create.product.title": "إضافة منتج جديد",
   "entity.create.warehouse.title": "إضافة مستودع جديد",
+  "entity.create.variant.button": "إضافة متغير",
   "entity.create.variant.title": "إضافة متغير جديد",
   "entity.create.button": "إنشاء",
   "entity.create.error.required": "يجب ملء جميع الحقول المطلوبة",

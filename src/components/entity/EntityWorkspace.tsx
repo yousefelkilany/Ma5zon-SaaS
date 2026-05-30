@@ -129,6 +129,9 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
     null
   )
+  const [selectedVariantProductId, setSelectedVariantProductId] = useState<
+    string | null
+  >(null)
   const [variantDetailOpen, setVariantDetailOpen] = useState(false)
 
   const handleAddNewClick = useCallback(() => {
@@ -144,11 +147,31 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   }, [])
 
   const handleVariantClick = useCallback(
-    (variantId: string, _productId: string) => {
+    (variantId: string, productId: string) => {
       setSelectedVariantId(variantId)
+      setSelectedVariantProductId(productId)
       setVariantDetailOpen(true)
     },
     []
+  )
+
+  const handleVariantSaved = useCallback(
+    async (_variant: { product_id: string }) => {
+      if (!selectedVariantProductId) return
+      const result = await commands.variantsGetByProduct(
+        selectedVariantProductId
+      )
+      if (result.status === 'ok') {
+        const variantRows: VariantRow[] = result.data.map(v => ({
+          ...v,
+          uom_id: Number(v.uom_id),
+        }))
+        setVariantsCache(prev =>
+          new Map(prev).set(selectedVariantProductId, variantRows)
+        )
+      }
+    },
+    [selectedVariantProductId]
   )
 
   const handleAddVariant = useCallback((productId: string) => {
@@ -293,6 +316,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
             setVariantDetailOpen(false)
             setSelectedVariantId(null)
           }}
+          onSaved={handleVariantSaved}
         />
       )}
     </div>

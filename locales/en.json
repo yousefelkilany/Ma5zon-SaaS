@@ -353,6 +353,7 @@
   "entity.layout.product_variants.columns.distribution": "Distribution",
   "entity.create.product.title": "Add New Product",
   "entity.create.warehouse.title": "Add New Warehouse",
+  "entity.create.variant.button": "Add Variant",
   "entity.create.variant.title": "Add New Variant",
   "entity.create.button": "Create",
   "entity.create.error.required": "All required fields must be filled",
