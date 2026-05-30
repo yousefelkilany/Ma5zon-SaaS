@@ -5,7 +5,10 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
-use crate::sql::warehouses::{create, create_table, get_by_id, get_created_at, soft_delete, update, build_where_clause, build_get_all};
+use crate::sql::warehouses::{
+    build_get_all, build_where_clause, create, create_table, get_by_id, get_created_at,
+    soft_delete, update,
+};
 use crate::types::FilterState;
 
 pub struct WarehousesInitializer;
@@ -19,11 +22,13 @@ impl DatabaseInitializable for WarehousesInitializer {
     async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
         let conn = get_conn(app)?;
 
-        conn.execute(create_table(), [])
+        conn.execute_batch(create_table())
             .map_err(|e| format!("Failed to create warehouses table: {e}"))?;
 
         let count: i64 = conn
-            .query_row("SELECT COUNT(*) FROM active_warehouses", [], |row| row.get(0))
+            .query_row("SELECT COUNT(*) FROM active_warehouses", [], |row| {
+                row.get(0)
+            })
             .map_err(|e| format!("Failed to count warehouses: {e}"))?;
 
         if count == 0 {
@@ -74,10 +79,10 @@ pub async fn warehouses_get_all(
     _columns: Vec<String>,
 ) -> Result<Vec<Warehouse>, String> {
     let conn = get_conn(&app)?;
-    
+
     let where_clause = build_where_clause(&filters);
     let query = build_get_all(&where_clause);
-    
+
     let mut stmt = conn
         .prepare(&query)
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
@@ -134,11 +139,8 @@ pub async fn warehouses_create(
 ) -> Result<Warehouse, String> {
     let conn = get_conn(&app)?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-    conn.execute(
-        create(),
-        params![name, location, now, now],
-    )
-    .map_err(|e| format!("Failed to create warehouse: {e}"))?;
+    conn.execute(create(), params![name, location, now, now])
+        .map_err(|e| format!("Failed to create warehouse: {e}"))?;
 
     let id = conn.last_insert_rowid().to_string();
     Ok(Warehouse {
@@ -167,11 +169,8 @@ pub async fn warehouses_update(
         .query_row(get_created_at(), params![id_i64], |row| row.get(0))
         .map_err(|e| format!("Warehouse not found: {e}"))?;
 
-    conn.execute(
-        update(),
-        params![name, location, &now, id_i64],
-    )
-    .map_err(|e| format!("Failed to update warehouse: {e}"))?;
+    conn.execute(update(), params![name, location, &now, id_i64])
+        .map_err(|e| format!("Failed to update warehouse: {e}"))?;
 
     Ok(Warehouse {
         id,
@@ -189,10 +188,7 @@ pub async fn warehouses_delete(app: AppHandle, id: String) -> Result<(), String>
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-    conn.execute(
-        soft_delete(),
-        params![now, id_i64],
-    )
-    .map_err(|e| format!("Failed to delete warehouse: {e}"))?;
+    conn.execute(soft_delete(), params![now, id_i64])
+        .map_err(|e| format!("Failed to delete warehouse: {e}"))?;
     Ok(())
 }

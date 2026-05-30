@@ -75,7 +75,7 @@ fn seed_stock_levels(conn: &Connection) -> Result<(), String> {
         };
 
         for warehouse_id in selected_warehouses {
-            let quantity: f64 = ((rng.gen_range(50.0_f64..2000.0_f64) * 100.0).round()) / 100.0;
+            let quantity: i64 = (((rng.gen_range(50.0_f64..2000.0_f64) * 100.0).round()) / 100.0) as i64;
             conn.execute(
                 "INSERT INTO stock_levels (variant_id, warehouse_id, quantity) VALUES (?1, ?2, ?3)",
                 params![variant_id, warehouse_id, quantity],

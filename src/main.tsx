@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './i18n'
 import App from './App'
 import { queryClient } from './lib/query-client'
+// import { StrictMode } from 'react'
 
 if (import.meta.env.PROD) {
   document.addEventListener('DOMContentLoaded', () => {
@@ -17,6 +18,9 @@ if (import.meta.env.PROD) {
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
+      {/* <StrictMode>
+        <App />
+      </StrictMode> */}
       <App />
     </BrowserRouter>
     <ReactQueryDevtools initialIsOpen={false} />

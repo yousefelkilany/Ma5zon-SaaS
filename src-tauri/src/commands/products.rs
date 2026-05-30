@@ -24,7 +24,7 @@ impl DatabaseInitializable for ProductsInitializer {
     async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
         let conn = get_conn(app)?;
 
-        conn.execute(create_table(), [])
+        conn.execute_batch(create_table())
             .map_err(|e| format!("Failed to create products table: {e}"))?;
 
         let count: i64 = conn
@@ -109,7 +109,7 @@ pub async fn get_all(
 
     let mut stmt = conn
         .prepare(&query)
-        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
+        .map_err(|e| format!("get_all Failed to prepare statement: {e}"))?;
 
     let products = stmt
         .query_map([], |row| {
@@ -137,7 +137,7 @@ pub async fn get_by_id(app: AppHandle, id: String) -> Result<Option<Product>, St
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let mut stmt = conn
         .prepare(sql_get_by_id())
-        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
+        .map_err(|e| format!("get_by_id Failed to prepare statement: {e}"))?;
 
     let product = stmt
         .query_row(params![id_i64], |row| {

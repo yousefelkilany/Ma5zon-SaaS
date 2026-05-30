@@ -14,11 +14,11 @@ pub fn create_table() -> &'static str {
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         deleted_at DATETIME DEFAULT NULL,
         FOREIGN KEY(product_id) REFERENCES products(id)
-    )
+    );
 
     CREATE INDEX idx_variant_product_id ON product_variants(product_id);
 
-    CREATE VIEW active_product_variants AS
+    CREATE VIEW IF NOT EXISTS active_product_variants AS
     SELECT * FROM product_variants WHERE deleted_at IS NULL;"
 }
 

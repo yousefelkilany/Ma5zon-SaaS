@@ -9,9 +9,9 @@ pub fn create_table() -> &'static str {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         deleted_at DATETIME DEFAULT NULL
-    )
+    );
 
-    CREATE VIEW active_products AS
+    CREATE VIEW IF NOT EXISTS active_products AS
     SELECT * FROM products WHERE deleted_at IS NULL;"
 }
 
@@ -113,7 +113,7 @@ pub fn build_where_clause(filters: &[FilterState]) -> String {
 }
 
 pub fn build_get_all(where_clause: &str) -> String {
-    let base = "SELECT id, company, name, category, created_at, updated_at FROM active_products";
+    let base = "SELECT id, company, name, category, created_at, updated_at, deleted_at FROM active_products";
     if where_clause.is_empty() {
         format!("{} ORDER BY name", base)
     } else {

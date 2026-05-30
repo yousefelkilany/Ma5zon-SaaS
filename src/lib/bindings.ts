@@ -175,9 +175,9 @@ async saveUser(user: User) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async deleteUser(userId: string) : Promise<Result<null, string>> {
+async softDeleteUser(userId: string) : Promise<Result<null, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("delete_user", { userId }) };
+    return { status: "ok", data: await TAURI_INVOKE("soft_delete_user", { userId }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -239,9 +239,9 @@ async update(id: string, company: string, name: string, category: string) : Prom
     else return { status: "error", error: e  as any };
 }
 },
-async delete(id: string) : Promise<Result<null, string>> {
+async softDelete(id: string) : Promise<Result<null, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("delete", { id }) };
+    return { status: "ok", data: await TAURI_INVOKE("soft_delete", { id }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };

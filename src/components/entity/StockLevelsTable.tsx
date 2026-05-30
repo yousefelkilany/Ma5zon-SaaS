@@ -90,9 +90,7 @@ function VariantStockView({
               {warehouseNames?.get(level.warehouse_id) ?? level.warehouse_id}
             </td>
             <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
-              {level.quantity.toLocaleString(locale, {
-                minimumFractionDigits: 2,
-              })}
+              {level.quantity.toLocaleString(locale)}
             </td>
           </tr>
         ))}
@@ -210,15 +208,11 @@ function ProductStockPivot({
                 key={col}
                 className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums"
               >
-                {row.quantities
-                  .get(col)
-                  ?.toLocaleString(locale, { minimumFractionDigits: 2 }) ?? '-'}
+                {row.quantities.get(col)?.toLocaleString(locale) ?? '-'}
               </td>
             ))}
             <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums font-bold">
-              {row.rowTotal.toLocaleString(locale, {
-                minimumFractionDigits: 2,
-              })}
+              {row.rowTotal.toLocaleString(locale)}
             </td>
           </tr>
         ))}
@@ -234,15 +228,12 @@ function ProductStockPivot({
               className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums"
             >
               {((totals as Record<string, number>)[col] || 0).toLocaleString(
-                locale,
-                { minimumFractionDigits: 2 }
+                locale
               )}
             </td>
           ))}
           <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
-            {totals._rowTotal.toLocaleString(locale, {
-              minimumFractionDigits: 2,
-            })}
+            {totals._rowTotal.toLocaleString(locale)}
           </td>
         </tr>
       </tfoot>

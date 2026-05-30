@@ -5,7 +5,9 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
-use crate::sql::variants::{create, create_table, get_all, get_by_id, get_by_product, soft_delete, update};
+use crate::sql::variants::{
+    create, create_table, get_all, get_by_id, get_by_product, soft_delete, update,
+};
 use crate::types::{NewVariant, UpdateVariant, Variant};
 
 pub struct VariantsInitializer;
@@ -19,7 +21,7 @@ impl DatabaseInitializable for VariantsInitializer {
     async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
         let conn = get_conn(app)?;
 
-        conn.execute(create_table(), [])
+        conn.execute_batch(create_table())
             .map_err(|e| format!("Failed to create product_variants table: {e}"))?;
 
         let count: i64 = conn
@@ -213,7 +215,17 @@ pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Vari
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(
         create(),
-        params![variant.product_id, variant.sku, variant.variant_name, variant.uom_id, variant.retail_price, variant.wholesale_price, variant.distribution_price, now, now],
+        params![
+            variant.product_id,
+            variant.sku,
+            variant.variant_name,
+            variant.uom_id,
+            variant.retail_price,
+            variant.wholesale_price,
+            variant.distribution_price,
+            now,
+            now
+        ],
     )
     .map_err(|e| format!("Failed to create variant: {e}"))?;
 
@@ -259,7 +271,16 @@ pub async fn variants_update(
 
     conn.execute(
         update(),
-        params![new_sku, new_variant_name, new_uom_id, new_retail_price, new_wholesale_price, new_distribution_price, now, id_i64],
+        params![
+            new_sku,
+            new_variant_name,
+            new_uom_id,
+            new_retail_price,
+            new_wholesale_price,
+            new_distribution_price,
+            now,
+            id_i64
+        ],
     )
     .map_err(|e| format!("Failed to update variant: {e}"))?;
 
@@ -284,10 +305,7 @@ pub async fn variants_delete(app: AppHandle, id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-    conn.execute(
-        soft_delete(),
-        params![now, id_i64],
-    )
-    .map_err(|e| format!("Failed to delete variant: {e}"))?;
+    conn.execute(soft_delete(), params![now, id_i64])
+        .map_err(|e| format!("Failed to delete variant: {e}"))?;
     Ok(())
 }

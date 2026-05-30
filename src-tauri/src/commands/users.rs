@@ -37,9 +37,9 @@ impl DatabaseInitializable for UserInitializer {
     async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
         let conn = get_conn(app)?;
 
-        conn.execute(create_table(), [])
+        conn.execute_batch(create_table())
             .map_err(|e| format!("Failed to create users table: {e}"))?;
-
+        
         let count: i64 = conn
             .query_row("SELECT COUNT(*) FROM active_users", [], |row| row.get(0))
             .map_err(|e| format!("Failed to check users count: {e}"))?;
