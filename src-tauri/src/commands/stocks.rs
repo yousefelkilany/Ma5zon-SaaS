@@ -445,17 +445,17 @@ pub async fn products_get_by_warehouse_with_stock(
 #[specta::specta]
 pub async fn products_get_by_warehouse_paginated(
     app: AppHandle,
-    warehouse_id: i64,
-    page: i64,
-    page_size: i64,
+    warehouse_id: i32,
+    page: i32,
+    page_size: i32,
 ) -> Result<PaginatedResponse<ProductWithStock>, String> {
     let offset = (page - 1) * page_size;
     let conn = get_conn(&app)?;
     let (sql_products, total_count) = fetch_products_by_warehouse_with_stock(
-       &conn,
-        warehouse_id,
-        Some(page_size),
-        Some(offset),
+&conn,
+        warehouse_id as i64,
+        Some(page_size as i64),
+        Some(offset as i64),
     )
     .map_err(|e| e.to_string())?;
 
@@ -467,11 +467,11 @@ pub async fn products_get_by_warehouse_paginated(
         })
         .collect();
 
-    let total_pages = (total_count as f64 / page_size as f64).ceil() as i64;
+    let total_pages = (total_count as f64 / page_size as f64).ceil();
 
     Ok(PaginatedResponse {
         data: products,
-        total_count,
+        total_count: total_count as f64,
         total_pages,
     })
 }

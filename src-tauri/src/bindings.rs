@@ -33,6 +33,7 @@ pub fn generate_bindings() -> Builder<tauri::Wry> {
         products::create,
         products::update,
         products::soft_delete,
+        products::products_get_paginated,
         variants::variants_get_all,
         variants::variants_get_by_product,
         variants::variants_get_by_id,
@@ -44,6 +45,7 @@ pub fn generate_bindings() -> Builder<tauri::Wry> {
         warehouses::warehouses_create,
         warehouses::warehouses_update,
         warehouses::warehouses_delete,
+        warehouses::warehouses_get_paginated,
         stocks::stock_levels_get_all,
         stocks::stock_levels_get_by_variant,
         stocks::stock_levels_get_by_warehouse,
@@ -51,6 +53,7 @@ pub fn generate_bindings() -> Builder<tauri::Wry> {
         stocks::stock_levels_get_by_warehouse_with_names,
         stocks::stock_movements_get_all,
         stocks::stock_movements_get_by_variant,
+        stocks::products_get_by_warehouse_paginated,
     ])
 }
 

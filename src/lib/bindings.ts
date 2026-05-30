@@ -247,6 +247,14 @@ async softDelete(id: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+async productsGetPaginated(page: number, pageSize: number) : Promise<Result<PaginatedResponse<Product>, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("products_get_paginated", { page, pageSize }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async variantsGetAll() : Promise<Result<Variant[], string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("variants_get_all") };
@@ -335,6 +343,14 @@ async warehousesDelete(id: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+async warehousesGetPaginated(page: number, pageSize: number) : Promise<Result<PaginatedResponse<Warehouse>, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("warehouses_get_paginated", { page, pageSize }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async stockLevelsGetAll() : Promise<Result<StockLevel[], string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("stock_levels_get_all") };
@@ -390,6 +406,14 @@ async stockMovementsGetByVariant(variantId: string) : Promise<Result<StockMoveme
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async productsGetByWarehousePaginated(warehouseId: number, page: number, pageSize: number) : Promise<Result<PaginatedResponse<ProductWithStock>, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("products_get_by_warehouse_paginated", { warehouseId, page, pageSize }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -422,7 +446,10 @@ export type ColumnInfo = { cid: number; name: string; col_type: string; notnull:
 export type FilterState = { column_id: string; operator: string; value: JsonValue }
 export type JsonValue = null | boolean | number | string | JsonValue[] | Partial<{ [key in string]: JsonValue }>
 export type NewVariant = { product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number }
+export type PaginatedResponse<T> = { data: T[]; total_count: number; total_pages: number }
+export type PaginatedResponse<T> = { data: T[]; total_count: number; total_pages: number }
 export type Product = { id: string; company: string; name: string; category: string; created_at: string | null; updated_at: string | null; deleted_at: string | null }
+export type ProductWithStock = { id: string; name: string }
 /**
  * Error types for recovery operations (typed for frontend matching)
  */

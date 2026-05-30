@@ -190,7 +190,7 @@ pub enum PriceList {
 
 impl PriceList {
     #[allow(dead_code)]
-    pub fn from_id(id: i64) -> Option<Self> {
+    pub fn from_id(id: i32) -> Option<Self> {
         match id {
             1 => Some(PriceList::Retail),
             2 => Some(PriceList::Wholesale),
@@ -200,7 +200,7 @@ impl PriceList {
     }
 
     #[allow(dead_code)]
-    pub fn id(&self) -> i64 {
+    pub fn id(&self) -> i32 {
         match self {
             PriceList::Retail => 1,
             PriceList::Wholesale => 2,
@@ -212,7 +212,7 @@ impl PriceList {
 impl FromStr for PriceList {
     type Err = String;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s:&str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
             "retail" => Ok(PriceList::Retail),
             "wholesale" => Ok(PriceList::Wholesale),

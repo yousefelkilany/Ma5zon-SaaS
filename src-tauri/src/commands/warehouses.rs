@@ -74,8 +74,8 @@ pub struct Warehouse {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
 pub struct PaginatedResponse<T> {
     pub data: Vec<T>,
-    pub total_count: i64,
-    pub total_pages: i64,
+    pub total_count: f64,
+    pub total_pages: f64,
 }
 
 #[tauri::command]
@@ -117,13 +117,13 @@ pub async fn warehouses_get_all(
 #[specta::specta]
 pub async fn warehouses_get_paginated(
     app: AppHandle,
-    page: i64,
-    page_size: i64,
+    page: i32,
+    page_size: i32,
 ) -> Result<PaginatedResponse<Warehouse>, String> {
     let offset = (page - 1) * page_size;
     let conn = get_conn(&app)?;
 
-    let (raw_warehouses, total_count) = fetch_all(&conn, Some(page_size), Some(offset))
+    let (raw_warehouses, total_count) = fetch_all(&conn, Some(page_size as i64), Some(offset as i64))
         .map_err(|e| format!("Failed to fetch warehouses: {e}"))?;
 
     let warehouses: Vec<Warehouse> = raw_warehouses
@@ -138,11 +138,11 @@ pub async fn warehouses_get_paginated(
         })
         .collect();
 
-    let total_pages = (total_count as f64 / page_size as f64).ceil() as i64;
+    let total_pages = (total_count as f64 / page_size as f64).ceil();
 
     Ok(PaginatedResponse {
         data: warehouses,
-        total_count,
+        total_count: total_count as f64,
         total_pages,
     })
 }
