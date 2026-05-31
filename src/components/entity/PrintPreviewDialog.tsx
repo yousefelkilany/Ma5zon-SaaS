@@ -87,7 +87,7 @@ function buildPrintHtml(
   columns: ColumnDef[],
   data: EntityRow[],
   entityType: string,
-  t: (key: string) => string
+  t: (key: string, options?: Record<string, unknown>) => string
 ): string {
   const headers = columns.map(c => `<th>${c.label}</th>`).join('')
   const rows = data

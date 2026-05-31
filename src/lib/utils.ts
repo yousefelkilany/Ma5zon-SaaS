@@ -114,7 +114,7 @@ export async function exportSelectedToExcel(
   const fileName = `ma5zon-export-${Date.now()}.xlsx`
   const arrayBuffer = XLSX.write(workbook, {
     bookType: 'xlsx',
-    type: 'arraybuffer',
+    type: 'array',
   })
 
   try {

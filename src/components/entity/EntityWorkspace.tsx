@@ -20,6 +20,8 @@ import { WarehouseCreateModal } from './WarehouseCreateModal'
 import { VariantCreateModal } from './VariantCreateModal'
 import { VariantDetailModal } from './VariantDetailModal'
 import { cn } from '@/lib/utils'
+import { PrintPreviewDialog } from './PrintPreviewDialog'
+import { exportSelectedToCSV, exportSelectedToExcel } from '@/lib/utils'
 
 function EntityHeader({
   entityType,
@@ -146,6 +148,11 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const [variantDetailOpen, setVariantDetailOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [printPreviewOpen, setPrintPreviewOpen] = useState(false)
+  const [selectedForPrint, setSelectedForPrint] = useState<EntityRow[]>([])
+  const [isPrinting, setIsPrinting] = useState(false)
+  const [_isExporting, setIsExporting] = useState(false)
+  const [_isDeleting, setIsDeleting] = useState(false)
   const [totalCount, setTotalCount] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
 
@@ -353,22 +360,64 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   }
 
   const handleBulkPrint = useCallback(
-    (_ids: Set<string>, _data: EntityRow[]) => {
-      // TODO: Implement bulk print
+    (ids: Set<string>, data: EntityRow[]) => {
+      const selectedData = data.filter(row => ids.has(row.id))
+      if (selectedData.length === 0) return
+      setSelectedForPrint(selectedData)
+      setPrintPreviewOpen(true)
     },
     []
   )
 
-  const handleBulkExport = useCallback(
-    (_format: 'csv' | 'xlsx', _data: EntityRow[]) => {
-      // TODO: Implement bulk export
+  const handleExportFormatSelect = useCallback(
+    async (format: 'csv' | 'xlsx', selectedData: EntityRow[]) => {
+      if (selectedData.length === 0) return
+      setIsExporting(true)
+      try {
+        if (format === 'csv') {
+          await exportSelectedToCSV(columns, selectedData)
+        } else {
+          await exportSelectedToExcel(columns, selectedData)
+        }
+      } finally {
+        setIsExporting(false)
+      }
     },
-    []
+    [columns]
   )
 
-  const handleBulkDelete = useCallback((_ids: Set<string>) => {
-    // TODO: Implement bulk delete
-  }, [])
+  const handleBulkDelete = useCallback(
+    async (ids: Set<string>) => {
+      if (ids.size === 0) return
+
+      setIsDeleting(true)
+      try {
+        for (const id of ids) {
+          let result: { status: 'ok' | 'error'; error?: string } | null = null
+
+          switch (entityType) {
+            case 'products': {
+              result = await commands.softDelete(id)
+              break
+            }
+            case 'warehouses': {
+              result = await commands.warehousesDelete(id)
+              break
+            }
+          }
+
+          if (result?.status === 'error') {
+            console.error(`Failed to delete ${entityType} ${id}:`, result.error)
+          }
+        }
+
+        queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
+      } finally {
+        setIsDeleting(false)
+      }
+    },
+    [entityType, queryClient]
+  )
 
   return (
     <div className="px-margin-edge flex flex-col h-full bg-background py-6">
@@ -390,7 +439,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         onFiltersApply={handleFiltersApply}
         onExport={handleExport}
         onPrintSelected={handleBulkPrint}
-        onExportFormatSelect={handleBulkExport}
+        onExportFormatSelect={handleExportFormatSelect}
         onDelete={handleBulkDelete}
         sort={sort}
         onSortChange={handleSortChange}
@@ -432,6 +481,18 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
           onSaved={handleVariantSaved}
         />
       )}
+      <PrintPreviewDialog
+        open={printPreviewOpen}
+        onOpenChange={setPrintPreviewOpen}
+        columns={columns}
+        selectedData={selectedForPrint}
+        entityType={entityType}
+        onPrint={() => {
+          setIsPrinting(true)
+          setPrintPreviewOpen(false)
+        }}
+        isPrinting={isPrinting}
+      />
     </div>
   )
 }
