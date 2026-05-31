@@ -112,15 +112,15 @@ export async function exportSelectedToExcel(
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Selected Items')
 
   const fileName = `ma5zon-export-${Date.now()}.xlsx`
-  const arrayBuffer = XLSX.write(workbook, {
+  const base64 = XLSX.write(workbook, {
     bookType: 'xlsx',
-    type: 'array',
+    type: 'base64',
   })
 
   try {
     await invoke('export_file', {
       filePath: fileName,
-      content: new Uint8Array(arrayBuffer),
+      content: base64,
     })
   } catch (err) {
     console.error(`export excel error: ${err}`)

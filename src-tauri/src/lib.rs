@@ -186,6 +186,8 @@ pub fn run() {
                 event: WindowEvent::CloseRequested { api, .. },
                 ..
             } if label == "main" => {
+                app_handle.exit(0);
+
                 #[cfg(target_os = "macos")]
                 {
                     api.prevent_close();

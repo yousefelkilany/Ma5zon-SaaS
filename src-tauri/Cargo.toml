@@ -2,7 +2,7 @@
 name = "ma5zon-finance"
 version = "0.1.0"
 description = "Ma5zon | Enterprise Finance"
-authors = ["you"]
+authors = ["Youssef Elkilany"]
 edition = "2021"
 rust-version = "1.82"
 
@@ -38,6 +38,7 @@ argon2 = { version = "0.5", features = ["rand"] }
 rand = "0.8"
 uuid = { version = "1", features = ["v4"] }
 chrono = "0.4"
+base64 = "0.22"
 
 # Type-safe Tauri command bindings
 specta = { version = "=2.0.0-rc.22", features = ["derive", "serde_json"] }

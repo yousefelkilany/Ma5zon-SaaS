@@ -5,5 +5,7 @@ use std::path::PathBuf;
 #[specta::specta]
 pub fn export_file(file_path: String, content: String) -> Result<(), String> {
     let target_path = PathBuf::from(&file_path);
-    fs::write(target_path, content).map_err(|e| e.to_string())
+    let decoded = base64::Engine::decode(&base64::engine::general_purpose::STANDARD, &content)
+        .map_err(|e| e.to_string())?;
+    fs::write(target_path, decoded).map_err(|e| e.to_string())
 }
