@@ -2,8 +2,16 @@ use tauri_specta::{collect_commands, Builder};
 
 pub fn generate_bindings() -> Builder<tauri::Wry> {
     use crate::commands::{
-        db_utils, notifications, preferences, products, quick_pane, recovery, stocks, users,
-        variants, warehouses,
+        db_utils,
+        notifications,
+        preferences,
+        products,
+        recovery,
+        stocks,
+        users,
+        variants,
+        warehouses,
+        //  quick_pane,
     };
     use crate::utils::fs_utils;
 
@@ -17,11 +25,11 @@ pub fn generate_bindings() -> Builder<tauri::Wry> {
         recovery::save_emergency_data,
         recovery::load_emergency_data,
         recovery::cleanup_old_recovery_files,
-        quick_pane::show_quick_pane,
-        quick_pane::dismiss_quick_pane,
-        quick_pane::toggle_quick_pane,
-        quick_pane::get_default_quick_pane_shortcut,
-        quick_pane::update_quick_pane_shortcut,
+        // quick_pane::show_quick_pane,
+        // quick_pane::dismiss_quick_pane,
+        // quick_pane::toggle_quick_pane,
+        // quick_pane::get_default_quick_pane_shortcut,
+        // quick_pane::update_quick_pane_shortcut,
         users::load_user,
         users::save_user,
         users::soft_delete_user,
