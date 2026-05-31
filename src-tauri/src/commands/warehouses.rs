@@ -5,6 +5,7 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
+use crate::seed::warehouses as seed_warehouses;
 use crate::sql::warehouses::{
     build_get_all, build_get_paginated, build_where_clause, count_query, create, create_table,
     get_by_id, get_created_at, soft_delete, update,
@@ -33,32 +34,11 @@ impl DatabaseInitializable for WarehousesInitializer {
 
         if count == 0 {
             log::info!("[WarehousesInitializer] Seeding sample warehouses");
-            seed_warehouses(&conn)?;
+            seed_warehouses::seed(&conn)?;
         }
 
         Ok(())
     }
-}
-
-fn seed_warehouses(conn: &Connection) -> Result<(), String> {
-    let warehouses = vec![
-        ("مركز التوزيع المركزي", "القاهرة"),
-        ("منشأة الساحل الشمالي", "الإسكندرية"),
-        ("المخزن الإقليمي الشمالي", "المنصورة"),
-        ("المستودع الجنوبي", "أسيوط"),
-        ("مركز الصعيد", "سوهاج"),
-    ];
-
-    for (name, location) in warehouses {
-        let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-        conn.execute(
-            "INSERT INTO warehouses (name, location, created_at, updated_at) VALUES (?1, ?2, ?3, ?4)",
-            params![name, location, now, now],
-        )
-        .map_err(|e| format!("Failed to insert warehouse: {e}"))?;
-    }
-
-    Ok(())
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]

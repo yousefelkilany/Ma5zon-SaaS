@@ -5,6 +5,7 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
+use crate::seed::variants as seed_variants;
 use crate::sql::variants::{
     create, create_table, get_all, get_by_id, get_by_product, soft_delete, update,
 };
@@ -32,82 +33,11 @@ impl DatabaseInitializable for VariantsInitializer {
 
         if count == 0 {
             log::info!("[VariantsInitializer] Seeding sample variants");
-            seed_variants(&conn)?;
+            seed_variants::seed(&conn)?;
         }
 
         Ok(())
     }
-}
-
-fn seed_variants(conn: &Connection) -> Result<(), String> {
-    use rand::Rng;
-
-    let mut rng = rand::thread_rng();
-
-    let mut stmt = conn
-        .prepare("SELECT id FROM active_products ORDER BY id")
-        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
-
-    let product_ids: Vec<i64> = stmt
-        .query_map([], |row| row.get(0))
-        .map_err(|e| format!("Failed to query products: {e}"))?
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| format!("Failed to collect product IDs: {e}"))?;
-
-    let variants_data = vec![
-        (
-            vec!["درجة أولى", "درجة صناعية", "درجة اقتصادية", "درجة ممتازة"],
-            "درجة",
-        ),
-        (vec!["10 وات", "25 وات", "50 وات", "100 وات"], "قدرة"),
-        (vec!["120 فولت", "240 فولت", "480 فولت", "جهد مزدوج"], "جهد"),
-        (vec!["ذكر", "أنثى", "بارب", "ضغط"], "موصل"),
-        (vec!["1 م", "2 م", "5 م", "10 م"], "طول"),
-        (
-            vec![
-                "ستانلس ستيل 304",
-                "ستانلس ستيل 316",
-                "ستانلس ستيل 430",
-                "مجلفن",
-            ],
-            "مادة",
-        ),
-        (vec!["شفاف", "ملون", "مرآوي", "مضاد للتوهج"], "تشطيب"),
-        (vec!["M3", "M4", "M5", "M6", "M8"], "مقاس"),
-        (vec!["صغير", "وسط", "كبير", "كبير جداً"], "حجم"),
-        (vec!["2 أمبير", "5 أمبير", "10 أمبير", "20 أمبير"], "أمبير"),
-    ];
-
-    let uom_names = ["pcs", "m", "kg", "L", "box", "roll", "set"];
-
-    for (i, product_id) in product_ids.iter().enumerate() {
-        let num_variants = rng.gen_range(2..5);
-        let variant_type = &variants_data[i % variants_data.len()];
-        let options = &variant_type.0;
-
-        for v in 0..num_variants {
-            let variant_name = format!(
-                "{} {} {}",
-                "منتج",
-                variant_type.1,
-                options[v % options.len()]
-            );
-            let sku = format!("SKU-{:04}-{:02}", product_id, v + 1);
-            let uom_id = (rng.gen_range(0..uom_names.len()) + 1) as i64;
-
-            let retail_price: f64 = ((rng.gen_range(5.0_f64..500.0_f64) * 100.0).round()) / 100.0;
-            let wholesale_price: f64 = (retail_price * 0.75 * 100.0).round() / 100.0;
-            let distribution_price: f64 = (retail_price * 0.6 * 100.0).round() / 100.0;
-
-            conn.execute(
-                "INSERT INTO product_variants (product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-                rusqlite::params![product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price],
-            )
-            .map_err(|e| format!("Failed to insert variant: {e}"))?;
-        }
-    }
-
-    Ok(())
 }
 
 #[tauri::command]
