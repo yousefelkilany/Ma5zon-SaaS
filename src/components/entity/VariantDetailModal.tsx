@@ -98,6 +98,7 @@ export function VariantDetailModal({
   const [activeTab, setActiveTab] = useState<TabId>('details')
   const [stockLevels, setStockLevels] = useState<StockLevelWithVariant[]>([])
   const [isLoadingStock, setIsLoadingStock] = useState(false)
+  const [stockLoadError, setStockLoadError] = useState('')
   const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
     new Map()
   )
@@ -137,8 +138,10 @@ export function VariantDetailModal({
     if (!entityId) return
     setIsLoadingStock(true)
     const result = await commands.stockLevelsGetByVariant(entityId)
+    console.log('[DEBUG] stockLevelsGetByVariant result:', result)
     setIsLoadingStock(false)
     if (result.status === 'ok') {
+      console.log('[DEBUG] stock levels data:', result.data)
       setStockLevels(
         result.data.map((l: StockLevel) => ({
           ...l,
@@ -154,14 +157,28 @@ export function VariantDetailModal({
         }
         setWarehouseNames(names)
       }
+    } else {
+      console.error('[DEBUG] stock levels error:', result.error)
+      setStockLoadError(result.error ?? 'Failed to load stock')
     }
   }, [entityId])
 
   useEffect(() => {
-    if (activeTab === 'stock' && stockLevels.length === 0 && !isLoadingStock) {
+    if (
+      activeTab === 'stock' &&
+      stockLevels.length === 0 &&
+      !isLoadingStock &&
+      !stockLoadError
+    ) {
       loadStockLevels()
     }
-  }, [activeTab, stockLevels.length, isLoadingStock, loadStockLevels])
+  }, [
+    activeTab,
+    stockLevels.length,
+    isLoadingStock,
+    stockLoadError,
+    loadStockLevels,
+  ])
 
   useEffect(() => {
     if (!open) {
@@ -181,6 +198,7 @@ export function VariantDetailModal({
       setDeleteError('')
       setSaveError('')
       setStockLevels([])
+      setStockLoadError('')
       setWarehouseNames(new Map())
     }
   }, [open])

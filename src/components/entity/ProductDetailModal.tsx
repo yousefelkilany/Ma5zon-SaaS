@@ -126,6 +126,8 @@ export function ProductDetailModal({
         }
         setWarehouseNames(names)
       }
+    } else {
+      setLoadError(result.error ?? 'Failed to load stock levels')
     }
   }, [entityId])
 
@@ -143,10 +145,10 @@ export function ProductDetailModal({
   }, [open])
 
   useEffect(() => {
-    if (activeTab === 'stock' && stockLevels.length === 0 && !isLoadingStock) {
+    if (activeTab === 'stock' && stockLevels.length === 0 && !isLoadingStock && !loadError) {
       loadStockLevels()
     }
-  }, [activeTab, stockLevels.length, isLoadingStock, loadStockLevels])
+  }, [activeTab, stockLevels.length, isLoadingStock, loadError, loadStockLevels])
 
   useEffect(() => {
     if (open && entityId) {

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import type {
   StockLevelWithVariant,
   ProductWithStock,
@@ -55,12 +55,16 @@ export function WarehousesSubTable({
 }: WarehousesSubTableProps) {
   const { t } = useTranslation()
   const locale = i18n.language
-  const [localProductsCache, setLocalProductsCache] = useState<
-    Map<string, ProductWithStock[]>
-  >(new Map())
-  const [localVariantsCache, setLocalVariantsCache] = useState<
-    Map<string, VariantWithStock[]>
-  >(new Map())
+  const localProductsCacheRef = useRef<Map<string, ProductWithStock[]>>(
+    new Map()
+  )
+  const [productsRenderKey, setProductsRenderKey] = useState(0)
+  void productsRenderKey
+  const localVariantsCacheRef = useRef<Map<string, VariantWithStock[]>>(
+    new Map()
+  )
+  const [variantsRenderKey, setVariantsRenderKey] = useState(0)
+  void variantsRenderKey
   const [loadingProducts, setLoadingProducts] = useState<Set<string>>(new Set())
   const [loadingVariants, setLoadingVariants] = useState<Set<string>>(new Set())
   const [errorProducts, setErrorProducts] = useState<Map<string, string>>(
@@ -81,7 +85,7 @@ export function WarehousesSubTable({
   useEffect(() => {
     if (
       !productsCache.has(warehouseId) &&
-      !localProductsCache.has(warehouseId)
+      !localProductsCacheRef.current.has(warehouseId)
     ) {
       setLoadingProducts(prev => new Set(prev).add(warehouseId))
       setErrorProducts(prev => {
@@ -97,9 +101,8 @@ export function WarehousesSubTable({
         )
         .then(result => {
           if (result.status === 'ok') {
-            setLocalProductsCache(prev =>
-              new Map(prev).set(warehouseId, result.data)
-            )
+            localProductsCacheRef.current.set(warehouseId, result.data)
+            setProductsRenderKey(k => k + 1)
           } else {
             setErrorProducts(prev =>
               new Map(prev).set(warehouseId, result.error)
@@ -120,7 +123,6 @@ export function WarehousesSubTable({
   }, [
     warehouseId,
     productsCache,
-    localProductsCache,
     typedCommands,
     productPagination.pageSize,
     productPagination.page,
@@ -141,7 +143,10 @@ export function WarehousesSubTable({
         newExpanded.delete(productId)
       } else {
         newExpanded.add(productId)
-        if (!variantsCache.has(cacheKey) && !localVariantsCache.has(cacheKey)) {
+        if (
+          !variantsCache.has(cacheKey) &&
+          !localVariantsCacheRef.current.has(cacheKey)
+        ) {
           setLoadingVariants(prev => new Set(prev).add(cacheKey))
           setErrorVariants(prev => {
             const next = new Map(prev)
@@ -154,9 +159,8 @@ export function WarehousesSubTable({
               whId
             )
             if (result.status === 'ok') {
-              setLocalVariantsCache(prev =>
-                new Map(prev).set(cacheKey, result.data)
-              )
+              localVariantsCacheRef.current.set(cacheKey, result.data)
+              setVariantsRenderKey(k => k + 1)
             } else {
               setErrorVariants(prev =>
                 new Map(prev).set(cacheKey, result.error)
@@ -178,7 +182,6 @@ export function WarehousesSubTable({
     [
       expandedProductIds,
       variantsCache,
-      localVariantsCache,
       onProductExpand,
       typedCommands,
     ]
@@ -186,7 +189,7 @@ export function WarehousesSubTable({
 
   const products = productsCache.has(warehouseId)
     ? (productsCache.get(warehouseId) ?? [])
-    : (localProductsCache.get(warehouseId) ?? [])
+    : (localProductsCacheRef.current.get(warehouseId) ?? [])
   const warehouseLoading =
     isLoadingProducts(warehouseId) || loadingProducts.has(warehouseId)
   const warehouseError = errorProducts.get(warehouseId)
@@ -251,7 +254,7 @@ export function WarehousesSubTable({
             const isProductExpanded = expandedProductIds.has(product.id)
             const variants = variantsCache.has(cacheKey)
               ? (variantsCache.get(cacheKey) ?? [])
-              : (localVariantsCache.get(cacheKey) ?? [])
+              : (localVariantsCacheRef.current.get(cacheKey) ?? [])
             const productLoading =
               isLoadingVariants(product.id) || loadingVariants.has(cacheKey)
             const productError = errorVariants.get(cacheKey)

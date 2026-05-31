@@ -23,7 +23,7 @@ export function PaginationFooter({
   }
 
   return (
-    <footer className="h-12 bg-surface-container-low border-t border-outline-variant px-6 flex items-center justify-between shrink-0">
+    <footer className="h-12 bg-surface-container-low border-t border-outline-variant px-6 flex items-center justify-between shrink-0 mt-3 rounded-full">
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2">
           <span className="text-on-surface-variant text-body-sm">

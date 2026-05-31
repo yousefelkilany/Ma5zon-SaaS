@@ -94,7 +94,7 @@ pub fn create_levels_table() -> &'static str {
     "CREATE TABLE IF NOT EXISTS stock_levels (
         variant_id INTEGER NOT NULL,
         warehouse_id INTEGER NOT NULL,
-        quantity INTEGER NOT NULL DEFAULT 0,
+        quantity INTEGER NOT NULL DEFAULT 0 CHECK (quantity >= 0),
         PRIMARY KEY (variant_id, warehouse_id),
         FOREIGN KEY(variant_id) REFERENCES product_variants(id),
         FOREIGN KEY(warehouse_id) REFERENCES warehouses(id)
@@ -107,7 +107,7 @@ pub fn create_movements_table() -> &'static str {
         variant_id INTEGER NOT NULL,
         from_warehouse_id INTEGER,
         to_warehouse_id INTEGER,
-        quantity INTEGER NOT NULL,
+        quantity INTEGER NOT NULL CHECK (quantity > 0),
         \"type\" TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(variant_id) REFERENCES product_variants(id),
@@ -147,7 +147,7 @@ pub fn get_stock_levels_by_product() -> &'static str {
         v.variant_name,
         v.sku,
         COALESCE(s.warehouse_id, 0) AS warehouse_id,
-        COALESCE(s.quantity, 0) AS current_qty
+        CAST(COALESCE(s.quantity, 0) AS INTEGER) AS quantity
      FROM product_variants v
      LEFT JOIN stock_levels s ON v.id = s.variant_id
      WHERE v.product_id = ?1
@@ -160,7 +160,7 @@ pub fn get_levels_by_warehouse_with_names() -> &'static str {
         v.variant_name,
         v.sku,
         COALESCE(s.warehouse_id, 0) AS warehouse_id,
-        COALESCE(s.quantity, 0) AS quantity
+        CAST(COALESCE(s.quantity, 0) AS INTEGER) AS quantity
      FROM product_variants v
      JOIN products p ON v.product_id = p.id
      LEFT JOIN stock_levels s ON v.id = s.variant_id AND s.warehouse_id = ?1
@@ -183,9 +183,31 @@ pub fn variants_get_by_product_and_warehouse() -> &'static str {
         v.id AS variant_id, \
         v.variant_name, \
         v.sku, \
-        COALESCE(s.quantity, 0) AS quantity \
+        CAST(COALESCE(s.quantity, 0) AS INTEGER) AS quantity \
      FROM product_variants v \
      LEFT JOIN stock_levels s ON v.id = s.variant_id AND s.warehouse_id = ?2 \
      WHERE v.product_id = ?1 \
      ORDER BY v.variant_name"
+}
+
+pub fn create_triggers() -> &'static str {
+    r#"
+-- Trigger to prevent negative stock on UPDATE
+CREATE TRIGGER IF NOT EXISTS prevent_negative_stock_update
+BEFORE UPDATE ON stock_levels
+FOR EACH ROW
+WHEN NEW.quantity < 0
+BEGIN
+    SELECT RAISE(ABORT, 'Stock cannot be negative');
+END;
+
+-- Trigger to prevent negative stock on INSERT
+CREATE TRIGGER IF NOT EXISTS prevent_negative_stock_insert
+BEFORE INSERT ON stock_levels
+FOR EACH ROW
+WHEN NEW.quantity < 0
+BEGIN
+    SELECT RAISE(ABORT, 'Stock cannot be negative');
+END;
+"#
 }

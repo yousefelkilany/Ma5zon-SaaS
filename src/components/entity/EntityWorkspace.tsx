@@ -1,6 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { invoke } from '@tauri-apps/api/core'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 import type { FilterState as BindingFilterState } from '@/lib/bindings'
@@ -49,7 +48,7 @@ function EntityHeader({
   const addNewLabel = t('entity.workspace.addNew', { entity: singularLabel })
 
   return (
-    <header className="flex flex-col gap-2 px-margin-edge pb-6 bg-surface shadow-sm shrink-0">
+    <header className="flex flex-col gap-2 px-margin-edge pb-6 bg-surface shadow-sm shrink-0 -mt-6 pt-6">
       <div className="flex items-center justify-between">
         <div className="flex flex-col">
           <nav className="flex items-center space-x-2 text-on-surface-variant mb-1">
@@ -83,40 +82,40 @@ function EntityHeader({
   )
 }
 
-async function exportToCSV(
-  columns: ColumnDef[],
-  data: Record<string, unknown>[]
-) {
-  const headers = columns
-    .filter(c => c.visible)
-    .map(c => c.label)
-    .join(',')
-  const rows = data.map(row =>
-    columns
-      .filter(c => c.visible)
-      .map(c => {
-        const value = row[c.id]
-        if (typeof value === 'string' && value.includes(',')) {
-          return `"${value}"`
-        }
-        return String(value ?? '')
-      })
-      .join(',')
-  )
+// async function exportToCSV(
+//   columns: ColumnDef[],
+//   data: Record<string, unknown>[]
+// ) {
+//   const headers = columns
+//     .filter(c => c.visible)
+//     .map(c => c.label)
+//     .join(',')
+//   const rows = data.map(row =>
+//     columns
+//       .filter(c => c.visible)
+//       .map(c => {
+//         const value = row[c.id]
+//         if (typeof value === 'string' && value.includes(',')) {
+//           return `"${value}"`
+//         }
+//         return String(value ?? '')
+//       })
+//       .join(',')
+//   )
 
-  const csvFile = '\ufeff' + [headers, ...rows].join('\n')
-  const filePath = `ma5zon-export-${Date.now()}.csv`
+//   const csvFile = '\ufeff' + [headers, ...rows].join('\n')
+//   const filePath = `ma5zon-export-${Date.now()}.csv`
 
-  try {
-    await invoke('export_file', {
-      filePath,
-      content: csvFile,
-    })
-    console.error(`rust invoke export success!`)
-  } catch (err) {
-    console.error(`rust invoke export err: ${err}`)
-  }
-}
+//   try {
+//     await invoke('export_file', {
+//       filePath,
+//       content: csvFile,
+//     })
+//     console.error(`rust invoke export success!`)
+//   } catch (err) {
+//     console.error(`rust invoke export err: ${err}`)
+//   }
+// }
 
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const queryClient = useQueryClient()
@@ -355,10 +354,6 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     [entityType, queryClient]
   )
 
-  const handleExport = async () => {
-    await exportToCSV(columns, entityData ?? [])
-  }
-
   const handleBulkPrint = useCallback((ids: Set<string>, data: EntityRow[]) => {
     const selectedData = data.filter(row => ids.has(row.id))
     if (selectedData.length === 0) return
@@ -434,7 +429,6 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         isLoading={isLoading}
         onSaveColumnPrefs={handleSaveColumnPrefs}
         onFiltersApply={handleFiltersApply}
-        onExport={handleExport}
         onPrintSelected={handleBulkPrint}
         onExportFormatSelect={handleExportFormatSelect}
         onDelete={handleBulkDelete}

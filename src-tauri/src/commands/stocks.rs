@@ -7,7 +7,7 @@ use crate::commands::DatabaseInitializable;
 use crate::commands::warehouses::PaginatedResponse;
 use crate::seed::movements as seed_movements;
 use crate::sql::stocks::{
-    create_levels_table, create_movements_table, fetch_products_by_warehouse_with_stock,
+    create_levels_table, create_movements_table, create_triggers, fetch_products_by_warehouse_with_stock,
     get_levels_all, get_levels_by_variant, get_levels_by_warehouse, get_levels_by_warehouse_with_names,
     get_movements_all, get_movements_by_variant, get_stock_levels_by_product,
 };
@@ -27,6 +27,8 @@ impl DatabaseInitializable for StockInitializer {
             .map_err(|e| format!("Failed to create stock_levels table: {e}"))?;
         conn.execute(create_movements_table(), [])
             .map_err(|e| format!("Failed to create stock_movements table: {e}"))?;
+        conn.execute_batch(create_triggers())
+            .map_err(|e| format!("Failed to create stock triggers: {e}"))?;
 
         let count: i64 = conn
             .query_row("SELECT COUNT(*) FROM stock_movements", [], |row| row.get(0))
@@ -53,7 +55,7 @@ pub struct StockMovement {
     pub variant_id: String,
     pub from_warehouse_id: Option<String>,
     pub to_warehouse_id: Option<String>,
-    pub quantity: f64,
+    pub quantity: i32,
     pub movement_type: String,
     pub created_at: String,
 }
@@ -93,7 +95,7 @@ pub async fn stock_levels_get_all(app: AppHandle) -> Result<Vec<StockLevel>, Str
             Ok(StockLevel {
                 variant_id: row.get::<_, i64>(0)?.to_string(),
                 warehouse_id: row.get::<_, i64>(1)?.to_string(),
-                quantity: row.get(2)?,
+                quantity: row.get::<_, i32>(2)?,
             })
         })
         .map_err(|e| format!("Failed to query stock levels: {e}"))?
@@ -122,7 +124,7 @@ pub async fn stock_levels_get_by_variant(
             Ok(StockLevel {
                 variant_id: row.get::<_, i64>(0)?.to_string(),
                 warehouse_id: row.get::<_, i64>(1)?.to_string(),
-                quantity: row.get(2)?,
+                quantity: row.get::<_, i32>(2)?,
             })
         })
         .map_err(|e| format!("Failed to query stock levels: {e}"))?
@@ -151,7 +153,7 @@ pub async fn stock_levels_get_by_warehouse(
             Ok(StockLevel {
                 variant_id: row.get::<_, i64>(0)?.to_string(),
                 warehouse_id: row.get::<_, i64>(1)?.to_string(),
-                quantity: row.get(2)?,
+                quantity: row.get::<_, i32>(2)?,
             })
         })
         .map_err(|e| format!("Failed to query stock levels: {e}"))?

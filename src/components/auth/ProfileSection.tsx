@@ -69,7 +69,7 @@ export function ProfileSection({ className }: ProfileSectionProps) {
           />
         ) : (
           <span
-            className="material-symbols-outlined w-10 h-10 pt-1 flex items-center justify-center rounded-full border border-black"
+            className="material-symbols-outlined w-10 h-10 pt-1 flex items-center justify-center rounded-xl border border-black"
             style={{ fontSize: '1.75em' }}
           >
             {DEFAULT_AVATAR}

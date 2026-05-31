@@ -22,7 +22,7 @@ export function Toolbar({
   const { t } = useTranslation()
 
   return (
-    <section className="px-6 py-3 border-y border-outline-variant bg-surface-container flex items-center justify-between shrink-0">
+    <section className="px-6 py-3 my-3 border border-outline-variant bg-surface-container flex items-center justify-between shrink-0 rounded-xl">
       <div className="flex items-center gap-3 flex-1">
         <div className="relative max-w-sm">
           <input

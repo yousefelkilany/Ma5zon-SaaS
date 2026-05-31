@@ -97,7 +97,7 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <SplashScreen isReady={isAppReady} minDuration={3000} />
+        <SplashScreen isReady={isAppReady} minDuration={1500} />
         <MainWindow />
       </ThemeProvider>
     </ErrorBoundary>
