@@ -77,12 +77,10 @@ export interface ToolbarProps {
   onSearchChange: (value: string) => void
   onFiltersClick: () => void
   onColumnsClick: () => void
-  hasSelection: boolean
   selectedCount: number
   onPrintSelected: () => void
   onExportFormatSelect: (format: 'csv' | 'xlsx') => void
   onDelete: () => void
-  onExport: () => void
   activeFilterCount?: number
 }
 

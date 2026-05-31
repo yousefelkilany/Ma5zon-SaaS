@@ -13,12 +13,10 @@ export function Toolbar({
   onSearchChange,
   onFiltersClick,
   onColumnsClick,
-  hasSelection,
   selectedCount,
   onPrintSelected,
   onExportFormatSelect,
   onDelete,
-  onExport,
 }: ToolbarProps) {
   const { t } = useTranslation()
 
@@ -65,69 +63,56 @@ export function Toolbar({
         </button>
       </div>
       <div className="flex items-center gap-3">
-        {hasSelection && (
-          <div className="flex items-center gap-2">
-            <span className="text-on-surface-variant text-body-sm">
-              {t('entity.workspace.selected', { count: selectedCount })}
-            </span>
-            <DropdownMenu>
-              <div className="flex">
+        <div className="flex items-center gap-2">
+          <span className="text-on-surface-variant text-body-sm">
+            {t('entity.workspace.selected', { count: selectedCount })}
+          </span>
+          <DropdownMenu>
+            <div className="flex">
+              <button
+                type="button"
+                className="flex items-center gap-2 px-3 py-1.5 bg-secondary text-on-secondary hover:bg-secondary/90 transition-colors rounded-s text-body-sm"
+                onClick={onPrintSelected}
+              >
+                <span className="material-symbols-outlined text-[18px]">
+                  print
+                </span>
+                {t('entity.workspace.toolbar.print')}
+              </button>
+              <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="flex items-center gap-2 px-3 py-1.5 bg-secondary text-on-secondary hover:bg-secondary/90 transition-colors rounded-s text-body-sm"
-                  onClick={onPrintSelected}
+                  className="flex items-center px-2 py-1.5 bg-secondary text-on-secondary hover:bg-secondary/90 transition-colors rounded-e border-s border-on-secondary/20"
                 >
                   <span className="material-symbols-outlined text-[18px]">
-                    print
+                    expand_more
                   </span>
-                  {t('entity.workspace.toolbar.print')}
                 </button>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    type="button"
-                    className="flex items-center px-2 py-1.5 bg-secondary text-on-secondary hover:bg-secondary/90 transition-colors rounded-e border-s border-on-secondary/20"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">
-                      expand_more
-                    </span>
-                  </button>
-                </DropdownMenuTrigger>
-              </div>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onExportFormatSelect('csv')}>
-                  <span className="material-symbols-outlined text-[18px]">
-                    grid_on
-                  </span>
-                  {t('entity.workspace.export.csv')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onExportFormatSelect('xlsx')}>
-                  <span className="material-symbols-outlined text-[18px]">
-                    table
-                  </span>
-                  {t('entity.workspace.export.excel')}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive" onClick={onDelete}>
-                  <span className="material-symbols-outlined text-[18px]">
-                    delete
-                  </span>
-                  {t('entity.workspace.delete')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
-        {hasSelection && <div className="h-6 w-px bg-outline-variant" />}
-        <button
-          type="button"
-          className="flex items-center gap-2 px-3 py-1.5 text-on-surface-variant hover:bg-surface-bright transition-colors rounded text-body-sm"
-          onClick={onExport}
-        >
-          <span className="material-symbols-outlined text-[18px]">
-            file_download
-          </span>
-          {t('entity.workspace.toolbar.export')}
-        </button>
+              </DropdownMenuTrigger>
+            </div>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onExportFormatSelect('csv')}>
+                <span className="material-symbols-outlined text-[18px]">
+                  grid_on
+                </span>
+                {t('entity.workspace.export.csv')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onExportFormatSelect('xlsx')}>
+                <span className="material-symbols-outlined text-[18px]">
+                  table
+                </span>
+                {t('entity.workspace.export.excel')}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive" onClick={onDelete}>
+                <span className="material-symbols-outlined text-[18px]">
+                  delete
+                </span>
+                {t('entity.workspace.delete')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </section>
   )

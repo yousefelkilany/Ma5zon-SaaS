@@ -185,12 +185,10 @@ export function DataTableShell({
         activeFilterCount={filters.length}
         onFiltersClick={() => setFilterDialogOpen(true)}
         onColumnsClick={() => setColumnDialogOpen(true)}
-        hasSelection={selectedIds.size > 0}
         selectedCount={selectedIds.size}
         onPrintSelected={handlePrintSelected}
         onExportFormatSelect={handleExportFormat}
         onDelete={handleDeleteClick}
-        onExport={onExport}
       />
       <div className="flex-1 overflow-hidden">
         <div className="h-full flex flex-col">
