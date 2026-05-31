@@ -28,7 +28,6 @@ interface DataTableShellProps {
   isLoading: boolean
   onSaveColumnPrefs: (columns: ColumnDef[]) => void
   onFiltersApply: (filters: FilterState[]) => void
-  onExport: () => void
   onPrintSelected: (ids: Set<string>, data: EntityRow[]) => void
   onExportFormatSelect: (
     format: 'csv' | 'xlsx',
@@ -57,7 +56,6 @@ export function DataTableShell({
   isLoading,
   onSaveColumnPrefs,
   onFiltersApply,
-  onExport,
   onPrintSelected,
   onExportFormatSelect,
   onDelete,

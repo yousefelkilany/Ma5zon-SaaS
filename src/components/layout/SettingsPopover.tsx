@@ -43,9 +43,9 @@ export function SettingsPopover() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full">
+        <button className="p-1 px-2 text-on-surface-variant hover:bg-surface-container-high rounded-full">
           <span
-            className="material-symbols-outlined"
+            className="material-symbols-outlined pt-1"
             style={{ fontSize: '1.75em' }}
           >
             settings

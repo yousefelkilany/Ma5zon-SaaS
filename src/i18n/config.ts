@@ -41,3 +41,7 @@ export const availableLanguages = Object.keys(resources)
 
 // Check if a language is RTL
 export const isRTL = (lng: string): boolean => rtlLanguages.includes(lng)
+
+// Check if a language is RTL
+export const langDir = (lng: string): 'ltr' | 'rtl' =>
+  isRTL(lng) ? 'rtl' : 'ltr'

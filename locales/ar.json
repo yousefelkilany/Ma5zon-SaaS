@@ -325,7 +325,7 @@
   "common.edit": "تعديل",
   "settingsPopover.language.arabic": "العربية",
   "settingsPopover.language.english": "EN",
-  "entity.workspace.selected": "{count, plural, =0 {لا توجد محددات} =1 {محدد واحد} =2 {محددان} few {# محددات} many {# محدد} other {# محدد}}",
+  "entity.workspace.selected": "{count, plural, =0 {لم يتم تحديد اى عنصر} =1 {عنصر واحد} =2 {عنصران} few {# عناصر} many {# عنصر} other {# عنصر}}",
   "entity.layout.products.label": "المنتجات",
   "entity.layout.products.columns.company": "اسم الشركة",
   "entity.layout.products.columns.name": "اسم المنتج",
@@ -376,5 +376,5 @@
   "entity.workspace.print.printButton": "طباعة",
   "entity.workspace.print.cancelButton": "إلغاء",
   "entity.workspace.export.csv": "CSV",
-  "entity.workspace.export.excel": "Excel"
+  "entity.workspace.export.excel": "إكسل"
 }

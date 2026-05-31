@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { LoginModal } from './LoginModal'
 import { ProfileModal } from './ProfileModal'
 
-const DEFAULT_AVATAR = new URL('@/assets/profile.png', import.meta.url).href
+const DEFAULT_AVATAR = 'person'
 
 interface ProfileSectionProps {
   className?: string
@@ -61,11 +61,20 @@ export function ProfileSection({ className }: ProfileSectionProps) {
         onClick={() => setProfileModalOpen(true)}
         className="flex items-center gap-2 px-3 py-1 rounded-full hover:bg-surface-container-high"
       >
-        <img
-          src={user.avatar_url ?? DEFAULT_AVATAR}
-          alt={user.name}
-          className="w-9 h-9 rounded-full border border-secondary"
-        />
+        {user.avatar_url ? (
+          <img
+            src={user.avatar_url}
+            alt={user.name}
+            className="w-9 h-9 rounded-full border border-secondary"
+          />
+        ) : (
+          <span
+            className="material-symbols-outlined w-10 h-10 pt-1 flex items-center justify-center rounded-full border border-black"
+            style={{ fontSize: '1.75em' }}
+          >
+            {DEFAULT_AVATAR}
+          </span>
+        )}
         <div className="hidden lg:block leading-tight">
           <p className="font-body-sm text-body-lg font-bold text-primary">
             {user.name}

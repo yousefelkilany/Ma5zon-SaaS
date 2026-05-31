@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { langDir } from '@/i18n/config'
 
 export function Toolbar({
   searchValue,
@@ -90,14 +91,20 @@ export function Toolbar({
                 </button>
               </DropdownMenuTrigger>
             </div>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent
+              align="start"
+              style={{ direction: langDir(document.documentElement.lang) }}
+            >
               <DropdownMenuItem onClick={() => onExportFormatSelect('csv')}>
                 <span className="material-symbols-outlined text-[18px]">
                   grid_on
                 </span>
                 {t('entity.workspace.export.csv')}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onExportFormatSelect('xlsx')}>
+              <DropdownMenuItem
+                onClick={() => onExportFormatSelect('xlsx')}
+                className=""
+              >
                 <span className="material-symbols-outlined text-[18px]">
                   table
                 </span>
