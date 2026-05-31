@@ -24,7 +24,7 @@ pub trait DatabaseInitializable: Send + Sync {
 }
 
 use self::{
-    products::ProductsInitializer, stocks::StockInitializer, users::UserInitializer,
+    products::ProductsInitializer, users::UserInitializer,
     variants::VariantsInitializer, warehouses::WarehousesInitializer,
 };
 
@@ -33,5 +33,4 @@ pub const TABLE_INITIALIZERS: &[&dyn DatabaseInitializable] = &[
     &ProductsInitializer,
     &VariantsInitializer,
     &WarehousesInitializer,
-    &StockInitializer,
 ];
