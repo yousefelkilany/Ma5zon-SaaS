@@ -12,14 +12,17 @@ const resources = {
 const rtlLanguages = ['ar']
 export const defaultLanguage = 'ar'
 
-i18n.use(initReactI18next).use(ICU).init({
-  resources,
-  lng: 'ar',
-  fallbackLng: 'ar',
-  interpolation: {
-    escapeValue: false,
-  },
-})
+i18n
+  .use(initReactI18next)
+  .use(ICU)
+  .init({
+    resources,
+    lng: 'ar',
+    fallbackLng: 'ar',
+    interpolation: {
+      escapeValue: false,
+    },
+  })
 
 // Update document direction and lang on language change
 i18n.on('languageChanged', lng => {

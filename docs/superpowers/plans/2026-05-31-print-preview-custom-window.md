@@ -473,15 +473,12 @@ const [isDeleting, setIsDeleting] = useState(false)
 Replace the existing `handleBulkPrint` stub (lines 355-360) with:
 
 ```tsx
-const handleBulkPrint = useCallback(
-  (ids: Set<string>, data: EntityRow[]) => {
-    const selectedData = data.filter(row => ids.has(row.id))
-    if (selectedData.length === 0) return
-    setSelectedForPrint(selectedData)
-    setPrintPreviewOpen(true)
-  },
-  []
-)
+const handleBulkPrint = useCallback((ids: Set<string>, data: EntityRow[]) => {
+  const selectedData = data.filter(row => ids.has(row.id))
+  if (selectedData.length === 0) return
+  setSelectedForPrint(selectedData)
+  setPrintPreviewOpen(true)
+}, [])
 ```
 
 - [ ] **Step 4: Implement handleExportFormatSelect**

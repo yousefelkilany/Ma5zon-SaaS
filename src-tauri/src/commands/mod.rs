@@ -35,14 +35,3 @@ pub const TABLE_INITIALIZERS: &[&dyn DatabaseInitializable] = &[
     &WarehousesInitializer,
     &StockInitializer,
 ];
-
-pub use stocks::{
-    StockLevel, StockLevelWithVariant, StockMovement,
-    stock_levels_get_all, stock_levels_get_by_variant, stock_levels_get_by_warehouse,
-    stock_levels_get_by_product, stock_levels_get_by_warehouse_with_names,
-    stock_movements_get_all, stock_movements_get_by_variant,
-    ProductWithStock, VariantWithStock,
-    products_get_by_warehouse_with_stock, products_get_by_warehouse_paginated,
-    variants_get_by_product_and_warehouse,
-};
-pub use warehouses::PaginatedResponse;

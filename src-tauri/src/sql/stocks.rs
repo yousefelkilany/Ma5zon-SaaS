@@ -3,6 +3,7 @@
 use rusqlite::{Connection, Result as DbErr};
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct ProductWithStock {
     pub id: String,
     pub company: String,
@@ -44,7 +45,7 @@ pub fn fetch_products_by_warehouse_with_stock(
                  INNER JOIN product_variants v ON p.id = v.product_id
                  INNER JOIN stock_levels sl ON v.id = sl.variant_id
                  WHERE sl.warehouse_id = ?
-                 LIMIT ? OFFSET ?"
+                 LIMIT ? OFFSET ?",
             )?;
             let mut rows = stmt.query([warehouse_id, limit, offset])?;
             let mut products = Vec::new();
@@ -60,7 +61,7 @@ pub fn fetch_products_by_warehouse_with_stock(
                  INNER JOIN product_variants v ON p.id = v.product_id
                  INNER JOIN stock_levels sl ON v.id = sl.variant_id
                  WHERE sl.warehouse_id = ?
-                 LIMIT ?"
+                 LIMIT ?",
             )?;
             let mut rows = stmt.query([warehouse_id, limit])?;
             let mut products = Vec::new();
@@ -75,7 +76,7 @@ pub fn fetch_products_by_warehouse_with_stock(
                  FROM products p
                  INNER JOIN product_variants v ON p.id = v.product_id
                  INNER JOIN stock_levels sl ON v.id = sl.variant_id
-                 WHERE sl.warehouse_id = ?"
+                 WHERE sl.warehouse_id = ?",
             )?;
             let mut rows = stmt.query([warehouse_id])?;
             let mut products = Vec::new();
@@ -166,6 +167,7 @@ pub fn get_levels_by_warehouse_with_names() -> &'static str {
      ORDER BY v.variant_name"
 }
 
+#[allow(dead_code)]
 pub fn products_get_by_warehouse_with_stock() -> &'static str {
     "SELECT DISTINCT p.id, p.name \
      FROM products p \
@@ -175,6 +177,7 @@ pub fn products_get_by_warehouse_with_stock() -> &'static str {
      ORDER BY p.name"
 }
 
+#[allow(dead_code)]
 pub fn variants_get_by_product_and_warehouse() -> &'static str {
     "SELECT \
         v.id AS variant_id, \

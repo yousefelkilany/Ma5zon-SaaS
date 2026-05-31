@@ -38,7 +38,11 @@ const [columnWidths, setColumnWidths] = useState<Record<string, number>>(
 )
 
 const [isResizing, setIsResizing] = useState<string | null>(null)
-const resizeRef = useRef<{ startX: number; startWidth: number; columnId: string } | null>(null)
+const resizeRef = useRef<{
+  startX: number
+  startWidth: number
+  columnId: string
+} | null>(null)
 ```
 
 ## 4. Column Width State
@@ -67,9 +71,11 @@ Each header cell contains an absolute-positioned resize handle at its trailing e
   )}
   <div
     className="absolute top-0 h-full w-4 cursor-col-resize flex items-center justify-center end-0"
-    onMouseDown={(e) => handleResizeStart(e, columnId)}
+    onMouseDown={e => handleResizeStart(e, columnId)}
   >
-    <div className={`h-full w-0.5 transition-colors ${isResizing === columnId ? 'bg-secondary' : 'bg-outline-variant hover:bg-secondary'}`} />
+    <div
+      className={`h-full w-0.5 transition-colors ${isResizing === columnId ? 'bg-secondary' : 'bg-outline-variant hover:bg-secondary'}`}
+    />
   </div>
 </div>
 ```
@@ -150,7 +156,7 @@ const handleSort = (columnId: string) => {
   type="checkbox"
   checked={row.getIsSelected()}
   onChange={row.getToggleSelectedHandler()}
-  onClick={(e) => e.stopPropagation()}
+  onClick={e => e.stopPropagation()}
 />
 ```
 
@@ -163,7 +169,7 @@ In each body row (first column after select):
 ```jsx
 <button
   className="p-1 hover:bg-surface-bright rounded transition-colors"
-  onClick={(e) => {
+  onClick={e => {
     e.stopPropagation()
     onRowToggleExpand?.(row.original.id)
   }}
@@ -279,10 +285,22 @@ import {
   flexRender,
   type ColumnDef as TanstackColumnDef,
 } from '@tanstack/react-table'
-import type { ColumnDef, EntityRow, DataTableProps, VariantRow, StockLevelWithVariant } from '@/lib/types/entity'
+import type {
+  ColumnDef,
+  EntityRow,
+  DataTableProps,
+  VariantRow,
+  StockLevelWithVariant,
+} from '@/lib/types/entity'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsRTL } from '@/hooks/user-is-rtl'
-import { VariantsSubTable, WarehousesSubTable, ProductDetailModal, WarehouseDetailModal, VariantDetailModal } from './'
+import {
+  VariantsSubTable,
+  WarehousesSubTable,
+  ProductDetailModal,
+  WarehouseDetailModal,
+  VariantDetailModal,
+} from './'
 ```
 
 ## 16. Out of Scope

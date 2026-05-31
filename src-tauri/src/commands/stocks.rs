@@ -4,12 +4,13 @@ use rusqlite::{params, Connection};
 use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
-use crate::commands::DatabaseInitializable;
 use crate::commands::warehouses::PaginatedResponse;
+use crate::commands::DatabaseInitializable;
 use crate::sql::stocks::{
     create_levels_table, create_movements_table, fetch_products_by_warehouse_with_stock,
-    get_levels_all, get_levels_by_variant, get_levels_by_warehouse, get_movements_all,
-    get_movements_by_variant, get_stock_levels_by_product, get_levels_by_warehouse_with_names,
+    get_levels_all, get_levels_by_variant, get_levels_by_warehouse,
+    get_levels_by_warehouse_with_names, get_movements_all, get_movements_by_variant,
+    get_stock_levels_by_product,
 };
 
 pub struct StockInitializer;
@@ -76,7 +77,8 @@ fn seed_stock_levels(conn: &Connection) -> Result<(), String> {
         };
 
         for warehouse_id in selected_warehouses {
-            let quantity: i64 = (((rng.gen_range(50.0_f64..2000.0_f64) * 100.0).round()) / 100.0) as i64;
+            let quantity: i64 =
+                (((rng.gen_range(50.0_f64..2000.0_f64) * 100.0).round()) / 100.0) as i64;
             conn.execute(
                 "INSERT INTO stock_levels (variant_id, warehouse_id, quantity) VALUES (?1, ?2, ?3)",
                 params![variant_id, warehouse_id, quantity],
@@ -203,6 +205,7 @@ pub struct ProductWithStock {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
+#[allow(dead_code)]
 pub struct VariantWithStock {
     pub variant_id: String,
     pub variant_name: String,
@@ -452,7 +455,7 @@ pub async fn products_get_by_warehouse_paginated(
     let offset = (page - 1) * page_size;
     let conn = get_conn(&app)?;
     let (sql_products, total_count) = fetch_products_by_warehouse_with_stock(
-&conn,
+        &conn,
         warehouse_id as i64,
         Some(page_size as i64),
         Some(offset as i64),
@@ -478,6 +481,7 @@ pub async fn products_get_by_warehouse_paginated(
 
 #[tauri::command]
 #[specta::specta]
+#[allow(dead_code)]
 pub async fn variants_get_by_product_and_warehouse(
     app: AppHandle,
     product_id: String,

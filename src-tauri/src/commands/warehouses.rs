@@ -6,8 +6,8 @@ use tauri::AppHandle;
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::sql::warehouses::{
-    build_get_all, build_get_paginated, build_where_clause, count_query, create,
-    create_table, get_by_id, get_created_at, soft_delete, update,
+    build_get_all, build_get_paginated, build_where_clause, count_query, create, create_table,
+    get_by_id, get_created_at, soft_delete, update,
 };
 use crate::types::{FilterState, SortState};
 
@@ -132,8 +132,7 @@ pub async fn warehouses_get_paginated(
         .query_row(&count_sql, [], |row| row.get(0))
         .map_err(|e| format!("Failed to count warehouses: {e}"))?;
 
-    let query =
-        build_get_paginated(&where_clause, sort.as_ref(), page_size, offset);
+    let query = build_get_paginated(&where_clause, sort.as_ref(), page_size, offset);
     let mut stmt = conn
         .prepare(&query)
         .map_err(|e| format!("warehouses_get_paginated Failed to prepare: {e}"))?;

@@ -1,7 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 import type { FilterState, SortState } from '@/lib/types/entity'
-import type { FilterState as BindingFilterState, SortState as BindingSortState } from '@/lib/bindings'
+import type {
+  FilterState as BindingFilterState,
+  SortState as BindingSortState,
+} from '@/lib/bindings'
 
 export function useProductsPagination(
   filters: FilterState[],

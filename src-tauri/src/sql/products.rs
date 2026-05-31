@@ -1,18 +1,15 @@
 //! SQL statements for products entity.
 
-use rusqlite::{Connection, Result as DbErr};
 use crate::types::Product;
+use rusqlite::{Connection, Result as DbErr};
 
+#[allow(dead_code)]
 pub fn fetch_all(
     conn: &Connection,
     limit: Option<i32>,
     offset: Option<i32>,
 ) -> DbErr<(Vec<Product>, i32)> {
-    let total: i32 = conn.query_row(
-        "SELECT COUNT(*) FROM products",
-        [],
-        |row| row.get(0),
-    )?;
+    let total: i32 = conn.query_row("SELECT COUNT(*) FROM products", [], |row| row.get(0))?;
 
     let products: Vec<Product> = match (limit, offset) {
         (Some(limit), Some(offset)) => {
@@ -77,7 +74,7 @@ pub fn fetch_all(
     Ok((products, total))
 }
 
-pub fn create_table() ->&'static str {
+pub fn create_table() -> &'static str {
     "CREATE TABLE IF NOT EXISTS products (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         company TEXT NOT NULL,
@@ -92,6 +89,7 @@ pub fn create_table() ->&'static str {
     SELECT * FROM products WHERE deleted_at IS NULL;"
 }
 
+#[allow(dead_code)]
 pub fn get_all() -> &'static str {
     "SELECT id, company, name, category, created_at, updated_at, deleted_at \
      FROM active_products ORDER BY name"
@@ -122,7 +120,7 @@ pub fn get_created_at() -> &'static str {
 
 use crate::types::{FilterState, SortState};
 
-pub fn build_where_clause(filters:&[FilterState]) -> String {
+pub fn build_where_clause(filters: &[FilterState]) -> String {
     if filters.is_empty() {
         return String::new();
     }
@@ -170,7 +168,7 @@ pub fn build_where_clause(filters:&[FilterState]) -> String {
                 }
                 "between" => {
                     if let Some(arr) = f.value.as_array() {
-                        let min = arr.get(0).and_then(|v| v.as_str()).unwrap_or("");
+                        let min = arr.first().and_then(|v| v.as_str()).unwrap_or("");
                         let max = arr.get(1).and_then(|v| v.as_str()).unwrap_or("");
                         format!("{} BETWEEN '{}' AND '{}'", column, min, max)
                     } else {

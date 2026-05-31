@@ -30,7 +30,10 @@ interface DataTableShellProps {
   onFiltersApply: (filters: FilterState[]) => void
   onExport: () => void
   onPrintSelected: (ids: Set<string>, data: EntityRow[]) => void
-  onExportFormatSelect: (format: 'csv' | 'xlsx', selectedData: EntityRow[]) => void
+  onExportFormatSelect: (
+    format: 'csv' | 'xlsx',
+    selectedData: EntityRow[]
+  ) => void
   onDelete: (ids: Set<string>) => void
   onPageChange?: (page: number, pageSize: number) => void
   sort?: SortState | null

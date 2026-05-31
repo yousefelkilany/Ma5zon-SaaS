@@ -28,6 +28,6 @@ export function getEntityLayout(entityType: string, t: TFunction): ColumnDef[] {
       filterable: true,
       visible: true,
       order: index + 1,
-      isDataCol: true
+      isDataCol: true,
     }))
 }

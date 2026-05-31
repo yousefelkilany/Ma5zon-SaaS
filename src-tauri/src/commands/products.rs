@@ -6,13 +6,12 @@ use tauri::AppHandle;
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::sql::products::{
-    build_get_all, build_get_paginated, build_where_clause, count_query,
-    create as sql_create, create_table, get_by_id as sql_get_by_id,
-    get_created_at as sql_get_created_at, soft_delete as sql_soft_delete,
-    update as sql_update,
+    build_get_all, build_get_paginated, build_where_clause, count_query, create as sql_create,
+    create_table, get_by_id as sql_get_by_id, get_created_at as sql_get_created_at,
+    soft_delete as sql_soft_delete, update as sql_update,
 };
-use crate::types::{FilterState, SortState};
 use crate::types::Product;
+use crate::types::{FilterState, SortState};
 
 use crate::commands::warehouses::PaginatedResponse;
 

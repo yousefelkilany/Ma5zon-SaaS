@@ -23,6 +23,7 @@
 ## Task 1: Update ToolbarProps Type
 
 **Files:**
+
 - Modify: `src/lib/types/entity.ts:75-85`
 
 - [ ] **Step 1: Update ToolbarProps interface**
@@ -57,6 +58,7 @@ git commit -m "feat(entity): update ToolbarProps for bulk actions"
 ## Task 2: Update Toolbar Component
 
 **Files:**
+
 - Modify: `src/components/entity/Toolbar.tsx`
 
 - [ ] **Step 1: Add imports for DropdownMenu components**
@@ -95,6 +97,7 @@ export function Toolbar({
 - [ ] **Step 3: Replace bulk action buttons section (lines 59-75)**
 
 Replace this section:
+
 ```typescript
 {hasSelection && (
   <div className="flex items-center gap-2">
@@ -178,6 +181,7 @@ git commit -m "feat(entity): add split button bulk actions with dropdown"
 ## Task 3: Update DataTableShell
 
 **Files:**
+
 - Modify: `src/components/entity/DataTableShell.tsx`
 
 - [ ] **Step 1: Add ConfirmationDialog import**
@@ -231,6 +235,7 @@ const handleConfirmDelete = useCallback(() => {
 - [ ] **Step 4: Add onPrintSelected, onExportSelected, onDelete to props interface and destructuring**
 
 Add to interface (after line 29):
+
 ```typescript
 onPrintSelected: (ids: Set<string>, data: EntityRow[]) => void
 onExportSelected: (ids: Set<string>, data: EntityRow[]) => void
@@ -238,6 +243,7 @@ onDelete: (ids: Set<string>) => void
 ```
 
 Add to destructuring (after line 53):
+
 ```typescript
 onPrintSelected,
 onExportSelected,
@@ -247,6 +253,7 @@ onDelete,
 - [ ] **Step 5: Update Toolbar props (lines 151-161)**
 
 Replace:
+
 ```typescript
 <Toolbar
   searchValue={searchValue}
@@ -262,6 +269,7 @@ Replace:
 ```
 
 With:
+
 ```typescript
 <Toolbar
   searchValue={searchValue}
@@ -311,6 +319,7 @@ git commit -m "feat(entity): wire up bulk actions with confirmation dialog"
 ## Task 4: Update EntityWorkspace
 
 **Files:**
+
 - Modify: `src/components/entity/EntityWorkspace.tsx`
 
 - [ ] **Step 1: Add new handlers after handleFiltersApply (after line 348)**
@@ -334,13 +343,10 @@ const handleExportSelected = useCallback(
   []
 )
 
-const handleDelete = useCallback(
-  async (_ids: Set<string>) => {
-    // TODO: implement delete logic
-    console.log('Delete:', _ids.size, 'items')
-  },
-  []
-)
+const handleDelete = useCallback(async (_ids: Set<string>) => {
+  // TODO: implement delete logic
+  console.log('Delete:', _ids.size, 'items')
+}, [])
 ```
 
 - [ ] **Step 2: Pass new handlers to DataTableShell (around line 357)**
@@ -348,9 +354,9 @@ const handleDelete = useCallback(
 Add after existing DataTableShell props:
 
 ```typescript
-onPrintSelected={handlePrintSelected}
-onExportSelected={handleExportSelected}
-onDelete={handleDelete}
+onPrintSelected = { handlePrintSelected }
+onExportSelected = { handleExportSelected }
+onDelete = { handleDelete }
 ```
 
 - [ ] **Step 3: Commit**
@@ -365,6 +371,7 @@ git commit -m "feat(entity): add bulk action handlers to EntityWorkspace"
 ## Task 5: Add i18n Keys
 
 **Files:**
+
 - Modify: `src/locales/en/entity.json` (or relevant locale)
 
 - [ ] **Step 1: Add new translation keys**
@@ -405,14 +412,14 @@ git commit -m "i18n: add bulk action translation keys"
 
 ## Spec Coverage
 
-| Spec Requirement | Task |
-|-----------------|------|
-| Delete with confirmation dialog | Task 3, Task 4 |
-| Export Selected (intersection) | Task 4 placeholder |
-| Print Selected (intersection) | Task 4 placeholder |
-| Split button UI | Task 2 |
-| ToolbarProps type change | Task 1 |
-| i18n keys | Task 5 |
+| Spec Requirement                | Task               |
+| ------------------------------- | ------------------ |
+| Delete with confirmation dialog | Task 3, Task 4     |
+| Export Selected (intersection)  | Task 4 placeholder |
+| Print Selected (intersection)   | Task 4 placeholder |
+| Split button UI                 | Task 2             |
+| ToolbarProps type change        | Task 1             |
+| i18n keys                       | Task 5             |
 
 **Note:** Actual PDF generation and complete export implementation are marked as TODO in EntityWorkspace handlers - those are out of scope for this plan per the spec.
 

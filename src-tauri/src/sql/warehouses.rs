@@ -3,6 +3,7 @@
 use rusqlite::{Connection, Result as DbErr};
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct Warehouse {
     pub id: i64,
     pub name: String,
@@ -13,6 +14,7 @@ pub struct Warehouse {
 }
 
 impl Warehouse {
+    #[allow(dead_code)]
     pub fn from_row(row: &rusqlite::Row) -> DbErr<Self> {
         Ok(Warehouse {
             id: row.get(0)?,
@@ -25,16 +27,13 @@ impl Warehouse {
     }
 }
 
+#[allow(dead_code)]
 pub fn fetch_all(
     conn: &Connection,
     limit: Option<i32>,
     offset: Option<i32>,
 ) -> DbErr<(Vec<Warehouse>, i32)> {
-    let total: i32 = conn.query_row(
-        "SELECT COUNT(*) FROM warehouses",
-        [],
-        |row| row.get(0),
-    )?;
+    let total: i32 = conn.query_row("SELECT COUNT(*) FROM warehouses", [], |row| row.get(0))?;
 
     let warehouses: Vec<Warehouse> = match (limit, offset) {
         (Some(limit), Some(offset)) => {
@@ -89,6 +88,7 @@ pub fn create_table() -> &'static str {
     SELECT * FROM warehouses WHERE deleted_at IS NULL;"
 }
 
+#[allow(dead_code)]
 pub fn get_all() -> &'static str {
     "SELECT id, name, location, created_at, updated_at, deleted_at \
      FROM active_warehouses ORDER BY name"
@@ -127,7 +127,7 @@ pub fn build_where_clause(filters: &[FilterState]) -> String {
     let clauses: Vec<String> = filters
         .iter()
         .map(|f| {
-            let column =&f.column_id;
+            let column = &f.column_id;
             match f.operator.as_str() {
                 "eq" => {
                     if let Some(arr) = f.value.as_array() {
@@ -167,7 +167,7 @@ pub fn build_where_clause(filters: &[FilterState]) -> String {
                 }
                 "between" => {
                     if let Some(arr) = f.value.as_array() {
-                        let min = arr.get(0).and_then(|v| v.as_str()).unwrap_or("");
+                        let min = arr.first().and_then(|v| v.as_str()).unwrap_or("");
                         let max = arr.get(1).and_then(|v| v.as_str()).unwrap_or("");
                         format!("{} BETWEEN '{}' AND '{}'", column, min, max)
                     } else {
@@ -220,7 +220,8 @@ pub fn count_query(where_clause: &str) -> String {
 }
 
 pub fn build_get_all(where_clause: &str, sort: Option<&SortState>) -> String {
-    let base = "SELECT id, name, location, created_at, updated_at, deleted_at FROM active_warehouses";
+    let base =
+        "SELECT id, name, location, created_at, updated_at, deleted_at FROM active_warehouses";
     let query = if where_clause.is_empty() {
         base.to_string()
     } else {

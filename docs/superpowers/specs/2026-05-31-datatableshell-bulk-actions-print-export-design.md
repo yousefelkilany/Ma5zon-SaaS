@@ -43,31 +43,56 @@ EntityWorkspace (handlers)
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Ma5zon - Print Selected</title>
-  <style>
-    body { font-family: system-ui, sans-serif; padding: 20px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background: #f5f5f5; }
-    @media print { body { padding: 0; } }
-  </style>
-</head>
-<body>
-  <h2>Print Selected - {entityType}</h2>
-  <p>{count} items selected</p>
-  <table>
-    <!-- columns from getEntityLayout -->
-<thead><tr><th>Name</th><th>...</th></tr></thead>
-    <tbody><!-- filtered rows --></tbody>
-  </table>
-</body>
+  <head>
+    <title>Ma5zon - Print Selected</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        padding: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background: #f5f5f5;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Print Selected - {entityType}</h2>
+    <p>{count} items selected</p>
+    <table>
+      <!-- columns from getEntityLayout -->
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>...</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- filtered rows -->
+      </tbody>
+    </table>
+  </body>
 </html>
 ```
 
 ### i18n for Print
 
 New keys needed:
+
 - `entity.workspace.toolbar.printing` - "Printing..." (loading state)
 
 ## Export Selected Implementation
@@ -84,6 +109,7 @@ New keys needed:
 ### Dependencies
 
 Add to `package.json`:
+
 ```json
 "xlsx": "^0.18.5"
 ```
@@ -118,7 +144,7 @@ async function exportSelectedToExcel(columns: ColumnDef[], data: EntityRow[]) {
   const visibleCols = columns.filter(c => c.visible && c.type !== 'actions')
   const worksheetData = [
     visibleCols.map(c => c.label), // header row
-    ...data.map(row => visibleCols.map(c => String(row[c.id] ?? '')))
+    ...data.map(row => visibleCols.map(c => String(row[c.id] ?? ''))),
   ]
 
   const worksheet = XLSX.utils.aoa_to_sheet(worksheetData)
@@ -126,7 +152,10 @@ async function exportSelectedToExcel(columns: ColumnDef[], data: EntityRow[]) {
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Selected Items')
 
   const fileName = `ma5zon-export-${Date.now()}.xlsx`
-  const arrayBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'arraybuffer' })
+  const arrayBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'arraybuffer',
+  })
 
   await commands.exportFile(fileName, new Uint8Array(arrayBuffer))
 }
@@ -141,13 +170,15 @@ async function exportSelectedToCSV(columns: ColumnDef[], data: EntityRow[]) {
   const visibleCols = columns.filter(c => c.visible && c.type !== 'actions')
   const headers = visibleCols.map(c => c.label).join(',')
   const rows = data.map(row =>
-    visibleCols.map(c => {
-      const value = row[c.id]
-      if (typeof value === 'string' && value.includes(',')) {
-        return `"${value}"`
-      }
-      return String(value ?? '')
-    }).join(',')
+    visibleCols
+      .map(c => {
+        const value = row[c.id]
+        if (typeof value === 'string' && value.includes(',')) {
+          return `"${value}"`
+        }
+        return String(value ?? '')
+      })
+      .join(',')
   )
 
   const csvFile = '\ufeff' + [headers, ...rows].join('\n')
@@ -159,6 +190,7 @@ async function exportSelectedToCSV(columns: ColumnDef[], data: EntityRow[]) {
 ## i18n Keys
 
 New keys:
+
 - `entity.workspace.toolbar.printing` - "Printing..."
 - `entity.workspace.export.formatTitle` - "Export Format"
 - `entity.workspace.export.formatDescription` - "Choose export format"

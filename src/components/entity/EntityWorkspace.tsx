@@ -359,15 +359,12 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     await exportToCSV(columns, entityData ?? [])
   }
 
-  const handleBulkPrint = useCallback(
-    (ids: Set<string>, data: EntityRow[]) => {
-      const selectedData = data.filter(row => ids.has(row.id))
-      if (selectedData.length === 0) return
-      setSelectedForPrint(selectedData)
-      setPrintPreviewOpen(true)
-    },
-    []
-  )
+  const handleBulkPrint = useCallback((ids: Set<string>, data: EntityRow[]) => {
+    const selectedData = data.filter(row => ids.has(row.id))
+    if (selectedData.length === 0) return
+    setSelectedForPrint(selectedData)
+    setPrintPreviewOpen(true)
+  }, [])
 
   const handleExportFormatSelect = useCallback(
     async (format: 'csv' | 'xlsx', selectedData: EntityRow[]) => {

@@ -39,7 +39,7 @@ impl DatabaseInitializable for UserInitializer {
 
         conn.execute_batch(create_table())
             .map_err(|e| format!("Failed to create users table: {e}"))?;
-        
+
         let count: i64 = conn
             .query_row("SELECT COUNT(*) FROM active_users", [], |row| row.get(0))
             .map_err(|e| format!("Failed to check users count: {e}"))?;

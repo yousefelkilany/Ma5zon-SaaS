@@ -43,11 +43,13 @@ EntityWorkspace (owns state, handlers)
 ### Toolbar.tsx
 
 **Props (ToolbarProps type):**
+
 - `onPrintSelected: () => void` - primary action, triggers directly on button click
 - `onExportSelected: () => void` - in dropdown menu
 - `onDelete: () => void` - in dropdown menu, opens confirmation dialog
 
 **UI Structure:**
+
 ```
 ┌──────────────────┬──────────┐
 │  [Print]         │  [▼]     │  ← Split button
@@ -66,19 +68,23 @@ EntityWorkspace (owns state, handlers)
 ### DataTableShell.tsx
 
 **New State:**
+
 - `confirmationDialogOpen: boolean`
 - `confirmationDialogAction: 'delete' | null`
 
 **Removed:**
+
 - `handleBulkAction` callback (replaced with specific handlers)
 
 **New Callbacks:**
+
 - `handleDeleteClick` - opens confirmation dialog
 - `handleConfirmDelete` - calls `onDelete(selectedIds)`, closes dialog, clears selection
 - `handlePrintSelected` - calls `onPrintSelected(selectedIds, filteredData)`
 - `handleExportSelected` - calls `onExportSelected(selectedIds, filteredData)`
 
 **Toolbar Props:**
+
 ```typescript
 <Toolbar
   // ... existing
@@ -89,15 +95,18 @@ EntityWorkspace (owns state, handlers)
 ```
 
 **ConfirmationDialog integration:**
+
 ```tsx
 <ConfirmationDialog
   open={confirmationDialogOpen}
-  onOpenChange={(open) => {
+  onOpenChange={open => {
     setConfirmationDialogOpen(open)
     if (!open) setConfirmationDialogAction(null)
   }}
   title={t('entity.workspace.deleteConfirmTitle')}
-  description={t('entity.workspace.deleteConfirmDescription', { count: selectedIds.size })}
+  description={t('entity.workspace.deleteConfirmDescription', {
+    count: selectedIds.size,
+  })}
   confirmLabel={t('entity.workspace.delete')}
   onConfirm={handleConfirmDelete}
 />
@@ -108,20 +117,29 @@ EntityWorkspace (owns state, handlers)
 **New Handlers:**
 
 ```typescript
-const handleExportSelected = useCallback((ids: Set<string>, data: EntityRow[]) => {
-  const selectedData = data.filter(row => ids.has(row.id))
-  // TODO: implement export logic
-}, [])
+const handleExportSelected = useCallback(
+  (ids: Set<string>, data: EntityRow[]) => {
+    const selectedData = data.filter(row => ids.has(row.id))
+    // TODO: implement export logic
+  },
+  []
+)
 
-const handlePrintSelected = useCallback((ids: Set<string>, data: EntityRow[]) => {
-  const selectedData = data.filter(row => ids.has(row.id))
-  // TODO: implement print PDF logic
-}, [])
+const handlePrintSelected = useCallback(
+  (ids: Set<string>, data: EntityRow[]) => {
+    const selectedData = data.filter(row => ids.has(row.id))
+    // TODO: implement print PDF logic
+  },
+  []
+)
 
-const handleDelete = useCallback(async (ids: Set<string>) => {
-  // TODO: call Rust delete command
-  // TODO: invalidate queries
-}, [queryClient, entityType])
+const handleDelete = useCallback(
+  async (ids: Set<string>) => {
+    // TODO: call Rust delete command
+    // TODO: invalidate queries
+  },
+  [queryClient, entityType]
+)
 ```
 
 ### ToolbarProps Type
@@ -155,6 +173,7 @@ export interface ToolbarProps {
 Both Print and Export operate on: `selectedIds ∩ visibleData`
 
 The `filteredData` passed to DataTableShell already accounts for:
+
 - Search filter (Fuse.js)
 - Column filters
 - Sort order
