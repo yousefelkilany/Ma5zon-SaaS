@@ -12,6 +12,7 @@ pub mod preferences;
 pub mod products;
 pub mod recovery;
 pub mod stocks;
+pub mod stock_movements;
 pub mod users;
 pub mod variants;
 pub mod warehouses;
