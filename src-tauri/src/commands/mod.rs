@@ -10,7 +10,6 @@ pub mod db_utils;
 pub mod notifications;
 pub mod preferences;
 pub mod products;
-pub mod quick_pane;
 pub mod recovery;
 pub mod stocks;
 pub mod users;

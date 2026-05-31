@@ -148,26 +148,28 @@ pub fn run() {
                 app.handle().plugin(Builder::new().build())?;
             }
 
-            // Load saved preferences and register the quick pane shortcut
-            #[cfg(desktop)]
-            {
-                let saved_shortcut = commands::preferences::load_quick_pane_shortcut(app.handle());
-                let shortcut_to_register = saved_shortcut
-                    .as_deref()
-                    .unwrap_or(DEFAULT_QUICK_PANE_SHORTCUT);
+            // NO NEED FOR QUICK PANE
 
-                log::info!("Registering quick pane shortcut: {shortcut_to_register}");
-                commands::quick_pane::register_quick_pane_shortcut(
-                    app.handle(),
-                    shortcut_to_register,
-                )?;
-            }
+            // // Load saved preferences and register the quick pane shortcut
+            // #[cfg(desktop)]
+            // {
+            //     let saved_shortcut = commands::preferences::load_quick_pane_shortcut(app.handle());
+            //     let shortcut_to_register = saved_shortcut
+            //         .as_deref()
+            //         .unwrap_or(DEFAULT_QUICK_PANE_SHORTCUT);
 
-            // Create the quick pane window (hidden) - must be done on main thread
-            if let Err(e) = commands::quick_pane::init_quick_pane(app.handle()) {
-                log::error!("Failed to create quick pane: {e}");
-                // Non-fatal: app can still run without quick pane
-            }
+            //     log::info!("Registering quick pane shortcut: {shortcut_to_register}");
+            //     commands::quick_pane::register_quick_pane_shortcut(
+            //         app.handle(),
+            //         shortcut_to_register,
+            //     )?;
+            // }
+
+            // // Create the quick pane window (hidden) - must be done on main thread
+            // if let Err(e) = commands::quick_pane::init_quick_pane(app.handle()) {
+            //     log::error!("Failed to create quick pane: {e}");
+            //     // Non-fatal: app can still run without quick pane
+            // }
 
             // NOTE: Application menu is built from JavaScript for i18n support
             // See src/lib/menu.ts for the menu implementation
