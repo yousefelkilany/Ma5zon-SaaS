@@ -360,7 +360,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   )
 
   const handleBulkExport = useCallback(
-    (_ids: Set<string>, _data: EntityRow[]) => {
+    (_format: 'csv' | 'xlsx', _data: EntityRow[]) => {
       // TODO: Implement bulk export
     },
     []
@@ -390,7 +390,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         onFiltersApply={handleFiltersApply}
         onExport={handleExport}
         onPrintSelected={handleBulkPrint}
-        onExportSelected={handleBulkExport}
+        onExportFormatSelect={handleBulkExport}
         onDelete={handleBulkDelete}
         sort={sort}
         onSortChange={handleSortChange}

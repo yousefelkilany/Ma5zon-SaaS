@@ -16,7 +16,7 @@ export function Toolbar({
   hasSelection,
   selectedCount,
   onPrintSelected,
-  onExportSelected,
+  onExportFormatSelect,
   onDelete,
   onExport,
 }: ToolbarProps) {
@@ -94,11 +94,17 @@ export function Toolbar({
                 </DropdownMenuTrigger>
               </div>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={onExportSelected}>
+                <DropdownMenuItem onClick={() => onExportFormatSelect('csv')}>
                   <span className="material-symbols-outlined text-[18px]">
-                    file_download
+                    table
                   </span>
-                  {t('entity.workspace.toolbar.exportSelected')}
+                  {t('entity.workspace.export.csv')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onExportFormatSelect('xlsx')}>
+                  <span className="material-symbols-outlined text-[18px]">
+                    grid_on
+                  </span>
+                  {t('entity.workspace.export.excel')}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onClick={onDelete}>

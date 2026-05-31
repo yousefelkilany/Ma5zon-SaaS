@@ -30,7 +30,7 @@ interface DataTableShellProps {
   onFiltersApply: (filters: FilterState[]) => void
   onExport: () => void
   onPrintSelected: (ids: Set<string>, data: EntityRow[]) => void
-  onExportSelected: (ids: Set<string>, data: EntityRow[]) => void
+  onExportFormatSelect: (format: 'csv' | 'xlsx', selectedData: EntityRow[]) => void
   onDelete: (ids: Set<string>) => void
   onPageChange?: (page: number, pageSize: number) => void
   sort?: SortState | null
@@ -56,7 +56,7 @@ export function DataTableShell({
   onFiltersApply,
   onExport,
   onPrintSelected,
-  onExportSelected,
+  onExportFormatSelect,
   onDelete,
   onPageChange,
   sort: externalSort,
@@ -147,9 +147,14 @@ export function DataTableShell({
     onPrintSelected(selectedIds, filteredData)
   }, [selectedIds, filteredData, onPrintSelected])
 
-  const handleExportSelected = useCallback(() => {
-    onExportSelected(selectedIds, filteredData)
-  }, [selectedIds, filteredData, onExportSelected])
+  const handleExportFormat = useCallback(
+    (format: 'csv' | 'xlsx') => {
+      const selectedData = filteredData.filter(row => selectedIds.has(row.id))
+      if (selectedData.length === 0) return
+      onExportFormatSelect(format, selectedData)
+    },
+    [selectedIds, filteredData, onExportFormatSelect]
+  )
 
   const handleDeleteClick = useCallback(() => {
     setDeleteDialogOpen(true)
@@ -180,7 +185,7 @@ export function DataTableShell({
         hasSelection={selectedIds.size > 0}
         selectedCount={selectedIds.size}
         onPrintSelected={handlePrintSelected}
-        onExportSelected={handleExportSelected}
+        onExportFormatSelect={handleExportFormat}
         onDelete={handleDeleteClick}
         onExport={onExport}
       />

@@ -80,7 +80,7 @@ export interface ToolbarProps {
   hasSelection: boolean
   selectedCount: number
   onPrintSelected: () => void
-  onExportSelected: () => void
+  onExportFormatSelect: (format: 'csv' | 'xlsx') => void
   onDelete: () => void
   onExport: () => void
   activeFilterCount?: number
