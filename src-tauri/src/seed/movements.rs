@@ -77,28 +77,21 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
                 .map_err(|e| format!("Failed transfer to Sohag: {}", e))?;
         }
 
-        // 6. Sales from various warehouses (2-4 per variant)
+        // 6. Sales from Cairo warehouse only (where stock is accumulated)
         let num_sales = rng.gen_range(2..=4);
         for _ in 0..num_sales {
-            let from_wh = warehouse_ids[rng.gen_range(0..warehouse_ids.len())];
             let sale_qty = ((rng.gen_range(1.0_f64..50.0_f64) * 100.0).round()) / 100.0;
-            execute_movement(conn, *variant_id, Some(from_wh), None, sale_qty, "SALE")
+            execute_movement(conn, *variant_id, Some(cairo_wh), None, sale_qty, "SALE")
                 .map_err(|e| format!("Failed sale: {}", e))?;
         }
 
-        // 7. Adjustments (0-2 per variant)
+        // 7. Positive adjustments only during seeding (upsert creates stock if missing)
         let num_adjustments = rng.gen_range(0..=2);
         for _ in 0..num_adjustments {
             let wh = warehouse_ids[rng.gen_range(0..warehouse_ids.len())];
-            let is_positive = rng.gen_bool(0.5);
             let adj_qty = ((rng.gen_range(1.0_f64..30.0_f64) * 100.0).round()) / 100.0;
-            if is_positive {
-                execute_movement(conn, *variant_id, None, Some(wh), adj_qty, "ADJUST")
-                    .map_err(|e| format!("Failed positive adjustment: {}", e))?;
-            } else {
-                execute_movement(conn, *variant_id, Some(wh), None, adj_qty, "ADJUST")
-                    .map_err(|e| format!("Failed negative adjustment: {}", e))?;
-            }
+            execute_movement(conn, *variant_id, None, Some(wh), adj_qty, "ADJUST")
+                .map_err(|e| format!("Failed positive adjustment: {}", e))?;
         }
     }
 
