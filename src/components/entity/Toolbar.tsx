@@ -96,13 +96,13 @@ export function Toolbar({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onExportFormatSelect('csv')}>
                   <span className="material-symbols-outlined text-[18px]">
-                    table
+                    grid_on
                   </span>
                   {t('entity.workspace.export.csv')}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onExportFormatSelect('xlsx')}>
                   <span className="material-symbols-outlined text-[18px]">
-                    grid_on
+                    table
                   </span>
                   {t('entity.workspace.export.excel')}
                 </DropdownMenuItem>

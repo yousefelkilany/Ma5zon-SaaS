@@ -147,16 +147,16 @@ export function DataTableShell({
   }, [])
 
   const handlePrintSelected = useCallback(() => {
-    onPrintSelected(selectedIds, filteredData)
-  }, [selectedIds, filteredData, onPrintSelected])
+    onPrintSelected(selectedIds, data)
+  }, [selectedIds, data, onPrintSelected])
 
   const handleExportFormat = useCallback(
     (format: 'csv' | 'xlsx') => {
-      const selectedData = filteredData.filter(row => selectedIds.has(row.id))
+      const selectedData = data.filter(row => selectedIds.has(row.id))
       if (selectedData.length === 0) return
       onExportFormatSelect(format, selectedData)
     },
-    [selectedIds, filteredData, onExportFormatSelect]
+    [selectedIds, data, onExportFormatSelect]
   )
 
   const handleDeleteClick = useCallback(() => {
