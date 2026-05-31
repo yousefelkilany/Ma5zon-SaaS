@@ -232,11 +232,13 @@ export function DataTableShell({
       />
       <ConfirmationDialog
         open={deleteDialogOpen}
-        onOpenChange={(open) => {
+        onOpenChange={open => {
           setDeleteDialogOpen(open)
         }}
         title={t('entity.workspace.deleteConfirmTitle')}
-        description={t('entity.workspace.deleteConfirmDescription', { count: selectedIds.size })}
+        description={t('entity.workspace.deleteConfirmDescription', {
+          count: selectedIds.size,
+        })}
         confirmLabel={t('entity.workspace.delete')}
         onConfirm={handleConfirmDelete}
       />

@@ -366,12 +366,9 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     []
   )
 
-  const handleBulkDelete = useCallback(
-    (_ids: Set<string>) => {
-      // TODO: Implement bulk delete
-    },
-    []
-  )
+  const handleBulkDelete = useCallback((_ids: Set<string>) => {
+    // TODO: Implement bulk delete
+  }, [])
 
   return (
     <div className="px-margin-edge flex flex-col h-full bg-background py-6">
