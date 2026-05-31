@@ -41,7 +41,7 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
         let options = template.1;
 
         for v in 0..num_variants {
-            let variant_name = format!("{} {} {}", template.0, options[v % options.len()], template.2);
+            let variant_name = format!("{} - {} - {}", template.0, options[v % options.len()], template.2);
             let sku = format!("SKU-{:04}-{:02}", product_id, v + 1);
             let uom_id = (rng.gen_range(0..UOM_NAMES.len()) + 1) as i64;
 

@@ -1,13 +1,45 @@
+use async_trait::async_trait;
 use rusqlite::params;
 use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
+use crate::commands::DatabaseInitializable;
 use crate::commands::warehouses::PaginatedResponse;
+use crate::seed::movements as seed_movements;
 use crate::sql::stocks::{
-    fetch_products_by_warehouse_with_stock, get_levels_all, get_levels_by_variant,
-    get_levels_by_warehouse, get_levels_by_warehouse_with_names, get_movements_all,
-    get_movements_by_variant, get_stock_levels_by_product,
+    create_levels_table, create_movements_table, fetch_products_by_warehouse_with_stock,
+    get_levels_all, get_levels_by_variant, get_levels_by_warehouse, get_levels_by_warehouse_with_names,
+    get_movements_all, get_movements_by_variant, get_stock_levels_by_product,
 };
+
+pub struct StockInitializer;
+
+#[async_trait]
+impl DatabaseInitializable for StockInitializer {
+    fn table_name(&self) -> &str {
+        "stock_levels"
+    }
+
+    async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
+        let conn = get_conn(app)?;
+
+        conn.execute(create_levels_table(), [])
+            .map_err(|e| format!("Failed to create stock_levels table: {e}"))?;
+        conn.execute(create_movements_table(), [])
+            .map_err(|e| format!("Failed to create stock_movements table: {e}"))?;
+
+        let count: i64 = conn
+            .query_row("SELECT COUNT(*) FROM stock_movements", [], |row| row.get(0))
+            .map_err(|e| format!("Failed to count stock_movements: {e}"))?;
+
+        if count == 0 {
+            log::info!("[StockInitializer] Seeding stock movements");
+            seed_movements::seed(&conn)?;
+        }
+
+        Ok(())
+    }
+}
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
 pub struct StockLevel {
