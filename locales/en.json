@@ -372,5 +372,12 @@
   "entity.stock.noProductsInWarehouse": "No stock in this warehouse",
   "entity.stock.noVariants": "No variants found",
   "entity.stock.errorLoadingProducts": "Error loading products",
-  "entity.stock.errorLoadingVariants": "Error loading variants"
+  "entity.stock.errorLoadingVariants": "Error loading variants",
+  "entity.workspace.toolbar.printing": "Printing...",
+  "entity.workspace.print.title": "Print Preview",
+  "entity.workspace.print.itemsCount": "{count} items selected",
+  "entity.workspace.print.printButton": "Print",
+  "entity.workspace.print.cancelButton": "Cancel",
+  "entity.workspace.export.csv": "CSV",
+  "entity.workspace.export.excel": "Excel"
 }

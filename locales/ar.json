@@ -369,5 +369,12 @@
   "entity.create.variant.title": "إضافة متغير جديد",
   "entity.create.button": "إنشاء",
   "entity.create.error.required": "يجب ملء جميع الحقول المطلوبة",
-  "entity.create.error.failed": "فشل في الإنشاء"
+  "entity.create.error.failed": "فشل في الإنشاء",
+  "entity.workspace.toolbar.printing": "جارى الطباعة...",
+  "entity.workspace.print.title": "معاينة الطباعة",
+  "entity.workspace.print.itemsCount": "{count} عناصر محددة",
+  "entity.workspace.print.printButton": "طباعة",
+  "entity.workspace.print.cancelButton": "إلغاء",
+  "entity.workspace.export.csv": "CSV",
+  "entity.workspace.export.excel": "Excel"
 }
