@@ -48,7 +48,17 @@ Seed functions execute in dependency order:
 - **Veterinary**: Animal medications, pet supplements
 
 ### Companies (Egyptian/Regional)
-Pharco, Eva Pharm, Amoun, Memphis Pharm, Octoplus, Siemens Healthineers, 3M, Bayer, Novartis, GSK, Pfizer, MERCK, Hikma, Jamjoon, plus international manufacturers
+Pharco ( فاركو ), Eva Pharm ( إيفا فارم ), Amoun ( آمون ), Memphis Pharm ( ممفيس فارم ), Octoplus ( أوكتوبلس ), Siemens Healthineers ( سيمنس هيلثينيرز ), 3M ( ثري إم ), Bayer ( باير ), Novartis ( نوفارتس ), GSK ( جي إس كي ), Pfizer ( فايزر ), MERCK ( ميرك ), Hikma ( هشامة ), Jamjoon ( جموjoon ), plus international manufacturers
+
+### Naming Convention
+ALL generated text (products, companies, categories, variants) uses bilingual format:
+`{English_name} {Arabic_name}`
+
+Examples:
+- Product: "Acetaminophen 500mg Tablets باراسيتامول 500 مجم أقراص"
+- Company: "Pharco فاركو"
+- Category: "OTC Medicines أدوية بدون روشتة"
+- Variant: "500mg 500 مجم"
 
 ### Quantity
 60+ products with 4-5 variants each
@@ -108,7 +118,7 @@ COMMIT;
 | PURCHASE | NULL | destination | +quantity |
 | TRANSFER | source | destination | -source, +destination |
 | SALE | source | NULL | -quantity |
-| ADJUST | source OR NULL | destination | +/-quantity |
+| ADJUST | destination OR NULL | source OR NULL | +/-quantity |
 
 ### Core Functions
 
