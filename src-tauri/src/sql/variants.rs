@@ -42,10 +42,12 @@ pub fn get_by_product() -> &'static str {
 
 pub fn get_by_product_with_quantity() -> &'static str {
     "SELECT id, product_id, sku, variant_name, COALESCE(SUM(s.quantity), 0), uom_id, retail_price, \
-     wholesale_price, distribution_price, created_at, updated_at, deleted_at \
-     FROM active_product_variants WHERE product_id = ?1 ORDER BY sku \
-     JOIN stock_levels s ON s.variant_id = id \
-     GROUP BY s.warehouse_id"
+    wholesale_price, distribution_price, created_at, updated_at, deleted_at \
+    FROM active_product_variants \
+    LEFT JOIN stock_levels s ON s.variant_id = id \
+    WHERE product_id = ?1 \
+    GROUP BY sku \
+    ORDER BY sku"
 }
 
 pub fn create() -> &'static str {
