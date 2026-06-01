@@ -45,6 +45,7 @@ interface DataTableShellProps {
   onAddVariant?: (productId: string) => void
   stockLevelsCache?: Map<string, StockLevelWithVariant[]>
   isLoadingStockLevels?: (id: string) => boolean
+  onProductClick?: (productId: string) => void
 }
 
 export function DataTableShell({
@@ -70,6 +71,7 @@ export function DataTableShell({
   onAddVariant,
   stockLevelsCache,
   isLoadingStockLevels,
+  onProductClick,
 }: DataTableShellProps) {
   const { t } = useTranslation()
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -209,6 +211,7 @@ export function DataTableShell({
             onAddVariant={onAddVariant}
             stockLevelsCache={stockLevelsCache}
             isLoadingStockLevels={isLoadingStockLevels}
+            onProductClick={onProductClick}
           />
         </div>
       </div>

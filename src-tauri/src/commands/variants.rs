@@ -1,15 +1,15 @@
 use async_trait::async_trait;
 use chrono::Local;
-use rusqlite::{params, Connection};
+use rusqlite::params;
 use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::seed::variants as seed_variants;
 use crate::sql::variants::{
-    create, create_table, get_all, get_by_id, get_by_product, soft_delete, update,
+    create, create_table, get_all, get_by_id, get_by_product_with_quantity, soft_delete, update,
 };
-use crate::types::{NewVariant, UpdateVariant, Variant};
+use crate::types::{NewVariant, UpdateVariant, Variant, ProductVariantWithStock};
 
 pub struct VariantsInitializer;
 
@@ -73,32 +73,33 @@ pub async fn variants_get_all(app: AppHandle) -> Result<Vec<Variant>, String> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn variants_get_by_product(
+pub async fn variants_get_by_product_with_stock(
     app: AppHandle,
     product_id: String,
-) -> Result<Vec<Variant>, String> {
+) -> Result<Vec<ProductVariantWithStock>, String> {
     let conn = get_conn(&app)?;
     let product_id_i64: i64 = product_id
         .parse()
         .map_err(|e| format!("Invalid product_id: {e}"))?;
     let mut stmt = conn
-        .prepare(get_by_product())
+        .prepare(get_by_product_with_quantity())
         .map_err(|e| format!("Failed to prepare statement: {e}"))?;
 
     let variants = stmt
         .query_map(params![product_id_i64], |row| {
-            Ok(Variant {
+            Ok(ProductVariantWithStock {
                 id: row.get::<_, i64>(0)?.to_string(),
                 product_id: row.get::<_, i64>(1)?.to_string(),
                 sku: row.get(2)?,
                 variant_name: row.get(3)?,
-                uom_id: row.get::<_, i64>(4)?.to_string(),
-                retail_price: row.get(5)?,
-                wholesale_price: row.get(6)?,
-                distribution_price: row.get(7)?,
-                created_at: row.get(8)?,
-                updated_at: row.get(9)?,
-                deleted_at: row.get(10)?,
+                quantity: row.get::<_, i32>(4)?,
+                uom_id: row.get::<_, i64>(5)?.to_string(),
+                retail_price: row.get(6)?,
+                wholesale_price: row.get(7)?,
+                distribution_price: row.get(8)?,
+                created_at: row.get(9)?,
+                updated_at: row.get(10)?,
+                deleted_at: row.get(11)?,
             })
         })
         .map_err(|e| format!("Failed to query variants: {e}"))?

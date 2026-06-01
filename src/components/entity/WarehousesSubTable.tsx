@@ -1,198 +1,141 @@
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import type {
   StockLevelWithVariant,
   ProductWithStock,
-  VariantWithStock,
 } from '@/lib/types/entity'
 import { useTranslation } from 'react-i18next'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PaginationFooter } from '@/components/entity'
-import { formatCurrency } from '@/lib/utils'
-import i18n from '@/i18n/config'
-import { ChevronRightIcon, ChevronDownIcon } from 'lucide-react'
 import { commands } from '@/lib/tauri-bindings'
-
-type Commands = typeof commands & {
-  productsGetByWarehouseWithStock: (
-    warehouseId: string,
-    limit: number,
-    offset: number
-  ) => Promise<
-    | { status: 'ok'; data: ProductWithStock[] }
-    | { status: 'error'; error: string }
-  >
-  variantsGetByProductAndWarehouse: (
-    productId: string,
-    warehouseId: string
-  ) => Promise<
-    | { status: 'ok'; data: VariantWithStock[] }
-    | { status: 'error'; error: string }
-  >
-}
+import { getEntityLayout } from '@/lib/entity-layout'
 
 export interface WarehousesSubTableProps {
   stockLevels: StockLevelWithVariant[]
   isLoading?: boolean
   warehouseId: string
-  expandedProductIds?: Set<string>
   productsCache?: Map<string, ProductWithStock[]>
-  variantsCache?: Map<string, VariantWithStock[]>
-  onProductExpand?: (productId: string) => void
+  onProductClick?: (productId: string) => void
   isLoadingProducts?: (warehouseId: string) => boolean
-  isLoadingVariants?: (productId: string) => boolean
 }
 
 export function WarehousesSubTable({
   stockLevels,
   isLoading,
   warehouseId,
-  expandedProductIds = new Set(),
   productsCache = new Map(),
-  variantsCache = new Map(),
-  onProductExpand,
+  onProductClick,
   isLoadingProducts = () => false,
-  isLoadingVariants = () => false,
 }: WarehousesSubTableProps) {
   const { t } = useTranslation()
-  const locale = i18n.language
-  const localProductsCacheRef = useRef<Map<string, ProductWithStock[]>>(
-    new Map()
-  )
-  const [productsRenderKey, setProductsRenderKey] = useState(0)
-  void productsRenderKey
-  const localVariantsCacheRef = useRef<Map<string, VariantWithStock[]>>(
-    new Map()
-  )
-  const [variantsRenderKey, setVariantsRenderKey] = useState(0)
-  void variantsRenderKey
+  const [localProductsCache, setLocalProductsCache] = useState<
+    Map<string, ProductWithStock[]>
+  >(new Map())
   const [loadingProducts, setLoadingProducts] = useState<Set<string>>(new Set())
-  const [loadingVariants, setLoadingVariants] = useState<Set<string>>(new Set())
   const [errorProducts, setErrorProducts] = useState<Map<string, string>>(
     new Map()
   )
-  const [errorVariants, setErrorVariants] = useState<Map<string, string>>(
-    new Map()
-  )
+
+  const subTablePagination = [5, 10, 15]
   const [productPagination, setProductPagination] = useState({
     page: 1,
-    pageSize: 10,
+    pageSize: subTablePagination[0] ?? 5,
     totalRows: 0,
     totalPages: 1,
   })
+  const hasFetchedRef = useRef<Set<string>>(new Set())
 
-  const typedCommands = commands as Commands
+  const WAREHOUSE_PRODUCT_COLUMNS = useMemo(() => {
+    const columnsNames = ['name', 'company', 'quantity']
+    return getEntityLayout('products', t, columnsNames)
+  }, [t])
+
+  const localProductsCacheRef = useRef(localProductsCache)
 
   useEffect(() => {
-    if (
-      !productsCache.has(warehouseId) &&
-      !localProductsCacheRef.current.has(warehouseId)
-    ) {
-      setLoadingProducts(prev => new Set(prev).add(warehouseId))
+    localProductsCacheRef.current = localProductsCache
+  }, [localProductsCache])
+
+  const fetchProducts = useCallback(
+    (page: number, pageSize: number) => {
+      const cacheKey = `${warehouseId}-${page}-${pageSize}`
+      const cached = localProductsCacheRef.current.get(cacheKey)
+      if (cached) {
+        return Promise.resolve(cached)
+      }
+
+      setLoadingProducts(prev => new Set(prev).add(cacheKey))
       setErrorProducts(prev => {
         const next = new Map(prev)
-        next.delete(warehouseId)
+        next.delete(cacheKey)
         return next
       })
-      typedCommands
-        .productsGetByWarehouseWithStock(
+
+      return commands
+        .productsGetByWarehousePaginated(
           warehouseId,
-          productPagination.pageSize,
-          (productPagination.page - 1) * productPagination.pageSize
+          pageSize,
+          (page - 1) * pageSize
         )
         .then(result => {
           if (result.status === 'ok') {
-            localProductsCacheRef.current.set(warehouseId, result.data)
-            setProductsRenderKey(k => k + 1)
+            const products = result.data.data
+            setLocalProductsCache(prev => new Map(prev).set(cacheKey, products))
+            setProductPagination(prev => ({
+              ...prev,
+              totalRows: result.data.total_count,
+              totalPages: Math.ceil(result.data.total_count / pageSize) || 1,
+            }))
+            return products
           } else {
-            setErrorProducts(prev =>
-              new Map(prev).set(warehouseId, result.error)
-            )
+            setErrorProducts(prev => new Map(prev).set(cacheKey, result.error))
+            return []
           }
         })
         .catch(e => {
-          setErrorProducts(prev => new Map(prev).set(warehouseId, String(e)))
+          setErrorProducts(prev => new Map(prev).set(cacheKey, String(e)))
+          return []
         })
         .finally(() => {
           setLoadingProducts(prev => {
             const next = new Set(prev)
-            next.delete(warehouseId)
-            return next
-          })
-        })
-    }
-  }, [
-    warehouseId,
-    productsCache,
-    typedCommands,
-    productPagination.pageSize,
-    productPagination.page,
-  ])
-
-  const handleProductPageChange = useCallback(
-    (page: number, pageSize: number) => {
-      setProductPagination(prev => ({ ...prev, page, pageSize }))
-    },
-    []
-  )
-
-  const handleProductExpand = useCallback(
-    async (productId: string, whId: string) => {
-      const cacheKey = `${productId}-${whId}`
-      const newExpanded = new Set(expandedProductIds)
-      if (newExpanded.has(productId)) {
-        newExpanded.delete(productId)
-      } else {
-        newExpanded.add(productId)
-        if (
-          !variantsCache.has(cacheKey) &&
-          !localVariantsCacheRef.current.has(cacheKey)
-        ) {
-          setLoadingVariants(prev => new Set(prev).add(cacheKey))
-          setErrorVariants(prev => {
-            const next = new Map(prev)
             next.delete(cacheKey)
             return next
           })
-          try {
-            const result = await typedCommands.variantsGetByProductAndWarehouse(
-              productId,
-              whId
-            )
-            if (result.status === 'ok') {
-              localVariantsCacheRef.current.set(cacheKey, result.data)
-              setVariantsRenderKey(k => k + 1)
-            } else {
-              setErrorVariants(prev =>
-                new Map(prev).set(cacheKey, result.error)
-              )
-            }
-          } catch (e) {
-            setErrorVariants(prev => new Map(prev).set(cacheKey, String(e)))
-          } finally {
-            setLoadingVariants(prev => {
-              const next = new Set(prev)
-              next.delete(cacheKey)
-              return next
-            })
-          }
-        }
-      }
-      onProductExpand?.(productId)
+        })
     },
-    [
-      expandedProductIds,
-      variantsCache,
-      onProductExpand,
-      typedCommands,
-    ]
+    [warehouseId]
   )
 
+  useEffect(() => {
+    const page = 1
+    const pageSize = 10
+    const cacheKey = `${warehouseId}-${page}-${pageSize}`
+
+    if (
+      !productsCache.has(warehouseId) &&
+      !localProductsCacheRef.current.has(cacheKey) &&
+      !hasFetchedRef.current.has(cacheKey)
+    ) {
+      hasFetchedRef.current.add(cacheKey)
+      fetchProducts(page, pageSize)
+    }
+  }, [warehouseId, productsCache, fetchProducts])
+
+  const handlePageChange = useCallback(
+    (page: number, pageSize: number) => {
+      setProductPagination(prev => ({ ...prev, page, pageSize }))
+      fetchProducts(page, pageSize)
+    },
+    [fetchProducts]
+  )
+
+  const cacheKey = `${warehouseId}-${productPagination.page}-${productPagination.pageSize}`
   const products = productsCache.has(warehouseId)
     ? (productsCache.get(warehouseId) ?? [])
-    : (localProductsCacheRef.current.get(warehouseId) ?? [])
+    : (localProductsCache.get(cacheKey) ?? [])
   const warehouseLoading =
-    isLoadingProducts(warehouseId) || loadingProducts.has(warehouseId)
-  const warehouseError = errorProducts.get(warehouseId)
+    isLoadingProducts(warehouseId) || loadingProducts.has(cacheKey)
+  const warehouseError = errorProducts.get(cacheKey)
 
   if (isLoading || warehouseLoading) {
     return (
@@ -218,22 +161,25 @@ export function WarehousesSubTable({
       <table className="w-full text-body-sm">
         <thead>
           <tr className="border-b border-outline-variant">
-            <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps w-2" />
-            <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-              {t('entity.stock.warehouseProduct') ?? 'Product'}
-            </th>
-            <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-              {t('entity.stock.sku') ?? 'SKU'}
-            </th>
-            <th className="px-3 py-2 text-end text-on-surface-variant font-label-caps">
-              {t('entity.stock.quantity') ?? 'Qty'}
-            </th>
+            {WAREHOUSE_PRODUCT_COLUMNS.map(col => (
+              <th
+                key={col.id}
+                className={`px-3 py-2 text-start text-on-surface-variant font-label-caps ${
+                  col.type === 'number' ? 'text-end' : ''
+                }`}
+              >
+                {col.label}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
           {warehouseError && (
             <tr className="border-t border-outline-variant/30">
-              <td colSpan={4} className="px-3 py-2 text-error text-body-sm">
+              <td
+                colSpan={WAREHOUSE_PRODUCT_COLUMNS.length}
+                className="px-3 py-2 text-error text-body-sm"
+              >
                 {t('entity.stock.errorLoadingProducts')}: {warehouseError}
               </td>
             </tr>
@@ -241,7 +187,7 @@ export function WarehousesSubTable({
           {products.length === 0 && !warehouseError && (
             <tr className="border-t border-outline-variant/30">
               <td
-                colSpan={4}
+                colSpan={WAREHOUSE_PRODUCT_COLUMNS.length}
                 className="px-3 py-2 text-on-surface-variant text-body-sm"
               >
                 {t('entity.stock.noProductsInWarehouse') ??
@@ -249,113 +195,36 @@ export function WarehousesSubTable({
               </td>
             </tr>
           )}
-          {products.map(product => {
-            const cacheKey = `${product.id}-${warehouseId}`
-            const isProductExpanded = expandedProductIds.has(product.id)
-            const variants = variantsCache.has(cacheKey)
-              ? (variantsCache.get(cacheKey) ?? [])
-              : (localVariantsCacheRef.current.get(cacheKey) ?? [])
-            const productLoading =
-              isLoadingVariants(product.id) || loadingVariants.has(cacheKey)
-            const productError = errorVariants.get(cacheKey)
-
-            return (
-              <>
-                <tr key={product.id}>
-                  <td className="px-3 py-2">
-                    <button
-                      onClick={() =>
-                        handleProductExpand(product.id, warehouseId)
-                      }
-                      className="p-1 hover:bg-surface-container-high rounded transition-colors"
-                      aria-label={
-                        isProductExpanded
-                          ? 'Collapse product'
-                          : 'Expand product'
-                      }
-                    >
-                      {isProductExpanded ? (
-                        <ChevronDownIcon className="size-4" />
-                      ) : (
-                        <ChevronRightIcon className="size-4" />
-                      )}
-                    </button>
-                  </td>
-                  <td className="px-3 py-2 text-on-surface font-medium">
-                    {product.name}
-                  </td>
-                  <td className="px-3 py-2 text-on-surface-variant">—</td>
-                  <td className="px-3 py-2 text-end text-on-surface-variant">
-                    —
-                  </td>
-                </tr>
-                {isProductExpanded && (
-                  <>
-                    {productError && (
-                      <tr className="border-t border-outline-variant/30 bg-surface-container-lowest">
-                        <td
-                          colSpan={4}
-                          className="px-8 py-2 text-error text-body-sm"
-                        >
-                          {t('entity.stock.errorLoadingVariants')}:{' '}
-                          {productError}
-                        </td>
-                      </tr>
-                    )}
-                    {productLoading && (
-                      <tr className="border-t border-outline-variant/30 bg-surface-container-lowest">
-                        <td colSpan={4} className="px-8 py-2">
-                          <Skeleton className="h-8 w-full" />
-                        </td>
-                      </tr>
-                    )}
-                    {!productLoading &&
-                      variants.length === 0 &&
-                      !productError && (
-                        <tr className="border-t border-outline-variant/30 bg-surface-container-lowest">
-                          <td
-                            colSpan={4}
-                            className="px-8 py-2 text-on-surface-variant text-body-sm"
-                          >
-                            {t('entity.stock.noVariants') ??
-                              'No variants found'}
-                          </td>
-                        </tr>
-                      )}
-                    {!productLoading &&
-                      variants.map(variant => (
-                        <tr
-                          key={variant.variant_id}
-                          className="border-t border-outline-variant/30 bg-surface-container-lowest"
-                        >
-                          <td className="px-8 py-1" />
-                          <td className="px-8 py-1 text-on-surface pl-10 text-body-sm">
-                            {variant.variant_name}
-                          </td>
-                          <td className="px-3 py-1 text-on-surface text-body-sm font-data-tabular tabular-nums">
-                            {variant.sku}
-                          </td>
-                          <td className="px-3 py-1 text-end text-on-surface text-body-sm font-data-tabular tabular-nums">
-                            {formatCurrency(variant.quantity, locale)}
-                          </td>
-                        </tr>
-                      ))}
-                  </>
-                )}
-              </>
-            )
-          })}
-          <tr>
-            <td colSpan={4}>
-              <PaginationFooter
-                pagination={productPagination}
-                onPageChange={handleProductPageChange}
-                isLoading={isLoadingProducts(warehouseId)}
-              />
-            </td>
-          </tr>
+          {products.map(product => (
+            <tr
+              key={product.id}
+              className="border-t border-outline-variant/30 hover:bg-surface-container-high transition-colors cursor-pointer"
+              onClick={() => onProductClick?.(product.id)}
+            >
+              {WAREHOUSE_PRODUCT_COLUMNS.map(col => (
+                <td
+                  key={col.id}
+                  className={`px-3 py-2 text-on-surface ${
+                    col.type === 'number'
+                      ? 'text-start text-on-surface font-data-tabular tabular-nums'
+                      : ''
+                  }`}
+                >
+                  {col.id === 'quantity'
+                    ? product.quantity.toLocaleString()
+                    : String(product[col.id as keyof ProductWithStock] ?? '-')}
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
+      <PaginationFooter
+        pagination={productPagination}
+        onPageChange={handlePageChange}
+        isLoading={isLoadingProducts(warehouseId)}
+        pageSizes={subTablePagination}
+      />
     </div>
   )
 }

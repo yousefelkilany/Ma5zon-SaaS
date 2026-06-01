@@ -2,7 +2,10 @@ import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
-import type { FilterState as BindingFilterState } from '@/lib/bindings'
+import type {
+  FilterState as BindingFilterState,
+  ProductVariantWithStock,
+} from '@/lib/bindings'
 import { getEntityLayout } from '@/lib/entity-layout'
 import type {
   EntityWorkspaceProps,
@@ -18,6 +21,7 @@ import { ProductCreateModal } from './ProductCreateModal'
 import { WarehouseCreateModal } from './WarehouseCreateModal'
 import { VariantCreateModal } from './VariantCreateModal'
 import { VariantDetailModal } from './VariantDetailModal'
+import { ProductDetailModal } from './ProductDetailModal'
 import { cn } from '@/lib/utils'
 import { PrintPreviewDialog } from './PrintPreviewDialog'
 import { exportSelectedToCSV, exportSelectedToExcel } from '@/lib/utils'
@@ -82,41 +86,6 @@ function EntityHeader({
   )
 }
 
-// async function exportToCSV(
-//   columns: ColumnDef[],
-//   data: Record<string, unknown>[]
-// ) {
-//   const headers = columns
-//     .filter(c => c.visible)
-//     .map(c => c.label)
-//     .join(',')
-//   const rows = data.map(row =>
-//     columns
-//       .filter(c => c.visible)
-//       .map(c => {
-//         const value = row[c.id]
-//         if (typeof value === 'string' && value.includes(',')) {
-//           return `"${value}"`
-//         }
-//         return String(value ?? '')
-//       })
-//       .join(',')
-//   )
-
-//   const csvFile = '\ufeff' + [headers, ...rows].join('\n')
-//   const filePath = `ma5zon-export-${Date.now()}.csv`
-
-//   try {
-//     await invoke('export_file', {
-//       filePath,
-//       content: csvFile,
-//     })
-//     console.error(`rust invoke export success!`)
-//   } catch (err) {
-//     console.error(`rust invoke export err: ${err}`)
-//   }
-// }
-
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const queryClient = useQueryClient()
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
@@ -145,6 +114,8 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   >(null)
   const [columnPrefs, setColumnPrefs] = useState<ColumnDef[] | null>(null)
   const [variantDetailOpen, setVariantDetailOpen] = useState(false)
+  const [productDetailOpen, setProductDetailOpen] = useState(false)
+  const [productDetailId, setProductDetailId] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [printPreviewOpen, setPrintPreviewOpen] = useState(false)
@@ -178,6 +149,11 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     if (!open) setCreateModalType(null)
   }, [])
 
+  const handleProductClick = useCallback((productId: string) => {
+    setProductDetailId(productId)
+    setProductDetailOpen(true)
+  }, [])
+
   const handleVariantClick = useCallback(
     (variantId: string, productId: string) => {
       setSelectedVariantId(variantId)
@@ -190,14 +166,11 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const handleVariantSaved = useCallback(
     async (_variant: { product_id: string }) => {
       if (!selectedVariantProductId) return
-      const result = await commands.variantsGetByProduct(
+      const result = await commands.variantsGetByProductWithStock(
         selectedVariantProductId
       )
       if (result.status === 'ok') {
-        const variantRows: VariantRow[] = result.data.map(v => ({
-          ...v,
-          uom_id: Number(v.uom_id),
-        }))
+        const variantRows: ProductVariantWithStock[] = result.data
         setVariantsCache(prev =>
           new Map(prev).set(selectedVariantProductId, variantRows)
         )
@@ -222,12 +195,9 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         if (entityType === 'products' && !variantsCache.has(id)) {
           setLoadingVariants(prev => new Set(prev).add(id))
           try {
-            const result = await commands.variantsGetByProduct(id)
+            const result = await commands.variantsGetByProductWithStock(id)
             if (result.status === 'ok') {
-              const variantRows: VariantRow[] = result.data.map(v => ({
-                ...v,
-                uom_id: Number(v.uom_id),
-              }))
+              const variantRows: VariantRow[] = result.data
               setVariantsCache(prev => new Map(prev).set(id, variantRows))
             }
           } finally {
@@ -272,13 +242,14 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         : null
       switch (entityType) {
         case 'products': {
-          const result = await commands.productsGetPaginated(
+          const result = await commands.getProductsWithStockPaginated(
             bindingFilters,
             [],
             bindingSort,
             page,
             pageSize
           )
+          console.log(result)
           if (result.status === 'ok') {
             setTotalCount(result.data.total_count)
             setTotalPages(result.data.total_pages)
@@ -442,6 +413,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         onAddVariant={handleAddVariant}
         stockLevelsCache={stockLevelsCache}
         isLoadingStockLevels={id => loadingStockLevels.has(id)}
+        onProductClick={handleProductClick}
       />
       <ProductCreateModal
         open={createModalOpen && createModalType === 'products'}
@@ -470,6 +442,21 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
             setSelectedVariantId(null)
           }}
           onSaved={handleVariantSaved}
+        />
+      )}
+      {entityType === 'warehouses' && productDetailId && (
+        <ProductDetailModal
+          open={productDetailOpen}
+          onOpenChange={open => {
+            setProductDetailOpen(open)
+            if (!open) setProductDetailId(null)
+          }}
+          entityId={productDetailId}
+          queryClient={queryClient}
+          onDeleted={() => {
+            setProductDetailOpen(false)
+            setProductDetailId(null)
+          }}
         />
       )}
       <PrintPreviewDialog

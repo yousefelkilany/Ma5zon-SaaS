@@ -1,6 +1,9 @@
 //! SQL statements for products entity.
 
-use crate::types::Product;
+use crate::{
+    sql::{build_filtered_sorted_paginated_query, build_filtered_sorted_query},
+    types::Product,
+};
 use rusqlite::{Connection, Result as DbErr};
 
 #[allow(dead_code)]
@@ -187,34 +190,53 @@ pub fn build_where_clause(filters: &[FilterState]) -> String {
     }
 }
 
-pub fn build_get_paginated(
+pub fn build_with_stock_paginated(
     where_clause: &str,
     sort: Option<&SortState>,
     limit: i32,
     offset: i32,
 ) -> String {
     let base =
-        "SELECT id, company, name, category, created_at, updated_at, deleted_at FROM active_products";
-    let query = if where_clause.is_empty() {
-        base.to_string()
-    } else {
-        format!("{base} WHERE {where_clause}")
-    };
+        "SELECT p.id, p.company, p.name, COALESCE(SUM(sl.quantity), 0) as quantity, p.category
+        FROM active_products p
+        LEFT JOIN product_variants pv ON p.id = pv.product_id
+        LEFT JOIN stock_levels sl ON pv.id = sl.variant_id
+        GROUP BY p.id, p.company, p.name, p.category";
 
-    let ordered = match sort {
-        Some(s) => format!("{query} ORDER BY {} {}", s.column_id, s.direction),
-        None => format!("{query} ORDER BY name"),
-    };
-
-    format!("{ordered} LIMIT {limit} OFFSET {offset}")
+    build_filtered_sorted_paginated_query(base, where_clause, sort, limit, offset)
 }
 
-pub fn count_query(where_clause: &str) -> String {
-    if where_clause.is_empty() {
-        "SELECT COUNT(*) FROM active_products".to_string()
-    } else {
-        format!("SELECT COUNT(*) FROM active_products WHERE {where_clause}")
-    }
+pub fn build_count(where_clause: &str, sort: Option<&SortState>) -> String {
+    let base = "SELECT COUNT(*) FROM active_products p";
+
+    build_filtered_sorted_query(base, where_clause, sort)
+}
+
+pub fn build_by_warehouse_count(where_clause: &str, sort: Option<&SortState>) -> String {
+    let base = "SELECT COUNT(*), COALESCE(SUM(sl.quantity), 0) as quantity
+        FROM active_products p
+        LEFT JOIN product_variants pv ON p.id = pv.product_id
+        LEFT JOIN stock_levels sl ON pv.id = sl.variant_id
+        WHERE sl.warehouse_id = ?
+        AND quantity > 0";
+
+    build_filtered_sorted_query(base, where_clause, sort)
+}
+
+pub fn build_with_stock_by_warehouse_paginated(
+    where_clause: &str,
+    sort: Option<&SortState>,
+    limit: i32,
+    offset: i32,
+) -> String {
+    let base =
+        "SELECT p.id, p.company, p.name, COALESCE(SUM(sl.quantity), 0) as quantity, p.category
+        FROM active_products p
+        LEFT JOIN product_variants pv ON p.id = pv.product_id
+        LEFT JOIN stock_levels sl ON pv.id = sl.variant_id
+        WHERE sl.warehouse_id = ?";
+
+    build_filtered_sorted_paginated_query(base, where_clause, sort, limit, offset)
 }
 
 pub fn build_get_all(where_clause: &str, sort: Option<&SortState>) -> String {

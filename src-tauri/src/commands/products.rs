@@ -1,20 +1,18 @@
 use async_trait::async_trait;
 use chrono::Local;
-use rusqlite::{params, Connection};
+use rusqlite::params;
 use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::seed::products as seed_products;
 use crate::sql::products::{
-    build_get_all, build_get_paginated, build_where_clause, count_query, create as sql_create,
-    create_table, get_by_id as sql_get_by_id, get_created_at as sql_get_created_at,
-    soft_delete as sql_soft_delete, update as sql_update,
+    build_count, build_get_all, build_where_clause, build_with_stock_paginated,
+    create as sql_create, create_table, get_by_id as sql_get_by_id,
+    get_created_at as sql_get_created_at, soft_delete as sql_soft_delete, update as sql_update,
 };
-use crate::types::Product;
-use crate::types::{FilterState, SortState};
-
-use crate::commands::warehouses::PaginatedResponse;
+use crate::types::{FilterState, PaginatedResponse, SortState};
+use crate::types::{Product, ProductWithStock};
 
 pub struct ProductsInitializer;
 
@@ -81,54 +79,46 @@ pub async fn get_all(
 
 #[tauri::command]
 #[specta::specta]
-pub async fn products_get_paginated(
+pub async fn get_products_with_stock_paginated(
     app: AppHandle,
     filters: Vec<FilterState>,
     _columns: Vec<String>,
     sort: Option<SortState>,
     page: i32,
     page_size: i32,
-) -> Result<PaginatedResponse<Product>, String> {
+) -> Result<PaginatedResponse<ProductWithStock>, String> {
     let offset = (page - 1) * page_size;
     let conn = get_conn(&app)?;
 
     let where_clause = build_where_clause(&filters);
-    let count_sql = count_query(&where_clause);
+    let count_sql = build_count(&where_clause, sort.as_ref());
     let total_count: i32 = conn
         .query_row(&count_sql, [], |row| row.get(0))
         .map_err(|e| format!("Failed to count products: {e}"))?;
 
-    let query = build_get_paginated(&where_clause, sort.as_ref(), page_size, offset);
+    let query = build_with_stock_paginated(&where_clause, sort.as_ref(), page_size, offset);
     let mut stmt = conn
         .prepare(&query)
         .map_err(|e| format!("products_get_paginated Failed to prepare: {e}"))?;
 
     let products = stmt
         .query_map([], |row| {
-            Ok(Product {
+            Ok(ProductWithStock {
                 id: row.get::<_, i64>(0)?.to_string(),
                 company: row.get(1)?,
                 name: row.get(2)?,
-                category: row.get(3)?,
-                created_at: row.get(4)?,
-                updated_at: row.get(5)?,
-                deleted_at: row.get(6)?,
+                quantity: row.get(3)?,
+                category: row.get(4)?,
             })
         })
         .map_err(|e| format!("Failed to query products: {e}"))?
         .collect::<Result<Vec<_>, _>>()
         .map_err(|e| format!("Failed to collect products: {e}"))?;
 
-    let total_pages = if total_count == 0 {
-        1
-    } else {
-        (total_count + page_size - 1) / page_size
-    };
-
     Ok(PaginatedResponse {
         data: products,
         total_count,
-        total_pages,
+        total_pages: (total_count + page_size - 1) / page_size,
     })
 }
 

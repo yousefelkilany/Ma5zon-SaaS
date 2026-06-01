@@ -17,6 +17,12 @@ export const entityLayoutConfig = {
         type: 'text',
         width: 275,
       },
+      quantity: {
+        labelKey: 'entity.layout.products.columns.qty_in_stock',
+        type: 'number',
+        width: 110,
+        sortable: false
+      },
     },
   },
   product_variants: {
@@ -36,6 +42,11 @@ export const entityLayoutConfig = {
         labelKey: 'entity.layout.product_variants.columns.uom',
         type: 'text',
         width: 80,
+      },
+      quantity: {
+        labelKey: 'entity.layout.products.columns.qty_in_stock',
+        type: 'number',
+        width: 110,
       },
       retail_price: {
         labelKey: 'entity.layout.product_variants.columns.retail',
@@ -84,7 +95,7 @@ export const entityLayoutConfig = {
       },
       quantity: {
         labelKey: 'entity.layout.stock_levels.columns.quantity',
-        type: 'currency',
+        type: 'number',
         width: 110,
       },
     },

@@ -107,6 +107,58 @@ async cleanupOldRecoveryFiles() : Promise<Result<number, RecoveryError>> {
     else return { status: "error", error: e  as any };
 }
 },
+/**
+ * Shows the quick pane window and makes it the key window (for keyboard input).
+ */
+async showQuickPane() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("show_quick_pane") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Dismisses the quick pane window.
+ * On macOS, resigns key window status before hiding to avoid activating main window.
+ */
+async dismissQuickPane() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("dismiss_quick_pane") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Toggles the quick pane window visibility.
+ */
+async toggleQuickPane() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("toggle_quick_pane") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Returns the default shortcut constant for frontend use.
+ */
+async getDefaultQuickPaneShortcut() : Promise<string> {
+    return await TAURI_INVOKE("get_default_quick_pane_shortcut");
+},
+/**
+ * Updates the global shortcut for the quick pane.
+ * Pass None to reset to default.
+ */
+async updateQuickPaneShortcut(shortcut: string | null) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("update_quick_pane_shortcut", { shortcut }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async loadUser(userId: string) : Promise<Result<User | null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("load_user", { userId }) };
@@ -195,9 +247,9 @@ async softDelete(id: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async productsGetPaginated(filters: FilterState[], columns: string[], sort: SortState | null, page: number, pageSize: number) : Promise<Result<PaginatedResponse<Product>, string>> {
+async getProductsWithStockPaginated(filters: FilterState[], columns: string[], sort: SortState | null, page: number, pageSize: number) : Promise<Result<PaginatedResponse<ProductWithStock>, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("products_get_paginated", { filters, columns, sort, page, pageSize }) };
+    return { status: "ok", data: await TAURI_INVOKE("get_products_with_stock_paginated", { filters, columns, sort, page, pageSize }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -211,9 +263,9 @@ async variantsGetAll() : Promise<Result<Variant[], string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async variantsGetByProduct(productId: string) : Promise<Result<Variant[], string>> {
+async variantsGetByProductWithStock(productId: string) : Promise<Result<ProductVariantWithStock[], string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("variants_get_by_product", { productId }) };
+    return { status: "ok", data: await TAURI_INVOKE("variants_get_by_product_with_stock", { productId }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -355,17 +407,9 @@ async stockMovementsGetByVariant(variantId: string) : Promise<Result<StockMoveme
     else return { status: "error", error: e  as any };
 }
 },
-async productsGetByWarehousePaginated(warehouseId: number, page: number, pageSize: number) : Promise<Result<PaginatedResponse<ProductWithStock>, string>> {
+async productsGetByWarehousePaginated(warehouseId: string, page: number, pageSize: number) : Promise<Result<PaginatedResponse<ProductWithStock>, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("products_get_by_warehouse_paginated", { warehouseId, page, pageSize }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async productsGetByWarehouseWithStock(warehouseId: string, limit: number | null, offset: number | null) : Promise<Result<ProductWithStock[], string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("products_get_by_warehouse_with_stock", { warehouseId, limit, offset }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -404,7 +448,8 @@ export type JsonValue = null | boolean | number | string | JsonValue[] | Partial
 export type NewVariant = { product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number }
 export type PaginatedResponse<T> = { data: T[]; total_count: number; total_pages: number }
 export type Product = { id: string; company: string; name: string; category: string; created_at: string | null; updated_at: string | null; deleted_at: string | null }
-export type ProductWithStock = { id: string; name: string }
+export type ProductVariantWithStock = { id: string; product_id: string; sku: string; variant_name: string; quantity: number; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number; created_at: string | null; updated_at: string | null; deleted_at: string | null }
+export type ProductWithStock = { id: string; company: string; name: string; quantity: number; category: string }
 /**
  * Error types for recovery operations (typed for frontend matching)
  */

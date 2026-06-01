@@ -17,8 +17,8 @@
         "title": "Ma5zon | Enterprise Finance",
         "width": 1850,
         "height": 1150,
-        "minWidth": 650,
-        "minHeight": 550,
+        "minWidth": 950,
+        "minHeight": 750,
         "resizable": true,
         "center": true,
         "fullscreen": false,
@@ -26,8 +26,8 @@
         "decorations": false,
         "alwaysOnTop": false,
         "transparent": false,
-        "shadow": true,
-        "dragDropEnabled": true
+        "shadow": false,
+        "dragDropEnabled": false
       }
     ],
     "security": {

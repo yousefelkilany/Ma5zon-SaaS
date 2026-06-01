@@ -74,6 +74,7 @@ interface ExpandedRowProps {
   isLoadingStockLevels?: (id: string) => boolean
   onVariantClick?: (variantId: string, productId: string) => void
   onAddVariant?: (productId: string) => void
+  onProductClick?: (productId: string) => void
 }
 
 export function DataTable({
@@ -95,6 +96,7 @@ export function DataTable({
   isLoadingStockLevels,
   onVariantClick,
   onAddVariant,
+  onProductClick,
 }: DataTableProps & ExpandedRowProps) {
   const { t } = useTranslation()
   const [editModalOpen, setEditModalOpen] = useState(false)
@@ -410,6 +412,7 @@ export function DataTable({
                             }
                             isLoading={isLoadingStockLevels?.(row.original.id)}
                             warehouseId={row.original.id}
+                            onProductClick={onProductClick}
                           />
                         )}
                       </td>

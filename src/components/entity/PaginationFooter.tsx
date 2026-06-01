@@ -5,6 +5,7 @@ export function PaginationFooter({
   pagination,
   onPageChange,
   isLoading,
+  pageSizes,
 }: PaginationFooterProps) {
   const { t } = useTranslation()
   const { page, pageSize, totalRows, totalPages } = pagination
@@ -14,6 +15,8 @@ export function PaginationFooter({
   const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onPageChange(1, Number(e.target.value))
   }
+
+  pageSizes = pageSizes ?? [10, 25, 50, 100]
 
   const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value)
@@ -36,10 +39,11 @@ export function PaginationFooter({
             disabled={isLoading}
             aria-label="Rows per page"
           >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
+            {pageSizes.map((s, i) => (
+              <option key={i} value={s}>
+                {s}
+              </option>
+            ))}
           </select>
         </div>
         <span className="text-on-surface-variant text-body-sm">

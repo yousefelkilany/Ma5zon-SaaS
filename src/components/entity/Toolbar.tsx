@@ -66,7 +66,8 @@ export function Toolbar({
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           <span className="text-on-surface-variant text-body-sm">
-            {t('entity.workspace.selected', { count: selectedCount })}
+            {selectedCount > 0 &&
+              t('entity.workspace.selected', { count: selectedCount })}
           </span>
           <DropdownMenu>
             <div className="flex">

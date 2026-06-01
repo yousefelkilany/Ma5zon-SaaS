@@ -38,7 +38,7 @@ export function VariantsSubTable({
   if (variants.length === 0) {
     return (
       <div className="pl-8 py-3 bg-surface-container-low text-on-surface-variant text-body-sm flex justify-between items-center pr-4">
-        <span>No variants found</span>
+        <span>{t('entity.layout.product_variants.none')}</span>
         <Button
           size="sm"
           variant="ghost"

@@ -4,13 +4,14 @@ use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
-use crate::commands::warehouses::PaginatedResponse;
 use crate::seed::movements as seed_movements;
 use crate::sql::stocks::{
-    create_levels_table, create_movements_table, create_triggers, fetch_products_by_warehouse_with_stock,
-    get_levels_all, get_levels_by_variant, get_levels_by_warehouse, get_levels_by_warehouse_with_names,
-    get_movements_all, get_movements_by_variant, get_stock_levels_by_product,
+    create_levels_table, create_movements_table, create_triggers,
+    fetch_products_by_warehouse_with_stock, get_levels_all, get_levels_by_variant,
+    get_levels_by_warehouse, get_levels_by_warehouse_with_names, get_movements_all,
+    get_movements_by_variant, get_stock_levels_by_product,
 };
+use crate::types::{PaginatedResponse, ProductWithStock};
 
 pub struct StockInitializer;
 
@@ -67,11 +68,6 @@ pub struct StockLevelWithVariant {
     pub sku: String,
     pub warehouse_id: String,
     pub quantity: i32,
-}
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
-pub struct ProductWithStock {
-    pub id: String,
-    pub name: String,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
@@ -287,65 +283,74 @@ pub async fn stock_levels_get_by_warehouse_with_names(
 
 #[tauri::command]
 #[specta::specta]
-pub async fn products_get_by_warehouse_with_stock(
+pub async fn products_get_by_warehouse_with_stock_paginated(
     app: AppHandle,
     warehouse_id: String,
-    limit: Option<i32>,
-    offset: Option<i32>,
-) -> Result<Vec<ProductWithStock>, String> {
+    page_size: i32,
+    page: i32,
+) -> Result<PaginatedResponse<ProductWithStock>, String> {
     let conn = get_conn(&app)?;
+    let offset: i32 = (page - 1) * page_size;
     let warehouse_id_i64: i64 = warehouse_id
         .parse()
         .map_err(|e| format!("Invalid warehouse_id: {e}"))?;
-    let (products, _total) = fetch_products_by_warehouse_with_stock(
+    let (data, total_count) = fetch_products_by_warehouse_with_stock(
         &conn,
         warehouse_id_i64,
-        limit.map(|l| l as i64),
-        offset.map(|o| o as i64),
+        Some(page_size as i64),
+        Some(offset as i64),
     )
     .map_err(|e| format!("Failed to query products: {e}"))?;
-    let result = products
-        .into_iter()
-        .map(|p| ProductWithStock {
-            id: p.id,
-            name: p.name,
-        })
-        .collect();
-    Ok(result)
+    // let data = products
+    //     .into_iter()
+    //     .map(|p| ProductWithStock {
+    //         id: p.id,
+    //         company: p.company,
+    //         name: p.name,
+    //         quantity: p.quantity,
+    //     })
+    //     .collect();
+    Ok(PaginatedResponse {
+        data,
+        total_count,
+        total_pages: ((total_count + page_size - 1) / page_size) as i32,
+    })
 }
 
 #[tauri::command]
 #[specta::specta]
 pub async fn products_get_by_warehouse_paginated(
     app: AppHandle,
-    warehouse_id: i32,
+    warehouse_id: String,
     page: i32,
     page_size: i32,
 ) -> Result<PaginatedResponse<ProductWithStock>, String> {
     let offset = (page - 1) * page_size;
     let conn = get_conn(&app)?;
-    let (sql_products, total_count) = fetch_products_by_warehouse_with_stock(
+    let (data, total_count) = fetch_products_by_warehouse_with_stock(
         &conn,
-        warehouse_id as i64,
+        warehouse_id
+            .parse()
+            .map_err(|e| format!("Invalid id: {e}"))?,
         Some(page_size as i64),
         Some(offset as i64),
     )
     .map_err(|e| e.to_string())?;
 
-    let products: Vec<ProductWithStock> = sql_products
-        .into_iter()
-        .map(|p| ProductWithStock {
-            id: p.id,
-            name: p.name,
-        })
-        .collect();
-
-    let total_pages = (total_count + page_size as i64 - 1) / page_size as i64;
+    // let products: Vec<ProductWithStock> = sql_products
+    //     .into_iter()
+    //     .map(|p| ProductWithStock {
+    //         id: p.id,
+    //         company: p.company,
+    //         name: p.name,
+    //         quantity: p.quantity,
+    //     })
+    //     .collect();
 
     Ok(PaginatedResponse {
-        data: products,
-        total_count: total_count as i32,
-        total_pages: total_pages as i32,
+        data,
+        total_count,
+        total_pages: ((total_count + page_size - 1) / page_size) as i32,
     })
 }
 

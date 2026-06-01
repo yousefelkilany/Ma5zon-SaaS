@@ -2,34 +2,16 @@
 
 use rusqlite::{Connection, Result as DbErr};
 
-#[derive(Debug, Clone)]
-#[allow(dead_code)]
-pub struct ProductWithStock {
-    pub id: String,
-    pub company: String,
-    pub name: String,
-    pub category: String,
-}
-
-impl ProductWithStock {
-    pub fn from_row(row: &rusqlite::Row) -> DbErr<Self> {
-        Ok(ProductWithStock {
-            id: row.get::<usize, i64>(0)?.to_string(),
-            company: row.get(1)?,
-            name: row.get(2)?,
-            category: row.get(3)?,
-        })
-    }
-}
+use crate::types::ProductWithStock;
 
 pub fn fetch_products_by_warehouse_with_stock(
     conn: &Connection,
     warehouse_id: i64,
     limit: Option<i64>,
     offset: Option<i64>,
-) -> DbErr<(Vec<ProductWithStock>, i64)> {
-    let total: i64 = conn.query_row(
-        "SELECT COUNT(*) FROM products p
+) -> DbErr<(Vec<ProductWithStock>, i32)> {
+    let total: i32 = conn.query_row(
+        "SELECT COUNT(DISTINCT p.id) FROM products p
          INNER JOIN product_variants v ON p.id = v.product_id
          INNER JOIN stock_levels sl ON v.id = sl.variant_id
          WHERE sl.warehouse_id = ?",
@@ -37,16 +19,15 @@ pub fn fetch_products_by_warehouse_with_stock(
         |row| row.get(0),
     )?;
 
+    let sql = "SELECT p.id, p.company, p.name, COALESCE(SUM(sl.quantity), 0) as quantity
+             FROM products p
+             INNER JOIN product_variants v ON p.id = v.product_id
+             INNER JOIN stock_levels sl ON v.id = sl.variant_id
+             WHERE sl.warehouse_id = ?
+             GROUP BY p.id, p.company, p.name";
     let products: Vec<ProductWithStock> = match (limit, offset) {
         (Some(limit), Some(offset)) => {
-            let mut stmt = conn.prepare(
-                "SELECT p.id, p.company, p.name, p.category
-                 FROM products p
-                 INNER JOIN product_variants v ON p.id = v.product_id
-                 INNER JOIN stock_levels sl ON v.id = sl.variant_id
-                 WHERE sl.warehouse_id = ?
-                 LIMIT ? OFFSET ?",
-            )?;
+            let mut stmt = conn.prepare(&format!("{sql} LIMIT ? OFFSET ?"))?;
             let mut rows = stmt.query([warehouse_id, limit, offset])?;
             let mut products = Vec::new();
             while let Some(row) = rows.next()? {
@@ -55,14 +36,7 @@ pub fn fetch_products_by_warehouse_with_stock(
             products
         }
         (Some(limit), None) => {
-            let mut stmt = conn.prepare(
-                "SELECT p.id, p.company, p.name, p.category
-                 FROM products p
-                 INNER JOIN product_variants v ON p.id = v.product_id
-                 INNER JOIN stock_levels sl ON v.id = sl.variant_id
-                 WHERE sl.warehouse_id = ?
-                 LIMIT ?",
-            )?;
+            let mut stmt = conn.prepare(&format!("{sql} LIMIT ?"))?;
             let mut rows = stmt.query([warehouse_id, limit])?;
             let mut products = Vec::new();
             while let Some(row) = rows.next()? {
@@ -71,13 +45,7 @@ pub fn fetch_products_by_warehouse_with_stock(
             products
         }
         _ => {
-            let mut stmt = conn.prepare(
-                "SELECT p.id, p.company, p.name, p.category
-                 FROM products p
-                 INNER JOIN product_variants v ON p.id = v.product_id
-                 INNER JOIN stock_levels sl ON v.id = sl.variant_id
-                 WHERE sl.warehouse_id = ?",
-            )?;
+            let mut stmt = conn.prepare(sql)?;
             let mut rows = stmt.query([warehouse_id])?;
             let mut products = Vec::new();
             while let Some(row) = rows.next()? {
@@ -167,7 +135,6 @@ pub fn get_levels_by_warehouse_with_names() -> &'static str {
      ORDER BY v.variant_name"
 }
 
-#[allow(dead_code)]
 pub fn products_get_by_warehouse_with_stock() -> &'static str {
     "SELECT DISTINCT p.id, p.name \
      FROM products p \

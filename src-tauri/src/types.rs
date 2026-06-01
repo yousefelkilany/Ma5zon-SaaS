@@ -1,6 +1,7 @@
 //! Shared types and validation functions for the Tauri application.
 
 use regex::Regex;
+use rusqlite::Result as DbErr;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::str::FromStr;
@@ -82,6 +83,13 @@ impl std::fmt::Display for RecoveryError {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct PaginatedResponse<T> {
+    pub data: Vec<T>,
+    pub total_count: i32,
+    pub total_pages: i32,
+}
+
 // ============================================================================
 // User
 // ============================================================================
@@ -112,11 +120,47 @@ pub struct Product {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct ProductWithStock {
+    pub id: String,
+    pub company: String,
+    pub name: String,
+    pub quantity: i32,
+    pub category: String,
+}
+impl ProductWithStock {
+    pub fn from_row(row: &rusqlite::Row) -> DbErr<Self> {
+        Ok(ProductWithStock {
+            id: row.get::<_, i64>(0)?.to_string(),
+            company: row.get(1)?,
+            name: row.get(2)?,
+            quantity: row.get(3)?,
+            category: row.get(4)?,
+        })
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct Variant {
     pub id: String,
     pub product_id: String,
     pub sku: String,
     pub variant_name: String,
+    pub uom_id: String,
+    pub retail_price: f64,
+    pub wholesale_price: f64,
+    pub distribution_price: f64,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
+    pub deleted_at: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct ProductVariantWithStock {
+    pub id: String,
+    pub product_id: String,
+    pub sku: String,
+    pub variant_name: String,
+    pub quantity: i32,
     pub uom_id: String,
     pub retail_price: f64,
     pub wholesale_price: f64,

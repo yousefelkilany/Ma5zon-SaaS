@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use chrono::Local;
-use rusqlite::{params, Connection};
+use rusqlite::params;
 use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
@@ -10,7 +10,7 @@ use crate::sql::warehouses::{
     build_get_all, build_get_paginated, build_where_clause, count_query, create, create_table,
     get_by_id, get_created_at, soft_delete, update,
 };
-use crate::types::{FilterState, SortState};
+use crate::types::{FilterState, PaginatedResponse, SortState};
 
 pub struct WarehousesInitializer;
 
@@ -49,13 +49,6 @@ pub struct Warehouse {
     pub created_at: Option<String>,
     pub updated_at: Option<String>,
     pub deleted_at: Option<String>,
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
-pub struct PaginatedResponse<T> {
-    pub data: Vec<T>,
-    pub total_count: i32,
-    pub total_pages: i32,
 }
 
 #[tauri::command]

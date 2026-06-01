@@ -70,6 +70,7 @@ export interface PaginationFooterProps {
   pagination: PaginationState
   onPageChange: (page: number, pageSize: number) => void
   isLoading: boolean
+  pageSizes?: number[]
 }
 
 export interface ToolbarProps {
@@ -95,7 +96,7 @@ export interface VariantRow {
   product_id: string
   sku: string
   variant_name: string
-  uom_id: number
+  uom_id: string
   [key: string]: unknown
 }
 
@@ -109,7 +110,9 @@ export interface StockLevelWithVariant {
 
 export interface ProductWithStock {
   id: string
+  company: string
   name: string
+  quantity: number
 }
 
 export interface VariantWithStock {
