@@ -7,8 +7,6 @@ import type {
   PaginationState,
   SortState,
   FilterState,
-  VariantRow,
-  StockLevelWithVariant,
 } from '@/lib/types/entity'
 import { Toolbar } from './Toolbar'
 import { DataTable } from './DataTable'
@@ -18,6 +16,7 @@ import { ColumnVisibilityDialog } from './ColumnVisibilityDialog'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import Fuse from 'fuse.js'
 import { normalizeArabic } from '@/lib/utils'
+import { useEntityExpanded } from '@/lib/hooks/useEntityExpanded'
 
 interface DataTableShellProps {
   entityType: string
@@ -37,14 +36,8 @@ interface DataTableShellProps {
   onPageChange?: (page: number, pageSize: number) => void
   sort?: SortState | null
   onSortChange?: (sort: SortState | null) => void
-  expandedRowIds?: Set<string>
-  variantsCache?: Map<string, VariantRow[]>
-  onRowToggleExpand?: (id: string) => void
-  isLoadingVariants?: (id: string) => boolean
   onVariantClick?: (variantId: string, productId: string) => void
   onAddVariant?: (productId: string) => void
-  stockLevelsCache?: Map<string, StockLevelWithVariant[]>
-  isLoadingStockLevels?: (id: string) => boolean
   onProductClick?: (productId: string) => void
 }
 
@@ -63,17 +56,12 @@ export function DataTableShell({
   onPageChange,
   sort: externalSort,
   onSortChange,
-  expandedRowIds,
-  variantsCache,
-  onRowToggleExpand,
-  isLoadingVariants,
   onVariantClick,
   onAddVariant,
-  stockLevelsCache,
-  isLoadingStockLevels,
   onProductClick,
 }: DataTableShellProps) {
   const { t } = useTranslation()
+  const { isExpanded, toggleExpanded } = useEntityExpanded(entityType)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [sort, setSort] = useState<SortState | null>(null)
   const [filters, setFilters] = useState<FilterState[]>([])
@@ -203,14 +191,10 @@ export function DataTableShell({
             onSort={handleSortChange}
             onRowSelect={handleRowSelect}
             onRowClick={handleRowClick}
-            expandedRowIds={expandedRowIds}
-            variantsCache={variantsCache}
-            onRowToggleExpand={onRowToggleExpand}
-            isLoadingVariants={isLoadingVariants}
+            onToggleExpand={toggleExpanded}
+            isExpanded={isExpanded}
             onVariantClick={onVariantClick}
             onAddVariant={onAddVariant}
-            stockLevelsCache={stockLevelsCache}
-            isLoadingStockLevels={isLoadingStockLevels}
             onProductClick={onProductClick}
           />
         </div>
