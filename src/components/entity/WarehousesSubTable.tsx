@@ -12,16 +12,12 @@ import { getEntityLayout } from '@/lib/entity-layout'
 
 export interface WarehousesSubTableProps {
   warehouseId: string
-  productsCache?: Map<string, ProductWithStock[]>
   onProductClick?: (productId: string) => void
-  isLoadingProducts?: (warehouseId: string) => boolean
 }
 
 export function WarehousesSubTable({
   warehouseId,
-  productsCache = new Map(),
   onProductClick,
-  isLoadingProducts = () => false,
 }: WarehousesSubTableProps) {
   const { t } = useTranslation()
 
@@ -121,14 +117,13 @@ export function WarehousesSubTable({
     const cacheKey = `${warehouseId}-${page}-${pageSize}`
 
     if (
-      !productsCache.has(warehouseId) &&
       !localProductsCacheRef.current.has(cacheKey) &&
       !hasFetchedRef.current.has(cacheKey)
     ) {
       hasFetchedRef.current.add(cacheKey)
       fetchProducts(page, pageSize)
     }
-  }, [warehouseId, productsCache, fetchProducts])
+  }, [warehouseId, fetchProducts])
 
   const handlePageChange = useCallback(
     (page: number, pageSize: number) => {
@@ -139,11 +134,8 @@ export function WarehousesSubTable({
   )
 
   const cacheKey = `${warehouseId}-${productPagination.page}-${productPagination.pageSize}`
-  const products = productsCache.has(warehouseId)
-    ? (productsCache.get(warehouseId) ?? [])
-    : (localProductsCache.get(cacheKey) ?? [])
-  const warehouseLoading =
-    isLoadingProducts(warehouseId) || loadingProducts.has(cacheKey)
+  const products = localProductsCache.get(cacheKey) ?? []
+  const warehouseLoading = loadingProducts.has(cacheKey)
   const warehouseError = errorProducts.get(cacheKey)
 
   if (isLoading || warehouseLoading) {
@@ -231,7 +223,7 @@ export function WarehousesSubTable({
       <PaginationFooter
         pagination={productPagination}
         onPageChange={handlePageChange}
-        isLoading={isLoadingProducts(warehouseId)}
+        isLoading={loadingProducts.has(cacheKey)}
         pageSizes={subTablePagination}
       />
     </div>
