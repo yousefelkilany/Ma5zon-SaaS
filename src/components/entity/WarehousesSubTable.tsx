@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import type {
   StockLevelWithVariant,
   ProductWithStock,
@@ -10,8 +11,6 @@ import { commands } from '@/lib/tauri-bindings'
 import { getEntityLayout } from '@/lib/entity-layout'
 
 export interface WarehousesSubTableProps {
-  stockLevels: StockLevelWithVariant[]
-  isLoading?: boolean
   warehouseId: string
   productsCache?: Map<string, ProductWithStock[]>
   onProductClick?: (productId: string) => void
@@ -19,14 +18,24 @@ export interface WarehousesSubTableProps {
 }
 
 export function WarehousesSubTable({
-  stockLevels,
-  isLoading,
   warehouseId,
   productsCache = new Map(),
   onProductClick,
   isLoadingProducts = () => false,
 }: WarehousesSubTableProps) {
   const { t } = useTranslation()
+
+  const { data: stockLevels = [], isLoading } = useQuery({
+    queryKey: ['entity', 'warehouses', 'stockLevels', warehouseId],
+    queryFn: async () => {
+      const result = await commands.stockLevelsGetByWarehouseWithNames(warehouseId)
+      if (result.status === 'ok') {
+        return result.data as StockLevelWithVariant[]
+      }
+      return []
+    },
+    staleTime: Infinity,
+  })
   const [localProductsCache, setLocalProductsCache] = useState<
     Map<string, ProductWithStock[]>
   >(new Map())
