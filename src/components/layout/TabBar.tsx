@@ -6,7 +6,11 @@ import { cn } from '@/lib/utils'
 
 export function TabBar() {
   const { t } = useTranslation()
-  const { tabs, activeTabId, setActiveTab, addTab, removeTab } = useTabStore()
+  const tabs = useTabStore(state => state.tabs)
+  const activeTabId = useTabStore(state => state.activeTabId)
+  const setActiveTab = useTabStore(state => state.setActiveTab)
+  const addTab = useTabStore(state => state.addTab)
+  const removeTab = useTabStore(state => state.removeTab)
   const { isLoggedIn } = useAuth()
 
   const handleTabClick = (tabId: string) => {

@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
 
 interface UIState {
   sidebarVisible: boolean
@@ -18,52 +17,31 @@ interface UIState {
 }
 
 export const useUIStore = create<UIState>()(
-  devtools(
-    set => ({
-      sidebarVisible: true,
-      commandPaletteOpen: false,
-      preferencesOpen: false,
-      lastQuickPaneEntry: null,
+  set => ({
+    sidebarVisible: true,
+    commandPaletteOpen: false,
+    preferencesOpen: false,
+    lastQuickPaneEntry: null,
 
-      toggleSidebar: () =>
-        set(
-          state => ({ sidebarVisible: !state.sidebarVisible }),
-          undefined,
-          'toggleSidebar'
-        ),
+    toggleSidebar: () =>
+      set(state => ({ sidebarVisible: !state.sidebarVisible })),
 
-      setSidebarVisible: visible =>
-        set({ sidebarVisible: visible }, undefined, 'setSidebarVisible'),
+    setSidebarVisible: visible => set({ sidebarVisible: visible }),
 
-      toggleCommandPalette: () =>
-        set(
-          state => ({ commandPaletteOpen: !state.commandPaletteOpen }),
-          undefined,
-          'toggleCommandPalette'
-        ),
+    toggleCommandPalette: () =>
+      set(state => ({ commandPaletteOpen: !state.commandPaletteOpen })),
 
-      setCommandPaletteOpen: open =>
-        set({ commandPaletteOpen: open }, undefined, 'setCommandPaletteOpen'),
+    setCommandPaletteOpen: open => set({ commandPaletteOpen: open }),
 
-      togglePreferences: () =>
-        set(
-          state => ({ preferencesOpen: !state.preferencesOpen }),
-          undefined,
-          'togglePreferences'
-        ),
+    togglePreferences: () =>
+      set(state => ({ preferencesOpen: !state.preferencesOpen })),
 
-      setPreferencesOpen: open =>
-        set({ preferencesOpen: open }, undefined, 'setPreferencesOpen'),
+    setPreferencesOpen: open => set({ preferencesOpen: open }),
 
-      setLastQuickPaneEntry: text =>
-        set({ lastQuickPaneEntry: text }, undefined, 'setLastQuickPaneEntry'),
+    setLastQuickPaneEntry: text => set({ lastQuickPaneEntry: text }),
 
-      setSquareCorners: (enabled: boolean) => {
-        document.documentElement.classList.toggle('square-corners', enabled)
-      },
-    }),
-    {
-      name: 'ui-store',
-    }
-  )
+    setSquareCorners: (enabled: boolean) => {
+      document.documentElement.classList.toggle('square-corners', enabled)
+    },
+  })
 )

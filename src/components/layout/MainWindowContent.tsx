@@ -18,16 +18,15 @@ function EntityRoute() {
 export function MainWindowContent() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { tabs, activeTabId, setActiveTab: _setActiveTab } = useTabStore()
+  const activeTabId = useTabStore(state => state.activeTabId)
+  const tabs = useTabStore(state => state.tabs)
   const isNavigatingRef = useRef(false)
 
-  // Sync both URL and active tab in a single effect to prevent feedback loops
   useEffect(() => {
     if (isNavigatingRef.current) return
 
     const activeTab = tabs.find(t => t.id === activeTabId)
 
-    // Active tab changed → update URL to match
     if (activeTab) {
       let targetPath = ''
       if (activeTab.type === 'entity' && activeTab.entityType) {

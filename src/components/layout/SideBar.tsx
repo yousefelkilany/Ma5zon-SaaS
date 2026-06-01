@@ -121,7 +121,8 @@ export function SideBar({ className }: SideBarProps) {
   const { t } = useTranslation()
   const [collapsed, setCollapsed] = useState(false)
   const navigate = useNavigate()
-  const { addTab, setActiveTab } = useTabStore()
+  const addTab = useTabStore(state => state.addTab)
+  const setActiveTab = useTabStore(state => state.setActiveTab)
   const { isLoggedIn, logout } = useAuth()
 
   const handleEntityClick = useCallback(

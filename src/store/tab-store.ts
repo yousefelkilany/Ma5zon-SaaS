@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
 import type { Tab, TabType } from '@/lib/utils'
 
 const DEFAULT_DASHBOARD_TAB = {
@@ -25,67 +24,62 @@ interface TabState {
   getTabByEntityType: (entityType: string) => Tab | undefined
 }
 
-export const useTabStore = create<TabState>()(
-  devtools(
-    (set, get) => ({
-      tabs: [DEFAULT_DASHBOARD_TAB],
-      activeTabId: 'dashboard',
+export const useTabStore = create<TabState>()((set, get) => ({
+  tabs: [DEFAULT_DASHBOARD_TAB],
+  activeTabId: 'dashboard',
 
-      addTab: tabData => {
-        const newTab: Tab = {
-          ...tabData,
-          id: generateId(),
-        }
-        set(state => ({
-          tabs: [...state.tabs, newTab],
-          activeTabId: newTab.id,
-        }))
-        return newTab.id
-      },
+  addTab: tabData => {
+    const newTab: Tab = {
+      ...tabData,
+      id: generateId(),
+    }
+    set(state => ({
+      tabs: [...state.tabs, newTab],
+      activeTabId: newTab.id,
+    }))
+    return newTab.id
+  },
 
-      removeTab: tabId => {
-        const { tabs, activeTabId } = get()
-        const tab = tabs.find(t => t.id === tabId)
-        if (!tab || !tab.closable) return
+  removeTab: tabId => {
+    const { tabs, activeTabId } = get()
+    const tab = tabs.find(t => t.id === tabId)
+    if (!tab || !tab.closable) return
 
-        const newTabs = tabs.filter(t => t.id !== tabId)
+    const newTabs = tabs.filter(t => t.id !== tabId)
 
-        const dashboardTab = newTabs.find(t => t.type === 'dashboard')
-        const otherTabs = newTabs.filter(t => t.type !== 'dashboard')
-        const reorderedTabs = dashboardTab
-          ? [dashboardTab, ...otherTabs]
-          : newTabs
+    const dashboardTab = newTabs.find(t => t.type === 'dashboard')
+    const otherTabs = newTabs.filter(t => t.type !== 'dashboard')
+    const reorderedTabs = dashboardTab
+      ? [dashboardTab, ...otherTabs]
+      : newTabs
 
-        let newActiveId = activeTabId
-        if (activeTabId === tabId) {
-          const closedIndex = tabs.findIndex(t => t.id === tabId)
-          newActiveId =
-            reorderedTabs[Math.min(closedIndex, reorderedTabs.length - 1)]
-              ?.id || 'dashboard'
-        }
+    let newActiveId = activeTabId
+    if (activeTabId === tabId) {
+      const closedIndex = tabs.findIndex(t => t.id === tabId)
+      newActiveId =
+        reorderedTabs[Math.min(closedIndex, reorderedTabs.length - 1)]
+          ?.id || 'dashboard'
+    }
 
-        set({ tabs: reorderedTabs, activeTabId: newActiveId })
-      },
+    set({ tabs: reorderedTabs, activeTabId: newActiveId })
+  },
 
-      setActiveTab: tabId => {
-        set({ activeTabId: tabId })
-      },
+  setActiveTab: tabId => {
+    set({ activeTabId: tabId })
+  },
 
-      getActiveTab: () => {
-        const { tabs, activeTabId } = get()
-        return tabs.find(t => t.id === activeTabId)
-      },
+  getActiveTab: () => {
+    const { tabs, activeTabId } = get()
+    return tabs.find(t => t.id === activeTabId)
+  },
 
-      getTabByType: type => {
-        const { tabs } = get()
-        return tabs.find(t => t.type === type)
-      },
+  getTabByType: type => {
+    const { tabs } = get()
+    return tabs.find(t => t.type === type)
+  },
 
-      getTabByEntityType: entityType => {
-        const { tabs } = get()
-        return tabs.find(t => t.entityType === entityType)
-      },
-    }),
-    { name: 'tab-store' }
-  )
-)
+  getTabByEntityType: entityType => {
+    const { tabs } = get()
+    return tabs.find(t => t.entityType === entityType)
+  },
+}))

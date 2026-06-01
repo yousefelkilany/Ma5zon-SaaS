@@ -16,7 +16,7 @@ import { ColumnVisibilityDialog } from './ColumnVisibilityDialog'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import Fuse from 'fuse.js'
 import { normalizeArabic } from '@/lib/utils'
-import { useEntityExpanded } from '@/hooks/useEntityExpanded'
+import { useEntityExpanded } from '@/contexts/ExpandedContext'
 import { commands } from '@/lib/tauri-bindings'
 
 interface DataTableShellProps {
