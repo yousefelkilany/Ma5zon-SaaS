@@ -145,10 +145,21 @@ export function ProductDetailModal({
   }, [open])
 
   useEffect(() => {
-    if (activeTab === 'stock' && stockLevels.length === 0 && !isLoadingStock && !loadError) {
+    if (
+      activeTab === 'stock' &&
+      stockLevels.length === 0 &&
+      !isLoadingStock &&
+      !loadError
+    ) {
       loadStockLevels()
     }
-  }, [activeTab, stockLevels.length, isLoadingStock, loadError, loadStockLevels])
+  }, [
+    activeTab,
+    stockLevels.length,
+    isLoadingStock,
+    loadError,
+    loadStockLevels,
+  ])
 
   useEffect(() => {
     if (open && entityId) {

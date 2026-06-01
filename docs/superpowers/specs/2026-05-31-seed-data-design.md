@@ -40,6 +40,7 @@ Seed functions execute in dependency order:
 ## 4. Product Seed Data
 
 ### Categories
+
 - **OTC Medicines**: Pain relievers, cold/flu, antacids, vitamins
 - **Prescription**: Antibiotics, diabetes medications, cardiovascular
 - **Supplements**: Proteins, minerals, herbal products
@@ -48,19 +49,23 @@ Seed functions execute in dependency order:
 - **Veterinary**: Animal medications, pet supplements
 
 ### Companies (Egyptian/Regional)
+
 Pharco ( فاركو ), Eva Pharm ( إيفا فارم ), Amoun ( آمون ), Memphis Pharm ( ممفيس فارم ), Octoplus ( أوكتوبلس ), Siemens Healthineers ( سيمنس هيلثينيرز ), 3M ( ثري إم ), Bayer ( باير ), Novartis ( نوفارتس ), GSK ( جي إس كي ), Pfizer ( فايزر ), MERCK ( ميرك ), Hikma ( هشامة ), Jamjoon ( جموjoon ), plus international manufacturers
 
 ### Naming Convention
+
 ALL generated text (products, companies, categories, variants) uses bilingual format:
 `{English_name} {Arabic_name}`
 
 Examples:
+
 - Product: "Acetaminophen 500mg Tablets باراسيتامول 500 مجم أقراص"
 - Company: "Pharco فاركو"
 - Category: "OTC Medicines أدوية بدون روشتة"
 - Variant: "500mg 500 مجم"
 
 ### Quantity
+
 60+ products with 4-5 variants each
 
 ---
@@ -68,12 +73,14 @@ Examples:
 ## 5. Variant Seed Data
 
 ### Attributes per variant
+
 - **SKU**: Format `SKU-{product_id:04}-{variant_index:02}`
 - **Variant name**: Realistic pharmaceutical names (e.g., "25mg tablets", "50ml suspension")
 - **UOM ID**: 1-7 mapping to (pcs, m, kg, L, box, roll, set)
 - **Prices**: retail, wholesale (75% of retail), distribution (60% of retail)
 
 ### Variant types per category
+
 - **Tablets/Capsules**: strength (100mg, 200mg, 500mg)
 - **Syrups/Suspensions**: volume (60ml, 100ml, 200ml)
 - **Injectables**: volume (5ml, 10ml, 20ml)
@@ -86,13 +93,13 @@ Examples:
 
 5 Egyptian warehouses:
 
-| Name | Location | Role |
-|------|----------|------|
-| مركز التوزيع المركزي | القاهرة | Primary - receives purchases |
-| منشأة الساحل الشمالي | الإسكندرية | Transfer only |
-| المخزن الإقليمي الشمالي | المنصورة | Transfer only |
-| المستودع الجنوبي | أسيوط | Mixed |
-| مركز الصعيد | سوهاج | Transfer only |
+| Name                    | Location   | Role                         |
+| ----------------------- | ---------- | ---------------------------- |
+| مركز التوزيع المركزي    | القاهرة    | Primary - receives purchases |
+| منشأة الساحل الشمالي    | الإسكندرية | Transfer only                |
+| المخزن الإقليمي الشمالي | المنصورة   | Transfer only                |
+| المستودع الجنوبي        | أسيوط      | Mixed                        |
+| مركز الصعيد             | سوهاج      | Transfer only                |
 
 ---
 
@@ -113,12 +120,12 @@ COMMIT;
 
 ### Movement Types
 
-| Type | from_warehouse | to_warehouse | Stock Effect |
-|------|----------------|--------------|--------------|
-| PURCHASE | NULL | destination | +quantity |
-| TRANSFER | source | destination | -source, +destination |
-| SALE | source | NULL | -quantity |
-| ADJUST | destination OR NULL | source OR NULL | +/-quantity |
+| Type     | from_warehouse      | to_warehouse   | Stock Effect          |
+| -------- | ------------------- | -------------- | --------------------- |
+| PURCHASE | NULL                | destination    | +quantity             |
+| TRANSFER | source              | destination    | -source, +destination |
+| SALE     | source              | NULL           | -quantity             |
+| ADJUST   | destination OR NULL | source OR NULL | +/-quantity           |
 
 ### Core Functions
 
@@ -143,6 +150,7 @@ fn upsert_stock_level(conn: &Connection, variant_id: i64, warehouse_id: i64, del
 ### Seeding Movements
 
 For each variant:
+
 1. **Purchase** to Cairo warehouse (50-500 units)
 2. **Transfers** to other warehouses based on location:
    - Cairo → Alexandria (30% of purchase)

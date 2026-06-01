@@ -6,11 +6,7 @@ import {
   flexRender,
   type ColumnDef as TanstackColumnDef,
 } from '@tanstack/react-table'
-import type {
-  ColumnDef,
-  EntityRow,
-  DataTableProps,
-} from '@/lib/types/entity'
+import type { ColumnDef, EntityRow, DataTableProps } from '@/lib/types/entity'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsRTL } from '@/hooks/user-is-rtl'
 import { VariantsSubTable } from './VariantsSubTable'

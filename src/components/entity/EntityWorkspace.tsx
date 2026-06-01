@@ -2,9 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
-import type {
-  FilterState as BindingFilterState,
-} from '@/lib/bindings'
+import type { FilterState as BindingFilterState } from '@/lib/bindings'
 import { getEntityLayout } from '@/lib/entity-layout'
 import type {
   EntityWorkspaceProps,

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 
 export function useProductsByWarehouse(
-  warehouseId: number,
+  warehouseId: string,
   page: number,
   pageSize: number,
   enabled = true

@@ -712,6 +712,7 @@ git commit -m "feat: add movements seed with purchase/transfer/sale/adjust patte
 - [ ] **Step 1: Add stock_movements reexport**
 
 Add to mod.rs after line with `pub mod stocks`:
+
 ```rust
 pub mod stock_movements;
 ```
@@ -739,11 +740,13 @@ git commit -m "feat: add stock_movements module export"
 - [ ] **Step 1: Remove seed functions from stocks.rs**
 
 Remove:
+
 - `StockInitializer` struct and implementation
 - `seed_stock_levels` function
 - `seed_stock_movements` function
 
 Keep only:
+
 - `StockLevel`, `StockMovement`, `StockLevelWithVariant`, `ProductWithStock`, `VariantWithStock` structs
 - All `#[tauri::command]` functions (stock_levels_get_all, etc.)
 
@@ -792,6 +795,7 @@ git commit -m "refactor: remove StockInitializer from TABLE_INITIALIZERS"
 ```
 
 And add a new function to trigger seed:
+
 ```rust
 pub async fn seed_database(app: &AppHandle) -> Result<(), String> {
     crate::seed::seed_all(app).await
@@ -801,14 +805,17 @@ pub async fn seed_database(app: &AppHandle) -> Result<(), String> {
 Actually wait — looking at the original code, the seeding is handled by the `init_and_seed` methods on the initializers. Let me re-check how this works.
 
 Looking at the original code:
+
 - `stocks.rs` has `StockInitializer` with `init_and_seed` that calls `seed_stock_levels` and `seed_stock_movements`
 - `mod.rs` has `TABLE_INITIALIZERS` array that references all initializers
 
 The new design moves seeds to `seed/` module. I need to:
+
 1. Remove `StockInitializer` from the initializers array (since stock levels are now seeded via movements)
 2. Make sure the seeding order is correct
 
 Actually, the seed order in the new system is:
+
 - products → variants → warehouses → movements
 
 The movements seeding internally will create stock_levels. So we don't need StockInitializer in the TABLE_INITIALIZERS anymore.
@@ -829,24 +836,25 @@ pub const TABLE_INITIALIZERS: &[&dyn DatabaseInitializable] = &[
 ```
 
 And add a separate seed trigger:
+
 ```rust
 pub async fn seed_all_data(app: &AppHandle) -> Result<(), String> {
     // Seed in dependency order
     let conn = get_conn(app)?;
-    
+
     // Run each initializer in order
     UserInitializer.init_and_seed(app).await?;
     ProductsInitializer.init_and_seed(app).await?;
     VariantsInitializer.init_and_seed(app).await?;
     WarehousesInitializer.init_and_seed(app).await?;
-    
+
     // For stock, we seed via movements after variants and warehouses exist
     // This is handled by the seed module
     crate::seed::products::seed(&conn)?;
     crate::seed::variants::seed(&conn)?;
     crate::seed::warehouses::seed(&conn)?;
     crate::seed::movements::seed(&conn)?;
-    
+
     Ok(())
 }
 ```
@@ -857,10 +865,12 @@ Actually, looking at the code more carefully, the initializers already do the se
 2. The order in `TABLE_INITIALIZERS` matters for foreign key dependencies
 
 So the proper fix is:
+
 - Keep `StockInitializer` but simplify it to only create tables (not seed) OR
 - Remove `StockInitializer` from `TABLE_INITIALIZERS` and handle stock seeding in the `seed` module
 
 The cleanest approach is to remove StockInitializer from TABLE_INITIALIZERS since:
+
 1. We already removed seed functions from stocks.rs
 2. The seed module's movements.rs will create stock_levels via transactions
 
@@ -907,15 +917,15 @@ git add -A && git commit -m "feat: complete seed data extraction and stock movem
 
 ## Summary
 
-| Task | Description |
-|------|-------------|
-| 1 | Create seed/mod.rs |
-| 2 | Create seed/products.rs (60+ products) |
-| 3 | Create seed/variants.rs (4-5 per product) |
-| 4 | Create seed/warehouses.rs (5 warehouses) |
-| 5 | Create commands/stock_movements.rs (core functions) |
-| 6 | Create seed/movements.rs (movement seeding) |
-| 7 | Update commands/mod.rs (add stock_movements) |
-| 8 | Remove seed functions from stocks.rs |
-| 9 | Update TABLE_INITIALIZERS |
-| 10 | Final verification |
+| Task | Description                                         |
+| ---- | --------------------------------------------------- |
+| 1    | Create seed/mod.rs                                  |
+| 2    | Create seed/products.rs (60+ products)              |
+| 3    | Create seed/variants.rs (4-5 per product)           |
+| 4    | Create seed/warehouses.rs (5 warehouses)            |
+| 5    | Create commands/stock_movements.rs (core functions) |
+| 6    | Create seed/movements.rs (movement seeding)         |
+| 7    | Update commands/mod.rs (add stock_movements)        |
+| 8    | Remove seed functions from stocks.rs                |
+| 9    | Update TABLE_INITIALIZERS                           |
+| 10   | Final verification                                  |

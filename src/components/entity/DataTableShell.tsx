@@ -16,7 +16,7 @@ import { ColumnVisibilityDialog } from './ColumnVisibilityDialog'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import Fuse from 'fuse.js'
 import { normalizeArabic } from '@/lib/utils'
-import { useEntityExpanded } from '@/lib/hooks/useEntityExpanded'
+import { useEntityExpanded } from '@/hooks/useEntityExpanded'
 import { commands } from '@/lib/tauri-bindings'
 
 interface DataTableShellProps {
@@ -184,7 +184,8 @@ export function DataTableShell({
           queryClient.prefetchQuery({
             queryKey: ['entity', entityType, 'stockLevels', id],
             queryFn: async () => {
-              const result = await commands.stockLevelsGetByWarehouseWithNames(id)
+              const result =
+                await commands.stockLevelsGetByWarehouseWithNames(id)
               return result.status === 'ok' ? result.data : []
             },
           })

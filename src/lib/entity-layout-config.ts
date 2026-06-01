@@ -21,7 +21,7 @@ export const entityLayoutConfig = {
         labelKey: 'entity.layout.products.columns.qty_in_stock',
         type: 'number',
         width: 110,
-        sortable: false
+        sortable: false,
       },
     },
   },

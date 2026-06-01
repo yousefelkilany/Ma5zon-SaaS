@@ -24,7 +24,7 @@ export function useProductsPagination(
       const bindingSort: BindingSortState | null = sort
         ? { column_id: sort.columnId, direction: sort.direction }
         : null
-      const result = await commands.productsGetPaginated(
+      const result = await commands.getProductsWithStockPaginated(
         bindingFilters,
         _columns,
         bindingSort,

@@ -3,10 +3,10 @@
 //! Seed data is extracted from command files into dedicated modules for better
 //! organization and maintainability.
 
+pub mod movements;
 pub mod products;
 pub mod variants;
 pub mod warehouses;
-pub mod movements;
 
 use async_trait::async_trait;
 use rusqlite::Connection;

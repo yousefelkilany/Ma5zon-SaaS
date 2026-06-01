@@ -9,7 +9,7 @@ use crate::seed::variants as seed_variants;
 use crate::sql::variants::{
     create, create_table, get_all, get_by_id, get_by_product_with_quantity, soft_delete, update,
 };
-use crate::types::{NewVariant, UpdateVariant, Variant, ProductVariantWithStock};
+use crate::types::{NewVariant, ProductVariantWithStock, UpdateVariant, Variant};
 
 pub struct VariantsInitializer;
 

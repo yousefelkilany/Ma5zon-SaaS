@@ -4,13 +4,17 @@
 //! and audit log. Two-level validation: application layer validates business
 //! rules (sufficient stock, valid warehouse) before DB layer enforces constraints.
 
+use chrono::Local;
 use rusqlite::{params, Connection};
 use tauri::AppHandle;
-use chrono::Local;
 
 use crate::commands::db_utils::get_conn;
 
-fn get_stock_level(conn: &Connection, variant_id: i64, warehouse_id: i64) -> Result<Option<i32>, String> {
+fn get_stock_level(
+    conn: &Connection,
+    variant_id: i64,
+    warehouse_id: i64,
+) -> Result<Option<i32>, String> {
     let result = conn.query_row(
         "SELECT quantity FROM stock_levels WHERE variant_id = ?1 AND warehouse_id = ?2",
         params![variant_id, warehouse_id],
@@ -41,7 +45,14 @@ fn validate_movement(
             let warehouse = to_warehouse_id.ok_or("PURCHASE requires to_warehouse")?;
             let current = get_stock_level(conn, variant_id, warehouse)?;
             let after = current.unwrap_or(0) + quantity;
-            log::trace!("[validate:PURCHASE] variant={}, warehouse={}, current={:?}, adding={}, after={}", variant_id, warehouse, current, quantity, after);
+            log::trace!(
+                "[validate:PURCHASE] variant={}, warehouse={}, current={:?}, adding={}, after={}",
+                variant_id,
+                warehouse,
+                current,
+                quantity,
+                after
+            );
         }
         "SALE" => {
             let warehouse = from_warehouse_id.ok_or("SALE requires from_warehouse")?;
@@ -53,7 +64,13 @@ fn validate_movement(
                     available, quantity
                 ));
             }
-            log::trace!("[validate:SALE] variant={}, warehouse={}, available={}, requested={}", variant_id, warehouse, available, quantity);
+            log::trace!(
+                "[validate:SALE] variant={}, warehouse={}, available={}, requested={}",
+                variant_id,
+                warehouse,
+                available,
+                quantity
+            );
         }
         "TRANSFER" => {
             let from = from_warehouse_id.ok_or("TRANSFER requires from_warehouse")?;
@@ -69,7 +86,14 @@ fn validate_movement(
                     available, quantity
                 ));
             }
-            log::trace!("[validate:TRANSFER] variant={}, from={}, to={}, available={}, requested={}", variant_id, from, to, available, quantity);
+            log::trace!(
+                "[validate:TRANSFER] variant={}, from={}, to={}, available={}, requested={}",
+                variant_id,
+                from,
+                to,
+                available,
+                quantity
+            );
         }
         "ADJUST" => {
             if let Some(warehouse) = to_warehouse_id {
@@ -85,7 +109,13 @@ fn validate_movement(
                         available, quantity
                     ));
                 }
-                log::trace!("[validate:ADJUST-] variant={}, warehouse={}, available={}, removing={}", variant_id, warehouse, available, quantity);
+                log::trace!(
+                    "[validate:ADJUST-] variant={}, warehouse={}, available={}, removing={}",
+                    variant_id,
+                    warehouse,
+                    available,
+                    quantity
+                );
             } else {
                 return Err("ADJUST requires either to_warehouse or from_warehouse".to_string());
             }
@@ -104,7 +134,14 @@ pub fn execute_movement(
     quantity: i32,
     movement_type: &str,
 ) -> Result<(), String> {
-    validate_movement(conn, variant_id, from_warehouse_id, to_warehouse_id, quantity, movement_type)?;
+    validate_movement(
+        conn,
+        variant_id,
+        from_warehouse_id,
+        to_warehouse_id,
+        quantity,
+        movement_type,
+    )?;
 
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
@@ -148,7 +185,12 @@ pub fn execute_movement(
     Ok(())
 }
 
-fn update_stock_level(conn: &Connection, variant_id: i64, warehouse_id: i64, delta: i32) -> Result<(), String> {
+fn update_stock_level(
+    conn: &Connection,
+    variant_id: i64,
+    warehouse_id: i64,
+    delta: i32,
+) -> Result<(), String> {
     let affected = conn.execute(
         "UPDATE stock_levels SET quantity = quantity + ?1 WHERE variant_id = ?2 AND warehouse_id = ?3",
         params![delta, variant_id, warehouse_id],
@@ -156,13 +198,21 @@ fn update_stock_level(conn: &Connection, variant_id: i64, warehouse_id: i64, del
     .map_err(|e| format!("Failed to update stock level: {e}"))?;
 
     if affected == 0 {
-        return Err(format!("No stock level found for variant {} at warehouse {}", variant_id, warehouse_id));
+        return Err(format!(
+            "No stock level found for variant {} at warehouse {}",
+            variant_id, warehouse_id
+        ));
     }
 
     Ok(())
 }
 
-fn upsert_stock_level(conn: &Connection, variant_id: i64, warehouse_id: i64, delta: i32) -> Result<(), String> {
+fn upsert_stock_level(
+    conn: &Connection,
+    variant_id: i64,
+    warehouse_id: i64,
+    delta: i32,
+) -> Result<(), String> {
     let affected = conn.execute(
         "UPDATE stock_levels SET quantity = quantity + ?1 WHERE variant_id = ?2 AND warehouse_id = ?3",
         params![delta, variant_id, warehouse_id],
@@ -190,12 +240,31 @@ pub async fn create_transfer(
     quantity: i32,
 ) -> Result<(), String> {
     let conn = get_conn(&app)?;
-    let variant_id_i64: i64 = variant_id.parse().map_err(|e| format!("Invalid variant_id: {e}"))?;
-    let from_wh_i64: i64 = from_warehouse.parse().map_err(|e| format!("Invalid from_warehouse: {e}"))?;
-    let to_wh_i64: i64 = to_warehouse.parse().map_err(|e| format!("Invalid to_warehouse: {e}"))?;
+    let variant_id_i64: i64 = variant_id
+        .parse()
+        .map_err(|e| format!("Invalid variant_id: {e}"))?;
+    let from_wh_i64: i64 = from_warehouse
+        .parse()
+        .map_err(|e| format!("Invalid from_warehouse: {e}"))?;
+    let to_wh_i64: i64 = to_warehouse
+        .parse()
+        .map_err(|e| format!("Invalid to_warehouse: {e}"))?;
 
-    execute_movement(&conn, variant_id_i64, Some(from_wh_i64), Some(to_wh_i64), quantity, "TRANSFER")?;
-    log::info!("[create_transfer] Transferred {} of variant {} from {} to {}", quantity, variant_id, from_warehouse, to_warehouse);
+    execute_movement(
+        &conn,
+        variant_id_i64,
+        Some(from_wh_i64),
+        Some(to_wh_i64),
+        quantity,
+        "TRANSFER",
+    )?;
+    log::info!(
+        "[create_transfer] Transferred {} of variant {} from {} to {}",
+        quantity,
+        variant_id,
+        from_warehouse,
+        to_warehouse
+    );
     Ok(())
 }
 
@@ -208,11 +277,27 @@ pub async fn create_purchase(
     quantity: i32,
 ) -> Result<(), String> {
     let conn = get_conn(&app)?;
-    let variant_id_i64: i64 = variant_id.parse().map_err(|e| format!("Invalid variant_id: {e}"))?;
-    let to_wh_i64: i64 = to_warehouse.parse().map_err(|e| format!("Invalid to_warehouse: {e}"))?;
+    let variant_id_i64: i64 = variant_id
+        .parse()
+        .map_err(|e| format!("Invalid variant_id: {e}"))?;
+    let to_wh_i64: i64 = to_warehouse
+        .parse()
+        .map_err(|e| format!("Invalid to_warehouse: {e}"))?;
 
-    execute_movement(&conn, variant_id_i64, None, Some(to_wh_i64), quantity, "PURCHASE")?;
-    log::info!("[create_purchase] Purchased {} of variant {} to warehouse {}", quantity, variant_id, to_warehouse);
+    execute_movement(
+        &conn,
+        variant_id_i64,
+        None,
+        Some(to_wh_i64),
+        quantity,
+        "PURCHASE",
+    )?;
+    log::info!(
+        "[create_purchase] Purchased {} of variant {} to warehouse {}",
+        quantity,
+        variant_id,
+        to_warehouse
+    );
     Ok(())
 }
 
@@ -225,11 +310,27 @@ pub async fn create_sale(
     quantity: i32,
 ) -> Result<(), String> {
     let conn = get_conn(&app)?;
-    let variant_id_i64: i64 = variant_id.parse().map_err(|e| format!("Invalid variant_id: {e}"))?;
-    let from_wh_i64: i64 = from_warehouse.parse().map_err(|e| format!("Invalid from_warehouse: {e}"))?;
+    let variant_id_i64: i64 = variant_id
+        .parse()
+        .map_err(|e| format!("Invalid variant_id: {e}"))?;
+    let from_wh_i64: i64 = from_warehouse
+        .parse()
+        .map_err(|e| format!("Invalid from_warehouse: {e}"))?;
 
-    execute_movement(&conn, variant_id_i64, Some(from_wh_i64), None, quantity, "SALE")?;
-    log::info!("[create_sale] Sold {} of variant {} from warehouse {}", quantity, variant_id, from_warehouse);
+    execute_movement(
+        &conn,
+        variant_id_i64,
+        Some(from_wh_i64),
+        None,
+        quantity,
+        "SALE",
+    )?;
+    log::info!(
+        "[create_sale] Sold {} of variant {} from warehouse {}",
+        quantity,
+        variant_id,
+        from_warehouse
+    );
     Ok(())
 }
 
@@ -242,14 +343,37 @@ pub async fn create_adjustment(
     quantity: i32,
 ) -> Result<(), String> {
     let conn = get_conn(&app)?;
-    let variant_id_i64: i64 = variant_id.parse().map_err(|e| format!("Invalid variant_id: {e}"))?;
-    let wh_i64: i64 = warehouse_id.parse().map_err(|e| format!("Invalid warehouse_id: {e}"))?;
+    let variant_id_i64: i64 = variant_id
+        .parse()
+        .map_err(|e| format!("Invalid variant_id: {e}"))?;
+    let wh_i64: i64 = warehouse_id
+        .parse()
+        .map_err(|e| format!("Invalid warehouse_id: {e}"))?;
 
     if quantity >= 0 {
-        execute_movement(&conn, variant_id_i64, None, Some(wh_i64), quantity, "ADJUST")?;
+        execute_movement(
+            &conn,
+            variant_id_i64,
+            None,
+            Some(wh_i64),
+            quantity,
+            "ADJUST",
+        )?;
     } else {
-        execute_movement(&conn, variant_id_i64, Some(wh_i64), None, quantity.abs(), "ADJUST")?;
+        execute_movement(
+            &conn,
+            variant_id_i64,
+            Some(wh_i64),
+            None,
+            quantity.abs(),
+            "ADJUST",
+        )?;
     }
-    log::info!("[create_adjustment] Adjusted {} of variant {} at warehouse {}", quantity, variant_id, warehouse_id);
+    log::info!(
+        "[create_adjustment] Adjusted {} of variant {} at warehouse {}",
+        quantity,
+        variant_id,
+        warehouse_id
+    );
     Ok(())
 }

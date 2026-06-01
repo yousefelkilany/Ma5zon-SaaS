@@ -55,30 +55,65 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
 
     for variant_id in &variant_ids {
         let purchase_qty: i32 = rng.gen_range(50..=500);
-        execute_movement(conn, *variant_id, None, Some(cairo_wh), purchase_qty, "PURCHASE")
-            .map_err(|e| format!("Failed purchase: {}", e))?;
+        execute_movement(
+            conn,
+            *variant_id,
+            None,
+            Some(cairo_wh),
+            purchase_qty,
+            "PURCHASE",
+        )
+        .map_err(|e| format!("Failed purchase: {}", e))?;
 
         let transfer_alex = (purchase_qty * 30) / 100;
-        execute_movement(conn, *variant_id, Some(cairo_wh), Some(alexandria_wh), transfer_alex, "TRANSFER")
-            .map_err(|e| format!("Failed transfer to Alexandria: {}", e))?;
+        execute_movement(
+            conn,
+            *variant_id,
+            Some(cairo_wh),
+            Some(alexandria_wh),
+            transfer_alex,
+            "TRANSFER",
+        )
+        .map_err(|e| format!("Failed transfer to Alexandria: {}", e))?;
 
         let transfer_mans = (purchase_qty * 20) / 100;
-        execute_movement(conn, *variant_id, Some(cairo_wh), Some(mansoura_wh), transfer_mans, "TRANSFER")
-            .map_err(|e| format!("Failed transfer to Mansoura: {}", e))?;
+        execute_movement(
+            conn,
+            *variant_id,
+            Some(cairo_wh),
+            Some(mansoura_wh),
+            transfer_mans,
+            "TRANSFER",
+        )
+        .map_err(|e| format!("Failed transfer to Mansoura: {}", e))?;
 
         let mut stock_available = vec![cairo_wh, alexandria_wh, mansoura_wh];
 
         if rng.gen_bool(0.5) {
             let transfer_asy = (purchase_qty * 15) / 100;
-            execute_movement(conn, *variant_id, Some(cairo_wh), Some(asyut_wh), transfer_asy, "TRANSFER")
-                .map_err(|e| format!("Failed transfer to Asyut: {}", e))?;
+            execute_movement(
+                conn,
+                *variant_id,
+                Some(cairo_wh),
+                Some(asyut_wh),
+                transfer_asy,
+                "TRANSFER",
+            )
+            .map_err(|e| format!("Failed transfer to Asyut: {}", e))?;
             stock_available.push(asyut_wh);
         }
 
         if rng.gen_bool(0.3) {
             let transfer_soh = (purchase_qty * 10) / 100;
-            execute_movement(conn, *variant_id, Some(cairo_wh), Some(sohag_wh), transfer_soh, "TRANSFER")
-                .map_err(|e| format!("Failed transfer to Sohag: {}", e))?;
+            execute_movement(
+                conn,
+                *variant_id,
+                Some(cairo_wh),
+                Some(sohag_wh),
+                transfer_soh,
+                "TRANSFER",
+            )
+            .map_err(|e| format!("Failed transfer to Sohag: {}", e))?;
             stock_available.push(sohag_wh);
         }
 
@@ -103,6 +138,9 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
         }
     }
 
-    log::info!("[seed:movements] Seeded movements for {} variants", variant_ids.len());
+    log::info!(
+        "[seed:movements] Seeded movements for {} variants",
+        variant_ids.len()
+    );
     Ok(())
 }

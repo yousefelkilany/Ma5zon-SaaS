@@ -2,13 +2,22 @@
 //!
 //! ALL names use bilingual format: "{English_name} {Arabic_name}"
 
-use rusqlite::Connection;
 use chrono::Local;
+use rusqlite::Connection;
 
 pub const WAREHOUSES: &[(&str, &str)] = &[
-    ("Central Distribution Center مركز التوزيع المركزي", "Cairo القاهرة"),
-    ("North Coast Facility منشأة الساحل الشمالي", "Alexandria الإسكندرية"),
-    ("North Regional Warehouse المخزن الإقليمي الشمالي", "Mansoura المنصورة"),
+    (
+        "Central Distribution Center مركز التوزيع المركزي",
+        "Cairo القاهرة",
+    ),
+    (
+        "North Coast Facility منشأة الساحل الشمالي",
+        "Alexandria الإسكندرية",
+    ),
+    (
+        "North Regional Warehouse المخزن الإقليمي الشمالي",
+        "Mansoura المنصورة",
+    ),
     ("Southern Warehouse المستودع الجنوبي", "Asyut أسيوط"),
     ("Upper Egypt Center مركز الصعيد", "Sohag سوهاج"),
 ];

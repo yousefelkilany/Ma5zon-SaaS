@@ -24,7 +24,8 @@ export function WarehousesSubTable({
   const { data: stockLevels = [], isLoading } = useQuery({
     queryKey: ['entity', 'warehouses', 'stockLevels', warehouseId],
     queryFn: async () => {
-      const result = await commands.stockLevelsGetByWarehouseWithNames(warehouseId)
+      const result =
+        await commands.stockLevelsGetByWarehouseWithNames(warehouseId)
       if (result.status === 'ok') {
         return result.data as StockLevelWithVariant[]
       }
