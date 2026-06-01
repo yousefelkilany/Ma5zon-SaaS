@@ -6,22 +6,31 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { useMemo } from 'react'
 import i18n from '@/i18n/config'
+import { useQuery } from '@tanstack/react-query'
+import { commands } from '@/lib/tauri-bindings'
 
 interface VariantsSubTableProps {
-  variants: VariantRow[]
-  isLoading?: boolean
   productId: string
   onVariantClick?: (variantId: string, productId: string) => void
   onAddVariant?: (productId: string) => void
 }
 
 export function VariantsSubTable({
-  variants,
-  isLoading,
   productId,
   onVariantClick,
   onAddVariant,
 }: VariantsSubTableProps) {
+  const { data: variants = [], isLoading } = useQuery({
+    queryKey: ['entity', 'products', 'variants', productId],
+    queryFn: async () => {
+      const result = await commands.variantsGetByProductWithStock(productId)
+      if (result.status === 'ok') {
+        return result.data as VariantRow[]
+      }
+      return []
+    },
+    staleTime: Infinity,
+  })
   const { t } = useTranslation()
 
   const columns = useMemo(() => getEntityLayout('product_variants', t), [t])
