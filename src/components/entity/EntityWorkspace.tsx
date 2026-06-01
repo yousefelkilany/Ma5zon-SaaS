@@ -95,6 +95,9 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
     null
   )
+  const [selectedVariantProductId, setSelectedVariantProductId] = useState<
+    string | null
+  >(null)
   const [columnPrefs, setColumnPrefs] = useState<ColumnDef[] | null>(null)
   const [variantDetailOpen, setVariantDetailOpen] = useState(false)
   const [productDetailOpen, setProductDetailOpen] = useState(false)
@@ -138,8 +141,9 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   }, [])
 
   const handleVariantClick = useCallback(
-    (variantId: string, _productId: string) => {
+    (variantId: string, productId: string) => {
       setSelectedVariantId(variantId)
+      setSelectedVariantProductId(productId)
       setVariantDetailOpen(true)
     },
     []
@@ -150,6 +154,16 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     setCreateModalProductId(productId)
     setCreateModalOpen(true)
   }, [])
+
+  const handleVariantSaved = useCallback(
+    async (_variant: { product_id: string }) => {
+      if (!selectedVariantProductId) return
+      queryClient.invalidateQueries({
+        queryKey: ['entity', 'products', 'variants', selectedVariantProductId],
+      })
+    },
+    [selectedVariantProductId, queryClient]
+  )
 
   const { data: entityData, isLoading } = useQuery({
     queryKey: ['entity', entityType, activeFilters, sort, page, pageSize],
@@ -357,6 +371,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
             setVariantDetailOpen(false)
             setSelectedVariantId(null)
           }}
+          onSaved={handleVariantSaved}
         />
       )}
       {entityType === 'warehouses' && productDetailId && (
