@@ -4,16 +4,13 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 import type {
   FilterState as BindingFilterState,
-  ProductVariantWithStock,
 } from '@/lib/bindings'
 import { getEntityLayout } from '@/lib/entity-layout'
 import type {
   EntityWorkspaceProps,
   ColumnDef,
-  VariantRow,
   FilterState,
   SortState,
-  StockLevelWithVariant,
   EntityRow,
 } from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
@@ -88,19 +85,8 @@ function EntityHeader({
 
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const queryClient = useQueryClient()
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
   const [activeFilters, setActiveFilters] = useState<FilterState[]>([])
   const [sort, setSort] = useState<SortState | null>(null)
-  const [variantsCache, setVariantsCache] = useState<Map<string, VariantRow[]>>(
-    new Map()
-  )
-  const [loadingVariants, setLoadingVariants] = useState<Set<string>>(new Set())
-  const [stockLevelsCache, setStockLevelsCache] = useState<
-    Map<string, StockLevelWithVariant[]>
-  >(new Map())
-  const [loadingStockLevels, setLoadingStockLevels] = useState<Set<string>>(
-    new Set()
-  )
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [createModalType, setCreateModalType] = useState<
     'products' | 'warehouses' | 'product_variants' | null
@@ -109,9 +95,6 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
     null
   )
-  const [selectedVariantProductId, setSelectedVariantProductId] = useState<
-    string | null
-  >(null)
   const [columnPrefs, setColumnPrefs] = useState<ColumnDef[] | null>(null)
   const [variantDetailOpen, setVariantDetailOpen] = useState(false)
   const [productDetailOpen, setProductDetailOpen] = useState(false)
@@ -155,28 +138,11 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   }, [])
 
   const handleVariantClick = useCallback(
-    (variantId: string, productId: string) => {
+    (variantId: string, _productId: string) => {
       setSelectedVariantId(variantId)
-      setSelectedVariantProductId(productId)
       setVariantDetailOpen(true)
     },
     []
-  )
-
-  const handleVariantSaved = useCallback(
-    async (_variant: { product_id: string }) => {
-      if (!selectedVariantProductId) return
-      const result = await commands.variantsGetByProductWithStock(
-        selectedVariantProductId
-      )
-      if (result.status === 'ok') {
-        const variantRows: ProductVariantWithStock[] = result.data
-        setVariantsCache(prev =>
-          new Map(prev).set(selectedVariantProductId, variantRows)
-        )
-      }
-    },
-    [selectedVariantProductId]
   )
 
   const handleAddVariant = useCallback((productId: string) => {
@@ -184,50 +150,6 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     setCreateModalProductId(productId)
     setCreateModalOpen(true)
   }, [])
-
-  const handleRowToggleExpand = useCallback(
-    async (id: string) => {
-      const newExpanded = new Set(expandedIds)
-      if (newExpanded.has(id)) {
-        newExpanded.delete(id)
-      } else {
-        newExpanded.add(id)
-        if (entityType === 'products' && !variantsCache.has(id)) {
-          setLoadingVariants(prev => new Set(prev).add(id))
-          try {
-            const result = await commands.variantsGetByProductWithStock(id)
-            if (result.status === 'ok') {
-              const variantRows: VariantRow[] = result.data
-              setVariantsCache(prev => new Map(prev).set(id, variantRows))
-            }
-          } finally {
-            setLoadingVariants(prev => {
-              const next = new Set(prev)
-              next.delete(id)
-              return next
-            })
-          }
-        }
-        if (entityType === 'warehouses' && !stockLevelsCache.has(id)) {
-          setLoadingStockLevels(prev => new Set(prev).add(id))
-          try {
-            const result = await commands.stockLevelsGetByWarehouseWithNames(id)
-            if (result.status === 'ok') {
-              setStockLevelsCache(prev => new Map(prev).set(id, result.data))
-            }
-          } finally {
-            setLoadingStockLevels(prev => {
-              const next = new Set(prev)
-              next.delete(id)
-              return next
-            })
-          }
-        }
-      }
-      setExpandedIds(newExpanded)
-    },
-    [expandedIds, variantsCache, stockLevelsCache, entityType]
-  )
 
   const { data: entityData, isLoading } = useQuery({
     queryKey: ['entity', entityType, activeFilters, sort, page, pageSize],
@@ -405,14 +327,8 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         onDelete={handleBulkDelete}
         sort={sort}
         onSortChange={handleSortChange}
-        expandedRowIds={expandedIds}
-        variantsCache={variantsCache}
-        onRowToggleExpand={handleRowToggleExpand}
-        isLoadingVariants={id => loadingVariants.has(id)}
         onVariantClick={handleVariantClick}
         onAddVariant={handleAddVariant}
-        stockLevelsCache={stockLevelsCache}
-        isLoadingStockLevels={id => loadingStockLevels.has(id)}
         onProductClick={handleProductClick}
       />
       <ProductCreateModal
@@ -441,7 +357,6 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
             setVariantDetailOpen(false)
             setSelectedVariantId(null)
           }}
-          onSaved={handleVariantSaved}
         />
       )}
       {entityType === 'warehouses' && productDetailId && (
