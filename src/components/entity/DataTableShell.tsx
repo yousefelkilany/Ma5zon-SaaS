@@ -17,6 +17,7 @@ import { ConfirmationDialog } from './ConfirmationDialog'
 import Fuse from 'fuse.js'
 import { normalizeArabic } from '@/lib/utils'
 import { useEntityExpanded } from '@/lib/hooks/useEntityExpanded'
+import { commands } from '@/lib/tauri-bindings'
 
 interface DataTableShellProps {
   entityType: string
@@ -165,6 +166,34 @@ export function DataTableShell({
     [onFiltersApply]
   )
 
+  const handleToggleExpand = useCallback(
+    (id: string) => {
+      toggleExpanded(id)
+
+      if (!isExpanded(id)) {
+        if (entityType === 'products') {
+          queryClient.prefetchQuery({
+            queryKey: ['entity', entityType, 'variants', id],
+            queryFn: async () => {
+              const result = await commands.variantsGetByProductWithStock(id)
+              return result.status === 'ok' ? result.data : []
+            },
+          })
+        }
+        if (entityType === 'warehouses') {
+          queryClient.prefetchQuery({
+            queryKey: ['entity', entityType, 'stockLevels', id],
+            queryFn: async () => {
+              const result = await commands.stockLevelsGetByWarehouseWithNames(id)
+              return result.status === 'ok' ? result.data : []
+            },
+          })
+        }
+      }
+    },
+    [toggleExpanded, isExpanded, entityType, queryClient]
+  )
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <Toolbar
@@ -191,7 +220,7 @@ export function DataTableShell({
             onSort={handleSortChange}
             onRowSelect={handleRowSelect}
             onRowClick={handleRowClick}
-            onToggleExpand={toggleExpanded}
+            onToggleExpand={handleToggleExpand}
             isExpanded={isExpanded}
             onVariantClick={onVariantClick}
             onAddVariant={onAddVariant}
