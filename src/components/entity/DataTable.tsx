@@ -10,8 +10,6 @@ import type {
   ColumnDef,
   EntityRow,
   DataTableProps,
-  VariantRow,
-  StockLevelWithVariant,
 } from '@/lib/types/entity'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsRTL } from '@/hooks/user-is-rtl'
@@ -66,12 +64,8 @@ function DataCell({ column, value }: { column: ColumnDef; value: unknown }) {
 }
 
 interface ExpandedRowProps {
-  expandedRowIds?: Set<string>
-  variantsCache?: Map<string, VariantRow[]>
-  stockLevelsCache?: Map<string, StockLevelWithVariant[]>
-  onRowToggleExpand?: (id: string) => void
-  isLoadingVariants?: (id: string) => boolean
-  isLoadingStockLevels?: (id: string) => boolean
+  onToggleExpand?: (id: string) => void
+  isExpanded?: (id: string) => boolean
   onVariantClick?: (variantId: string, productId: string) => void
   onAddVariant?: (productId: string) => void
   onProductClick?: (productId: string) => void
@@ -88,12 +82,8 @@ export function DataTable({
   onSort,
   onRowSelect,
   onRowClick,
-  expandedRowIds,
-  variantsCache,
-  stockLevelsCache,
-  onRowToggleExpand,
-  isLoadingVariants,
-  isLoadingStockLevels,
+  onToggleExpand,
+  isExpanded,
   onVariantClick,
   onAddVariant,
   onProductClick,
@@ -150,18 +140,18 @@ export function DataTable({
           className="p-1 hover:bg-surface-bright rounded transition-colors"
           onClick={e => {
             e.stopPropagation()
-            onRowToggleExpand?.(row.original.id)
+            onToggleExpand?.(row.original.id)
           }}
         >
           <span
-            className={`icon-directional material-symbols-outlined text-[18px] text-on-surface-variant transition-transform ${expandedRowIds?.has(row.original.id) ? 'rotate-90' : 'rotate-180'}`}
+            className={`icon-directional material-symbols-outlined text-[18px] text-on-surface-variant transition-transform ${isExpanded?.(row.original.id) ? 'rotate-90' : 'rotate-180'}`}
           >
             chevron_right
           </span>
         </button>
       ),
     }),
-    [expandedRowIds, onRowToggleExpand]
+    [onToggleExpand, isExpanded]
   )
 
   const tableColumns = useMemo<TanstackColumnDef<EntityRow>[]>(() => {
@@ -393,13 +383,11 @@ export function DataTable({
                       )
                     })}
                   </tr>
-                  {expandedRowIds?.has(row.original.id) && (
+                  {isExpanded?.(row.original.id) && (
                     <tr>
                       <td colSpan={columns.length + 2} className="p-0">
                         {entityType === 'products' && (
                           <VariantsSubTable
-                            variants={variantsCache?.get(row.original.id) ?? []}
-                            isLoading={isLoadingVariants?.(row.original.id)}
                             productId={row.original.id}
                             onVariantClick={onVariantClick}
                             onAddVariant={onAddVariant}
@@ -407,10 +395,6 @@ export function DataTable({
                         )}
                         {entityType === 'warehouses' && (
                           <WarehousesSubTable
-                            stockLevels={
-                              stockLevelsCache?.get(row.original.id) ?? []
-                            }
-                            isLoading={isLoadingStockLevels?.(row.original.id)}
                             warehouseId={row.original.id}
                             onProductClick={onProductClick}
                           />
