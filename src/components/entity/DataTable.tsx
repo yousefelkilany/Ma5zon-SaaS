@@ -5,10 +5,14 @@ import {
   getCoreRowModel,
   flexRender,
   type ColumnDef as TanstackColumnDef,
+  type CellContext,
 } from '@tanstack/react-table'
 import type { ColumnDef, EntityRow, DataTableProps } from '@/lib/types/entity'
+import type { QueryClient } from '@tanstack/react-query'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsRTL } from '@/hooks/user-is-rtl'
+import { useTabStore } from '@/store/tab-store'
+import { commands } from '@/lib/tauri-bindings'
 import { VariantsSubTable } from './VariantsSubTable'
 import { WarehousesSubTable } from './WarehousesSubTable'
 import { ProductDetailModal } from './ProductDetailModal'
@@ -60,7 +64,6 @@ function DataCell({ column, value }: { column: ColumnDef; value: unknown }) {
 }
 
 interface ExpandedRowProps {
-  onToggleExpand?: (id: string) => void
   isExpanded?: (id: string) => boolean
   onVariantClick?: (variantId: string, productId: string) => void
   onAddVariant?: (productId: string) => void
@@ -78,8 +81,6 @@ export function DataTable({
   onSort,
   onRowSelect,
   onRowClick,
-  onToggleExpand,
-  isExpanded,
   onVariantClick,
   onAddVariant,
   onProductClick,
@@ -131,23 +132,15 @@ export function DataTable({
       size: 10,
       enableResizing: false,
       header: () => null,
-      cell: ({ row }) => (
-        <button
-          className="p-1 hover:bg-surface-bright rounded transition-colors"
-          onClick={e => {
-            e.stopPropagation()
-            onToggleExpand?.(row.original.id)
-          }}
-        >
-          <span
-            className={`icon-directional material-symbols-outlined text-[18px] text-on-surface-variant transition-transform ${isExpanded?.(row.original.id) ? 'rotate-90' : 'rotate-180'}`}
-          >
-            chevron_right
-          </span>
-        </button>
+      cell: (props: CellContext<EntityRow, unknown>) => (
+        <ExpandCell
+          rowId={props.row.original.id}
+          entityType={entityType}
+          queryClient={queryClient}
+        />
       ),
     }),
-    [onToggleExpand, isExpanded]
+    [entityType, queryClient]
   )
 
   const tableColumns = useMemo<TanstackColumnDef<EntityRow>[]>(() => {
@@ -201,10 +194,11 @@ export function DataTable({
     },
 
     onRowSelectionChange: set => {
+      const currentSelection = Object.fromEntries(
+        Object.keys(selectedIds).map(id => [id, true])
+      )
       const newSelection =
-        typeof set === 'function'
-          ? set(Object.fromEntries([...selectedIds].map(id => [id, true])))
-          : set
+        typeof set === 'function' ? set(currentSelection) : set
       const ids = Object.keys(newSelection).filter(k => newSelection[k])
       onRowSelect(new Set(ids))
     },
@@ -212,7 +206,9 @@ export function DataTable({
       sorting: sort
         ? [{ id: sort.columnId, desc: sort.direction === 'desc' }]
         : [],
-      rowSelection: Object.fromEntries([...selectedIds].map(id => [id, true])),
+      rowSelection: Object.fromEntries(
+        Object.keys(selectedIds).map(id => [id, true])
+      ),
     },
   })
 
@@ -379,25 +375,14 @@ export function DataTable({
                       )
                     })}
                   </tr>
-                  {isExpanded?.(row.original.id) && (
-                    <tr>
-                      <td colSpan={columns.length + 2} className="p-0">
-                        {entityType === 'products' && (
-                          <VariantsSubTable
-                            productId={row.original.id}
-                            onVariantClick={onVariantClick}
-                            onAddVariant={onAddVariant}
-                          />
-                        )}
-                        {entityType === 'warehouses' && (
-                          <WarehousesSubTable
-                            warehouseId={row.original.id}
-                            onProductClick={onProductClick}
-                          />
-                        )}
-                      </td>
-                    </tr>
-                  )}
+                  <ExpandedRow
+                    rowId={row.original.id}
+                    entityType={entityType}
+                    columnsLength={columns.length}
+                    onVariantClick={onVariantClick}
+                    onAddVariant={onAddVariant}
+                    onProductClick={onProductClick}
+                  />
                 </Fragment>
               ))}
             </tbody>
@@ -441,5 +426,106 @@ export function DataTable({
         />
       )}
     </>
+  )
+}
+
+function ExpandCell({
+  rowId,
+  entityType,
+  queryClient,
+}: {
+  rowId: string
+  entityType: string
+  queryClient: QueryClient
+}) {
+  const expanded = useTabStore(
+    state => state.tabUIStates[state.activeTabId]?.expandedIds[rowId] === true
+  )
+
+  const onToggle = useCallback(
+    (id: string) => {
+      useTabStore.getState().toggleExpanded(id)
+      const nowExpanded = useTabStore.getState().isExpanded(id)
+      if (nowExpanded) {
+        if (entityType === 'products') {
+          queryClient.prefetchQuery({
+            queryKey: ['entity', entityType, 'variants', id],
+            queryFn: async () => {
+              const result = await commands.variantsGetByProductWithStock(id)
+              return result.status === 'ok' ? result.data : []
+            },
+          })
+        }
+        if (entityType === 'warehouses') {
+          queryClient.prefetchQuery({
+            queryKey: ['entity', entityType, 'stockLevels', id],
+            queryFn: async () => {
+              const result =
+                await commands.stockLevelsGetByWarehouseWithNames(id)
+              return result.status === 'ok' ? result.data : []
+            },
+          })
+        }
+      }
+    },
+    [entityType, queryClient]
+  )
+
+  return (
+    <button
+      className="p-1 hover:bg-surface-bright rounded transition-colors"
+      onClick={e => {
+        e.stopPropagation()
+        onToggle(rowId)
+      }}
+    >
+      <span
+        className={`icon-directional material-symbols-outlined text-[18px] text-on-surface-variant transition-transform ${expanded ? 'rotate-90' : 'rotate-180'}`}
+      >
+        chevron_right
+      </span>
+    </button>
+  )
+}
+
+function ExpandedRow({
+  rowId,
+  entityType,
+  columnsLength,
+  onVariantClick,
+  onAddVariant,
+  onProductClick,
+}: {
+  rowId: string
+  entityType: string
+  columnsLength: number
+  onVariantClick?: (variantId: string, productId: string) => void
+  onAddVariant?: (productId: string) => void
+  onProductClick?: (productId: string) => void
+}) {
+  const isExpanded = useTabStore(
+    state => state.tabUIStates[state.activeTabId]?.expandedIds[rowId] === true
+  )
+
+  if (!isExpanded) return null
+
+  return (
+    <tr>
+      <td colSpan={columnsLength + 2} className="p-0">
+        {entityType === 'products' && (
+          <VariantsSubTable
+            productId={rowId}
+            onVariantClick={onVariantClick}
+            onAddVariant={onAddVariant}
+          />
+        )}
+        {entityType === 'warehouses' && (
+          <WarehousesSubTable
+            warehouseId={rowId}
+            onProductClick={onProductClick}
+          />
+        )}
+      </td>
+    </tr>
   )
 }

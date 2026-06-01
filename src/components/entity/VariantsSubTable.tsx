@@ -24,7 +24,6 @@ export function VariantsSubTable({
     queryKey: ['entity', 'products', 'variants', productId],
     queryFn: async () => {
       const result = await commands.variantsGetByProductWithStock(productId)
-      console.log('results', result)
       if (result.status === 'ok') {
         return result.data as VariantRow[]
       }

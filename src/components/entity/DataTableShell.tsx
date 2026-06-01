@@ -16,8 +16,7 @@ import { ColumnVisibilityDialog } from './ColumnVisibilityDialog'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import Fuse from 'fuse.js'
 import { normalizeArabic } from '@/lib/utils'
-import { useEntityExpanded } from '@/contexts/ExpandedContext'
-import { commands } from '@/lib/tauri-bindings'
+import { useTabStore } from '@/store/tab-store'
 
 interface DataTableShellProps {
   entityType: string
@@ -62,11 +61,23 @@ export function DataTableShell({
   onProductClick,
 }: DataTableShellProps) {
   const { t } = useTranslation()
-  const { isExpanded, toggleExpanded } = useEntityExpanded(entityType)
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-  const [sort, setSort] = useState<SortState | null>(null)
-  const [filters, setFilters] = useState<FilterState[]>([])
-  const [searchValue, setSearchValue] = useState('')
+  const { tabUIStates, activeTabId } = useTabStore()
+  const currentTabState = tabUIStates[activeTabId]
+  const selectedIds = useMemo(
+    () => currentTabState?.selectedIds ?? {},
+    [currentTabState?.selectedIds]
+  )
+  const isExpanded = useMemo(
+    () => (id: string) => useTabStore.getState().isExpanded(id),
+    []
+  )
+  const sort = currentTabState?.sort ?? null
+  const filters = currentTabState?.filters ?? []
+  const searchValue = currentTabState?.searchValue ?? ''
+  const setSelectedIds = useTabStore(state => state.setSelectedIds)
+  const setSort = useTabStore(state => state.setSort)
+  const setFilters = useTabStore(state => state.setFilters)
+  const setSearchValue = useTabStore(state => state.setSearchValue)
   const [filterDialogOpen, setFilterDialogOpen] = useState(false)
   const [columnDialogOpen, setColumnDialogOpen] = useState(false)
   const [localColumns, setLocalColumns] = useState<ColumnDef[]>(columns)
@@ -110,14 +121,14 @@ export function DataTableShell({
     if (externalSort !== undefined) {
       setSort(externalSort)
     }
-  }, [externalSort])
+  }, [externalSort, setSort])
 
   const handleSortChange = useCallback(
     (newSort: SortState | null) => {
       setSort(newSort)
       onSortChange?.(newSort)
     },
-    [onSortChange]
+    [onSortChange, setSort]
   )
 
   const handlePageChange = useCallback(
@@ -127,21 +138,24 @@ export function DataTableShell({
     [onPageChange]
   )
 
-  const handleRowSelect = useCallback((ids: Set<string>) => {
-    setSelectedIds(ids)
-  }, [])
+  const handleRowSelect = useCallback(
+    (ids: Set<string>) => {
+      setSelectedIds(Object.fromEntries([...ids].map(id => [id, true])))
+    },
+    [setSelectedIds]
+  )
 
   const handleRowClick = useCallback((_id: string) => {
     // Row click handling is done in DataTable with typed modals
   }, [])
 
   const handlePrintSelected = useCallback(() => {
-    onPrintSelected(selectedIds, data)
+    onPrintSelected(new Set(Object.keys(selectedIds)), data)
   }, [selectedIds, data, onPrintSelected])
 
   const handleExportFormat = useCallback(
     (format: 'csv' | 'xlsx') => {
-      const selectedData = data.filter(row => selectedIds.has(row.id))
+      const selectedData = data.filter(row => selectedIds[row.id])
       if (selectedData.length === 0) return
       onExportFormatSelect(format, selectedData)
     },
@@ -153,46 +167,17 @@ export function DataTableShell({
   }, [])
 
   const handleConfirmDelete = useCallback(() => {
-    onDelete(selectedIds)
+    onDelete(new Set(Object.keys(selectedIds)))
     setDeleteDialogOpen(false)
-    setSelectedIds(new Set())
-  }, [selectedIds, onDelete])
+    setSelectedIds({})
+  }, [selectedIds, onDelete, setSelectedIds])
 
   const handleFiltersApply = useCallback(
     (newFilters: FilterState[]) => {
       setFilters(newFilters)
       onFiltersApply(newFilters)
     },
-    [onFiltersApply]
-  )
-
-  const handleToggleExpand = useCallback(
-    (id: string) => {
-      toggleExpanded(id)
-
-      if (!isExpanded(id)) {
-        if (entityType === 'products') {
-          queryClient.prefetchQuery({
-            queryKey: ['entity', entityType, 'variants', id],
-            queryFn: async () => {
-              const result = await commands.variantsGetByProductWithStock(id)
-              return result.status === 'ok' ? result.data : []
-            },
-          })
-        }
-        if (entityType === 'warehouses') {
-          queryClient.prefetchQuery({
-            queryKey: ['entity', entityType, 'stockLevels', id],
-            queryFn: async () => {
-              const result =
-                await commands.stockLevelsGetByWarehouseWithNames(id)
-              return result.status === 'ok' ? result.data : []
-            },
-          })
-        }
-      }
-    },
-    [toggleExpanded, isExpanded, entityType, queryClient]
+    [onFiltersApply, setFilters]
   )
 
   return (
@@ -203,7 +188,7 @@ export function DataTableShell({
         activeFilterCount={filters.length}
         onFiltersClick={() => setFilterDialogOpen(true)}
         onColumnsClick={() => setColumnDialogOpen(true)}
-        selectedCount={selectedIds.size}
+        selectedCount={Object.keys(selectedIds).length}
         onPrintSelected={handlePrintSelected}
         onExportFormatSelect={handleExportFormat}
         onDelete={handleDeleteClick}
@@ -221,7 +206,6 @@ export function DataTableShell({
             onSort={handleSortChange}
             onRowSelect={handleRowSelect}
             onRowClick={handleRowClick}
-            onToggleExpand={handleToggleExpand}
             isExpanded={isExpanded}
             onVariantClick={onVariantClick}
             onAddVariant={onAddVariant}
@@ -258,7 +242,7 @@ export function DataTableShell({
         }}
         title={t('entity.workspace.deleteConfirmTitle')}
         description={t('entity.workspace.deleteConfirmDescription', {
-          count: selectedIds.size,
+          count: Object.keys(selectedIds).length,
         })}
         confirmLabel={t('entity.workspace.delete')}
         onConfirm={handleConfirmDelete}

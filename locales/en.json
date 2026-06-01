@@ -1,5 +1,6 @@
 {
   "app.name": "Ma5zon",
+  "common.dashboard": "Dashboard",
   "splash.loadingCaption": "Precision in every transaction",
   "menu.about": "About {appName}",
   "menu.checkForUpdates": "Check for Updates...",

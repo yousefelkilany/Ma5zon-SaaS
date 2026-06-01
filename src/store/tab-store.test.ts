@@ -13,6 +13,7 @@ describe('useTabStore', () => {
         },
       ],
       activeTabId: 'dashboard',
+      tabUIStates: {},
     })
   })
 

@@ -16,32 +16,30 @@ interface UIState {
   setSquareCorners: (enabled: boolean) => void
 }
 
-export const useUIStore = create<UIState>()(
-  set => ({
-    sidebarVisible: true,
-    commandPaletteOpen: false,
-    preferencesOpen: false,
-    lastQuickPaneEntry: null,
+export const useUIStore = create<UIState>()(set => ({
+  sidebarVisible: true,
+  commandPaletteOpen: false,
+  preferencesOpen: false,
+  lastQuickPaneEntry: null,
 
-    toggleSidebar: () =>
-      set(state => ({ sidebarVisible: !state.sidebarVisible })),
+  toggleSidebar: () =>
+    set(state => ({ sidebarVisible: !state.sidebarVisible })),
 
-    setSidebarVisible: visible => set({ sidebarVisible: visible }),
+  setSidebarVisible: visible => set({ sidebarVisible: visible }),
 
-    toggleCommandPalette: () =>
-      set(state => ({ commandPaletteOpen: !state.commandPaletteOpen })),
+  toggleCommandPalette: () =>
+    set(state => ({ commandPaletteOpen: !state.commandPaletteOpen })),
 
-    setCommandPaletteOpen: open => set({ commandPaletteOpen: open }),
+  setCommandPaletteOpen: open => set({ commandPaletteOpen: open }),
 
-    togglePreferences: () =>
-      set(state => ({ preferencesOpen: !state.preferencesOpen })),
+  togglePreferences: () =>
+    set(state => ({ preferencesOpen: !state.preferencesOpen })),
 
-    setPreferencesOpen: open => set({ preferencesOpen: open }),
+  setPreferencesOpen: open => set({ preferencesOpen: open }),
 
-    setLastQuickPaneEntry: text => set({ lastQuickPaneEntry: text }),
+  setLastQuickPaneEntry: text => set({ lastQuickPaneEntry: text }),
 
-    setSquareCorners: (enabled: boolean) => {
-      document.documentElement.classList.toggle('square-corners', enabled)
-    },
-  })
-)
+  setSquareCorners: (enabled: boolean) => {
+    document.documentElement.classList.toggle('square-corners', enabled)
+  },
+}))

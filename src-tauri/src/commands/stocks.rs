@@ -286,8 +286,8 @@ pub async fn stock_levels_get_by_warehouse_with_names(
 pub async fn products_get_by_warehouse_with_stock_paginated(
     app: AppHandle,
     warehouse_id: String,
-    page_size: i32,
     page: i32,
+    page_size: i32,
 ) -> Result<PaginatedResponse<ProductWithStock>, String> {
     let conn = get_conn(&app)?;
     let offset: i32 = (page - 1) * page_size;
@@ -323,9 +323,8 @@ pub async fn products_get_by_warehouse_paginated(
     app: AppHandle,
     warehouse_id: String,
     page: i32,
-    page_size_: i32,
+    page_size: i32,
 ) -> Result<PaginatedResponse<ProductWithStock>, String> {
-    let page_size = page_size_.max(1);
     let offset = (page - 1) * page_size;
     let conn = get_conn(&app)?;
     let (data, total_count) = fetch_products_by_warehouse_with_stock(

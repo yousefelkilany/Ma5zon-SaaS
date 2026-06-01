@@ -58,7 +58,7 @@ export interface DataTableProps {
   data: EntityRow[]
   sort: SortState | null
   isLoading: boolean
-  selectedIds: Set<string>
+  selectedIds: Record<string, boolean>
   onSort: (sort: SortState | null) => void
   onRowSelect: (ids: Set<string>) => void
   onRowClick: (id: string, row: EntityRow) => void

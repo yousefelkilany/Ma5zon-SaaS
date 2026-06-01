@@ -62,7 +62,7 @@ export function PaginationFooter({
           title="First page"
           aria-label="First page"
         >
-          <span className="material-symbols-outlined text-on-surface-variant text-[18px] icon-directional">
+          <span className="material-symbols-outlined text-on-surface-variant text-[18px] icon-directional rotate-180">
             first_page
           </span>
         </button>
@@ -73,7 +73,7 @@ export function PaginationFooter({
           title="Previous page"
           aria-label="Previous page"
         >
-          <span className="material-symbols-outlined text-on-surface-variant text-[18px] icon-directional">
+          <span className="material-symbols-outlined text-on-surface-variant text-[18px] icon-directional rotate-180">
             chevron_left
           </span>
         </button>
@@ -102,7 +102,7 @@ export function PaginationFooter({
           title="Next page"
           aria-label="Next page"
         >
-          <span className="material-symbols-outlined text-on-surface-variant text-[18px] icon-directional">
+          <span className="material-symbols-outlined text-on-surface-variant text-[18px] icon-directional rotate-180">
             chevron_right
           </span>
         </button>
@@ -113,7 +113,7 @@ export function PaginationFooter({
           title="Last page"
           aria-label="Last page"
         >
-          <span className="material-symbols-outlined text-on-surface-variant text-[18px] icon-directional">
+          <span className="material-symbols-outlined text-on-surface-variant text-[18px] rotate-180">
             last_page
           </span>
         </button>

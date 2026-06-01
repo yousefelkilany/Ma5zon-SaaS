@@ -12,7 +12,6 @@ import { SplashScreen } from './components/splash'
 import { ThemeProvider } from './components/ThemeProvider'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { useSquareCornersEffect } from './hooks/useSquareCornersEffect'
-import { ExpandedProvider } from './contexts/ExpandedContext'
 
 function App() {
   useSquareCornersEffect()
@@ -98,10 +97,8 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <ExpandedProvider>
-          <SplashScreen isReady={isAppReady} minDuration={1500} />
-          <MainWindow />
-        </ExpandedProvider>
+        <SplashScreen isReady={isAppReady} minDuration={1500} />
+        <MainWindow />
       </ThemeProvider>
     </ErrorBoundary>
   )

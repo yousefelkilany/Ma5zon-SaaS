@@ -19,12 +19,13 @@ pub fn fetch_products_by_warehouse_with_stock(
         |row| row.get(0),
     )?;
 
-    let sql = "SELECT p.id, p.company, p.name, COALESCE(SUM(sl.quantity), 0) as quantity
+    let sql =
+        "SELECT p.id, p.company, p.name, COALESCE(SUM(sl.quantity), 0) as quantity, p.category
              FROM products p
              INNER JOIN product_variants v ON p.id = v.product_id
              INNER JOIN stock_levels sl ON v.id = sl.variant_id
              WHERE sl.warehouse_id = ?
-             GROUP BY p.id, p.company, p.name";
+             GROUP BY p.id";
     let products: Vec<ProductWithStock> = match (limit, offset) {
         (Some(limit), Some(offset)) => {
             let mut stmt = conn.prepare(&format!("{sql} LIMIT ? OFFSET ?"))?;

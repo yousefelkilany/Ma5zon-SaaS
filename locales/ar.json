@@ -1,5 +1,6 @@
 {
   "app.name": "Ma5zon",
+  "common.dashboard": "لوحة التحكم",
   "splash.loadingCaption": "الدقة فى المعاملات",
   "menu.about": "حول {appName}",
   "menu.checkForUpdates": "التحقق من التحديثات...",
