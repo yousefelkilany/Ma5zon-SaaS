@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import type { QueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
+import { createWarehouseSchema } from '@/lib/validation/schemas'
 import {
   Dialog,
   DialogContent,
@@ -27,11 +28,13 @@ export function WarehouseCreateModal({
   const { t } = useTranslation()
   const [name, setName] = useState('')
   const [location, setLocation] = useState('')
+  const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const resetForm = () => {
     setName('')
     setLocation('')
+    setErrors({})
   }
 
   useEffect(() => {
@@ -43,7 +46,14 @@ export function WarehouseCreateModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!name || !location) {
+    const result = createWarehouseSchema.safeParse({ name, location })
+    if (!result.success) {
+      const errs = result.error.flatten().fieldErrors
+      setErrors(
+        Object.fromEntries(
+          Object.entries(errs).map(([k, v]) => [k, v?.[0] ?? ''])
+        )
+      )
       return
     }
 
@@ -88,10 +98,16 @@ export function WarehouseCreateModal({
                 id="name"
                 type="text"
                 value={name}
-                onChange={e => setName(e.target.value)}
+                onChange={e => {
+                  setName(e.target.value)
+                  setErrors(prev => ({ ...prev, name: '' }))
+                }}
                 required
                 className="w-full bg-surface-bright border border-outline-variant rounded px-3 py-1.5 text-on-surface text-body-sm focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
               />
+              {errors.name && (
+                <p className="text-body-sm text-error">{errors.name}</p>
+              )}
             </div>
             <div className="space-y-2">
               <label
@@ -104,10 +120,16 @@ export function WarehouseCreateModal({
                 id="location"
                 type="text"
                 value={location}
-                onChange={e => setLocation(e.target.value)}
+                onChange={e => {
+                  setLocation(e.target.value)
+                  setErrors(prev => ({ ...prev, location: '' }))
+                }}
                 required
                 className="w-full bg-surface-bright border border-outline-variant rounded px-3 py-1.5 text-on-surface text-body-sm focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
               />
+              {errors.location && (
+                <p className="text-body-sm text-error">{errors.location}</p>
+              )}
             </div>
           </div>
           <DialogFooter className="flex justify-end gap-2 pt-4">

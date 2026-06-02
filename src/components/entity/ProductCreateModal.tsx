@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import type { QueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
+import { createProductSchema } from '@/lib/validation/schemas'
 import {
   Dialog,
   DialogContent,
@@ -28,12 +29,14 @@ export function ProductCreateModal({
   const [company, setCompany] = useState('')
   const [name, setName] = useState('')
   const [category, setCategory] = useState('')
+  const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const resetForm = () => {
     setCompany('')
     setName('')
     setCategory('')
+    setErrors({})
   }
 
   useEffect(() => {
@@ -45,7 +48,14 @@ export function ProductCreateModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!company || !name || !category) {
+    const result = createProductSchema.safeParse({ company, name, category })
+    if (!result.success) {
+      const errs = result.error.flatten().fieldErrors
+      setErrors(
+        Object.fromEntries(
+          Object.entries(errs).map(([k, v]) => [k, v?.[0] ?? ''])
+        )
+      )
       return
     }
 
@@ -90,10 +100,16 @@ export function ProductCreateModal({
                 id="company"
                 type="text"
                 value={company}
-                onChange={e => setCompany(e.target.value)}
+                onChange={e => {
+                  setCompany(e.target.value)
+                  setErrors(prev => ({ ...prev, company: '' }))
+                }}
                 required
                 className="w-full bg-surface-bright border border-outline-variant rounded px-3 py-1.5 text-on-surface text-body-sm focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
               />
+              {errors.company && (
+                <p className="text-body-sm text-error">{errors.company}</p>
+              )}
             </div>
             <div className="space-y-2">
               <label
@@ -106,10 +122,16 @@ export function ProductCreateModal({
                 id="name"
                 type="text"
                 value={name}
-                onChange={e => setName(e.target.value)}
+                onChange={e => {
+                  setName(e.target.value)
+                  setErrors(prev => ({ ...prev, name: '' }))
+                }}
                 required
                 className="w-full bg-surface-bright border border-outline-variant rounded px-3 py-1.5 text-on-surface text-body-sm focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
               />
+              {errors.name && (
+                <p className="text-body-sm text-error">{errors.name}</p>
+              )}
             </div>
           </div>
           <div className="space-y-2">
@@ -123,10 +145,16 @@ export function ProductCreateModal({
               id="category"
               type="text"
               value={category}
-              onChange={e => setCategory(e.target.value)}
+              onChange={e => {
+                setCategory(e.target.value)
+                setErrors(prev => ({ ...prev, category: '' }))
+              }}
               required
               className="w-full bg-surface-bright border border-outline-variant rounded px-3 py-1.5 text-on-surface text-body-sm focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
             />
+            {errors.category && (
+              <p className="text-body-sm text-error">{errors.category}</p>
+            )}
           </div>
           <DialogFooter className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="ghost" onClick={handleCancel}>
