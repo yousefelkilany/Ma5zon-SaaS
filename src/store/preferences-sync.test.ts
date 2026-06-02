@@ -61,8 +61,8 @@ describe('preferences-sync', () => {
       vi.mocked(commands.loadPreferences).mockResolvedValue({
         status: 'ok',
         data: {
-          theme: 'invalid-theme' as any,
-          language: 'invalid-lang' as any,
+          theme: 'invalid-theme' as unknown as string,
+          language: 'invalid-lang' as unknown as string,
           quick_pane_shortcut: null,
         },
       })

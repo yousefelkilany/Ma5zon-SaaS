@@ -1,11 +1,5 @@
 import { create } from 'zustand'
 
-interface UserPreferences {
-  language: 'ar' | 'en'
-  theme?: 'light' | 'dark' | 'system'
-  dateFormat?: string
-}
-
 interface UIState {
   sidebarVisible: boolean
   commandPaletteOpen: boolean
@@ -23,6 +17,12 @@ interface UIState {
   setSquareCorners: (enabled: boolean) => void
   setUserPreferences: (prefs: UserPreferences) => void
   updateUserPreferences: (partial: Partial<UserPreferences>) => void
+}
+
+export interface UserPreferences {
+  language: 'ar' | 'en'
+  theme?: 'light' | 'dark' | 'system'
+  dateFormat?: string
 }
 
 export const useUIStore = create<UIState>()(set => ({

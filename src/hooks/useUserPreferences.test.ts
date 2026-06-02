@@ -26,9 +26,13 @@ describe('useUserPreferences', () => {
     const initialLanguage = result.current.userPreferences.language
 
     act(() => {
-      result.current.updateUserPreferences({ language: initialLanguage === 'ar' ? 'en' : 'ar' })
+      result.current.updateUserPreferences({
+        language: initialLanguage === 'ar' ? 'en' : 'ar',
+      })
     })
 
-    expect(useUIStore.getState().userPreferences.language).toBe(initialLanguage === 'ar' ? 'en' : 'ar')
+    expect(useUIStore.getState().userPreferences.language).toBe(
+      initialLanguage === 'ar' ? 'en' : 'ar'
+    )
   })
 })

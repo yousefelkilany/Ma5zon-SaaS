@@ -12,20 +12,21 @@
 
 ## File Map
 
-| File | Role |
-|------|------|
-| `src/store/ui-store.ts` | Add `UserPreferences` interface, state, actions |
-| `src/store/preferences-sync.ts` | New — load/save with debounce |
-| `src/hooks/useUserPreferences.ts` | New — selector-pattern hook |
-| `src/i18n/config.ts` | Call `i18n.changeLanguage()` after prefs load |
-| `src/store/ui-store.test.ts` | Add tests for new state/actions |
-| `src/store/preferences-sync.test.ts` | New — test load/save/optimistic/debounce |
+| File                                 | Role                                            |
+| ------------------------------------ | ----------------------------------------------- |
+| `src/store/ui-store.ts`              | Add `UserPreferences` interface, state, actions |
+| `src/store/preferences-sync.ts`      | New — load/save with debounce                   |
+| `src/hooks/useUserPreferences.ts`    | New — selector-pattern hook                     |
+| `src/i18n/config.ts`                 | Call `i18n.changeLanguage()` after prefs load   |
+| `src/store/ui-store.test.ts`         | Add tests for new state/actions                 |
+| `src/store/preferences-sync.test.ts` | New — test load/save/optimistic/debounce        |
 
 ---
 
 ## Task 1: Add UserPreferences to UIStore
 
 **Files:**
+
 - Modify: `src/store/ui-store.ts`
 
 - [ ] **Step 1a: Add interface above store definition**
@@ -95,6 +96,7 @@ git commit -m "feat(ui-store): add userPreferences state and actions"
 ## Task 2: Create preferences-sync.ts
 
 **Files:**
+
 - Create: `src/store/preferences-sync.ts`
 - Test: `src/store/preferences-sync.test.ts`
 
@@ -185,6 +187,7 @@ git commit -m "feat: add preferences sync module with debounced save"
 ## Task 3: Create useUserPreferences hook
 
 **Files:**
+
 - Create: `src/hooks/useUserPreferences.ts`
 - Test: `src/hooks/useUserPreferences.test.ts`
 
@@ -236,6 +239,7 @@ git commit -m "feat: add useUserPreferences hook"
 ## Task 4: Integrate i18n with loaded preferences
 
 **Files:**
+
 - Modify: `src/i18n/config.ts`
 - Create: `src/hooks/useSyncLanguageToI18n.ts` (or inline in app init)
 
@@ -268,6 +272,7 @@ git commit -m "feat: sync i18n language with loaded user preferences"
 ## Task 5: Add tests to ui-store.test.ts
 
 **Files:**
+
 - Modify: `src/store/ui-store.test.ts`
 
 - [ ] **Step 5a: Reset state in beforeEach**
@@ -298,7 +303,11 @@ it('has correct default userPreferences', () => {
 it('setters and updaters work correctly', () => {
   const { setUserPreferences, updateUserPreferences } = useUIStore.getState()
 
-  setUserPreferences({ language: 'en', theme: 'dark', dateFormat: 'dd/MM/yyyy' })
+  setUserPreferences({
+    language: 'en',
+    theme: 'dark',
+    dateFormat: 'dd/MM/yyyy',
+  })
   expect(useUIStore.getState().userPreferences.language).toBe('en')
 
   updateUserPreferences({ language: 'ar' })

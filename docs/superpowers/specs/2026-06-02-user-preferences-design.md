@@ -128,12 +128,12 @@ To add a new preference (e.g., `timezone`):
 
 ## 8. Files Affected
 
-| File | Change |
-|------|--------|
-| `src/store/ui-store.ts` | Add `UserPreferences` interface, state fields, actions |
-| `src/store/preferences-sync.ts` | New — load/save with debounce |
-| `src/hooks/useUserPreferences.ts` | New — convenience hook |
-| `src/i18n/config.ts` | Call `i18n.changeLanguage()` after prefs load |
+| File                              | Change                                                 |
+| --------------------------------- | ------------------------------------------------------ |
+| `src/store/ui-store.ts`           | Add `UserPreferences` interface, state fields, actions |
+| `src/store/preferences-sync.ts`   | New — load/save with debounce                          |
+| `src/hooks/useUserPreferences.ts` | New — convenience hook                                 |
+| `src/i18n/config.ts`              | Call `i18n.changeLanguage()` after prefs load          |
 
 ---
 

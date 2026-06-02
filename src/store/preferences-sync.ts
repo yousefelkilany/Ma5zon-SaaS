@@ -12,8 +12,8 @@ let saveTimeout: ReturnType<typeof setTimeout> | null = null
 const VALID_LANGUAGES = ['ar', 'en'] as const
 const VALID_THEMES = ['light', 'dark', 'system'] as const
 
-type ValidLanguage = typeof VALID_LANGUAGES[number]
-type ValidTheme = typeof VALID_THEMES[number]
+type ValidLanguage = (typeof VALID_LANGUAGES)[number]
+type ValidTheme = (typeof VALID_THEMES)[number]
 
 function isValidLanguage(lang: string | null): lang is ValidLanguage {
   return lang !== null && VALID_LANGUAGES.includes(lang as ValidLanguage)

@@ -73,7 +73,11 @@ describe('UIStore', () => {
   it('setUserPreferences replaces full preferences object', () => {
     const { setUserPreferences } = useUIStore.getState()
 
-    setUserPreferences({ language: 'en', theme: 'dark', dateFormat: 'dd/MM/yyyy' })
+    setUserPreferences({
+      language: 'en',
+      theme: 'dark',
+      dateFormat: 'dd/MM/yyyy',
+    })
     expect(useUIStore.getState().userPreferences.language).toBe('en')
     expect(useUIStore.getState().userPreferences.theme).toBe('dark')
     expect(useUIStore.getState().userPreferences.dateFormat).toBe('dd/MM/yyyy')
@@ -81,7 +85,11 @@ describe('UIStore', () => {
 
   it('updateUserPreferences merges partial updates', () => {
     useUIStore.setState({
-      userPreferences: { language: 'en', theme: 'dark', dateFormat: 'dd/MM/yyyy' },
+      userPreferences: {
+        language: 'en',
+        theme: 'dark',
+        dateFormat: 'dd/MM/yyyy',
+      },
     })
 
     const { updateUserPreferences } = useUIStore.getState()
