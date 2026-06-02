@@ -132,4 +132,64 @@ mod tests {
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), "name: required");
     }
+
+    #[test]
+    fn test_validate_product_whitespace_only() {
+        let result = validate_product("   ", "Widget", "Electronics");
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "company: required");
+    }
+
+    #[test]
+    fn test_validate_warehouse_whitespace_only() {
+        let result = validate_warehouse("   ", "123 Main St");
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "name: required");
+    }
+
+    #[test]
+    fn test_validate_variant_sku_boundary_50_chars() {
+        let result = validate_variant(&"A".repeat(50), "Blue Widget", None, 10.0, 5.0, 3.0);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_validate_variant_sku_boundary_51_chars() {
+        let result = validate_variant(&"A".repeat(51), "Blue Widget", None, 10.0, 5.0, 3.0);
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "sku: must be 50 characters or less");
+    }
+
+    #[test]
+    fn test_validate_product_name_boundary_200_chars() {
+        let result = validate_product("Acme Corp", &"A".repeat(200), "Electronics");
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_validate_product_company_boundary_100_chars() {
+        let result = validate_product(&"A".repeat(100), "Widget", "Electronics");
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_validate_variant_negative_wholesale_price() {
+        let result = validate_variant("SKU-001", "Blue Widget", None, 10.0, -5.0, 3.0);
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "wholesale_price: must be 0 or greater");
+    }
+
+    #[test]
+    fn test_validate_variant_negative_distribution_price() {
+        let result = validate_variant("SKU-001", "Blue Widget", None, 10.0, 5.0, -3.0);
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "distribution_price: must be 0 or greater");
+    }
+
+    #[test]
+    fn test_validate_variant_uom_id_too_long() {
+        let result = validate_variant("SKU-001", "Blue Widget", Some(&"U".repeat(51)), 10.0, 5.0, 3.0);
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "uom_id: must be 50 characters or less");
+    }
 }
