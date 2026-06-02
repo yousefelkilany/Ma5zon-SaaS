@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { check } from '@tauri-apps/plugin-updater'
 import { relaunch } from '@tauri-apps/plugin-process'
 import { initializeCommandSystem } from './lib/commands'
-import { initializeLanguage } from './i18n/language-init'
+import { loadUserPreferences } from './store/preferences-sync'
+import { useUIStore } from './store/ui-store'
+import i18n from './i18n/config'
 import { logger } from './lib/logger'
 import { cleanupOldFiles } from './lib/recovery'
-import { commands } from './lib/tauri-bindings'
 import './App.css'
 import { MainWindow } from './components/layout/MainWindow'
 import { SplashScreen } from './components/splash'
@@ -25,10 +26,12 @@ function App() {
       logger.debug('Command system initialized')
 
       try {
-        const result = await commands.loadPreferences()
-        const savedLanguage =
-          result.status === 'ok' ? result.data.language : null
-        await initializeLanguage(savedLanguage)
+        const loaded = await loadUserPreferences()
+        useUIStore.getState().setUserPreferences(loaded)
+        await i18n.changeLanguage(loaded.language)
+        logger.info('User preferences loaded and i18n synced', {
+          language: loaded.language,
+        })
       } catch (error) {
         logger.warn('Failed to initialize language', { error })
       }
