@@ -8,6 +8,7 @@ import { commands } from '@/lib/tauri-bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import type { StockLevelWithVariant } from '@/lib/types/entity'
 import { StockLevelsTable } from './StockLevelsTable'
+import { updateProductSchema } from '@/lib/validation/schemas'
 
 interface ProductDetailModalProps {
   open: boolean
@@ -71,6 +72,7 @@ export function ProductDetailModal({
   const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
     new Map()
   )
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -141,6 +143,7 @@ export function ProductDetailModal({
       setDeleteError('')
       setStockLevels([])
       setWarehouseNames(new Map())
+      setFieldErrors({})
     }
   }, [open])
 
@@ -175,21 +178,32 @@ export function ProductDetailModal({
 
   async function handleSave() {
     if (!entity) return
-    setIsSaving(true)
     setSaveError('')
-    const result = await commands.update(
+    const validationResult = updateProductSchema.safeParse(editForm)
+    if (!validationResult.success) {
+      const errors = validationResult.error.flatten().fieldErrors
+      setFieldErrors(
+        Object.fromEntries(
+          Object.entries(errors).map(([k, v]) => [k, v?.[0] ?? ''])
+        )
+      )
+      return
+    }
+    setFieldErrors({})
+    setIsSaving(true)
+    const saveResult = await commands.update(
       entity.id,
       editForm.company,
       editForm.name,
       editForm.category
     )
     setIsSaving(false)
-    if (result.status === 'ok') {
-      setEntity(result.data)
+    if (saveResult.status === 'ok') {
+      setEntity(saveResult.data)
       setIsEditing(false)
       queryClient.invalidateQueries({ queryKey: ['entity', 'products'] })
     } else {
-      setSaveError(result.error ?? 'Save failed')
+      setSaveError(saveResult.error ?? 'Save failed')
     }
   }
 
@@ -289,22 +303,33 @@ export function ProductDetailModal({
                               {t(field.label)}
                             </label>
                             {isEditing && field.type === 'text' ? (
-                              <input
-                                className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
-                                value={
-                                  editForm[
-                                    field.key as keyof typeof editForm
-                                  ] as string
-                                }
-                                onChange={e =>
-                                  setEditForm(prev => ({
-                                    ...prev,
-                                    [field.key as keyof typeof editForm]:
-                                      e.target.value,
-                                  }))
-                                }
-                                disabled={isSaving}
-                              />
+                              <div className="space-y-1">
+                                <input
+                                  className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
+                                  value={
+                                    editForm[
+                                      field.key as keyof typeof editForm
+                                    ] as string
+                                  }
+                                  onChange={e => {
+                                    setEditForm(prev => ({
+                                      ...prev,
+                                      [field.key as keyof typeof editForm]:
+                                        e.target.value,
+                                    }))
+                                    setFieldErrors(prev => ({
+                                      ...prev,
+                                      [field.key]: '',
+                                    }))
+                                  }}
+                                  disabled={isSaving}
+                                />
+                                {fieldErrors[field.key as keyof typeof fieldErrors] && (
+                                  <p className="text-body-sm text-error">
+                                    {fieldErrors[field.key as keyof typeof fieldErrors]}
+                                  </p>
+                                )}
+                              </div>
                             ) : (
                               <p className="text-body-md text-on-surface">
                                 {field.type === 'date'

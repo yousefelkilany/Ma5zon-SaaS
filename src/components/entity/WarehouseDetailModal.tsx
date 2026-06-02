@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
+import { updateWarehouseSchema } from '@/lib/validation/schemas'
 
 interface WarehouseDetailModalProps {
   open: boolean
@@ -58,6 +59,7 @@ export function WarehouseDetailModal({
   const [deleteError, setDeleteError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
   const [loadError, setLoadError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -106,6 +108,7 @@ export function WarehouseDetailModal({
       setActiveTab('details')
       setDeleteError('')
       setSaveError('')
+      setFieldErrors({})
     }
   }, [open])
 
@@ -123,12 +126,19 @@ export function WarehouseDetailModal({
 
   async function handleSave() {
     if (!entity) return
-    if (!editForm.name.trim() || !editForm.location.trim()) {
-      setSaveError('Name and location are required')
+    setSaveError('')
+    const validationResult = updateWarehouseSchema.safeParse(editForm)
+    if (!validationResult.success) {
+      const errors = validationResult.error.flatten().fieldErrors
+      setFieldErrors(
+        Object.fromEntries(
+          Object.entries(errors).map(([k, v]) => [k, v?.[0] ?? ''])
+        )
+      )
       return
     }
+    setFieldErrors({})
     setIsSaving(true)
-    setSaveError('')
     const result = await commands.warehousesUpdate(
       entity.id,
       editForm.name,
@@ -232,22 +242,29 @@ export function WarehouseDetailModal({
                               {t(field.label)}
                             </label>
                             {isEditing && field.type === 'text' ? (
-                              <input
-                                className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
-                                value={
-                                  editForm[
-                                    field.key as keyof typeof editForm
-                                  ] as string
-                                }
-                                onChange={e =>
-                                  setEditForm(prev => ({
-                                    ...prev,
-                                    [field.key as keyof typeof editForm]:
-                                      e.target.value,
-                                  }))
-                                }
-                                disabled={isSaving}
-                              />
+                              <div className="space-y-1">
+                                <input
+                                  className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
+                                  value={
+                                    editForm[
+                                      field.key as keyof typeof editForm
+                                    ] as string
+                                  }
+                                  onChange={e =>
+                                    setEditForm(prev => ({
+                                      ...prev,
+                                      [field.key as keyof typeof editForm]:
+                                        e.target.value,
+                                    }))
+                                  }
+                                  disabled={isSaving}
+                                />
+                                {fieldErrors[field.key as keyof typeof fieldErrors] && (
+                                  <p className="text-body-sm text-error">
+                                    {fieldErrors[field.key as keyof typeof fieldErrors]}
+                                  </p>
+                                )}
+                              </div>
                             ) : (
                               <p className="text-body-md text-on-surface">
                                 {field.type === 'date'

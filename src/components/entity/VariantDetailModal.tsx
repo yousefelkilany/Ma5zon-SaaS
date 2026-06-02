@@ -9,6 +9,7 @@ import type { StockLevelWithVariant } from '@/lib/types/entity'
 import type { StockLevel } from '@/lib/bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import { StockLevelsTable } from './StockLevelsTable'
+import { updateVariantSchema } from '@/lib/validation/schemas'
 
 interface VariantDetailModalProps {
   open: boolean
@@ -102,6 +103,7 @@ export function VariantDetailModal({
   const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
     new Map()
   )
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -200,6 +202,7 @@ export function VariantDetailModal({
       setStockLevels([])
       setStockLoadError('')
       setWarehouseNames(new Map())
+      setFieldErrors({})
     }
   }, [open])
 
@@ -211,12 +214,27 @@ export function VariantDetailModal({
 
   async function handleSave() {
     if (!entity) return
-    if (!editForm.sku.trim() || !editForm.variant_name.trim()) {
-      setSaveError('SKU and variant name are required')
+    setSaveError('')
+    const parsedData = {
+      sku: editForm.sku,
+      variant_name: editForm.variant_name,
+      uom_id: editForm.uom_id,
+      retail_price: parseFloat(editForm.retail_price) || 0,
+      wholesale_price: parseFloat(editForm.wholesale_price) || 0,
+      distribution_price: parseFloat(editForm.distribution_price) || 0,
+    }
+    const validationResult = updateVariantSchema.safeParse(parsedData)
+    if (!validationResult.success) {
+      const errors = validationResult.error.flatten().fieldErrors
+      setFieldErrors(
+        Object.fromEntries(
+          Object.entries(errors).map(([k, v]) => [k, v?.[0] ?? ''])
+        )
+      )
       return
     }
+    setFieldErrors({})
     setIsSaving(true)
-    setSaveError('')
     const result = await commands.variantsUpdate(entity.id, {
       sku: editForm.sku,
       variant_name: editForm.variant_name,
@@ -351,24 +369,31 @@ export function VariantDetailModal({
                             {isEditing &&
                             (field.type === 'text' ||
                               field.type === 'number') ? (
-                              <input
-                                type={
-                                  field.type === 'number' ? 'number' : 'text'
-                                }
-                                className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
-                                value={
-                                  editForm[
-                                    field.key as keyof EditForm
-                                  ] as string
-                                }
-                                onChange={e =>
-                                  setEditForm(prev => ({
-                                    ...prev,
-                                    [field.key]: e.target.value,
-                                  }))
-                                }
-                                disabled={isSaving}
-                              />
+                              <div className="space-y-1">
+                                <input
+                                  type={
+                                    field.type === 'number' ? 'number' : 'text'
+                                  }
+                                  className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
+                                  value={
+                                    editForm[
+                                      field.key as keyof EditForm
+                                    ] as string
+                                  }
+                                  onChange={e =>
+                                    setEditForm(prev => ({
+                                      ...prev,
+                                      [field.key]: e.target.value,
+                                    }))
+                                  }
+                                  disabled={isSaving}
+                                />
+                                {fieldErrors[field.key as keyof typeof fieldErrors] && (
+                                  <p className="text-body-sm text-error">
+                                    {fieldErrors[field.key as keyof typeof fieldErrors]}
+                                  </p>
+                                )}
+                              </div>
                             ) : (
                               <p className="text-body-md text-on-surface">
                                 {field.type === 'date'
