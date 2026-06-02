@@ -207,6 +207,8 @@ pub async fn variants_update(
     let new_distribution_price = variant
         .distribution_price
         .unwrap_or(current.distribution_price);
+    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+
     validate_variant(
         &new_sku,
         &new_variant_name,
@@ -215,7 +217,6 @@ pub async fn variants_update(
         new_wholesale_price,
         new_distribution_price,
     )?;
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
     conn.execute(
         update(),
