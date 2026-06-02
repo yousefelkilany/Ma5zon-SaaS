@@ -13,7 +13,7 @@ use crate::sql::products::{
 };
 use crate::types::{FilterState, PaginatedResponse, SortState};
 use crate::types::{Product, ProductWithStock};
-use crate::validation::{validate_product, validate_warehouse};
+use crate::validation::validate_product;
 
 pub struct ProductsInitializer;
 
