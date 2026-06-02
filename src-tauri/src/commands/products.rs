@@ -13,6 +13,7 @@ use crate::sql::products::{
 };
 use crate::types::{FilterState, PaginatedResponse, SortState};
 use crate::types::{Product, ProductWithStock};
+use crate::validation::{validate_product, validate_warehouse};
 
 pub struct ProductsInitializer;
 
@@ -156,6 +157,7 @@ pub async fn create(
     name: String,
     category: String,
 ) -> Result<Product, String> {
+    validate_product(&company, &name, &category)?;
     let conn = get_conn(&app)?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(sql_create(), params![company, name, category, &now, &now])
@@ -182,6 +184,7 @@ pub async fn update(
     name: String,
     category: String,
 ) -> Result<Product, String> {
+    validate_product(&company, &name, &category)?;
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();

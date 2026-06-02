@@ -11,6 +11,7 @@ use crate::sql::warehouses::{
     get_by_id, get_created_at, soft_delete, update,
 };
 use crate::types::{FilterState, PaginatedResponse, SortState};
+use crate::validation::validate_warehouse;
 
 pub struct WarehousesInitializer;
 
@@ -170,6 +171,7 @@ pub async fn warehouses_create(
     name: String,
     location: String,
 ) -> Result<Warehouse, String> {
+    validate_warehouse(&name, &location)?;
     let conn = get_conn(&app)?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(create(), params![name, location, now, now])
@@ -194,6 +196,7 @@ pub async fn warehouses_update(
     name: String,
     location: String,
 ) -> Result<Warehouse, String> {
+    validate_warehouse(&name, &location)?;
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();

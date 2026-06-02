@@ -10,6 +10,7 @@ use crate::sql::variants::{
     create, create_table, get_all, get_by_id, get_by_product_with_quantity, soft_delete, update,
 };
 use crate::types::{NewVariant, ProductVariantWithStock, UpdateVariant, Variant};
+use crate::validation::validate_variant;
 
 pub struct VariantsInitializer;
 
@@ -142,6 +143,14 @@ pub async fn variants_get_by_id(app: AppHandle, id: String) -> Result<Option<Var
 #[tauri::command]
 #[specta::specta]
 pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Variant, String> {
+    validate_variant(
+        &variant.sku,
+        &variant.variant_name,
+        Some(&variant.uom_id),
+        variant.retail_price,
+        variant.wholesale_price,
+        variant.distribution_price,
+    )?;
     let conn = get_conn(&app)?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
     conn.execute(
@@ -198,6 +207,14 @@ pub async fn variants_update(
     let new_distribution_price = variant
         .distribution_price
         .unwrap_or(current.distribution_price);
+    validate_variant(
+        &new_sku,
+        &new_variant_name,
+        Some(&new_uom_id),
+        new_retail_price,
+        new_wholesale_price,
+        new_distribution_price,
+    )?;
     let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
 
     conn.execute(
