@@ -1,10 +1,17 @@
 import { create } from 'zustand'
 
+interface UserPreferences {
+  language: 'ar' | 'en'
+  theme?: 'light' | 'dark' | 'system'
+  dateFormat?: string
+}
+
 interface UIState {
   sidebarVisible: boolean
   commandPaletteOpen: boolean
   preferencesOpen: boolean
   lastQuickPaneEntry: string | null
+  userPreferences: UserPreferences
 
   toggleSidebar: () => void
   setSidebarVisible: (visible: boolean) => void
@@ -14,6 +21,8 @@ interface UIState {
   setPreferencesOpen: (open: boolean) => void
   setLastQuickPaneEntry: (text: string) => void
   setSquareCorners: (enabled: boolean) => void
+  setUserPreferences: (prefs: UserPreferences) => void
+  updateUserPreferences: (partial: Partial<UserPreferences>) => void
 }
 
 export const useUIStore = create<UIState>()(set => ({
@@ -21,6 +30,11 @@ export const useUIStore = create<UIState>()(set => ({
   commandPaletteOpen: false,
   preferencesOpen: false,
   lastQuickPaneEntry: null,
+  userPreferences: {
+    language: 'ar',
+    theme: 'system',
+    dateFormat: 'yyyy-MM-dd',
+  },
 
   toggleSidebar: () =>
     set(state => ({ sidebarVisible: !state.sidebarVisible })),
@@ -42,4 +56,11 @@ export const useUIStore = create<UIState>()(set => ({
   setSquareCorners: (enabled: boolean) => {
     document.documentElement.classList.toggle('square-corners', enabled)
   },
+
+  setUserPreferences: prefs => set({ userPreferences: prefs }),
+
+  updateUserPreferences: partial =>
+    set(state => ({
+      userPreferences: { ...state.userPreferences, ...partial },
+    })),
 }))
