@@ -33,6 +33,8 @@ interface TabUIState {
   searchValue: string
   page: number
   pageSize: number
+  totalCount: number
+  totalPages: number
 }
 
 interface TabState {
@@ -71,6 +73,11 @@ interface TabState {
   ) => void
   setSearchValue: (value: string) => void
   setPage: (page: number, pageSize?: number) => void
+  setPaginationTotal: (
+    totalCount: number,
+    totalPages: number,
+    tabId?: string
+  ) => void
 }
 
 const defaultUIState: TabUIState = {
@@ -81,6 +88,8 @@ const defaultUIState: TabUIState = {
   searchValue: '',
   page: 1,
   pageSize: 10,
+  totalCount: 0,
+  totalPages: 1,
 }
 
 function ensureUIState(state: TabState, tabId: string): TabUIState {
@@ -249,6 +258,28 @@ export const useTabStore = create<TabState>()((set, get) => ({
             ...current,
             page,
             ...(pageSize !== undefined ? { pageSize } : {}),
+          },
+        },
+      }
+    })
+  },
+
+  setPaginationTotal: (
+    totalCount: number,
+    totalPages: number,
+    tabId?: string
+  ) => {
+    const { activeTabId } = get()
+    const targetTabId = tabId ?? activeTabId
+    set(state => {
+      const current = ensureUIState(state, targetTabId)
+      return {
+        tabUIStates: {
+          ...state.tabUIStates,
+          [targetTabId]: {
+            ...current,
+            totalCount,
+            totalPages,
           },
         },
       }

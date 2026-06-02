@@ -181,6 +181,7 @@ export function DataTable({
     data,
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
+    getRowId: (row: EntityRow) => row.id,
     manualSorting: true,
     manualFiltering: true,
     manualPagination: true,

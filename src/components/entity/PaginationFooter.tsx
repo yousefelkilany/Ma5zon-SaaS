@@ -9,8 +9,9 @@ export function PaginationFooter({
 }: PaginationFooterProps) {
   const { t } = useTranslation()
   const { page, pageSize, totalRows, totalPages } = pagination
-  const start = (page - 1) * pageSize + 1
-  const end = Math.min(page * pageSize, totalRows)
+  const start = totalRows === 0 && isLoading ? 0 : (page - 1) * pageSize + 1
+  const end =
+    totalRows === 0 && isLoading ? 0 : Math.min(page * pageSize, totalRows)
 
   const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onPageChange(1, Number(e.target.value))

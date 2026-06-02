@@ -20,6 +20,7 @@ import { ProductDetailModal } from './ProductDetailModal'
 import { cn } from '@/lib/utils'
 import { PrintPreviewDialog } from './PrintPreviewDialog'
 import { exportSelectedToCSV, exportSelectedToExcel } from '@/lib/utils'
+import { useTabStore } from '@/store/tab-store'
 
 function EntityHeader({
   entityType,
@@ -100,15 +101,17 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const [variantDetailOpen, setVariantDetailOpen] = useState(false)
   const [productDetailOpen, setProductDetailOpen] = useState(false)
   const [productDetailId, setProductDetailId] = useState<string | null>(null)
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
   const [printPreviewOpen, setPrintPreviewOpen] = useState(false)
   const [selectedForPrint, setSelectedForPrint] = useState<EntityRow[]>([])
-  const [isPrinting, setIsPrinting] = useState(false)
   const [_isExporting, setIsExporting] = useState(false)
   const [_isDeleting, setIsDeleting] = useState(false)
-  const [totalCount, setTotalCount] = useState(0)
-  const [totalPages, setTotalPages] = useState(1)
+
+  const tabUIState = useTabStore(state => state.tabUIStates[state.activeTabId])
+  const page = tabUIState?.page ?? 1
+  const pageSize = tabUIState?.pageSize ?? 10
+  const totalCount = tabUIState?.totalCount ?? 0
+  const totalPages = tabUIState?.totalPages ?? 1
+  const setPaginationTotal = useTabStore(state => state.setPaginationTotal)
 
   useEffect(() => {
     const saved = localStorage.getItem(`user_prefs_columns_${entityType}`)
@@ -166,6 +169,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const { data: entityData, isLoading } = useQuery({
     queryKey: ['entity', entityType, activeFilters, sort, page, pageSize],
     queryFn: async () => {
+      const activeTabIdAtFetch = useTabStore.getState().activeTabId
       const bindingFilters: BindingFilterState[] = activeFilters.map(f => ({
         column_id: f.columnId,
         operator: f.operator,
@@ -183,10 +187,12 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
             page,
             pageSize
           )
-          console.log(result)
           if (result.status === 'ok') {
-            setTotalCount(result.data.total_count)
-            setTotalPages(result.data.total_pages)
+            setPaginationTotal(
+              result.data.total_count,
+              result.data.total_pages,
+              activeTabIdAtFetch
+            )
             return result.data.data
           }
           return []
@@ -200,8 +206,11 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
             pageSize
           )
           if (result.status === 'ok') {
-            setTotalCount(result.data.total_count)
-            setTotalPages(result.data.total_pages)
+            setPaginationTotal(
+              result.data.total_count,
+              result.data.total_pages,
+              activeTabIdAtFetch
+            )
             return result.data.data
           }
           return []
@@ -237,23 +246,26 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     [entityType, queryClient]
   )
 
-  const handleSortChange = useCallback((newSort: SortState | null) => {
-    setSort(newSort)
-    setPage(1)
-  }, [])
+  const handleSortChange = useCallback(
+    (newSort: SortState | null) => {
+      setSort(newSort)
+      useTabStore.getState().setPage(1)
+    },
+    [setSort]
+  )
 
   const handlePageChange = useCallback(
     (newPage: number, newPageSize: number) => {
-      setPage(newPage)
-      setPageSize(newPageSize)
+      useTabStore.getState().setPage(newPage, newPageSize)
+      queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
     },
-    []
+    [entityType, queryClient]
   )
 
   const handleFiltersApply = useCallback(
     (filters: FilterState[]) => {
       setActiveFilters(filters)
-      setPage(1)
+      useTabStore.getState().setPage(1)
       queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
     },
     [entityType, queryClient]
@@ -394,10 +406,8 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         selectedData={selectedForPrint}
         entityType={entityType}
         onPrint={() => {
-          setIsPrinting(true)
           setPrintPreviewOpen(false)
         }}
-        isPrinting={isPrinting}
       />
     </div>
   )

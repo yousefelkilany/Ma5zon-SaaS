@@ -12,7 +12,11 @@ import { EntityWorkspace } from '@/components/entity'
 
 function EntityRoute() {
   const params = useParams()
-  return <EntityWorkspace entityType={params['entityType'] ?? ''} />
+  const activeTabId = useTabStore(state => state.activeTabId)
+  const tabs = useTabStore(state => state.tabs)
+  const activeTab = tabs.find(t => t.id === activeTabId)
+  const entityType = activeTab?.entityType ?? params['entityType'] ?? ''
+  return <EntityWorkspace entityType={entityType} />
 }
 
 export function MainWindowContent() {

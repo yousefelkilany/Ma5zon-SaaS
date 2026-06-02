@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { QueryClient } from '@tanstack/react-query'
 import type {
@@ -54,7 +54,7 @@ export function DataTableShell({
   onExportFormatSelect,
   onDelete,
   onPageChange,
-  sort: externalSort,
+  sort: _externalSort,
   onSortChange,
   onVariantClick,
   onAddVariant,
@@ -78,14 +78,14 @@ export function DataTableShell({
   const setSort = useTabStore(state => state.setSort)
   const setFilters = useTabStore(state => state.setFilters)
   const setSearchValue = useTabStore(state => state.setSearchValue)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [filterDialogOpen, setFilterDialogOpen] = useState(false)
   const [columnDialogOpen, setColumnDialogOpen] = useState(false)
   const [localColumns, setLocalColumns] = useState<ColumnDef[]>(columns)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
-  const filteredData = useMemo(() => {
+  const clientSearchIds = useMemo((): Record<string, boolean> | null => {
     if (!searchValue.trim() || searchValue.length < 2) {
-      return data
+      return null
     }
 
     const normalizedSearch = normalizeArabic(searchValue.toLowerCase())
@@ -110,32 +110,62 @@ export function DataTableShell({
       },
     })
 
-    return fuse.search(normalizedSearch).map(result => result.item)
+    return Object.fromEntries(
+      fuse.search(normalizedSearch).map(r => [r.item.id, true])
+    )
   }, [data, searchValue, columns])
+
+  const clientSearchResults = useMemo(
+    () =>
+      clientSearchIds ? data.filter(row => clientSearchIds[row.id]) : data,
+    [data, clientSearchIds]
+  )
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      const currentSelectedIds = currentTabState?.selectedIds ?? {}
+      if (value.trim().length < 2 || !clientSearchIds) {
+        setSearchValue(value)
+        return
+      }
+      const intersectedIds = Object.fromEntries(
+        Object.keys(currentSelectedIds)
+          .filter(id => clientSearchIds[id])
+          .map(id => [id, true])
+      )
+      setSelectedIds(intersectedIds)
+      setSearchValue(value)
+    },
+    [clientSearchIds, currentTabState, setSearchValue, setSelectedIds]
+  )
+
+  const cachedDataMap = useRef<Map<string, EntityRow>>(new Map())
+  useEffect(() => {
+    cachedDataMap.current.clear()
+    for (const row of data) {
+      if (row.id) cachedDataMap.current.set(row.id, row)
+    }
+  }, [data])
 
   useEffect(() => {
     setLocalColumns(columns)
   }, [columns])
 
-  useEffect(() => {
-    if (externalSort !== undefined) {
-      setSort(externalSort)
-    }
-  }, [externalSort, setSort])
-
   const handleSortChange = useCallback(
     (newSort: SortState | null) => {
+      setSelectedIds({})
       setSort(newSort)
       onSortChange?.(newSort)
     },
-    [onSortChange, setSort]
+    [onSortChange, setSort, setSelectedIds]
   )
 
   const handlePageChange = useCallback(
     (page: number, pageSize: number) => {
+      setSelectedIds({})
       onPageChange?.(page, pageSize)
     },
-    [onPageChange]
+    [onPageChange, setSelectedIds]
   )
 
   const handleRowSelect = useCallback(
@@ -150,7 +180,9 @@ export function DataTableShell({
   }, [])
 
   const handlePrintSelected = useCallback(() => {
-    onPrintSelected(new Set(Object.keys(selectedIds)), data)
+    const selectedData = data.filter(row => selectedIds[row.id])
+    if (selectedData.length === 0) return
+    onPrintSelected(new Set(Object.keys(selectedIds)), selectedData)
   }, [selectedIds, data, onPrintSelected])
 
   const handleExportFormat = useCallback(
@@ -174,17 +206,18 @@ export function DataTableShell({
 
   const handleFiltersApply = useCallback(
     (newFilters: FilterState[]) => {
+      setSelectedIds({})
       setFilters(newFilters)
       onFiltersApply(newFilters)
     },
-    [onFiltersApply, setFilters]
+    [onFiltersApply, setFilters, setSelectedIds]
   )
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <Toolbar
         searchValue={searchValue}
-        onSearchChange={setSearchValue}
+        onSearchChange={handleSearchChange}
         activeFilterCount={filters.length}
         onFiltersClick={() => setFilterDialogOpen(true)}
         onColumnsClick={() => setColumnDialogOpen(true)}
@@ -199,7 +232,7 @@ export function DataTableShell({
             entityType={entityType}
             queryClient={queryClient}
             columns={localColumns}
-            data={filteredData}
+            data={clientSearchResults}
             sort={sort}
             isLoading={isLoading}
             selectedIds={selectedIds}

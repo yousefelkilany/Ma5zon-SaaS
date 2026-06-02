@@ -16,7 +16,6 @@ interface PrintPreviewDialogProps {
   selectedData: EntityRow[]
   entityType: string
   onPrint: () => void
-  isPrinting?: boolean
 }
 
 export function PrintPreviewDialog({
@@ -26,7 +25,6 @@ export function PrintPreviewDialog({
   selectedData,
   entityType,
   onPrint,
-  isPrinting = false,
 }: PrintPreviewDialogProps) {
   const { t } = useTranslation()
 
@@ -69,12 +67,7 @@ export function PrintPreviewDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('entity.workspace.print.cancelButton')}
           </Button>
-          <Button onClick={handlePrintClick} disabled={isPrinting}>
-            {isPrinting ? (
-              <span className="material-symbols-outlined text-sm animate-spin">
-                sync
-              </span>
-            ) : null}
+          <Button onClick={handlePrintClick}>
             {t('entity.workspace.print.printButton')}
           </Button>
         </DialogFooter>
