@@ -10,6 +10,7 @@ mod seed;
 mod sql;
 mod types;
 mod utils;
+mod validation;
 
 use tauri::{AppHandle, Manager, RunEvent, WindowEvent};
 
