@@ -7,6 +7,12 @@ describe('UIStore', () => {
       sidebarVisible: true,
       commandPaletteOpen: false,
       preferencesOpen: false,
+      lastQuickPaneEntry: null,
+      userPreferences: {
+        language: 'ar',
+        theme: 'system',
+        dateFormat: 'yyyy-MM-dd',
+      },
     })
   })
 
@@ -55,5 +61,35 @@ describe('UIStore', () => {
 
     toggleCommandPalette()
     expect(useUIStore.getState().commandPaletteOpen).toBe(false)
+  })
+
+  it('has correct default userPreferences', () => {
+    const state = useUIStore.getState()
+    expect(state.userPreferences.language).toBe('ar')
+    expect(state.userPreferences.theme).toBe('system')
+    expect(state.userPreferences.dateFormat).toBe('yyyy-MM-dd')
+  })
+
+  it('setUserPreferences replaces full preferences object', () => {
+    const { setUserPreferences } = useUIStore.getState()
+
+    setUserPreferences({ language: 'en', theme: 'dark', dateFormat: 'dd/MM/yyyy' })
+    expect(useUIStore.getState().userPreferences.language).toBe('en')
+    expect(useUIStore.getState().userPreferences.theme).toBe('dark')
+    expect(useUIStore.getState().userPreferences.dateFormat).toBe('dd/MM/yyyy')
+  })
+
+  it('updateUserPreferences merges partial updates', () => {
+    useUIStore.setState({
+      userPreferences: { language: 'en', theme: 'dark', dateFormat: 'dd/MM/yyyy' },
+    })
+
+    const { updateUserPreferences } = useUIStore.getState()
+    updateUserPreferences({ language: 'ar' })
+
+    const prefs = useUIStore.getState().userPreferences
+    expect(prefs.language).toBe('ar')
+    expect(prefs.theme).toBe('dark')
+    expect(prefs.dateFormat).toBe('dd/MM/yyyy')
   })
 })
