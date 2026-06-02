@@ -26,6 +26,7 @@ src-tauri/src/validation/
 ## Task 1: Create Frontend Validation Schemas
 
 **Files:**
+
 - Create: `src/lib/validation/types.ts`
 - Create: `src/lib/validation/schemas.ts`
 
@@ -33,8 +34,12 @@ src-tauri/src/validation/
 
 ```typescript
 // src/lib/validation/validation.test.ts
-import { describe, it, expect } from 'vitest';
-import { createProductSchema, createVariantSchema, createWarehouseSchema } from './schemas';
+import { describe, it, expect } from 'vitest'
+import {
+  createProductSchema,
+  createVariantSchema,
+  createWarehouseSchema,
+} from './schemas'
 
 describe('Product validation', () => {
   it('accepts valid product data', () => {
@@ -42,19 +47,19 @@ describe('Product validation', () => {
       company: 'Acme Corp',
       name: 'Widget',
       category: 'Electronics',
-    });
-    expect(result.success).toBe(true);
-  });
+    })
+    expect(result.success).toBe(true)
+  })
 
   it('rejects empty company', () => {
     const result = createProductSchema.safeParse({
       company: '',
       name: 'Widget',
       category: 'Electronics',
-    });
-    expect(result.success).toBe(false);
-  });
-});
+    })
+    expect(result.success).toBe(false)
+  })
+})
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -67,13 +72,13 @@ Expected: FAIL - file doesn't exist
 ```typescript
 // src/lib/validation/types.ts
 export interface ValidationError {
-  field: string;
-  message: string;
+  field: string
+  message: string
 }
 
 export interface ValidationResult {
-  success: boolean;
-  errors?: ValidationError[];
+  success: boolean
+  errors?: ValidationError[]
 }
 ```
 
@@ -81,36 +86,52 @@ export interface ValidationResult {
 
 ```typescript
 // src/lib/validation/schemas.ts
-import { z } from 'zod';
+import { z } from 'zod'
 
-const NONEMPTY_MSG = 'This field is required';
-const MAX_CHARS_MSG = (max: number) => `Must be ${max} characters or less`;
+const NONEMPTY_MSG = 'This field is required'
+const MAX_CHARS_MSG = (max: number) => `Must be ${max} characters or less`
 
 export const createProductSchema = z.object({
   company: z.string().min(1, NONEMPTY_MSG).max(100, MAX_CHARS_MSG(100)),
   name: z.string().min(1, NONEMPTY_MSG).max(200, MAX_CHARS_MSG(200)),
   category: z.string().min(1, NONEMPTY_MSG).max(100, MAX_CHARS_MSG(100)),
-});
+})
 
-export const updateProductSchema = createProductSchema.partial();
+export const updateProductSchema = createProductSchema.partial()
 
 export const createVariantSchema = z.object({
-  sku: z.string().min(1, NONEMPTY_MSG).max(50, MAX_CHARS_MSG(50)).regex(/^[a-zA-Z0-9-]+$/, 'Must be alphanumeric with dashes only'),
+  sku: z
+    .string()
+    .min(1, NONEMPTY_MSG)
+    .max(50, MAX_CHARS_MSG(50))
+    .regex(/^[a-zA-Z0-9-]+$/, 'Must be alphanumeric with dashes only'),
   variant_name: z.string().min(1, NONEMPTY_MSG).max(200, MAX_CHARS_MSG(200)),
   uom_id: z.string().max(50, MAX_CHARS_MSG(50)).optional(),
-  retail_price: z.number().min(0, 'Must be 0 or greater').max(999999999, 'Too large').optional(),
-  wholesale_price: z.number().min(0, 'Must be 0 or greater').max(999999999, 'Too large').optional(),
-  distribution_price: z.number().min(0, 'Must be 0 or greater').max(999999999, 'Too large').optional(),
-});
+  retail_price: z
+    .number()
+    .min(0, 'Must be 0 or greater')
+    .max(999999999, 'Too large')
+    .optional(),
+  wholesale_price: z
+    .number()
+    .min(0, 'Must be 0 or greater')
+    .max(999999999, 'Too large')
+    .optional(),
+  distribution_price: z
+    .number()
+    .min(0, 'Must be 0 or greater')
+    .max(999999999, 'Too large')
+    .optional(),
+})
 
-export const updateVariantSchema = createVariantSchema.partial();
+export const updateVariantSchema = createVariantSchema.partial()
 
 export const createWarehouseSchema = z.object({
   name: z.string().min(1, NONEMPTY_MSG).max(100, MAX_CHARS_MSG(100)),
   location: z.string().min(1, NONEMPTY_MSG).max(200, MAX_CHARS_MSG(200)),
-});
+})
 
-export const updateWarehouseSchema = createWarehouseSchema.partial();
+export const updateWarehouseSchema = createWarehouseSchema.partial()
 ```
 
 - [ ] **Step 5: Run tests to verify they pass**
@@ -130,6 +151,7 @@ git commit -m "feat: add frontend validation schemas and types"
 ## Task 2: Create Rust Validation Rules
 
 **Files:**
+
 - Create: `src-tauri/src/validation/rules.rs`
 - Create: `src-tauri/src/validation/lib.rs`
 - Modify: `src-tauri/src/lib.rs` - add validation module
@@ -264,6 +286,7 @@ pub use rules::*;
 - [ ] **Step 5: Add validation module to lib.rs**
 
 Add after existing module declarations in `src-tauri/src/lib.rs`:
+
 ```rust
 pub mod validation;
 ```
@@ -286,6 +309,7 @@ git commit -m "feat: add Rust validation rules for entities"
 ## Task 3: Integrate Frontend Validation into Create Modals
 
 **Files:**
+
 - Modify: `src/components/entity/ProductCreateModal.tsx`
 - Modify: `src/components/entity/VariantCreateModal.tsx`
 - Modify: `src/components/entity/WarehouseCreateModal.tsx`
@@ -293,6 +317,7 @@ git commit -m "feat: add Rust validation rules for entities"
 - [ ] **Step 1: Add validation to ProductCreateModal**
 
 Add import for schema and use safeParse in handleSubmit:
+
 ```typescript
 import { createProductSchema } from '@/lib/validation/schemas'
 
@@ -332,6 +357,7 @@ git commit -m "feat: add Zod validation to create modals"
 ## Task 4: Integrate Backend Validation into Rust Commands
 
 **Files:**
+
 - Modify: `src-tauri/src/commands/products.rs`
 - Modify: `src-tauri/src/commands/variants.rs`
 - Modify: `src-tauri/src/commands/warehouses.rs`
@@ -339,6 +365,7 @@ git commit -m "feat: add Zod validation to create modals"
 - [ ] **Step 1: Add validation to products create command**
 
 Add at start of create function:
+
 ```rust
 validate_product(&company, &name, &category)?;
 ```
@@ -346,6 +373,7 @@ validate_product(&company, &name, &category)?;
 - [ ] **Step 2: Add validation to products update command**
 
 Add at start of update function:
+
 ```rust
 validate_product(&company, &name, &category)?;
 ```
@@ -353,6 +381,7 @@ validate_product(&company, &name, &category)?;
 - [ ] **Step 3: Add validation to variants commands**
 
 Add to variants_create and variants_update:
+
 ```rust
 validate_variant(
     &variant.sku,
@@ -367,6 +396,7 @@ validate_variant(
 - [ ] **Step 4: Add validation to warehouse commands**
 
 Add to warehouses_create and warehouses_update:
+
 ```rust
 validate_warehouse(&name, &location)?;
 ```
@@ -390,6 +420,7 @@ git commit -m "feat: add backend validation to entity commands"
 ## Task 5: Integrate Validation into Detail Modals (Edit Mode)
 
 **Files:**
+
 - Modify: `src/components/entity/ProductDetailModal.tsx`
 - Modify: `src/components/entity/VariantDetailModal.tsx`
 - Modify: `src/components/entity/WarehouseDetailModal.tsx`
@@ -439,14 +470,14 @@ Fix as needed and repeat step 1
 
 ## Validation Rules Reference
 
-| Entity | Field | Rule |
-|--------|-------|------|
-| Product | company | required, 1-100 chars |
-| Product | name | required, 1-200 chars |
-| Product | category | required, 1-100 chars |
-| Variant | sku | required, 1-50 chars, alphanumeric + dashes |
-| Variant | variant_name | required, 1-200 chars |
-| Variant | uom_id | optional, max 50 chars |
-| Variant | prices | optional, >= 0 |
-| Warehouse | name | required, 1-100 chars |
-| Warehouse | location | required, 1-200 chars |
+| Entity    | Field        | Rule                                        |
+| --------- | ------------ | ------------------------------------------- |
+| Product   | company      | required, 1-100 chars                       |
+| Product   | name         | required, 1-200 chars                       |
+| Product   | category     | required, 1-100 chars                       |
+| Variant   | sku          | required, 1-50 chars, alphanumeric + dashes |
+| Variant   | variant_name | required, 1-200 chars                       |
+| Variant   | uom_id       | optional, max 50 chars                      |
+| Variant   | prices       | optional, >= 0                              |
+| Warehouse | name         | required, 1-100 chars                       |
+| Warehouse | location     | required, 1-200 chars                       |

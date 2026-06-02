@@ -324,9 +324,15 @@ export function ProductDetailModal({
                                   }}
                                   disabled={isSaving}
                                 />
-                                {fieldErrors[field.key as keyof typeof fieldErrors] && (
+                                {fieldErrors[
+                                  field.key as keyof typeof fieldErrors
+                                ] && (
                                   <p className="text-body-sm text-error">
-                                    {fieldErrors[field.key as keyof typeof fieldErrors]}
+                                    {
+                                      fieldErrors[
+                                        field.key as keyof typeof fieldErrors
+                                      ]
+                                    }
                                   </p>
                                 )}
                               </div>

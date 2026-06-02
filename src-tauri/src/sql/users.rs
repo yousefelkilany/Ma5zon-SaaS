@@ -2,7 +2,7 @@
 
 pub fn create_table() -> &'static str {
     "CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
         email TEXT NOT NULL UNIQUE,
         role TEXT NOT NULL,
@@ -11,7 +11,7 @@ pub fn create_table() -> &'static str {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         deleted_at DATETIME DEFAULT NULL
-    );
+    ) SRTICT;
 
     CREATE VIEW IF NOT EXISTS active_users AS
     SELECT * FROM users WHERE deleted_at IS NULL;"

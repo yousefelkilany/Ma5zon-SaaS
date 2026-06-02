@@ -97,7 +97,10 @@ mod tests {
     fn test_validate_product_company_too_long() {
         let result = validate_product(&"x".repeat(101), "Widget", "Electronics");
         assert!(result.is_err());
-        assert_eq!(result.unwrap_err(), "company: must be 100 characters or less");
+        assert_eq!(
+            result.unwrap_err(),
+            "company: must be 100 characters or less"
+        );
     }
 
     #[test]
@@ -117,7 +120,10 @@ mod tests {
     fn test_validate_variant_invalid_sku_chars() {
         let result = validate_variant("SKU@001!", "Blue Widget", None, 10.0, 5.0, 3.0);
         assert!(result.is_err());
-        assert_eq!(result.unwrap_err(), "sku: must be alphanumeric with dashes only");
+        assert_eq!(
+            result.unwrap_err(),
+            "sku: must be alphanumeric with dashes only"
+        );
     }
 
     #[test]
@@ -183,12 +189,22 @@ mod tests {
     fn test_validate_variant_negative_distribution_price() {
         let result = validate_variant("SKU-001", "Blue Widget", None, 10.0, 5.0, -3.0);
         assert!(result.is_err());
-        assert_eq!(result.unwrap_err(), "distribution_price: must be 0 or greater");
+        assert_eq!(
+            result.unwrap_err(),
+            "distribution_price: must be 0 or greater"
+        );
     }
 
     #[test]
     fn test_validate_variant_uom_id_too_long() {
-        let result = validate_variant("SKU-001", "Blue Widget", Some(&"U".repeat(51)), 10.0, 5.0, 3.0);
+        let result = validate_variant(
+            "SKU-001",
+            "Blue Widget",
+            Some(&"U".repeat(51)),
+            10.0,
+            5.0,
+            3.0,
+        );
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), "uom_id: must be 50 characters or less");
     }

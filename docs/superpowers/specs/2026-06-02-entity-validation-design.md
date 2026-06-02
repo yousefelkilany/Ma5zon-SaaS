@@ -25,28 +25,28 @@ src-tauri/src/validation/
 
 ### Product
 
-| Field | Rule |
-|-------|------|
-| company | required, 1-100 chars |
-| name | required, 1-200 chars |
+| Field    | Rule                  |
+| -------- | --------------------- |
+| company  | required, 1-100 chars |
+| name     | required, 1-200 chars |
 | category | required, 1-100 chars |
 
 ### Variant
 
-| Field | Rule |
-|-------|------|
-| sku | required, 1-50 chars, alphanumeric + dashes |
-| variant_name | required, 1-200 chars |
-| uom_id | optional, max 50 chars |
-| retail_price | optional, >= 0, max 2 decimal places |
-| wholesale_price | optional, >= 0, max 2 decimal places |
-| distribution_price | optional, >= 0, max 2 decimal places |
+| Field              | Rule                                        |
+| ------------------ | ------------------------------------------- |
+| sku                | required, 1-50 chars, alphanumeric + dashes |
+| variant_name       | required, 1-200 chars                       |
+| uom_id             | optional, max 50 chars                      |
+| retail_price       | optional, >= 0, max 2 decimal places        |
+| wholesale_price    | optional, >= 0, max 2 decimal places        |
+| distribution_price | optional, >= 0, max 2 decimal places        |
 
 ### Warehouse
 
-| Field | Rule |
-|-------|------|
-| name | required, 1-100 chars |
+| Field    | Rule                  |
+| -------- | --------------------- |
+| name     | required, 1-100 chars |
 | location | required, 1-200 chars |
 
 ## Implementation
@@ -67,11 +67,13 @@ Create `src-tauri/src/validation/` with `rules.rs` containing `validate_*` funct
 ## Components to Update
 
 ### Create Modals
+
 - `ProductCreateModal.tsx`
 - `VariantCreateModal.tsx`
 - `WarehouseCreateModal.tsx`
 
 ### Detail Modals (Edit)
+
 - `ProductDetailModal.tsx`
 - `VariantDetailModal.tsx`
 - `WarehouseDetailModal.tsx`

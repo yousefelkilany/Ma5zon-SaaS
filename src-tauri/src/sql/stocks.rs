@@ -67,7 +67,7 @@ pub fn create_levels_table() -> &'static str {
         PRIMARY KEY (variant_id, warehouse_id),
         FOREIGN KEY(variant_id) REFERENCES product_variants(id),
         FOREIGN KEY(warehouse_id) REFERENCES warehouses(id)
-    )"
+    ) SRTICT"
 }
 
 pub fn create_movements_table() -> &'static str {
@@ -82,7 +82,7 @@ pub fn create_movements_table() -> &'static str {
         FOREIGN KEY(variant_id) REFERENCES product_variants(id),
         FOREIGN KEY(from_warehouse_id) REFERENCES warehouses(id),
         FOREIGN KEY(to_warehouse_id) REFERENCES warehouses(id)
-    )"
+    ) SRTICT"
 }
 
 pub fn get_levels_all() -> &'static str {

@@ -14,7 +14,7 @@ pub fn create_table() -> &'static str {
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         deleted_at DATETIME DEFAULT NULL,
         FOREIGN KEY(product_id) REFERENCES products(id)
-    );
+    ) SRTICT;
 
     CREATE INDEX idx_variant_product_id ON product_variants(product_id);
 
