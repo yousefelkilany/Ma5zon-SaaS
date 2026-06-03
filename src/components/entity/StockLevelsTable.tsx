@@ -1,6 +1,8 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import type { StockLevelWithVariant } from '@/lib/types/entity'
+import { commands } from '@/lib/tauri-bindings'
 import i18n from '@/i18n/config'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -19,6 +21,11 @@ export function StockLevelsTable({
 }: StockLevelsTableProps) {
   const { t } = useTranslation()
   const locale = i18n.language
+  const [transferState, setTransferState] = useState<{
+    variantId: string
+    warehouseId: string
+    fromWarehouseId: string
+  } | null>(null)
 
   if (isLoading) {
     return (
@@ -44,6 +51,8 @@ export function StockLevelsTable({
         stockLevels={stockLevels}
         warehouseNames={warehouseNames}
         locale={locale}
+        transferState={transferState}
+        setTransferState={setTransferState}
       />
     )
   }
@@ -53,6 +62,8 @@ export function StockLevelsTable({
       stockLevels={stockLevels}
       warehouseNames={warehouseNames}
       locale={locale}
+      transferState={transferState}
+      setTransferState={setTransferState}
     />
   )
 }
@@ -61,10 +72,24 @@ function VariantStockView({
   stockLevels,
   warehouseNames,
   locale,
+  transferState,
+  setTransferState,
 }: {
   stockLevels: StockLevelWithVariant[]
   warehouseNames?: Map<string, string>
   locale: string
+  transferState: {
+    variantId: string
+    warehouseId: string
+    fromWarehouseId: string
+  } | null
+  setTransferState: React.Dispatch<
+    React.SetStateAction<{
+      variantId: string
+      warehouseId: string
+      fromWarehouseId: string
+    } | null>
+  >
 }) {
   const { t } = useTranslation()
 
@@ -82,17 +107,41 @@ function VariantStockView({
       </thead>
       <tbody>
         {stockLevels.map((level, idx) => (
-          <tr
-            key={`${level.variant_id}-${level.warehouse_id}-${idx}`}
-            className="border-t border-outline-variant/30"
-          >
-            <td className="px-3 py-2 text-on-surface">
-              {warehouseNames?.get(level.warehouse_id) ?? level.warehouse_id}
-            </td>
-            <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
-              {level.quantity.toLocaleString(locale)}
-            </td>
-          </tr>
+          <>
+            <tr
+              key={`${level.variant_id}-${level.warehouse_id}-${idx}`}
+              className="border-t border-outline-variant/30"
+            >
+              <td className="px-3 py-2 text-on-surface">
+                {warehouseNames?.get(level.warehouse_id) ?? level.warehouse_id}
+              </td>
+              <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
+                {level.quantity.toLocaleString(locale)}
+                <button
+                  onClick={() =>
+                    setTransferState({
+                      variantId: stockLevels[0]?.variant_id ?? '',
+                      warehouseId: level.warehouse_id,
+                      fromWarehouseId: level.warehouse_id,
+                    })
+                  }
+                  className="ml-2 text-secondary hover:opacity-70"
+                  title={t('entity.stock.transfer')}
+                >
+                  <span className="material-symbols-outlined text-sm">
+                    swap_horiz
+                  </span>
+                </button>
+              </td>
+            </tr>
+            {transferState?.warehouseId === level.warehouse_id && (
+              <InlineTransferSection
+                variantId={stockLevels[0]?.variant_id ?? ''}
+                warehouseId={level.warehouse_id}
+                onClose={() => setTransferState(null)}
+              />
+            )}
+          </>
         ))}
       </tbody>
     </table>
@@ -103,10 +152,24 @@ function ProductStockPivot({
   stockLevels,
   warehouseNames,
   locale,
+  transferState,
+  setTransferState,
 }: {
   stockLevels: StockLevelWithVariant[]
   warehouseNames?: Map<string, string>
   locale: string
+  transferState: {
+    variantId: string
+    warehouseId: string
+    fromWarehouseId: string
+  } | null
+  setTransferState: React.Dispatch<
+    React.SetStateAction<{
+      variantId: string
+      warehouseId: string
+      fromWarehouseId: string
+    } | null>
+  >
 }) {
   const { t } = useTranslation()
 
@@ -197,24 +260,52 @@ function ProductStockPivot({
       </thead>
       <tbody>
         {rows.map(row => (
-          <tr
-            key={row.variantId}
-            className="border-t border-outline-variant/30"
-          >
-            <td className="px-3 py-2 text-on-surface-variant">{row.sku}</td>
-            <td className="px-3 py-2 text-on-surface">{row.variantName}</td>
-            {columns.map(col => (
-              <td
-                key={col}
-                className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums"
-              >
-                {row.quantities.get(col)?.toLocaleString(locale) ?? '-'}
+          <>
+            <tr
+              key={row.variantId}
+              className="border-t border-outline-variant/30"
+            >
+              <td className="px-3 py-2 text-on-surface-variant">{row.sku}</td>
+              <td className="px-3 py-2 text-on-surface">{row.variantName}</td>
+              {columns.map(col => (
+                <td
+                  key={col}
+                  className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums group"
+                >
+                  {row.quantities.get(col)?.toLocaleString(locale) ?? '-'}
+                  <button
+                    onClick={() =>
+                      setTransferState({
+                        variantId: row.variantId,
+                        warehouseId: col,
+                        fromWarehouseId: col,
+                      })
+                    }
+                    className="ml-1 text-secondary hover:opacity-70 opacity-0 group-hover:opacity-100"
+                    title={t('entity.stock.transfer')}
+                  >
+                    <span className="material-symbols-outlined text-xs">
+                      swap_horiz
+                    </span>
+                  </button>
+                </td>
+              ))}
+              <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums font-bold">
+                {row.rowTotal.toLocaleString(locale)}
               </td>
-            ))}
-            <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums font-bold">
-              {row.rowTotal.toLocaleString(locale)}
-            </td>
-          </tr>
+            </tr>
+            {columns.map(col =>
+              transferState?.variantId === row.variantId &&
+              transferState?.warehouseId === col ? (
+                <InlineTransferSection
+                  key={`transfer-${col}`}
+                  variantId={row.variantId}
+                  warehouseId={col}
+                  onClose={() => setTransferState(null)}
+                />
+              ) : null
+            )}
+          </>
         ))}
       </tbody>
       <tfoot>
@@ -238,5 +329,94 @@ function ProductStockPivot({
         </tr>
       </tfoot>
     </table>
+  )
+}
+
+function InlineTransferSection({
+  variantId,
+  warehouseId,
+  onClose,
+}: {
+  variantId: string
+  warehouseId: string
+  onClose: () => void
+}) {
+  const { t } = useTranslation()
+  const [toWarehouseId, setToWarehouseId] = useState('')
+  const [quantity, setQuantity] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const { data: warehouses } = useQuery({
+    queryKey: ['warehouses', 'all'],
+    queryFn: async () => {
+      const result = await commands.warehousesGetAll([], [], null)
+      if (result.status === 'ok') {
+        return result.data
+      }
+      return []
+    },
+  })
+
+  const toWarehouseOptions =
+    warehouses
+      ?.filter(w => w.id !== warehouseId)
+      .map(w => ({ value: w.id, label: w.name })) ?? []
+
+  const handleSubmit = async () => {
+    if (!toWarehouseId || !quantity) return
+    setIsSubmitting(true)
+    try {
+      await commands.createTransfer(variantId, warehouseId, toWarehouseId, parseInt(quantity))
+      onClose()
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <tr className="bg-surface-bright/50">
+      <td colSpan={3} className="px-3 py-3">
+        <div className="flex items-center gap-3">
+          <span className="text-body-sm text-on-surface-variant">
+            {t('entity.stock.transferFrom')}
+          </span>
+          <select
+            value={toWarehouseId}
+            onChange={e => setToWarehouseId(e.target.value)}
+            className="bg-surface border border-outline-variant rounded px-2 py-1 text-body-sm"
+          >
+            <option value="">{t('entity.stock.selectWarehouse')}</option>
+            {toWarehouseOptions.map(opt => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <input
+            type="number"
+            value={quantity}
+            onChange={e => setQuantity(e.target.value)}
+            min="1"
+            className="w-20 bg-surface border border-outline-variant rounded px-2 py-1 text-body-sm"
+            placeholder={t('entity.stock.quantity')}
+          />
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting || !toWarehouseId || !quantity}
+            className="bg-secondary text-on-secondary px-3 py-1 rounded text-body-sm hover:opacity-90 disabled:opacity-50"
+          >
+            {t('entity.stock.confirm')}
+          </button>
+          <button
+            onClick={onClose}
+            className="text-body-sm text-on-surface-variant hover:text-on-surface"
+          >
+            {t('common.cancel')}
+          </button>
+        </div>
+      </td>
+    </tr>
   )
 }

@@ -2,8 +2,8 @@ use tauri_specta::{collect_commands, Builder};
 
 pub fn generate_bindings() -> Builder<tauri::Wry> {
     use crate::commands::{
-        db_utils, notifications, preferences, products, quick_pane, recovery, stocks, users,
-        variants, warehouses,
+        db_utils, notifications, preferences, products, quick_pane, recovery, stock_movements,
+        stocks, users, variants, warehouses,
     };
     use crate::utils::fs_utils;
 
@@ -53,6 +53,10 @@ pub fn generate_bindings() -> Builder<tauri::Wry> {
         stocks::stock_levels_get_by_warehouse_with_names,
         stocks::stock_movements_get_all,
         stocks::stock_movements_get_by_variant,
+        stock_movements::create_transfer,
+        stock_movements::create_purchase,
+        stock_movements::create_sale,
+        stock_movements::create_adjustment,
         stocks::products_get_by_warehouse_paginated,
     ])
 }
