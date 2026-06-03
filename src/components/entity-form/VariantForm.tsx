@@ -1,10 +1,9 @@
-import { useForm } from '@tanstack/react-form'
-import { useTranslation } from 'react-i18next'
-import type { z } from 'zod'
-import { createVariantSchema, updateVariantSchema } from '@/lib/validation/schemas'
-import { TextField, NumberField } from './fields'
+/* eslint-disable react/no-children-prop */
+import { useAppForm } from './createFormHook'
+import { createVariantSchema } from '@/lib/validation/schemas'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
+import { useTranslation } from 'react-i18next'
 
 interface VariantFormProps {
   productId?: string
@@ -26,7 +25,7 @@ interface VariantFormProps {
     wholesale_price?: number
     distribution_price?: number
   }
-  schema?: z.ZodSchema
+  schema?: typeof createVariantSchema
 }
 
 export function VariantForm({
@@ -38,7 +37,7 @@ export function VariantForm({
 }: VariantFormProps) {
   const { t } = useTranslation()
 
-  const form = useForm({
+  const form = useAppForm({
     defaultValues: initialValues ?? {
       sku: '',
       variant_name: '',
@@ -56,46 +55,68 @@ export function VariantForm({
   })
 
   return (
-    <form onSubmit={form.handleSubmit} className="space-y-4">
+    <form
+      onSubmit={e => {
+        e.preventDefault()
+        form.handleSubmit()
+      }}
+      className="space-y-4"
+    >
       <div className="grid grid-cols-2 gap-4">
-        <TextField
+        <form.AppField
           name="sku"
-          label={t('entity.layout.product_variants.columns.sku')}
-          form={form}
+          children={field => (
+            <field.TextField label={t('entity.layout.product_variants.columns.sku')} />
+          )}
         />
-        <TextField
+        <form.AppField
           name="variant_name"
-          label={t('entity.layout.product_variants.columns.variant_name')}
-          form={form}
+          children={field => (
+            <field.TextField label={t('entity.layout.product_variants.columns.variant_name')} />
+          )}
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <TextField name="uom_id" label={t('entity.layout.product_variants.columns.uom')} form={form} />
+        <form.AppField
+          name="uom_id"
+          children={field => (
+            <field.TextField label={t('entity.layout.product_variants.columns.uom')} />
+          )}
+        />
       </div>
       <div className="grid grid-cols-3 gap-4">
-        <NumberField
+        <form.AppField
           name="retail_price"
-          label={t('entity.layout.product_variants.columns.retail')}
-          form={form}
-          min={0}
-          max={999999}
-          precision={2}
+          children={field => (
+            <field.NumberField
+              label={t('entity.layout.product_variants.columns.retail')}
+              min={0}
+              max={999999}
+              precision={2}
+            />
+          )}
         />
-        <NumberField
+        <form.AppField
           name="wholesale_price"
-          label={t('entity.layout.product_variants.columns.wholesale')}
-          form={form}
-          min={0}
-          max={999999}
-          precision={2}
+          children={field => (
+            <field.NumberField
+              label={t('entity.layout.product_variants.columns.wholesale')}
+              min={0}
+              max={999999}
+              precision={2}
+            />
+          )}
         />
-        <NumberField
+        <form.AppField
           name="distribution_price"
-          label={t('entity.layout.product_variants.columns.distribution')}
-          form={form}
-          min={0}
-          max={999999}
-          precision={2}
+          children={field => (
+            <field.NumberField
+              label={t('entity.layout.product_variants.columns.distribution')}
+              min={0}
+              max={999999}
+              precision={2}
+            />
+          )}
         />
       </div>
       <div className="flex justify-end gap-2 pt-4">

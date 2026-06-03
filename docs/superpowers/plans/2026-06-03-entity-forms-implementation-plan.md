@@ -27,6 +27,7 @@ src/components/entity-form/
 ```
 
 **Dependencies to add:**
+
 - `@tanstack/react-form` (not currently in package.json)
 
 ---
@@ -36,6 +37,7 @@ src/components/entity-form/
 ### Task 1: Install TanStack Form
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Add @tanstack/react-form dependency**
@@ -56,6 +58,7 @@ git commit -m "feat: add @tanstack/react-form dependency"
 ### Task 2: Create TextField Component
 
 **Files:**
+
 - Create: `src/components/entity-form/fields/TextField.tsx`
 - Create: `src/components/entity-form/fields/TextField.test.tsx`
 - Create: `src/components/entity-form/fields/index.ts`
@@ -114,7 +117,12 @@ interface TextFieldProps {
   disabled?: boolean
 }
 
-export function TextField({ name, label, placeholder, disabled }: TextFieldProps) {
+export function TextField({
+  name,
+  label,
+  placeholder,
+  disabled,
+}: TextFieldProps) {
   const form = useFormContext()
 
   return (
@@ -164,6 +172,7 @@ git commit -m "feat: add TextField component with TanStack Form integration"
 ### Task 3: Create NumberField Component
 
 **Files:**
+
 - Create: `src/components/entity-form/fields/NumberField.tsx`
 - Create: `src/components/entity-form/fields/NumberField.test.tsx`
 
@@ -193,7 +202,14 @@ describe('NumberField', () => {
   it('accepts numeric constraints', () => {
     render(
       <TestWrapper>
-        <NumberField name="price" label="Price" min={0} max={999} step={0.01} precision={2} />
+        <NumberField
+          name="price"
+          label="Price"
+          min={0}
+          max={999}
+          step={0.01}
+          precision={2}
+        />
       </TestWrapper>
     )
     const input = screen.getByRole('spinbutton')
@@ -293,6 +309,7 @@ git commit -m "feat: add NumberField component with constraint support"
 ### Task 4: Create SelectField Component
 
 **Files:**
+
 - Create: `src/components/entity-form/fields/SelectField.tsx`
 - Create: `src/components/entity-form/fields/SelectField.test.tsx`
 
@@ -370,7 +387,13 @@ interface SelectFieldProps {
   disabled?: boolean
 }
 
-export function SelectField({ name, label, options, placeholder, disabled }: SelectFieldProps) {
+export function SelectField({
+  name,
+  label,
+  options,
+  placeholder,
+  disabled,
+}: SelectFieldProps) {
   const form = useFormContext()
 
   return (
@@ -430,6 +453,7 @@ git commit -m "feat: add SelectField component"
 ### Task 5: Create ProductForm Component
 
 **Files:**
+
 - Create: `src/components/entity-form/ProductForm.tsx`
 - Create: `src/components/entity-form/ProductForm.test.tsx`
 
@@ -479,13 +503,20 @@ Expected: FAIL - component doesn't exist
 import { useForm, FormProvider } from '@tanstack/react-form'
 import { useTranslation } from 'react-i18next'
 import type { z } from 'zod'
-import { createProductSchema, updateProductSchema } from '@/lib/validation/schemas'
+import {
+  createProductSchema,
+  updateProductSchema,
+} from '@/lib/validation/schemas'
 import { TextField } from './fields'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 
 interface ProductFormProps {
-  onSubmit: (values: { company: string; name: string; category: string }) => void
+  onSubmit: (values: {
+    company: string
+    name: string
+    category: string
+  }) => void
   isLoading?: boolean
   initialValues?: { company: string; name: string; category: string }
   schema?: z.ZodSchema
@@ -555,6 +586,7 @@ git commit -m "feat: add ProductForm component"
 ### Task 6: Create VariantForm Component
 
 **Files:**
+
 - Create: `src/components/entity-form/VariantForm.tsx`
 - Create: `src/components/entity-form/VariantForm.test.tsx`
 
@@ -589,7 +621,10 @@ Expected: FAIL - component doesn't exist
 import { useForm, FormProvider } from '@tanstack/react-form'
 import { useTranslation } from 'react-i18next'
 import type { z } from 'zod'
-import { createVariantSchema, updateVariantSchema } from '@/lib/validation/schemas'
+import {
+  createVariantSchema,
+  updateVariantSchema,
+} from '@/lib/validation/schemas'
 import { TextField, NumberField } from './fields'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
@@ -714,6 +749,7 @@ git commit -m "feat: add VariantForm component"
 ### Task 7: Create WarehouseForm Component
 
 **Files:**
+
 - Create: `src/components/entity-form/WarehouseForm.tsx`
 - Create: `src/components/entity-form/WarehouseForm.test.tsx`
 
@@ -778,14 +814,8 @@ export function WarehouseForm({
     <FormProvider value={form}>
       <form onSubmit={form.handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <TextField
-            name="name"
-            label={t('entity.warehouse.name')}
-          />
-          <TextField
-            name="location"
-            label={t('entity.warehouse.location')}
-          />
+          <TextField name="name" label={t('entity.warehouse.name')} />
+          <TextField name="location" label={t('entity.warehouse.location')} />
         </div>
         <div className="flex justify-end gap-2 pt-4">
           <Button type="submit" disabled={isLoading}>
@@ -816,6 +846,7 @@ git commit -m "feat: add WarehouseForm component"
 ### Task 8: Create StockMovementForm Component
 
 **Files:**
+
 - Create: `src/components/entity-form/StockMovementForm.tsx`
 - Create: `src/components/entity-form/StockMovementForm.test.tsx`
 
@@ -899,8 +930,10 @@ export function StockMovementForm({
     },
   })
 
-  const showFromWarehouse = movementType === 'transfer' || movementType === 'shipped'
-  const showToWarehouse = movementType === 'transfer' || movementType === 'received'
+  const showFromWarehouse =
+    movementType === 'transfer' || movementType === 'shipped'
+  const showToWarehouse =
+    movementType === 'transfer' || movementType === 'received'
 
   return (
     <FormProvider value={form}>
@@ -983,6 +1016,7 @@ git commit -m "feat: add StockMovementForm component with conditional warehouse 
 ### Task 9: Run Full Test Suite and Typecheck
 
 **Files:**
+
 - Run: `pnpm run check:all` or at minimum `pnpm run typecheck && pnpm run test:run`
 
 - [ ] **Step 1: Run typecheck and tests**

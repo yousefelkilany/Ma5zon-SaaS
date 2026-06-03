@@ -40,7 +40,8 @@ const MAX_CHARS_MSG = (max: number) => `Must be ${max} characters or less`
 const NONEMPTY_MSG = () => i18n.t('validation.fieldRequired')
 const NONNEGATIVE_MSG = () => i18n.t('validation.mustBeZeroOrGreater')
 const BIG_NUMBER_MSG = () => i18n.t('validation.tooLarge')
-const MAX_CHARS_MSG = (max: number) => () => i18n.t('validation.maxChars', { max })
+const MAX_CHARS_MSG = (max: number) => () =>
+  i18n.t('validation.maxChars', { max })
 ```
 
 ### Locale Keys Required
@@ -81,11 +82,11 @@ Rust validation functions already return English strings (e.g., `"company: requi
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
-| `src/lib/validation/schemas.ts` | Update message constants to functions |
-| `locales/en.json` | Add validation keys |
-| `locales/ar.json` | Add validation keys (Arabic translations) |
+| File                            | Change                                    |
+| ------------------------------- | ----------------------------------------- |
+| `src/lib/validation/schemas.ts` | Update message constants to functions     |
+| `locales/en.json`               | Add validation keys                       |
+| `locales/ar.json`               | Add validation keys (Arabic translations) |
 
 ## Migration Notes
 

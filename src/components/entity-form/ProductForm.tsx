@@ -1,16 +1,19 @@
-import { useForm } from '@tanstack/react-form'
-import { useTranslation } from 'react-i18next'
-import type { z } from 'zod'
+/* eslint-disable react/no-children-prop */
+import { useAppForm } from './createFormHook'
 import { createProductSchema } from '@/lib/validation/schemas'
-import { TextField } from './fields'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
+import { useTranslation } from 'react-i18next'
 
 interface ProductFormProps {
-  onSubmit: (values: { company: string; name: string; category: string }) => void
+  onSubmit: (values: {
+    company: string
+    name: string
+    category: string
+  }) => void
   isLoading?: boolean
   initialValues?: { company: string; name: string; category: string }
-  schema?: z.ZodSchema
+  schema?: typeof createProductSchema
 }
 
 export function ProductForm({
@@ -21,7 +24,7 @@ export function ProductForm({
 }: ProductFormProps) {
   const { t } = useTranslation()
 
-  const form = useForm({
+  const form = useAppForm({
     defaultValues: initialValues ?? { company: '', name: '', category: '' },
     validators: {
       onSubmit: schema,
@@ -32,11 +35,26 @@ export function ProductForm({
   })
 
   return (
-    <form onSubmit={form.handleSubmit} className="space-y-4">
+    <form
+      onSubmit={e => {
+        e.preventDefault()
+        form.handleSubmit()
+      }}
+      className="space-y-4"
+    >
       <div className="grid grid-cols-2 gap-4">
-        <TextField name="company" label={t('entity.layout.products.columns.company')} form={form} />
-        <TextField name="name" label={t('entity.layout.products.columns.name')} form={form} />
-        <TextField name="category" label={t('entity.layout.products.columns.category')} form={form} />
+        <form.AppField
+          name="company"
+          children={field => <field.TextField label={t('entity.layout.products.columns.company')} />}
+        />
+        <form.AppField
+          name="name"
+          children={field => <field.TextField label={t('entity.layout.products.columns.name')} />}
+        />
+        <form.AppField
+          name="category"
+          children={field => <field.TextField label={t('entity.layout.products.columns.category')} />}
+        />
       </div>
       <div className="flex justify-end gap-2 pt-4">
         <Button type="submit" disabled={isLoading}>

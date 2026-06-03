@@ -371,7 +371,7 @@ describe('Warehouse validation', () => {
     expect(result.success).toBe(false)
   })
 
-it('accepts partial update', () => {
+  it('accepts partial update', () => {
     const result = updateWarehouseSchema.safeParse({ location: 'New Location' })
     expect(result.success).toBe(true)
   })

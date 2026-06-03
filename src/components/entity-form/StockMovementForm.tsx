@@ -1,10 +1,10 @@
+/* eslint-disable react/no-children-prop */
 import { useState } from 'react'
-import { useForm } from '@tanstack/react-form'
-import { useTranslation } from 'react-i18next'
-import { stockMovementSchema } from '@/lib/validation/schemas'
-import { NumberField, SelectField } from './fields'
+import { useAppForm } from './createFormHook'
+import { createStockMovementSchema } from '@/lib/validation/schemas'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
+import { useTranslation } from 'react-i18next'
 
 interface StockMovementFormProps {
   onSubmit: (values: {
@@ -33,7 +33,7 @@ export function StockMovementForm({
   const { t } = useTranslation()
   const [movementType, setMovementType] = useState<string>('')
 
-  const form = useForm({
+  const form = useAppForm({
     defaultValues: {
       variant_id: '',
       from_warehouse_id: '',
@@ -42,7 +42,7 @@ export function StockMovementForm({
       movement_type: '',
     },
     validators: {
-      onSubmit: stockMovementSchema,
+      onSubmit: createStockMovementSchema,
     },
     onSubmit: async ({ value }) => {
       onSubmit(value)
@@ -53,48 +53,69 @@ export function StockMovementForm({
   const showToWarehouse = movementType === 'transfer' || movementType === 'received'
 
   return (
-    <form onSubmit={form.handleSubmit} className="space-y-4">
+    <form
+      onSubmit={e => {
+        e.preventDefault()
+        form.handleSubmit()
+      }}
+      className="space-y-4"
+    >
       <div className="grid grid-cols-2 gap-4">
-        <SelectField
+        <form.AppField
           name="variant_id"
-          label={t('entity.stockMovement.variant')}
-          options={[]}
-          placeholder={t('entity.stockMovement.selectVariant')}
-          form={form}
+          children={field => (
+            <field.SelectField
+              label={t('entity.stockMovement.variant')}
+              options={[]}
+              placeholder={t('entity.stockMovement.selectVariant')}
+            />
+          )}
         />
-        <SelectField
+        <form.AppField
           name="movement_type"
-          label={t('entity.stockMovement.movementType')}
-          options={MOVEMENT_TYPES}
-          form={form}
-          onChange={val => setMovementType(val)}
+          children={field => (
+            <field.SelectField
+              label={t('entity.stockMovement.movementType')}
+              options={MOVEMENT_TYPES}
+              onChange={val => setMovementType(val)}
+            />
+          )}
         />
       </div>
 
       {showFromWarehouse && (
-        <SelectField
+        <form.AppField
           name="from_warehouse_id"
-          label={t('entity.stockMovement.fromWarehouse')}
-          options={warehouses}
-          form={form}
+          children={field => (
+            <field.SelectField
+              label={t('entity.stockMovement.fromWarehouse')}
+              options={warehouses}
+            />
+          )}
         />
       )}
 
       {showToWarehouse && (
-        <SelectField
+        <form.AppField
           name="to_warehouse_id"
-          label={t('entity.stockMovement.toWarehouse')}
-          options={warehouses}
-          form={form}
+          children={field => (
+            <field.SelectField
+              label={t('entity.stockMovement.toWarehouse')}
+              options={warehouses}
+            />
+          )}
         />
       )}
 
-      <NumberField
+      <form.AppField
         name="quantity"
-        label={t('entity.stockMovement.quantity')}
-        min={1}
-        step={1}
-        form={form}
+        children={field => (
+          <field.NumberField
+            label={t('entity.stockMovement.quantity')}
+            min={1}
+            step={1}
+          />
+        )}
       />
 
       <div className="flex justify-end gap-2 pt-4">

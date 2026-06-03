@@ -1,4 +1,4 @@
-export { TextField, NumberField, SelectField } from './fields'
+export { useAppForm } from './createFormHook'
 export { ProductForm } from './ProductForm'
 export { VariantForm } from './VariantForm'
 export { WarehouseForm } from './WarehouseForm'

@@ -38,12 +38,14 @@ src/components/entity-form/
 Text input with label and inline error display.
 
 **Props:**
+
 - `name: string` — field name for form registration
 - `label: string` — display label (i18n key)
 - `placeholder?: string`
 - `disabled?: boolean`
 
 **Behavior:**
+
 - Uses `useFormContext()` to connect to nearest `FormProvider`
 - Shows first error from `field.state.meta.errors[0]`
 - No children, no render props
@@ -53,6 +55,7 @@ Text input with label and inline error display.
 Numeric input with constraint support.
 
 **Props:**
+
 - `name: string`
 - `label: string`
 - `placeholder?: string`
@@ -63,6 +66,7 @@ Numeric input with constraint support.
 - `precision?: number` — decimal places (e.g., 2 for currency)
 
 **Behavior:**
+
 - All numeric constraints are optional with sensible defaults
 - `aria-invalid` set when field has errors
 
@@ -71,6 +75,7 @@ Numeric input with constraint support.
 Dropdown selection.
 
 **Props:**
+
 - `name: string`
 - `label: string`
 - `options: { value: string; label: string }[]`
@@ -84,6 +89,7 @@ Dropdown selection.
 **Handles:** `company`, `name`, `category`
 
 **Props:**
+
 - `onSubmit: (values: { company: string; name: string; category: string }) => void`
 - `isLoading?: boolean`
 - `initialValues?: { company: string; name: string; category: string }`
@@ -96,6 +102,7 @@ Dropdown selection.
 **Handles:** `sku`, `variant_name`, `uom_id`, `retail_price`, `wholesale_price`, `distribution_price`
 
 **Props:**
+
 - `productId?: string` — required for create, omitted for update
 - `onSubmit: (values: VariantValues) => void`
 - `isLoading?: boolean`
@@ -103,6 +110,7 @@ Dropdown selection.
 - `schema?: ZodSchema` — default: `createVariantSchema`
 
 **Layout:**
+
 - Row 1: `sku`, `variant_name`
 - Row 2: `uom_id`
 - Row 3: `retail_price`, `wholesale_price`, `distribution_price`
@@ -112,6 +120,7 @@ Dropdown selection.
 **Handles:** `name`, `location`
 
 **Props:**
+
 - `onSubmit: (values: { name: string; location: string }) => void`
 - `isLoading?: boolean`
 - `initialValues?: { name: string; location: string }`
@@ -124,10 +133,12 @@ Dropdown selection.
 **Handles:** `variant_id`, `from_warehouse_id`, `to_warehouse_id`, `quantity`, `movement_type`
 
 **Props:**
+
 - `onSubmit: (values: StockMovementValues) => void`
 - `isLoading?: boolean`
 
 **Behavior:**
+
 - Create only — no update form
 - Movement type toggle (Transfer, Adjustment, etc.) conditionally shows from/to fields
 - Uses `stockMovementSchema` for submit validation
@@ -175,6 +186,7 @@ To add a new entity form:
 ## Files to Create/Modify
 
 **New files:**
+
 - `src/components/entity-form/fields/TextField.tsx`
 - `src/components/entity-form/fields/NumberField.tsx`
 - `src/components/entity-form/fields/SelectField.tsx`
@@ -184,6 +196,7 @@ To add a new entity form:
 - `src/components/entity-form/StockMovementForm.tsx`
 
 **Schemas (already exist):**
+
 - `createProductSchema`, `updateProductSchema`
 - `createVariantSchema`, `updateVariantSchema`
 - `createWarehouseSchema`, `updateWarehouseSchema`

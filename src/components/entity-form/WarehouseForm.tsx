@@ -1,16 +1,15 @@
-import { useForm } from '@tanstack/react-form'
-import { useTranslation } from 'react-i18next'
-import type { z } from 'zod'
+/* eslint-disable react/no-children-prop */
+import { useAppForm } from './createFormHook'
 import { createWarehouseSchema } from '@/lib/validation/schemas'
-import { TextField } from './fields'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
+import { useTranslation } from 'react-i18next'
 
 interface WarehouseFormProps {
   onSubmit: (values: { name: string; location: string }) => void
   isLoading?: boolean
   initialValues?: { name: string; location: string }
-  schema?: z.ZodSchema
+  schema?: typeof createWarehouseSchema
 }
 
 export function WarehouseForm({
@@ -21,7 +20,7 @@ export function WarehouseForm({
 }: WarehouseFormProps) {
   const { t } = useTranslation()
 
-  const form = useForm({
+  const form = useAppForm({
     defaultValues: initialValues ?? { name: '', location: '' },
     validators: {
       onSubmit: schema,
@@ -32,17 +31,21 @@ export function WarehouseForm({
   })
 
   return (
-    <form onSubmit={form.handleSubmit} className="space-y-4">
+    <form
+      onSubmit={e => {
+        e.preventDefault()
+        form.handleSubmit()
+      }}
+      className="space-y-4"
+    >
       <div className="grid grid-cols-2 gap-4">
-        <TextField
+        <form.AppField
           name="name"
-          label={t('entity.warehouse.name')}
-          form={form}
+          children={field => <field.TextField label={t('entity.warehouse.name')} />}
         />
-        <TextField
+        <form.AppField
           name="location"
-          label={t('entity.warehouse.location')}
-          form={form}
+          children={field => <field.TextField label={t('entity.warehouse.location')} />}
         />
       </div>
       <div className="flex justify-end gap-2 pt-4">

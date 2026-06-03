@@ -4,7 +4,8 @@ import { i18n } from '@/i18n/config'
 const NONEMPTY_MSG = () => i18n.t('validation.fieldRequired')
 const NONNEGATIVE_MSG = () => i18n.t('validation.mustBeZeroOrGreater')
 const BIG_NUMBER_MSG = () => i18n.t('validation.tooLarge')
-const MAX_CHARS_MSG = (max: number) => () => i18n.t('validation.maxChars', { max })
+const MAX_CHARS_MSG = (max: number) => () =>
+  i18n.t('validation.maxChars', { max })
 
 const FILTER_OPERATORS = [
   'eq',
@@ -17,11 +18,9 @@ const FILTER_OPERATORS = [
   'between',
 ] as const
 export const filterOperatorSchema = z.enum(FILTER_OPERATORS)
-type FilterOperator = z.infer<typeof filterOperatorSchema>
 
 const SORT_DIRECTION = ['asc', 'desc'] as const
 export const sortDirectionSchema = z.enum(SORT_DIRECTION)
-type SortDirection = z.infer<typeof sortDirectionSchema>
 
 const TAB_TYPE = [
   'dashboard',
@@ -31,15 +30,12 @@ const TAB_TYPE = [
   'entity',
 ] as const
 export const tabTypeSchema = z.enum(TAB_TYPE)
-type TabType = z.infer<typeof tabTypeSchema>
 
 const THEME = ['light', 'dark', 'system'] as const
 export const themeSchema = z.enum(THEME)
-type Theme = z.infer<typeof themeSchema>
 
 const LANGUAGE = ['ar', 'en'] as const
 export const languageSchema = z.enum(LANGUAGE)
-type Language = z.infer<typeof languageSchema>
 
 export const filterValueSchema = z.union([
   z.string(),
@@ -110,6 +106,14 @@ export const stockMovementSchema = z.object({
   created_at: z.string().min(1),
 })
 
+export const createStockMovementSchema = z.object({
+  variant_id: z.string().min(1),
+  from_warehouse_id: z.string(),
+  to_warehouse_id: z.string(),
+  quantity: z.number().int(),
+  movement_type: z.string().min(1),
+})
+
 export const columnInfoSchema = z.object({
   cid: z.number().int(),
   name: z.string().min(1),
@@ -145,8 +149,13 @@ export const createVariantSchema = z.object({
     .string()
     .min(1, NONEMPTY_MSG())
     .max(50, MAX_CHARS_MSG(50)())
-    .regex(/^[a-zA-Z0-9-]+$/, { error: () => i18n.t('validation.mustBeAlphanumeric') }),
-  variant_name: z.string().min(1, NONEMPTY_MSG()).max(200, MAX_CHARS_MSG(200)()),
+    .regex(/^[a-zA-Z0-9-]+$/, {
+      error: () => i18n.t('validation.mustBeAlphanumeric'),
+    }),
+  variant_name: z
+    .string()
+    .min(1, NONEMPTY_MSG())
+    .max(200, MAX_CHARS_MSG(200)()),
   uom_id: z.string().max(50, MAX_CHARS_MSG(50)()).optional(),
   retail_price: z
     .number()

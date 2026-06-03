@@ -98,7 +98,8 @@ import { i18n } from '@/i18n/config'
 const NONEMPTY_MSG = () => i18n.t('validation.fieldRequired')
 const NONNEGATIVE_MSG = () => i18n.t('validation.mustBeZeroOrGreater')
 const BIG_NUMBER_MSG = () => i18n.t('validation.tooLarge')
-const MAX_CHARS_MSG = (max: number) => () => i18n.t('validation.maxChars', { max })
+const MAX_CHARS_MSG = (max: number) => () =>
+  i18n.t('validation.maxChars', { max })
 ```
 
 - [ ] **Step 1: Add i18n import at top of schemas.ts**
@@ -116,6 +117,7 @@ Replace lines 3-6 with the new lazy function versions shown above.
 - [ ] **Step 3: Update schema usage in createProductSchema (line 135)**
 
 **Before:**
+
 ```typescript
 export const createProductSchema = z.object({
   company: z.string().min(1, NONEMPTY_MSG).max(100, MAX_CHARS_MSG(100)),
@@ -125,6 +127,7 @@ export const createProductSchema = z.object({
 ```
 
 **After:**
+
 ```typescript
 export const createProductSchema = z.object({
   company: z.string().min(1, NONEMPTY_MSG()).max(100, MAX_CHARS_MSG(100)()),
@@ -136,6 +139,7 @@ export const createProductSchema = z.object({
 - [ ] **Step 4: Update createVariantSchema (lines 142-165)**
 
 **Before:**
+
 ```typescript
 export const createVariantSchema = z.object({
   sku: z
@@ -164,6 +168,7 @@ export const createVariantSchema = z.object({
 ```
 
 **After:**
+
 ```typescript
 export const createVariantSchema = z.object({
   sku: z
@@ -171,7 +176,10 @@ export const createVariantSchema = z.object({
     .min(1, NONEMPTY_MSG())
     .max(50, MAX_CHARS_MSG(50)())
     .regex(/^[a-zA-Z0-9-]+$/, () => i18n.t('validation.mustBeAlphanumeric')),
-  variant_name: z.string().min(1, NONEMPTY_MSG()).max(200, MAX_CHARS_MSG(200)()),
+  variant_name: z
+    .string()
+    .min(1, NONEMPTY_MSG())
+    .max(200, MAX_CHARS_MSG(200)()),
   uom_id: z.string().max(50, MAX_CHARS_MSG(50)()).optional(),
   retail_price: z
     .number()
@@ -194,6 +202,7 @@ export const createVariantSchema = z.object({
 - [ ] **Step 5: Update createWarehouseSchema (lines 169-172)**
 
 **Before:**
+
 ```typescript
 export const createWarehouseSchema = z.object({
   name: z.string().min(1, NONEMPTY_MSG).max(100, MAX_CHARS_MSG(100)),
@@ -202,6 +211,7 @@ export const createWarehouseSchema = z.object({
 ```
 
 **After:**
+
 ```typescript
 export const createWarehouseSchema = z.object({
   name: z.string().min(1, NONEMPTY_MSG()).max(100, MAX_CHARS_MSG(100)()),
@@ -271,21 +281,21 @@ Fix as needed and repeat step 1
 
 ## Summary of Changes
 
-| File | Change |
-|------|--------|
-| `locales/en.json` | Added `validation.*` keys with English messages |
-| `locales/ar.json` | Added `validation.*` keys with Arabic translations |
+| File                            | Change                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------ |
+| `locales/en.json`               | Added `validation.*` keys with English messages                          |
+| `locales/ar.json`               | Added `validation.*` keys with Arabic translations                       |
 | `src/lib/validation/schemas.ts` | Converted message constants to lazy functions, updated all schema usages |
 
 ## Validation Message Keys
 
-| Key | English | Arabic |
-|-----|--------|-------|
-| `validation.fieldRequired` | This field is required | هذا الحقل مطلوب |
-| `validation.mustBeZeroOrGreater` | Must be 0 or greater | يجب أن يكون 0 أو أكبر |
-| `validation.tooLarge` | Too large | أكبر من المسموح |
-| `validation.maxChars` | Must be {max} characters or less | يجب أن يكون {max} أحرف أو أقل |
-| `validation.mustBeAlphanumeric` | Must be alphanumeric with dashes only | يجب أن يكون alphanumeric مع شرطات فقط |
+| Key                              | English                               | Arabic                                |
+| -------------------------------- | ------------------------------------- | ------------------------------------- |
+| `validation.fieldRequired`       | This field is required                | هذا الحقل مطلوب                       |
+| `validation.mustBeZeroOrGreater` | Must be 0 or greater                  | يجب أن يكون 0 أو أكبر                 |
+| `validation.tooLarge`            | Too large                             | أكبر من المسموح                       |
+| `validation.maxChars`            | Must be {max} characters or less      | يجب أن يكون {max} أحرف أو أقل         |
+| `validation.mustBeAlphanumeric`  | Must be alphanumeric with dashes only | يجب أن يكون alphanumeric مع شرطات فقط |
 
 ---
 
