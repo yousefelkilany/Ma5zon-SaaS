@@ -380,5 +380,12 @@
   "entity.workspace.print.printButton": "Print",
   "entity.workspace.print.cancelButton": "Cancel",
   "entity.workspace.export.csv": "CSV",
-  "entity.workspace.export.excel": "Excel"
+  "entity.workspace.export.excel": "Excel",
+  "validation": {
+    "fieldRequired": "This field is required",
+    "mustBeZeroOrGreater": "Must be 0 or greater",
+    "tooLarge": "Too large",
+    "maxChars": "Must be {max} characters or less",
+    "mustBeAlphanumeric": "Must be alphanumeric with dashes only"
+  }
 }

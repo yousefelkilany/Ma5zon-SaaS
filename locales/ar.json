@@ -382,5 +382,12 @@
   "entity.workspace.export.csv": "CSV",
   "entity.workspace.export.excel": "إكسل",
   "entity.stock.errorLoadingProducts": "خطأ فى عرض المنتجات",
-  "entity.stock.noProductsInWarehouse": "لا توجد كميات فى هذا المخزن"
+  "entity.stock.noProductsInWarehouse": "لا توجد كميات فى هذا المخزن",
+  "validation": {
+    "fieldRequired": "هذا الحقل مطلوب",
+    "mustBeZeroOrGreater": "يجب أن يكون 0 أو أكبر",
+    "tooLarge": "أكبر من المسموح",
+    "maxChars": "يجب أن يكون {max} أحرف أو أقل",
+    "mustBeAlphanumeric": "يجب أن يكون alphanumeric مع شرطات فقط"
+  }
 }
