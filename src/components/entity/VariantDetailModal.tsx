@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next'
 import type { QueryClient } from '@tanstack/react-query'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
 import type { StockLevelWithVariant } from '@/lib/types/entity'
 import type { StockLevel } from '@/lib/bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import { StockLevelsTable } from './StockLevelsTable'
 import { updateVariantSchema } from '@/lib/validation/schemas'
+import { VariantForm } from '@/components/entity-form'
 
 interface VariantDetailModalProps {
   open: boolean
@@ -45,30 +45,14 @@ interface EditForm {
 
 type TabId = 'details' | 'stock' | 'insights' | 'audits'
 
-interface FieldConfig {
-  key: keyof EditForm | 'created_at' | 'updated_at'
-  label: string
-  type: 'text' | 'number' | 'date'
+interface EditForm {
+  sku: string
+  variant_name: string
+  uom_id: string
+  retail_price: string
+  wholesale_price: string
+  distribution_price: string
 }
-
-const VARIANT_FIELDS: FieldConfig[] = [
-  { key: 'sku', label: 'entity.variant.sku', type: 'text' },
-  { key: 'variant_name', label: 'entity.variant.name', type: 'text' },
-  { key: 'uom_id', label: 'entity.variant.uom', type: 'text' },
-  { key: 'retail_price', label: 'entity.variant.retailPrice', type: 'number' },
-  {
-    key: 'wholesale_price',
-    label: 'entity.variant.wholesalePrice',
-    type: 'number',
-  },
-  {
-    key: 'distribution_price',
-    label: 'entity.variant.distributionPrice',
-    type: 'number',
-  },
-  { key: 'created_at', label: 'entity.common.createdAt', type: 'date' },
-  { key: 'updated_at', label: 'entity.common.updatedAt', type: 'date' },
-]
 
 export function VariantDetailModal({
   open,
@@ -81,7 +65,6 @@ export function VariantDetailModal({
   const { t } = useTranslation()
   const [entity, setEntity] = useState<Variant | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState<EditForm>({
     sku: '',
     variant_name: '',
@@ -91,7 +74,6 @@ export function VariantDetailModal({
     distribution_price: '',
   })
   const [isSaving, setIsSaving] = useState(false)
-  const [saveError, setSaveError] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteError, setDeleteError] = useState('')
@@ -103,7 +85,7 @@ export function VariantDetailModal({
   const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
     new Map()
   )
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [isDirty, setIsDirty] = useState(false)
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -187,7 +169,6 @@ export function VariantDetailModal({
       setEntity(null)
       setIsLoading(true)
       setLoadError('')
-      setIsEditing(false)
       setEditForm({
         sku: '',
         variant_name: '',
@@ -198,11 +179,10 @@ export function VariantDetailModal({
       })
       setActiveTab('details')
       setDeleteError('')
-      setSaveError('')
       setStockLevels([])
       setStockLoadError('')
       setWarehouseNames(new Map())
-      setFieldErrors({})
+      setIsDirty(false)
     }
   }, [open])
 
@@ -212,45 +192,37 @@ export function VariantDetailModal({
     }
   }, [open, entityId, loadEntity])
 
-  async function handleSave() {
+  useEffect(() => {
+    setIsDirty(false)
+  }, [entity])
+
+  useEffect(() => {
+    setIsDirty(true)
+  }, [editForm])
+
+  async function handleSave(values: {
+    sku: string
+    variant_name: string
+    uom_id?: string
+    retail_price?: number
+    wholesale_price?: number
+    distribution_price?: number
+  }) {
     if (!entity) return
-    setSaveError('')
-    const parsedData = {
-      sku: editForm.sku,
-      variant_name: editForm.variant_name,
-      uom_id: editForm.uom_id,
-      retail_price: parseFloat(editForm.retail_price) || 0,
-      wholesale_price: parseFloat(editForm.wholesale_price) || 0,
-      distribution_price: parseFloat(editForm.distribution_price) || 0,
-    }
-    const validationResult = updateVariantSchema.safeParse(parsedData)
-    if (!validationResult.success) {
-      const errors = validationResult.error.flatten().fieldErrors
-      setFieldErrors(
-        Object.fromEntries(
-          Object.entries(errors).map(([k, v]) => [k, v?.[0] ?? ''])
-        )
-      )
-      return
-    }
-    setFieldErrors({})
     setIsSaving(true)
     const result = await commands.variantsUpdate(entity.id, {
-      sku: editForm.sku,
-      variant_name: editForm.variant_name,
-      uom_id: editForm.uom_id,
-      retail_price: parseFloat(editForm.retail_price) || 0,
-      wholesale_price: parseFloat(editForm.wholesale_price) || 0,
-      distribution_price: parseFloat(editForm.distribution_price) || 0,
+      sku: values.sku,
+      variant_name: values.variant_name,
+      uom_id: values.uom_id ?? '',
+      retail_price: values.retail_price ?? 0,
+      wholesale_price: values.wholesale_price ?? 0,
+      distribution_price: values.distribution_price ?? 0,
     })
     setIsSaving(false)
     if (result.status === 'ok') {
       setEntity(result.data)
-      setIsEditing(false)
       queryClient.invalidateQueries({ queryKey: ['entity', 'variants'] })
       onSaved?.(result.data)
-    } else {
-      setSaveError(result.error ?? 'Save failed')
     }
   }
 
@@ -270,34 +242,6 @@ export function VariantDetailModal({
     }
   }
 
-  function handleCancelEdit() {
-    if (entity) {
-      setEditForm({
-        sku: entity.sku,
-        variant_name: entity.variant_name,
-        uom_id: entity.uom_id,
-        retail_price: entity.retail_price.toString(),
-        wholesale_price: entity.wholesale_price.toString(),
-        distribution_price: entity.distribution_price.toString(),
-      })
-    }
-    setIsEditing(false)
-  }
-
-  function handleEdit() {
-    if (entity) {
-      setEditForm({
-        sku: entity.sku,
-        variant_name: entity.variant_name,
-        uom_id: entity.uom_id,
-        retail_price: entity.retail_price.toString(),
-        wholesale_price: entity.wholesale_price.toString(),
-        distribution_price: entity.distribution_price.toString(),
-      })
-    }
-    setIsEditing(true)
-  }
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     const currentIndex = tabs.findIndex(tab => tab.id === activeTab)
     if (e.key === 'ArrowRight') {
@@ -311,7 +255,10 @@ export function VariantDetailModal({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={(open) => {
+        if (!open && isDirty) return
+        onOpenChange(open)
+      }}>
         <DialogContent className="max-w-2xl">
           <div className="flex flex-col h-full">
             {/* Tab Bar */}
@@ -360,120 +307,19 @@ export function VariantDetailModal({
                     </div>
                   ) : entity ? (
                     <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        {VARIANT_FIELDS.map(field => (
-                          <div key={field.key} className="space-y-1">
-                            <label className="text-label-caps text-on-surface-variant">
-                              {t(field.label)}
-                            </label>
-                            {isEditing &&
-                            (field.type === 'text' ||
-                              field.type === 'number') ? (
-                              <div className="space-y-1">
-                                <input
-                                  type={
-                                    field.type === 'number' ? 'number' : 'text'
-                                  }
-                                  className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
-                                  value={
-                                    editForm[
-                                      field.key as keyof EditForm
-                                    ] as string
-                                  }
-                                  onChange={e =>
-                                    setEditForm(prev => ({
-                                      ...prev,
-                                      [field.key]: e.target.value,
-                                    }))
-                                  }
-                                  disabled={isSaving}
-                                />
-                                {fieldErrors[
-                                  field.key as keyof typeof fieldErrors
-                                ] && (
-                                  <p className="text-body-sm text-error">
-                                    {
-                                      fieldErrors[
-                                        field.key as keyof typeof fieldErrors
-                                      ]
-                                    }
-                                  </p>
-                                )}
-                              </div>
-                            ) : (
-                              <p className="text-body-md text-on-surface">
-                                {field.type === 'date'
-                                  ? entity[
-                                      field.key as 'created_at' | 'updated_at'
-                                    ]
-                                    ? new Date(
-                                        entity[
-                                          field.key as
-                                            | 'created_at'
-                                            | 'updated_at'
-                                        ] ?? ''
-                                      ).toLocaleString()
-                                    : '—'
-                                  : field.type === 'number'
-                                    ? Number(
-                                        entity[field.key as keyof Variant]
-                                      ).toLocaleString()
-                                    : (entity[field.key as keyof Variant] ??
-                                      '—')}
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Footer Actions */}
-                      {saveError && (
-                        <p className="text-body-sm text-error">{saveError}</p>
-                      )}
-                      <div className="flex items-center justify-between pt-4 border-t border-outline-variant">
-                        <Button
-                          variant="ghost"
-                          className="text-error"
-                          onClick={() => setShowDeleteConfirm(true)}
-                        >
-                          <span className="material-symbols-outlined text-sm">
-                            delete
-                          </span>
-                          {t('entity.detail.delete')}
-                        </Button>
-                        <div className="flex gap-2">
-                          {isEditing ? (
-                            <>
-                              <Button
-                                variant="outline"
-                                onClick={handleCancelEdit}
-                                disabled={isSaving}
-                              >
-                                {t('common.cancel')}
-                              </Button>
-                              <Button onClick={handleSave} disabled={isSaving}>
-                                {isSaving ? (
-                                  <span className="material-symbols-outlined text-sm animate-spin">
-                                    sync
-                                  </span>
-                                ) : (
-                                  <span className="material-symbols-outlined text-sm">
-                                    save
-                                  </span>
-                                )}
-                                {t('common.save')}
-                              </Button>
-                            </>
-                          ) : (
-                            <Button onClick={handleEdit}>
-                              <span className="material-symbols-outlined text-sm">
-                                edit
-                              </span>
-                              {t('entity.detail.edit')}
-                            </Button>
-                          )}
-                        </div>
-                      </div>
+                      <VariantForm
+                          onSubmit={handleSave}
+                          isLoading={isSaving}
+                          initialValues={{
+                            sku: editForm.sku,
+                            variant_name: editForm.variant_name,
+                            uom_id: editForm.uom_id,
+                            retail_price: editForm.retail_price ? parseFloat(editForm.retail_price) : undefined,
+                            wholesale_price: editForm.wholesale_price ? parseFloat(editForm.wholesale_price) : undefined,
+                            distribution_price: editForm.distribution_price ? parseFloat(editForm.distribution_price) : undefined,
+                          }}
+                          schema={updateVariantSchema}
+                        />
                     </div>
                   ) : loadError ? (
                     <p className="text-body-md text-error">{loadError}</p>
