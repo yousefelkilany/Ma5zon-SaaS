@@ -8,7 +8,7 @@ import { commands } from '@/lib/tauri-bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import type { StockLevelWithVariant } from '@/lib/types/entity'
 import { StockLevelsTable } from './StockLevelsTable'
-import { updateProductSchema } from '@/lib/validation/schemas'
+import { ProductForm } from '@/components/entity-form'
 
 interface ProductDetailModalProps {
   open: boolean
@@ -72,7 +72,7 @@ export function ProductDetailModal({
   const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
     new Map()
   )
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [isDirty, setIsDirty] = useState(false)
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -100,6 +100,7 @@ export function ProductDetailModal({
     if (result.status === 'ok') {
       if (result.data) {
         setEntity(result.data)
+        setIsDirty(false)
         setEditForm({
           company: result.data.company,
           name: result.data.name,
@@ -143,7 +144,6 @@ export function ProductDetailModal({
       setDeleteError('')
       setStockLevels([])
       setWarehouseNames(new Map())
-      setFieldErrors({})
     }
   }, [open])
 
@@ -176,26 +176,18 @@ export function ProductDetailModal({
     }
   }, [showDeleteConfirm])
 
-  async function handleSave() {
+  useEffect(() => {
+    setIsDirty(true)
+  }, [editForm])
+
+  async function handleSave(values: { company: string; name: string; category: string }) {
     if (!entity) return
-    setSaveError('')
-    const validationResult = updateProductSchema.safeParse(editForm)
-    if (!validationResult.success) {
-      const errors = validationResult.error.flatten().fieldErrors
-      setFieldErrors(
-        Object.fromEntries(
-          Object.entries(errors).map(([k, v]) => [k, v?.[0] ?? ''])
-        )
-      )
-      return
-    }
-    setFieldErrors({})
     setIsSaving(true)
     const saveResult = await commands.update(
       entity.id,
-      editForm.company,
-      editForm.name,
-      editForm.category
+      values.company,
+      values.name,
+      values.category
     )
     setIsSaving(false)
     if (saveResult.status === 'ok') {
@@ -247,7 +239,10 @@ export function ProductDetailModal({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={(open) => {
+        if (!open && isDirty) return
+        onOpenChange(open)
+      }}>
         <DialogContent className="min-w-xl max-w-fit">
           <div className="flex flex-col h-full">
             {/* Tab Bar */}
@@ -296,47 +291,19 @@ export function ProductDetailModal({
                     </div>
                   ) : entity ? (
                     <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        {PRODUCT_FIELDS.map(field => (
-                          <div key={field.key} className="space-y-1">
-                            <label className="text-label-caps text-on-surface-variant">
-                              {t(field.label)}
-                            </label>
-                            {isEditing && field.type === 'text' ? (
-                              <div className="space-y-1">
-                                <input
-                                  className="w-full bg-surface-container-high border border-outline-variant text-on-surface font-body-md px-3 py-2 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none"
-                                  value={
-                                    editForm[
-                                      field.key as keyof typeof editForm
-                                    ] as string
-                                  }
-                                  onChange={e => {
-                                    setEditForm(prev => ({
-                                      ...prev,
-                                      [field.key as keyof typeof editForm]:
-                                        e.target.value,
-                                    }))
-                                    setFieldErrors(prev => ({
-                                      ...prev,
-                                      [field.key]: '',
-                                    }))
-                                  }}
-                                  disabled={isSaving}
-                                />
-                                {fieldErrors[
-                                  field.key as keyof typeof fieldErrors
-                                ] && (
-                                  <p className="text-body-sm text-error">
-                                    {
-                                      fieldErrors[
-                                        field.key as keyof typeof fieldErrors
-                                      ]
-                                    }
-                                  </p>
-                                )}
-                              </div>
-                            ) : (
+                      {isEditing ? (
+                        <ProductForm
+                          onSubmit={handleSave}
+                          isLoading={isSaving}
+                          initialValues={editForm}
+                        />
+                      ) : (
+                        <div className="grid grid-cols-2 gap-4">
+                          {PRODUCT_FIELDS.map(field => (
+                            <div key={field.key} className="space-y-1">
+                              <label className="text-label-caps text-on-surface-variant">
+                                {t(field.label)}
+                              </label>
                               <p className="text-body-md text-on-surface">
                                 {field.type === 'date'
                                   ? entity[field.key]
@@ -346,10 +313,10 @@ export function ProductDetailModal({
                                     : '—'
                                   : (entity[field.key] ?? '—')}
                               </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
                       {/* Footer Actions */}
                       {saveError && (
@@ -375,18 +342,6 @@ export function ProductDetailModal({
                                 disabled={isSaving}
                               >
                                 {t('common.cancel')}
-                              </Button>
-                              <Button onClick={handleSave} disabled={isSaving}>
-                                {isSaving ? (
-                                  <span className="material-symbols-outlined text-sm animate-spin">
-                                    sync
-                                  </span>
-                                ) : (
-                                  <span className="material-symbols-outlined text-sm">
-                                    save
-                                  </span>
-                                )}
-                                {t('common.save')}
                               </Button>
                             </>
                           ) : (
