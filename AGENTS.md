@@ -12,6 +12,7 @@ This repository is a template with sensible defaults for building Tauri React ap
 - Review `docs/developer/architecture-guide.md` for high-level patterns
 - Check `docs/developer/README.md` for the full documentation index
 - Check git status and project structure
+- Use admin/admin creds for auth in login modal
 
 ### Development Practices
 
