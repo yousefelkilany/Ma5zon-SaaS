@@ -145,7 +145,7 @@ export const createVariantSchema = z.object({
     .string()
     .min(1, NONEMPTY_MSG())
     .max(50, MAX_CHARS_MSG(50)())
-    .regex(/^[a-zA-Z0-9-]+$/, 'Must be alphanumeric with dashes only'),
+    .regex(/^[a-zA-Z0-9-]+$/, { error: () => i18n.t('validation.mustBeAlphanumeric') }),
   variant_name: z.string().min(1, NONEMPTY_MSG()).max(200, MAX_CHARS_MSG(200)()),
   uom_id: z.string().max(50, MAX_CHARS_MSG(50)()).optional(),
   retail_price: z
