@@ -35,7 +35,7 @@ export function VariantCreateModal({
         </DialogHeader>
         <VariantForm
           productId={productId}
-          onSubmit={async (values) => {
+          onSubmit={async values => {
             setIsSubmitting(true)
             try {
               const result = await commands.variantsCreate({
@@ -48,7 +48,9 @@ export function VariantCreateModal({
                 distribution_price: values.distribution_price ?? 0,
               })
               if (result.status === 'ok') {
-                queryClient.invalidateQueries({ queryKey: ['entity', 'product_variants'] })
+                queryClient.invalidateQueries({
+                  queryKey: ['entity', 'product_variants'],
+                })
                 onOpenChange(false)
               } else {
                 toast.error(result.error)
