@@ -9,6 +9,7 @@ import { ConfirmationDialog } from './ConfirmationDialog'
 import type { StockLevelWithVariant } from '@/lib/types/entity'
 import { StockLevelsTable } from './StockLevelsTable'
 import { ProductForm } from '@/components/entity-form'
+import { updateProductSchema } from '@/lib/validation/schemas'
 
 interface ProductDetailModalProps {
   open: boolean
@@ -293,6 +294,7 @@ export function ProductDetailModal({
                     <div className="space-y-4">
                       {isEditing ? (
                         <ProductForm
+                          schema={updateProductSchema}
                           onSubmit={handleSave}
                           isLoading={isSaving}
                           initialValues={editForm}
