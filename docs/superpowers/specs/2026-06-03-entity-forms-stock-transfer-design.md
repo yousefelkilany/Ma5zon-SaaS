@@ -15,13 +15,14 @@ Replace custom inline forms across entity modals with reusable form components f
 
 ### 2.1 Create Modals → Reusable Forms
 
-| File | Form Component | Notes |
-|------|---------------|-------|
-| `ProductCreateModal.tsx` | `<ProductForm>` | Pass empty `initialValues` |
-| `WarehouseCreateModal.tsx` | `<WarehouseForm>` | Pass empty `initialValues` |
-| `VariantCreateModal.tsx` | `<VariantForm>` | Pass `productId` prop when creating from product context |
+| File                       | Form Component    | Notes                                                    |
+| -------------------------- | ----------------- | -------------------------------------------------------- |
+| `ProductCreateModal.tsx`   | `<ProductForm>`   | Pass empty `initialValues`                               |
+| `WarehouseCreateModal.tsx` | `<WarehouseForm>` | Pass empty `initialValues`                               |
+| `VariantCreateModal.tsx`   | `<VariantForm>`   | Pass `productId` prop when creating from product context |
 
 **Pattern:**
+
 ```tsx
 <ProductForm
   onSubmit={handleSubmit}
@@ -32,13 +33,14 @@ Replace custom inline forms across entity modals with reusable form components f
 
 ### 2.2 Detail Modals → Reusable Forms with Initial Values
 
-| File | Form Component | Notes |
-|------|---------------|-------|
-| `ProductDetailModal.tsx` | `<ProductForm>` | Fetch product on mount, pass as `initialValues` |
-| `VariantDetailModal.tsx` | `<VariantForm>` | Fetch variant on mount, pass as `initialValues` |
+| File                       | Form Component    | Notes                                             |
+| -------------------------- | ----------------- | ------------------------------------------------- |
+| `ProductDetailModal.tsx`   | `<ProductForm>`   | Fetch product on mount, pass as `initialValues`   |
+| `VariantDetailModal.tsx`   | `<VariantForm>`   | Fetch variant on mount, pass as `initialValues`   |
 | `WarehouseDetailModal.tsx` | `<WarehouseForm>` | Fetch warehouse on mount, pass as `initialValues` |
 
 **Pattern:**
+
 ```tsx
 <ProductForm
   onSubmit={handleSubmit}
@@ -58,10 +60,12 @@ Replace custom inline forms across entity modals with reusable form components f
 Both `VariantStockView` and `ProductStockPivot` views have transfer controls.
 
 #### VariantStockView (table)
+
 - Each warehouse row has an arrow icon button
 - Clicking expands inline transfer section below that row
 
 #### ProductStockPivot (grid)
+
 - Each cell (warehouse × variant) has a subtle arrow icon
 - Clicking expands inline transfer for that warehouse/variant combo
 
@@ -76,6 +80,7 @@ Both `VariantStockView` and `ProductStockPivot` views have transfer controls.
 ### 3.3 UI
 
 Transfer section renders as an expanded row beneath the source row/cell, containing:
+
 - Hidden/disabled `from_warehouse` field (pre-filled)
 - `to_warehouse` select dropdown
 - `quantity` number input
@@ -116,18 +121,18 @@ const handleClose = () => {
 
 ## 5. Files to Modify
 
-| File | Change |
-|------|--------|
-| `src/components/entity/ProductCreateModal.tsx` | Replace custom form with `<ProductForm>` |
-| `src/components/entity/WarehouseCreateModal.tsx` | Replace custom form with `<WarehouseForm>` |
-| `src/components/entity/VariantCreateModal.tsx` | Replace custom form with `<VariantForm>` |
-| `src/components/entity/ProductDetailModal.tsx` | Replace custom form with `<ProductForm>`, add dirty state |
-| `src/components/entity/VariantDetailModal.tsx` | Replace custom form with `<VariantForm>`, add dirty state |
+| File                                             | Change                                                      |
+| ------------------------------------------------ | ----------------------------------------------------------- |
+| `src/components/entity/ProductCreateModal.tsx`   | Replace custom form with `<ProductForm>`                    |
+| `src/components/entity/WarehouseCreateModal.tsx` | Replace custom form with `<WarehouseForm>`                  |
+| `src/components/entity/VariantCreateModal.tsx`   | Replace custom form with `<VariantForm>`                    |
+| `src/components/entity/ProductDetailModal.tsx`   | Replace custom form with `<ProductForm>`, add dirty state   |
+| `src/components/entity/VariantDetailModal.tsx`   | Replace custom form with `<VariantForm>`, add dirty state   |
 | `src/components/entity/WarehouseDetailModal.tsx` | Replace custom form with `<WarehouseForm>`, add dirty state |
-| `src/components/entity/StockLevelsTable.tsx` | Add transfer button and inline transfer UI to both views |
-| `src/components/entity-form/ProductForm.tsx` | May need `initialValues` support (already has it) |
-| `src/components/entity-form/VariantForm.tsx` | May need `initialValues` support (already has it) |
-| `src/components/entity-form/WarehouseForm.tsx` | May need `initialValues` support (already has it) |
+| `src/components/entity/StockLevelsTable.tsx`     | Add transfer button and inline transfer UI to both views    |
+| `src/components/entity-form/ProductForm.tsx`     | May need `initialValues` support (already has it)           |
+| `src/components/entity-form/VariantForm.tsx`     | May need `initialValues` support (already has it)           |
+| `src/components/entity-form/WarehouseForm.tsx`   | May need `initialValues` support (already has it)           |
 
 ---
 

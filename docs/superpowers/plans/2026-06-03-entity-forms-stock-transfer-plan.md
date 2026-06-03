@@ -12,26 +12,27 @@
 
 ## File Structure
 
-| File | Responsibility |
-|------|----------------|
-| `src/components/entity/ProductCreateModal.tsx` | Create product modal — swap to `<ProductForm>` |
-| `src/components/entity/WarehouseCreateModal.tsx` | Create warehouse modal — swap to `<WarehouseForm>` |
-| `src/components/entity/VariantCreateModal.tsx` | Create variant modal — swap to `<VariantForm>` |
-| `src/components/entity/ProductDetailModal.tsx` | Edit product modal — swap to `<ProductForm>` + dirty state |
-| `src/components/entity/VariantDetailModal.tsx` | Edit variant modal — swap to `<VariantForm>` + dirty state |
-| `src/components/entity/WarehouseDetailModal.tsx` | Edit warehouse modal — swap to `<WarehouseForm>` + dirty state |
-| `src/components/entity/StockLevelsTable.tsx` | Add transfer button + inline transfer UI to both views |
-| `src/components/entity-form/ProductForm.tsx` | Supports `initialValues` already |
-| `src/components/entity-form/VariantForm.tsx` | Supports `initialValues` already |
-| `src/components/entity-form/WarehouseForm.tsx` | Supports `initialValues` already |
-| `src/components/entity-form/StockMovementForm.tsx` | Already exists, needs `variantId` prop support |
-| `src/components/ui/dialog.tsx` | Check if close button can be disabled |
+| File                                               | Responsibility                                                 |
+| -------------------------------------------------- | -------------------------------------------------------------- |
+| `src/components/entity/ProductCreateModal.tsx`     | Create product modal — swap to `<ProductForm>`                 |
+| `src/components/entity/WarehouseCreateModal.tsx`   | Create warehouse modal — swap to `<WarehouseForm>`             |
+| `src/components/entity/VariantCreateModal.tsx`     | Create variant modal — swap to `<VariantForm>`                 |
+| `src/components/entity/ProductDetailModal.tsx`     | Edit product modal — swap to `<ProductForm>` + dirty state     |
+| `src/components/entity/VariantDetailModal.tsx`     | Edit variant modal — swap to `<VariantForm>` + dirty state     |
+| `src/components/entity/WarehouseDetailModal.tsx`   | Edit warehouse modal — swap to `<WarehouseForm>` + dirty state |
+| `src/components/entity/StockLevelsTable.tsx`       | Add transfer button + inline transfer UI to both views         |
+| `src/components/entity-form/ProductForm.tsx`       | Supports `initialValues` already                               |
+| `src/components/entity-form/VariantForm.tsx`       | Supports `initialValues` already                               |
+| `src/components/entity-form/WarehouseForm.tsx`     | Supports `initialValues` already                               |
+| `src/components/entity-form/StockMovementForm.tsx` | Already exists, needs `variantId` prop support                 |
+| `src/components/ui/dialog.tsx`                     | Check if close button can be disabled                          |
 
 ---
 
 ## Task 1: Update ProductCreateModal to use ProductForm
 
 **Files:**
+
 - Modify: `src/components/entity/ProductCreateModal.tsx`
 
 - [ ] **Step 1: Read current file**
@@ -44,11 +45,15 @@ Verify current structure matches what was read earlier.
 import { ProductForm } from '@/components/entity-form'
 
 // Replace the entire <form> block (lines 90-168) with:
-<ProductForm
-  onSubmit={async (values) => {
+;<ProductForm
+  onSubmit={async values => {
     setIsSubmitting(true)
     try {
-      const result = await commands.create(values.company, values.name, values.category)
+      const result = await commands.create(
+        values.company,
+        values.name,
+        values.category
+      )
       if (result.status === 'ok') {
         queryClient.invalidateQueries({ queryKey: ['entity', 'products'] })
         onOpenChange(false)
@@ -84,6 +89,7 @@ git commit -m "refactor: use ProductForm in ProductCreateModal"
 ## Task 2: Update WarehouseCreateModal to use WarehouseForm
 
 **Files:**
+
 - Modify: `src/components/entity/WarehouseCreateModal.tsx`
 
 - [ ] **Step 1: Replace form with WarehouseForm**
@@ -92,11 +98,14 @@ git commit -m "refactor: use ProductForm in ProductCreateModal"
 import { WarehouseForm } from '@/components/entity-form'
 
 // Replace <form> block with:
-<WarehouseForm
-  onSubmit={async (values) => {
+;<WarehouseForm
+  onSubmit={async values => {
     setIsSubmitting(true)
     try {
-      const result = await commands.warehousesCreate(values.name, values.location)
+      const result = await commands.warehousesCreate(
+        values.name,
+        values.location
+      )
       if (result.status === 'ok') {
         queryClient.invalidateQueries({ queryKey: ['entity', 'warehouses'] })
         onOpenChange(false)
@@ -132,6 +141,7 @@ git commit -m "refactor: use WarehouseForm in WarehouseCreateModal"
 ## Task 3: Update VariantCreateModal to use VariantForm
 
 **Files:**
+
 - Modify: `src/components/entity/VariantCreateModal.tsx`
 
 - [ ] **Step 1: Replace form with VariantForm**
@@ -140,9 +150,9 @@ git commit -m "refactor: use WarehouseForm in WarehouseCreateModal"
 import { VariantForm } from '@/components/entity-form'
 
 // Replace <form> block with:
-<VariantForm
+;<VariantForm
   productId={productId}
-  onSubmit={async (values) => {
+  onSubmit={async values => {
     setIsSubmitting(true)
     try {
       const result = await commands.variantsCreate({
@@ -155,7 +165,9 @@ import { VariantForm } from '@/components/entity-form'
         distribution_price: values.distribution_price ?? 0,
       })
       if (result.status === 'ok') {
-        queryClient.invalidateQueries({ queryKey: ['entity', 'product_variants'] })
+        queryClient.invalidateQueries({
+          queryKey: ['entity', 'product_variants'],
+        })
         onOpenChange(false)
       } else {
         toast.error(result.error)
@@ -196,11 +208,13 @@ git commit -m "refactor: use VariantForm in VariantCreateModal"
 ## Task 4: Update ProductDetailModal to use ProductForm with dirty state
 
 **Files:**
+
 - Modify: `src/components/entity/ProductDetailModal.tsx`
 
 - [ ] **Step 1: Add dirty state tracking**
 
 Add after line 75 (`fieldErrors` state):
+
 ```tsx
 const [isDirty, setIsDirty] = useState(false)
 ```
@@ -214,6 +228,7 @@ Add a `useEffect` that watches `editForm` and sets `isDirty` to true when form d
 Import `ProductForm` from `@/components/entity-form`.
 
 Replace the details tab content (fields + buttons) with:
+
 ```tsx
 <ProductForm
   onSubmit={handleSave}
@@ -228,6 +243,7 @@ Keep the existing `handleSave` function. Remove the manual field rendering code 
 - [ ] **Step 4: Disable X close button when dirty**
 
 Find the Dialog's `onOpenChange`. Wrap it:
+
 ```tsx
 onOpenChange={(open) => {
   if (!open && isDirty) return
@@ -251,11 +267,13 @@ git commit -m "refactor: use ProductForm in ProductDetailModal with dirty state"
 ## Task 5: Update VariantDetailModal to use VariantForm with dirty state
 
 **Files:**
+
 - Modify: `src/components/entity/VariantDetailModal.tsx`
 
 - [ ] **Step 1: Add dirty state**
 
 Add after line 106 (`fieldErrors` state):
+
 ```tsx
 const [isDirty, setIsDirty] = useState(false)
 ```
@@ -269,6 +287,7 @@ Watch `editForm` and `entity`. When entity loads, reset `isDirty` to false. On a
 Import `VariantForm` from `@/components/entity-form`.
 
 In the details tab, replace field rendering with:
+
 ```tsx
 <VariantForm
   onSubmit={handleSave}
@@ -277,9 +296,15 @@ In the details tab, replace field rendering with:
     sku: editForm.sku,
     variant_name: editForm.variant_name,
     uom_id: editForm.uom_id,
-    retail_price: editForm.retail_price ? parseFloat(editForm.retail_price) : undefined,
-    wholesale_price: editForm.wholesale_price ? parseFloat(editForm.wholesale_price) : undefined,
-    distribution_price: editForm.distribution_price ? parseFloat(editForm.distribution_price) : undefined,
+    retail_price: editForm.retail_price
+      ? parseFloat(editForm.retail_price)
+      : undefined,
+    wholesale_price: editForm.wholesale_price
+      ? parseFloat(editForm.wholesale_price)
+      : undefined,
+    distribution_price: editForm.distribution_price
+      ? parseFloat(editForm.distribution_price)
+      : undefined,
   }}
   schema={updateVariantSchema}
 />
@@ -305,11 +330,13 @@ git commit -m "refactor: use VariantForm in VariantDetailModal with dirty state"
 ## Task 6: Update WarehouseDetailModal to use WarehouseForm with dirty state
 
 **Files:**
+
 - Modify: `src/components/entity/WarehouseDetailModal.tsx`
 
 - [ ] **Step 1: Add dirty state**
 
 Add after line 62 (`fieldErrors` state):
+
 ```tsx
 const [isDirty, setIsDirty] = useState(false)
 ```
@@ -323,6 +350,7 @@ Add `useEffect` that resets `isDirty` when entity loads and sets it true when `e
 Import `WarehouseForm` from `@/components/entity-form`.
 
 Replace details tab fields with:
+
 ```tsx
 <WarehouseForm
   onSubmit={handleSave}
@@ -352,11 +380,13 @@ git commit -m "refactor: use WarehouseForm in WarehouseDetailModal with dirty st
 ## Task 7: Add inline stock transfer to StockLevelsTable
 
 **Files:**
+
 - Modify: `src/components/entity/StockLevelsTable.tsx`
 
 - [ ] **Step 1: Add state for transfer section**
 
 Add to top of component:
+
 ```tsx
 const [transferState, setTransferState] = useState<{
   variantId: string
@@ -368,13 +398,16 @@ const [transferState, setTransferState] = useState<{
 - [ ] **Step 2: Update VariantStockView to add transfer button**
 
 In `VariantStockView`, add to each row after the quantity cell:
+
 ```tsx
 <button
-  onClick={() => setTransferState({
-    variantId: stockLevels[0]?.variant_id ?? '',
-    warehouseId: level.warehouse_id,
-    fromWarehouseId: level.warehouse_id,
-  })}
+  onClick={() =>
+    setTransferState({
+      variantId: stockLevels[0]?.variant_id ?? '',
+      warehouseId: level.warehouse_id,
+      fromWarehouseId: level.warehouse_id,
+    })
+  }
   className="ml-2 text-secondary hover:opacity-70"
   title={t('entity.stock.transfer')}
 >
@@ -385,13 +418,16 @@ In `VariantStockView`, add to each row after the quantity cell:
 - [ ] **Step 3: Update ProductStockPivot to add transfer button**
 
 In `ProductStockPivot`, add to each cell after the quantity display:
+
 ```tsx
 <button
-  onClick={() => setTransferState({
-    variantId: row.variantId,
-    warehouseId: col,
-    fromWarehouseId: col,
-  })}
+  onClick={() =>
+    setTransferState({
+      variantId: row.variantId,
+      warehouseId: col,
+      fromWarehouseId: col,
+    })
+  }
   className="ml-1 text-secondary hover:opacity-70 opacity-0 group-hover:opacity-100"
   title={t('entity.stock.transfer')}
 >
@@ -404,6 +440,7 @@ Wrap the `<td>` in a group: `className="px-3 py-2 text-end ... group"`
 - [ ] **Step 4: Add inline transfer section component**
 
 Add at bottom of file (after both view components):
+
 ```tsx
 function InlineTransferSection({
   variantId,
@@ -431,9 +468,10 @@ function InlineTransferSection({
     },
   })
 
-  const toWarehouseOptions = warehouses
-    ?.filter(w => w.id !== warehouseId)
-    .map(w => ({ value: w.id, label: w.name })) ?? []
+  const toWarehouseOptions =
+    warehouses
+      ?.filter(w => w.id !== warehouseId)
+      .map(w => ({ value: w.id, label: w.name })) ?? []
 
   const handleSubmit = async () => {
     if (!toWarehouseId || !quantity) return
@@ -468,7 +506,9 @@ function InlineTransferSection({
           >
             <option value="">{t('entity.stock.selectWarehouse')}</option>
             {toWarehouseOptions.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
           </select>
           <input
@@ -504,25 +544,32 @@ Note: Uses `useQuery` from `@tanstack/react-query` — needs import at top.
 - [ ] **Step 5: Render transfer section after active row**
 
 In `VariantStockView`, after the closing `</tr>` of each row, add conditional:
+
 ```tsx
-{transferState?.warehouseId === level.warehouse_id && (
-  <InlineTransferSection
-    variantId={stockLevels[0]?.variant_id ?? ''}
-    warehouseId={level.warehouse_id}
-    onClose={() => setTransferState(null)}
-  />
-)}
+{
+  transferState?.warehouseId === level.warehouse_id && (
+    <InlineTransferSection
+      variantId={stockLevels[0]?.variant_id ?? ''}
+      warehouseId={level.warehouse_id}
+      onClose={() => setTransferState(null)}
+    />
+  )
+}
 ```
 
 In `ProductStockPivot`, after the `</tr>` of each row:
+
 ```tsx
-{transferState?.variantId === row.variantId && transferState?.warehouseId === col && (
-  <InlineTransferSection
-    variantId={row.variantId}
-    warehouseId={col}
-    onClose={() => setTransferState(null)}
-  />
-)}
+{
+  transferState?.variantId === row.variantId &&
+    transferState?.warehouseId === col && (
+      <InlineTransferSection
+        variantId={row.variantId}
+        warehouseId={col}
+        onClose={() => setTransferState(null)}
+      />
+    )
+}
 ```
 
 - [ ] **Step 6: Verify no compile errors**
@@ -541,6 +588,7 @@ git commit -m "feat: add inline stock transfer to StockLevelsTable"
 ## Task 8: Add dirty state to StockMovementForm for create scenarios
 
 **Files:**
+
 - Modify: `src/components/entity-form/StockMovementForm.tsx`
 
 - [ ] **Step 1: Add variantId prop support**
