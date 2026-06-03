@@ -138,6 +138,7 @@ function VariantStockView({
               <InlineTransferSection
                 variantId={stockLevels[0]?.variant_id ?? ''}
                 warehouseId={level.warehouse_id}
+                warehouseNames={warehouseNames}
                 onClose={() => setTransferState(null)}
               />
             )}
@@ -301,6 +302,7 @@ function ProductStockPivot({
                   key={`transfer-${col}`}
                   variantId={row.variantId}
                   warehouseId={col}
+                  warehouseNames={warehouseNames}
                   onClose={() => setTransferState(null)}
                 />
               ) : null
@@ -335,10 +337,12 @@ function ProductStockPivot({
 function InlineTransferSection({
   variantId,
   warehouseId,
+  warehouseNames,
   onClose,
 }: {
   variantId: string
   warehouseId: string
+  warehouseNames?: Map<string, string>
   onClose: () => void
 }) {
   const { t } = useTranslation()
@@ -382,6 +386,15 @@ function InlineTransferSection({
           <span className="text-body-sm text-on-surface-variant">
             {t('entity.stock.transferFrom')}
           </span>
+          <select
+            value={warehouseId}
+            disabled
+            className="bg-surface-disabled border border-outline-variant rounded px-2 py-1 text-body-sm text-on-surface-variant"
+          >
+            <option value={warehouseId}>
+              {warehouseNames?.get(warehouseId) ?? warehouseId}
+            </option>
+          </select>
           <select
             value={toWarehouseId}
             onChange={e => setToWarehouseId(e.target.value)}

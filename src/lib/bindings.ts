@@ -407,6 +407,38 @@ async stockMovementsGetByVariant(variantId: string) : Promise<Result<StockMoveme
     else return { status: "error", error: e  as any };
 }
 },
+async createTransfer(variantId: string, fromWarehouse: string, toWarehouse: string, quantity: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("create_transfer", { variantId, fromWarehouse, toWarehouse, quantity }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async createPurchase(variantId: string, toWarehouse: string, quantity: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("create_purchase", { variantId, toWarehouse, quantity }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async createSale(variantId: string, fromWarehouse: string, quantity: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("create_sale", { variantId, fromWarehouse, quantity }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async createAdjustment(variantId: string, warehouseId: string, quantity: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("create_adjustment", { variantId, warehouseId, quantity }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async productsGetByWarehousePaginated(warehouseId: string, page: number, pageSize: number) : Promise<Result<PaginatedResponse<ProductWithStock>, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("products_get_by_warehouse_paginated", { warehouseId, page, pageSize }) };
