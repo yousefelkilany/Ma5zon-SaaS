@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import type { QueryClient } from '@tanstack/react-query'
@@ -24,11 +24,6 @@ export function ProductCreateModal({
 }: ProductCreateModalProps) {
   const { t } = useTranslation()
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  useEffect(() => {
-    if (!open) {
-    }
-  }, [open])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
