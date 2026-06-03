@@ -67,13 +67,17 @@ export function VariantForm({
         <form.AppField
           name="sku"
           children={field => (
-            <field.TextField label={t('entity.layout.product_variants.columns.sku')} />
+            <field.TextField
+              label={t('entity.layout.product_variants.columns.sku')}
+            />
           )}
         />
         <form.AppField
           name="variant_name"
           children={field => (
-            <field.TextField label={t('entity.layout.product_variants.columns.variant_name')} />
+            <field.TextField
+              label={t('entity.layout.product_variants.columns.variant_name')}
+            />
           )}
         />
       </div>
@@ -81,7 +85,9 @@ export function VariantForm({
         <form.AppField
           name="uom_id"
           children={field => (
-            <field.TextField label={t('entity.layout.product_variants.columns.uom')} />
+            <field.TextField
+              label={t('entity.layout.product_variants.columns.uom')}
+            />
           )}
         />
       </div>

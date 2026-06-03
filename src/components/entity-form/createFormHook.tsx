@@ -68,7 +68,9 @@ function NumberFieldComponent({
         value={field.state.value !== undefined ? field.state.value : ''}
         onChange={e => {
           const val = e.target.value
-          field.handleChange(val === '' ? ('' as unknown as number) : parseFloat(val))
+          field.handleChange(
+            val === '' ? ('' as unknown as number) : parseFloat(val)
+          )
         }}
         onBlur={field.handleBlur}
         placeholder={placeholder}

@@ -32,12 +32,18 @@ export function ProductCreateModal({
           <DialogTitle>{t('entity.create.product.title')}</DialogTitle>
         </DialogHeader>
         <ProductForm
-          onSubmit={async (values) => {
+          onSubmit={async values => {
             setIsSubmitting(true)
             try {
-              const result = await commands.create(values.company, values.name, values.category)
+              const result = await commands.create(
+                values.company,
+                values.name,
+                values.category
+              )
               if (result.status === 'ok') {
-                queryClient.invalidateQueries({ queryKey: ['entity', 'products'] })
+                queryClient.invalidateQueries({
+                  queryKey: ['entity', 'products'],
+                })
                 onOpenChange(false)
               } else {
                 toast.error(result.error)

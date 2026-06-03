@@ -181,7 +181,11 @@ export function ProductDetailModal({
     setIsDirty(true)
   }, [editForm])
 
-  async function handleSave(values: { company: string; name: string; category: string }) {
+  async function handleSave(values: {
+    company: string
+    name: string
+    category: string
+  }) {
     if (!entity) return
     setIsSaving(true)
     const saveResult = await commands.update(
@@ -240,10 +244,13 @@ export function ProductDetailModal({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={(open) => {
-        if (!open && isDirty) return
-        onOpenChange(open)
-      }}>
+      <Dialog
+        open={open}
+        onOpenChange={open => {
+          if (!open && isDirty) return
+          onOpenChange(open)
+        }}
+      >
         <DialogContent className="min-w-xl max-w-fit">
           <div className="flex flex-col h-full">
             {/* Tab Bar */}

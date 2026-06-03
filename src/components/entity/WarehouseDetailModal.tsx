@@ -124,7 +124,11 @@ export function WarehouseDetailModal({
   async function handleSave(values: { name: string; location: string }) {
     if (!entity) return
     setIsSaving(true)
-    const result = await commands.warehousesUpdate(entity.id, values.name, values.location)
+    const result = await commands.warehousesUpdate(
+      entity.id,
+      values.name,
+      values.location
+    )
     setIsSaving(false)
     if (result.status === 'ok') {
       setEntity(result.data)
@@ -167,10 +171,13 @@ export function WarehouseDetailModal({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={(open) => {
-        if (!open && isDirty) return
-        onOpenChange(open)
-      }}>
+      <Dialog
+        open={open}
+        onOpenChange={open => {
+          if (!open && isDirty) return
+          onOpenChange(open)
+        }}
+      >
         <DialogContent className="max-w-2xl">
           <div className="flex flex-col h-full">
             {/* Tab Bar */}

@@ -370,7 +370,12 @@ function InlineTransferSection({
     if (!toWarehouseId || !quantity) return
     setIsSubmitting(true)
     try {
-      await commands.createTransfer(variantId, warehouseId, toWarehouseId, parseInt(quantity))
+      await commands.createTransfer(
+        variantId,
+        warehouseId,
+        toWarehouseId,
+        parseInt(quantity)
+      )
       onClose()
     } catch (err) {
       console.error(err)

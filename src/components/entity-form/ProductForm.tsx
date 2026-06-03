@@ -46,15 +46,25 @@ export function ProductForm({
       <div className="grid grid-cols-2 gap-4">
         <form.AppField
           name="company"
-          children={field => <field.TextField label={t('entity.layout.products.columns.company')} />}
+          children={field => (
+            <field.TextField
+              label={t('entity.layout.products.columns.company')}
+            />
+          )}
         />
         <form.AppField
           name="name"
-          children={field => <field.TextField label={t('entity.layout.products.columns.name')} />}
+          children={field => (
+            <field.TextField label={t('entity.layout.products.columns.name')} />
+          )}
         />
         <form.AppField
           name="category"
-          children={field => <field.TextField label={t('entity.layout.products.columns.category')} />}
+          children={field => (
+            <field.TextField
+              label={t('entity.layout.products.columns.category')}
+            />
+          )}
         />
       </div>
       <div className="flex justify-end gap-2 pt-4">

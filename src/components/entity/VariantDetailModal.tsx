@@ -255,10 +255,13 @@ export function VariantDetailModal({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={(open) => {
-        if (!open && isDirty) return
-        onOpenChange(open)
-      }}>
+      <Dialog
+        open={open}
+        onOpenChange={open => {
+          if (!open && isDirty) return
+          onOpenChange(open)
+        }}
+      >
         <DialogContent className="max-w-2xl">
           <div className="flex flex-col h-full">
             {/* Tab Bar */}
@@ -308,18 +311,24 @@ export function VariantDetailModal({
                   ) : entity ? (
                     <div className="space-y-4">
                       <VariantForm
-                          onSubmit={handleSave}
-                          isLoading={isSaving}
-                          initialValues={{
-                            sku: editForm.sku,
-                            variant_name: editForm.variant_name,
-                            uom_id: editForm.uom_id,
-                            retail_price: editForm.retail_price ? parseFloat(editForm.retail_price) : undefined,
-                            wholesale_price: editForm.wholesale_price ? parseFloat(editForm.wholesale_price) : undefined,
-                            distribution_price: editForm.distribution_price ? parseFloat(editForm.distribution_price) : undefined,
-                          }}
-                          schema={updateVariantSchema}
-                        />
+                        onSubmit={handleSave}
+                        isLoading={isSaving}
+                        initialValues={{
+                          sku: editForm.sku,
+                          variant_name: editForm.variant_name,
+                          uom_id: editForm.uom_id,
+                          retail_price: editForm.retail_price
+                            ? parseFloat(editForm.retail_price)
+                            : undefined,
+                          wholesale_price: editForm.wholesale_price
+                            ? parseFloat(editForm.wholesale_price)
+                            : undefined,
+                          distribution_price: editForm.distribution_price
+                            ? parseFloat(editForm.distribution_price)
+                            : undefined,
+                        }}
+                        schema={updateVariantSchema}
+                      />
                     </div>
                   ) : loadError ? (
                     <p className="text-body-md text-error">{loadError}</p>

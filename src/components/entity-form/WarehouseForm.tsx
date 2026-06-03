@@ -42,11 +42,15 @@ export function WarehouseForm({
       <div className="grid grid-cols-2 gap-4">
         <form.AppField
           name="name"
-          children={field => <field.TextField label={t('entity.warehouse.name')} />}
+          children={field => (
+            <field.TextField label={t('entity.warehouse.name')} />
+          )}
         />
         <form.AppField
           name="location"
-          children={field => <field.TextField label={t('entity.warehouse.location')} />}
+          children={field => (
+            <field.TextField label={t('entity.warehouse.location')} />
+          )}
         />
       </div>
       <div className="flex justify-end gap-2 pt-4">

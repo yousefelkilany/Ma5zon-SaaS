@@ -51,8 +51,10 @@ export function StockMovementForm({
     },
   })
 
-  const showFromWarehouse = movementType === 'transfer' || movementType === 'shipped'
-  const showToWarehouse = movementType === 'transfer' || movementType === 'received'
+  const showFromWarehouse =
+    movementType === 'transfer' || movementType === 'shipped'
+  const showToWarehouse =
+    movementType === 'transfer' || movementType === 'received'
 
   return (
     <form

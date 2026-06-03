@@ -32,12 +32,17 @@ export function WarehouseCreateModal({
           <DialogTitle>{t('entity.create.warehouse.title')}</DialogTitle>
         </DialogHeader>
         <WarehouseForm
-          onSubmit={async (values) => {
+          onSubmit={async values => {
             setIsSubmitting(true)
             try {
-              const result = await commands.warehousesCreate(values.name, values.location)
+              const result = await commands.warehousesCreate(
+                values.name,
+                values.location
+              )
               if (result.status === 'ok') {
-                queryClient.invalidateQueries({ queryKey: ['entity', 'warehouses'] })
+                queryClient.invalidateQueries({
+                  queryKey: ['entity', 'warehouses'],
+                })
                 onOpenChange(false)
               } else {
                 toast.error(result.error)
