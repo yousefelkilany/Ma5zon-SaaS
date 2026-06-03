@@ -1,9 +1,10 @@
 import { z } from 'zod'
+import { i18n } from '@/i18n/config'
 
-const NONEMPTY_MSG = 'This field is required'
-const NONNEGATIVE_MSG = 'Must be 0 or greater'
-const BIG_NUMBER_MSG = 'Too large'
-const MAX_CHARS_MSG = (max: number) => `Must be ${max} characters or less`
+const NONEMPTY_MSG = () => i18n.t('validation.fieldRequired')
+const NONNEGATIVE_MSG = () => i18n.t('validation.mustBeZeroOrGreater')
+const BIG_NUMBER_MSG = () => i18n.t('validation.tooLarge')
+const MAX_CHARS_MSG = (max: number) => () => i18n.t('validation.maxChars', { max })
 
 const FILTER_OPERATORS = [
   'eq',
@@ -132,9 +133,9 @@ export const recoveryErrorSchema = z.discriminatedUnion('type', [
 ])
 
 export const createProductSchema = z.object({
-  company: z.string().min(1, NONEMPTY_MSG).max(100, MAX_CHARS_MSG(100)),
-  name: z.string().min(1, NONEMPTY_MSG).max(200, MAX_CHARS_MSG(200)),
-  category: z.string().min(1, NONEMPTY_MSG).max(100, MAX_CHARS_MSG(100)),
+  company: z.string().min(1, NONEMPTY_MSG()).max(100, MAX_CHARS_MSG(100)()),
+  name: z.string().min(1, NONEMPTY_MSG()).max(200, MAX_CHARS_MSG(200)()),
+  category: z.string().min(1, NONEMPTY_MSG()).max(100, MAX_CHARS_MSG(100)()),
 })
 
 export const updateProductSchema = createProductSchema.partial()
@@ -142,33 +143,33 @@ export const updateProductSchema = createProductSchema.partial()
 export const createVariantSchema = z.object({
   sku: z
     .string()
-    .min(1, NONEMPTY_MSG)
-    .max(50, MAX_CHARS_MSG(50))
+    .min(1, NONEMPTY_MSG())
+    .max(50, MAX_CHARS_MSG(50)())
     .regex(/^[a-zA-Z0-9-]+$/, 'Must be alphanumeric with dashes only'),
-  variant_name: z.string().min(1, NONEMPTY_MSG).max(200, MAX_CHARS_MSG(200)),
-  uom_id: z.string().max(50, MAX_CHARS_MSG(50)).optional(),
+  variant_name: z.string().min(1, NONEMPTY_MSG()).max(200, MAX_CHARS_MSG(200)()),
+  uom_id: z.string().max(50, MAX_CHARS_MSG(50)()).optional(),
   retail_price: z
     .number()
-    .min(0, NONNEGATIVE_MSG)
-    .max(999999, BIG_NUMBER_MSG)
+    .min(0, NONNEGATIVE_MSG())
+    .max(999999, BIG_NUMBER_MSG())
     .optional(),
   wholesale_price: z
     .number()
-    .min(0, NONNEGATIVE_MSG)
-    .max(999999, BIG_NUMBER_MSG)
+    .min(0, NONNEGATIVE_MSG())
+    .max(999999, BIG_NUMBER_MSG())
     .optional(),
   distribution_price: z
     .number()
-    .min(0, NONNEGATIVE_MSG)
-    .max(999999, BIG_NUMBER_MSG)
+    .min(0, NONNEGATIVE_MSG())
+    .max(999999, BIG_NUMBER_MSG())
     .optional(),
 })
 
 export const updateVariantSchema = createVariantSchema.partial()
 
 export const createWarehouseSchema = z.object({
-  name: z.string().min(1, NONEMPTY_MSG).max(100, MAX_CHARS_MSG(100)),
-  location: z.string().min(1, NONEMPTY_MSG).max(200, MAX_CHARS_MSG(200)),
+  name: z.string().min(1, NONEMPTY_MSG()).max(100, MAX_CHARS_MSG(100)()),
+  location: z.string().min(1, NONEMPTY_MSG()).max(200, MAX_CHARS_MSG(200)()),
 })
 
 export const updateWarehouseSchema = createWarehouseSchema.partial()
