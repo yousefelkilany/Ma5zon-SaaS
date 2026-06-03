@@ -16,6 +16,7 @@ interface StockMovementFormProps {
   }) => void
   isLoading?: boolean
   warehouses?: { value: string; label: string }[]
+  variantId?: string
 }
 
 const MOVEMENT_TYPES = [
@@ -29,13 +30,14 @@ export function StockMovementForm({
   onSubmit,
   isLoading,
   warehouses = [],
+  variantId,
 }: StockMovementFormProps) {
   const { t } = useTranslation()
   const [movementType, setMovementType] = useState<string>('')
 
   const form = useAppForm({
     defaultValues: {
-      variant_id: '',
+      variant_id: variantId ?? '',
       from_warehouse_id: '',
       to_warehouse_id: '',
       quantity: 0,
@@ -60,7 +62,7 @@ export function StockMovementForm({
       }}
       className="space-y-4"
     >
-      <div className="grid grid-cols-2 gap-4">
+      {!variantId && (
         <form.AppField
           name="variant_id"
           children={field => (
@@ -71,17 +73,18 @@ export function StockMovementForm({
             />
           )}
         />
-        <form.AppField
-          name="movement_type"
-          children={field => (
-            <field.SelectField
-              label={t('entity.stockMovement.movementType')}
-              options={MOVEMENT_TYPES}
-              onChange={val => setMovementType(val)}
-            />
-          )}
-        />
-      </div>
+      )}
+
+      <form.AppField
+        name="movement_type"
+        children={field => (
+          <field.SelectField
+            label={t('entity.stockMovement.movementType')}
+            options={MOVEMENT_TYPES}
+            onChange={val => setMovementType(val)}
+          />
+        )}
+      />
 
       {showFromWarehouse && (
         <form.AppField
