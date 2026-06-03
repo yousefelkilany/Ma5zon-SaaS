@@ -25,7 +25,8 @@ interface VariantFormProps {
     wholesale_price?: number
     distribution_price?: number
   }
-  schema?: typeof createVariantSchema
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  schema?: any
 }
 
 export function VariantForm({

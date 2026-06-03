@@ -13,7 +13,8 @@ interface ProductFormProps {
   }) => void
   isLoading?: boolean
   initialValues?: { company: string; name: string; category: string }
-  schema?: typeof createProductSchema
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  schema?: any
 }
 
 export function ProductForm({

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import { WarehouseForm } from '@/components/entity-form'
+import { updateWarehouseSchema } from '@/lib/validation/schemas'
 
 interface WarehouseDetailModalProps {
   open: boolean
@@ -220,6 +221,7 @@ export function WarehouseDetailModal({
                     <div className="space-y-4">
                       {isEditing ? (
                         <WarehouseForm
+                          schema={updateWarehouseSchema}
                           onSubmit={handleSave}
                           isLoading={isSaving}
                           initialValues={editForm}

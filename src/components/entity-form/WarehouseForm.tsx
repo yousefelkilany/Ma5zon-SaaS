@@ -9,7 +9,8 @@ interface WarehouseFormProps {
   onSubmit: (values: { name: string; location: string }) => void
   isLoading?: boolean
   initialValues?: { name: string; location: string }
-  schema?: typeof createWarehouseSchema
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  schema?: any
 }
 
 export function WarehouseForm({
