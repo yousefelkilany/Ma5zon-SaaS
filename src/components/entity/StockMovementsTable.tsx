@@ -127,8 +127,9 @@ function VariantMovementsView({
   locale,
   isPaginated,
   currentPage,
-  totalPages,
+  totalPages: externalTotalPages,
   onPageChange,
+  pageSize: externalPageSize,
 }: {
   movements: StockMovement[]
   warehouseNames?: Map<string, string>
@@ -138,8 +139,10 @@ function VariantMovementsView({
   currentPage?: number
   totalPages?: number
   onPageChange?: (page: number) => void
+  pageSize?: number
 }) {
   const { t } = useTranslation()
+  const pageSize = externalPageSize ?? 10
 
   const groupedMovements = useMemo(() => {
     const groups = new Map<string, StockMovement[]>()
@@ -150,10 +153,16 @@ function VariantMovementsView({
     return groups
   }, [movements])
 
+  const totalGroups = groupedMovements.size
+  const totalPages = externalTotalPages ?? Math.ceil(totalGroups / pageSize)
+  const startIndex = ((currentPage ?? 1) - 1) * pageSize
+  const endIndex = startIndex + pageSize
+  const paginatedGroups = Array.from(groupedMovements.entries()).slice(startIndex, endIndex)
+
   return (
     <div className="flex flex-col">
       <div className="flex-1 overflow-auto">
-        {Array.from(groupedMovements.entries()).map(([variantId, variantMovements]) => (
+        {paginatedGroups.map(([variantId, variantMovements]) => (
           <div key={variantId} className="border-b border-outline-variant">
             <div className="bg-surface-bright px-4 py-2">
               <span className="text-body-sm font-medium text-on-surface">
