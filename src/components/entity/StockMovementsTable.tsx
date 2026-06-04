@@ -5,6 +5,17 @@ import { Skeleton } from '@/components/ui/skeleton'
 import i18n from '@/i18n/config'
 import { cn } from '@/lib/utils'
 
+function groupMovementsByVariantId(
+  movements: StockMovement[]
+): Map<string, StockMovement[]> {
+  const groups = new Map<string, StockMovement[]>()
+  for (const movement of movements) {
+    const existing = groups.get(movement.variant_id) ?? []
+    groups.set(movement.variant_id, [...existing, movement])
+  }
+  return groups
+}
+
 interface StockMovementsTableProps {
   movements: StockMovement[]
   isLoading: boolean
@@ -142,21 +153,16 @@ function VariantMovementsView({
   pageSize?: number
 }) {
   const { t } = useTranslation()
-  const pageSize = externalPageSize ?? 10
+  const effectivePageSize = externalPageSize ?? 10
 
   const groupedMovements = useMemo(() => {
-    const groups = new Map<string, StockMovement[]>()
-    for (const movement of movements) {
-      const existing = groups.get(movement.variant_id) ?? []
-      groups.set(movement.variant_id, [...existing, movement])
-    }
-    return groups
+    return groupMovementsByVariantId(movements)
   }, [movements])
 
   const totalGroups = groupedMovements.size
-  const totalPages = externalTotalPages ?? Math.ceil(totalGroups / pageSize)
-  const startIndex = ((currentPage ?? 1) - 1) * pageSize
-  const endIndex = startIndex + pageSize
+  const totalPages = externalTotalPages ?? Math.ceil(totalGroups / effectivePageSize)
+  const startIndex = ((currentPage ?? 1) - 1) * effectivePageSize
+  const endIndex = startIndex + effectivePageSize
   const paginatedGroups = Array.from(groupedMovements.entries()).slice(startIndex, endIndex)
 
   return (
@@ -263,12 +269,7 @@ function ProductMovementsView({
   const { t } = useTranslation()
 
   const groupedMovements = useMemo(() => {
-    const groups = new Map<string, StockMovement[]>()
-    for (const movement of movements) {
-      const existing = groups.get(movement.variant_id) ?? []
-      groups.set(movement.variant_id, [...existing, movement])
-    }
-    return groups
+    return groupMovementsByVariantId(movements)
   }, [movements])
 
   return (
