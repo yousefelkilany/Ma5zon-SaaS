@@ -97,8 +97,6 @@ export function VariantDetailModal({
   const [isLoadingMovements, setIsLoadingMovements] = useState(false)
   const [movementsError, setMovementsError] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const pageSize = 10
   const [isDirty, setIsDirty] = useState(false)
 
   const tabs: { id: TabId; label: string }[] = [
@@ -171,8 +169,6 @@ export function VariantDetailModal({
 
     if (result.status === 'ok') {
       setMovements(result.data)
-      const total = Math.ceil(result.data.length / pageSize)
-      setTotalPages(total || 1)
       setCurrentPage(1)
     } else {
       setMovementsError(result.error ?? 'Failed to load movements')
@@ -197,10 +193,10 @@ export function VariantDetailModal({
   ])
 
   useEffect(() => {
-    if (activeTab === 'audits' && movements.length === 0 && !isLoadingMovements && !movementsError) {
+    if (activeTab === 'audits' && !isLoadingMovements && !movementsError) {
       loadMovements()
     }
-  }, [activeTab, movements.length, isLoadingMovements, movementsError, loadMovements])
+  }, [activeTab, entityId, isLoadingMovements, movementsError, loadMovements])
 
   useEffect(() => {
     if (!open) {
@@ -223,7 +219,6 @@ export function VariantDetailModal({
       setMovements([])
       setMovementsError('')
       setCurrentPage(1)
-      setTotalPages(1)
       setIsDirty(false)
       setIsEditing(false)
     }
@@ -481,7 +476,6 @@ export function VariantDetailModal({
                   emptyMessage={t('entity.stockMovement.noMovementsVariant')}
                   isPaginated
                   currentPage={currentPage}
-                  totalPages={totalPages}
                   onPageChange={setCurrentPage}
                   onRetry={loadMovements}
                 />
