@@ -9,6 +9,8 @@ import { ConfirmationDialog } from './ConfirmationDialog'
 import { WarehouseForm } from '@/components/entity-form'
 import { updateWarehouseSchema } from '@/lib/validation/schemas'
 import { EntityFieldGrid } from './EntityFieldGrid'
+import { StockMovementsTable } from './StockMovementsTable'
+import type { StockMovement } from '@/lib/bindings'
 
 interface WarehouseDetailModalProps {
   open: boolean
@@ -56,6 +58,11 @@ export function WarehouseDetailModal({
   const [activeTab, setActiveTab] = useState<TabId>('details')
   const [loadError, setLoadError] = useState('')
   const [isDirty, setIsDirty] = useState(false)
+  const [movements, setMovements] = useState<StockMovement[]>([])
+  const [isLoadingMovements, setIsLoadingMovements] = useState(false)
+  const [movementsError, setMovementsError] = useState('')
+  const [productNames, setProductNames] = useState<Map<string, string>>(new Map())
+  const [variantNames, setVariantNames] = useState<Map<string, string>>(new Map())
 
   useEffect(() => {
     if (!entity) return
@@ -101,6 +108,42 @@ export function WarehouseDetailModal({
     }
   }, [entityId])
 
+  const loadMovements = useCallback(async () => {
+    if (!entityId) return
+    setIsLoadingMovements(true)
+    setMovementsError('')
+
+    const result = await commands.stockMovementsGetByWarehouse(entityId)
+    setIsLoadingMovements(false)
+
+    if (result.status === 'ok') {
+      setMovements(result.data)
+
+      const uniqueProductIds = [...new Set(result.data.map(m => m.product_id))]
+      const uniqueVariantIds = [...new Set(result.data.map(m => m.variant_id))]
+
+      const productNamesMap = new Map<string, string>()
+      for (const pid of uniqueProductIds) {
+        const productResult = await commands.getById(pid)
+        if (productResult.status === 'ok' && productResult.data) {
+          productNamesMap.set(pid, productResult.data.name)
+        }
+      }
+      setProductNames(productNamesMap)
+
+      const variantNamesMap = new Map<string, string>()
+      for (const vid of uniqueVariantIds) {
+        const variantResult = await commands.variantsGetById(vid)
+        if (variantResult.status === 'ok' && variantResult.data) {
+          variantNamesMap.set(vid, variantResult.data.variant_name)
+        }
+      }
+      setVariantNames(variantNamesMap)
+    } else {
+      setMovementsError(result.error ?? 'Failed to load movements')
+    }
+  }, [entityId])
+
   useEffect(() => {
     if (!open) {
       setEntity(null)
@@ -112,6 +155,10 @@ export function WarehouseDetailModal({
       setActiveTab('details')
       setDeleteError('')
       setSaveError('')
+      setMovements([])
+      setMovementsError('')
+      setProductNames(new Map())
+      setVariantNames(new Map())
     }
   }, [open])
 
@@ -126,6 +173,12 @@ export function WarehouseDetailModal({
       setDeleteError('')
     }
   }, [showDeleteConfirm])
+
+  useEffect(() => {
+    if (activeTab === 'audits' && movements.length === 0 && !isLoadingMovements && !movementsError) {
+      loadMovements()
+    }
+  }, [activeTab, movements.length, isLoadingMovements, movementsError, loadMovements])
 
   async function handleSave(values: { name: string; location: string }) {
     if (!entity) return
@@ -316,23 +369,16 @@ export function WarehouseDetailModal({
               )}
 
               {activeTab === 'audits' && (
-                <div
-                  id="audits-panel"
-                  role="tabpanel"
-                  aria-labelledby="audits-tab"
-                >
-                  <div className="space-y-3">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <Skeleton className="h-8 w-8 rounded-full" />
-                        <div className="flex-1 space-y-1">
-                          <Skeleton className="h-4 w-48" />
-                          <Skeleton className="h-3 w-24" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <StockMovementsTable
+                  movements={movements}
+                  isLoading={isLoadingMovements}
+                  error={movementsError}
+                  variant="warehouse"
+                  productNames={productNames}
+                  variantNames={variantNames}
+                  emptyMessage={t('entity.stockMovement.noMovementsWarehouse')}
+                  onRetry={loadMovements}
+                />
               )}
             </div>
           </div>
