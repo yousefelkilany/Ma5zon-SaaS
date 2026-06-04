@@ -66,8 +66,8 @@ export function WarehouseDetailModal({
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
-    { id: 'insights', label: t('entity.detail.tabs.insights') },
     { id: 'audits', label: t('entity.detail.tabs.audits') },
+    { id: 'insights', label: t('entity.detail.tabs.insights') },
   ]
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -188,7 +188,7 @@ export function WarehouseDetailModal({
           onOpenChange(open)
         }}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent>
           <div className="flex flex-col h-full">
             {/* Tab Bar */}
             <div

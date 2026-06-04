@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import type { StockLevelWithVariant } from '@/lib/types/entity'
@@ -11,6 +11,7 @@ interface StockLevelsTableProps {
   isLoading?: boolean
   view: 'variant' | 'product'
   warehouseNames?: Map<string, string>
+  onTransferSuccess?: () => void
 }
 
 export function StockLevelsTable({
@@ -18,6 +19,7 @@ export function StockLevelsTable({
   isLoading,
   view,
   warehouseNames,
+  onTransferSuccess,
 }: StockLevelsTableProps) {
   const { t } = useTranslation()
   const locale = i18n.language
@@ -53,6 +55,7 @@ export function StockLevelsTable({
         locale={locale}
         transferState={transferState}
         setTransferState={setTransferState}
+        onTransferSuccess={onTransferSuccess}
       />
     )
   }
@@ -64,6 +67,7 @@ export function StockLevelsTable({
       locale={locale}
       transferState={transferState}
       setTransferState={setTransferState}
+      onTransferSuccess={onTransferSuccess}
     />
   )
 }
@@ -74,6 +78,7 @@ function VariantStockView({
   locale,
   transferState,
   setTransferState,
+  onTransferSuccess,
 }: {
   stockLevels: StockLevelWithVariant[]
   warehouseNames?: Map<string, string>
@@ -90,6 +95,7 @@ function VariantStockView({
       fromWarehouseId: string
     } | null>
   >
+  onTransferSuccess?: () => void
 }) {
   const { t } = useTranslation()
 
@@ -107,11 +113,8 @@ function VariantStockView({
       </thead>
       <tbody>
         {stockLevels.map((level, idx) => (
-          <>
-            <tr
-              key={`${level.variant_id}-${level.warehouse_id}-${idx}`}
-              className="border-t border-outline-variant/30"
-            >
+          <Fragment key={`${level.variant_id}-${level.warehouse_id}-${idx}`}>
+            <tr className="border-t border-outline-variant/30">
               <td className="px-3 py-2 text-on-surface">
                 {warehouseNames?.get(level.warehouse_id) ?? level.warehouse_id}
               </td>
@@ -140,9 +143,10 @@ function VariantStockView({
                 warehouseId={level.warehouse_id}
                 warehouseNames={warehouseNames}
                 onClose={() => setTransferState(null)}
+                onSuccess={onTransferSuccess}
               />
             )}
-          </>
+          </Fragment>
         ))}
       </tbody>
     </table>
@@ -155,6 +159,7 @@ function ProductStockPivot({
   locale,
   transferState,
   setTransferState,
+  onTransferSuccess,
 }: {
   stockLevels: StockLevelWithVariant[]
   warehouseNames?: Map<string, string>
@@ -171,6 +176,7 @@ function ProductStockPivot({
       fromWarehouseId: string
     } | null>
   >
+  onTransferSuccess?: () => void
 }) {
   const { t } = useTranslation()
 
@@ -261,11 +267,8 @@ function ProductStockPivot({
       </thead>
       <tbody>
         {rows.map(row => (
-          <>
-            <tr
-              key={row.variantId}
-              className="border-t border-outline-variant/30"
-            >
+          <Fragment key={row.variantId}>
+            <tr className="border-t border-outline-variant/30">
               <td className="px-3 py-2 text-on-surface-variant">{row.sku}</td>
               <td className="px-3 py-2 text-on-surface">{row.variantName}</td>
               {columns.map(col => (
@@ -304,10 +307,11 @@ function ProductStockPivot({
                   warehouseId={col}
                   warehouseNames={warehouseNames}
                   onClose={() => setTransferState(null)}
+                  onSuccess={onTransferSuccess}
                 />
               ) : null
             )}
-          </>
+          </Fragment>
         ))}
       </tbody>
       <tfoot>
@@ -339,11 +343,13 @@ function InlineTransferSection({
   warehouseId,
   warehouseNames,
   onClose,
+  onSuccess,
 }: {
   variantId: string
   warehouseId: string
   warehouseNames?: Map<string, string>
   onClose: () => void
+  onSuccess?: () => void
 }) {
   const { t } = useTranslation()
   const [toWarehouseId, setToWarehouseId] = useState('')
@@ -377,6 +383,7 @@ function InlineTransferSection({
         parseInt(quantity)
       )
       onClose()
+      onSuccess?.()
     } catch (err) {
       console.error(err)
     } finally {

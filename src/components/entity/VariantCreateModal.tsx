@@ -29,7 +29,7 @@ export function VariantCreateModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="min-w-xl max-w-fit">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('entity.create.variant.title')}</DialogTitle>
         </DialogHeader>

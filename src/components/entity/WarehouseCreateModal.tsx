@@ -27,7 +27,7 @@ export function WarehouseCreateModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('entity.create.warehouse.title')}</DialogTitle>
         </DialogHeader>

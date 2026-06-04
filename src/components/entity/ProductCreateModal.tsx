@@ -27,7 +27,7 @@ export function ProductCreateModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('entity.create.product.title')}</DialogTitle>
         </DialogHeader>

@@ -97,8 +97,8 @@ export function VariantDetailModal({
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
     { id: 'stock', label: t('entity.detail.tabs.stock') },
-    { id: 'insights', label: t('entity.detail.tabs.insights') },
     { id: 'audits', label: t('entity.detail.tabs.audits') },
+    { id: 'insights', label: t('entity.detail.tabs.insights') },
   ]
 
   const loadEntity = useCallback(async () => {
@@ -283,7 +283,7 @@ export function VariantDetailModal({
           onOpenChange(open)
         }}
       >
-        <DialogContent className="!max-w-5xl max-w-[90vw]">
+        <DialogContent>
           <div className="flex flex-col h-full">
             {/* Tab Bar */}
             <div
@@ -411,6 +411,7 @@ export function VariantDetailModal({
                     isLoading={isLoadingStock}
                     view="variant"
                     warehouseNames={warehouseNames}
+                    onTransferSuccess={loadStockLevels}
                   />
                 </div>
               )}
