@@ -377,6 +377,8 @@
   "entity.stockMovement.selectVariant": "Select Variant",
   "entity.stockMovement.toWarehouse": "To Warehouse",
   "entity.stockMovement.variant": "Variant",
+  "entity.stockMovement.noMovements": "No stock movements",
+  "entity.stock.date": "Date",
   "entity.layout.product_variants.none": "No variants",
   "entity.stock.noLevels": "No stock levels found",
   "entity.stock.quantity": "Quantity",
