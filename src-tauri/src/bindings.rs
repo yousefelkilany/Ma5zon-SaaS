@@ -53,6 +53,7 @@ pub fn generate_bindings() -> Builder<tauri::Wry> {
         stocks::stock_levels_get_by_warehouse_with_names,
         stocks::stock_movements_get_all,
         stocks::stock_movements_get_by_variant,
+        stocks::stock_movements_get_by_warehouse,
         stock_movements::create_transfer,
         stock_movements::create_purchase,
         stock_movements::create_sale,
