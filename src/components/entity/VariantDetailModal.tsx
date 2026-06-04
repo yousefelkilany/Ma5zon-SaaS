@@ -197,8 +197,10 @@ export function VariantDetailModal({
   }, [entity])
 
   useEffect(() => {
-    setIsDirty(true)
-  }, [editForm])
+    if (entity) {
+      setIsDirty(true)
+    }
+  }, [editForm, entity])
 
   async function handleSave(values: {
     sku: string

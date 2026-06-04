@@ -56,8 +56,10 @@ export function WarehouseDetailModal({
   }, [entity])
 
   useEffect(() => {
-    setIsDirty(true)
-  }, [editForm])
+    if (entity) {
+      setIsDirty(true)
+    }
+  }, [editForm, entity])
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
