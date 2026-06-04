@@ -407,33 +407,41 @@ async stockMovementsGetByVariant(variantId: string) : Promise<Result<StockMoveme
     else return { status: "error", error: e  as any };
 }
 },
-async createTransfer(variantId: string, fromWarehouse: string, toWarehouse: string, quantity: number) : Promise<Result<null, string>> {
+async stockMovementsGetByWarehouse(warehouseId: string) : Promise<Result<StockMovement[], string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("create_transfer", { variantId, fromWarehouse, toWarehouse, quantity }) };
+    return { status: "ok", data: await TAURI_INVOKE("stock_movements_get_by_warehouse", { warehouseId }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
 },
-async createPurchase(variantId: string, toWarehouse: string, quantity: number) : Promise<Result<null, string>> {
+async createTransfer(variantId: string, productId: string, fromWarehouse: string, toWarehouse: string, quantity: number) : Promise<Result<null, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("create_purchase", { variantId, toWarehouse, quantity }) };
+    return { status: "ok", data: await TAURI_INVOKE("create_transfer", { variantId, productId, fromWarehouse, toWarehouse, quantity }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
 },
-async createSale(variantId: string, fromWarehouse: string, quantity: number) : Promise<Result<null, string>> {
+async createPurchase(variantId: string, productId: string, toWarehouse: string, quantity: number) : Promise<Result<null, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("create_sale", { variantId, fromWarehouse, quantity }) };
+    return { status: "ok", data: await TAURI_INVOKE("create_purchase", { variantId, productId, toWarehouse, quantity }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
 },
-async createAdjustment(variantId: string, warehouseId: string, quantity: number) : Promise<Result<null, string>> {
+async createSale(variantId: string, productId: string, fromWarehouse: string, quantity: number) : Promise<Result<null, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("create_adjustment", { variantId, warehouseId, quantity }) };
+    return { status: "ok", data: await TAURI_INVOKE("create_sale", { variantId, productId, fromWarehouse, quantity }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async createAdjustment(variantId: string, productId: string, warehouseId: string, quantity: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("create_adjustment", { variantId, productId, warehouseId, quantity }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -509,7 +517,7 @@ export type RecoveryError =
 export type SortState = { column_id: string; direction: string }
 export type StockLevel = { variant_id: string; warehouse_id: string; quantity: number }
 export type StockLevelWithVariant = { variant_id: string; variant_name: string; sku: string; warehouse_id: string; quantity: number }
-export type StockMovement = { id: string; variant_id: string; from_warehouse_id: string | null; to_warehouse_id: string | null; quantity: number; movement_type: string; created_at: string }
+export type StockMovement = { id: string; variant_id: string; product_id: string; from_warehouse_id: string | null; to_warehouse_id: string | null; quantity: number; movement_type: string; created_at: string }
 export type TableInfo = { table_name: string; columns: ColumnInfo[] }
 export type UpdateVariant = { sku: string | null; variant_name: string | null; uom_id: string | null; retail_price: number | null; wholesale_price: number | null; distribution_price: number | null }
 /**
