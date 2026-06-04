@@ -11,8 +11,8 @@ pub fn fetch_products_by_warehouse_with_stock(
     offset: Option<i64>,
 ) -> DbErr<(Vec<ProductWithStock>, i32)> {
     let total: i32 = conn.query_row(
-        "SELECT COUNT(DISTINCT p.id) FROM products p
-         INNER JOIN product_variants v ON p.id = v.product_id
+        "SELECT COUNT(DISTINCT p.id) FROM active_products p
+         INNER JOIN active_product_variants v ON p.id = v.product_id
          INNER JOIN stock_levels sl ON v.id = sl.variant_id
          WHERE sl.warehouse_id = ?",
         [warehouse_id],
@@ -21,8 +21,8 @@ pub fn fetch_products_by_warehouse_with_stock(
 
     let sql =
         "SELECT p.id, p.company, p.name, COALESCE(SUM(sl.quantity), 0) as quantity, p.category
-             FROM products p
-             INNER JOIN product_variants v ON p.id = v.product_id
+             FROM active_products p
+             INNER JOIN active_product_variants v ON p.id = v.product_id
              INNER JOIN stock_levels sl ON v.id = sl.variant_id
              WHERE sl.warehouse_id = ?
              GROUP BY p.id";
@@ -117,7 +117,7 @@ pub fn get_stock_levels_by_product() -> &'static str {
         v.sku,
         COALESCE(s.warehouse_id, 0) AS warehouse_id,
         CAST(COALESCE(s.quantity, 0) AS INTEGER) AS quantity
-     FROM product_variants v
+     FROM active_product_variants v
      LEFT JOIN stock_levels s ON v.id = s.variant_id
      WHERE v.product_id = ?1
      ORDER BY v.variant_name"
@@ -130,7 +130,7 @@ pub fn get_levels_by_warehouse_with_names() -> &'static str {
         v.sku,
         COALESCE(s.warehouse_id, 0) AS warehouse_id,
         CAST(COALESCE(s.quantity, 0) AS INTEGER) AS quantity
-     FROM product_variants v
+     FROM active_product_variants v
      JOIN products p ON v.product_id = p.id
      LEFT JOIN stock_levels s ON v.id = s.variant_id AND s.warehouse_id = ?1
      ORDER BY v.variant_name"
@@ -139,7 +139,7 @@ pub fn get_levels_by_warehouse_with_names() -> &'static str {
 pub fn products_get_by_warehouse_with_stock() -> &'static str {
     "SELECT DISTINCT p.id, p.name \
      FROM products p \
-     JOIN product_variants v ON p.id = v.product_id \
+     JOIN active_product_variants v ON p.id = v.product_id \
      JOIN stock_levels s ON v.id = s.variant_id \
      WHERE s.warehouse_id = ?1 AND s.quantity > 0 \
      ORDER BY p.name"
@@ -152,7 +152,7 @@ pub fn variants_get_by_product_and_warehouse() -> &'static str {
         v.variant_name, \
         v.sku, \
         CAST(COALESCE(s.quantity, 0) AS INTEGER) AS quantity \
-     FROM product_variants v \
+     FROM active_product_variants v \
      LEFT JOIN stock_levels s ON v.id = s.variant_id AND s.warehouse_id = ?2 \
      WHERE v.product_id = ?1 \
      ORDER BY v.variant_name"

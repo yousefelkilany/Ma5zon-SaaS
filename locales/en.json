@@ -366,6 +366,18 @@
   "entity.create.button": "Create",
   "entity.create.error.required": "All required fields must be filled",
   "entity.create.error.failed": "Failed to create",
+  "entity.update.button": "Update",
+  "entity.stock.confirm": "Confirm",
+  "entity.stock.selectWarehouse": "Select Warehouse",
+  "entity.stock.transfer": "Transfer",
+  "entity.stock.transferFrom": "Transfer From",
+  "entity.stockMovement.fromWarehouse": "From Warehouse",
+  "entity.stockMovement.movementType": "Movement Type",
+  "entity.stockMovement.quantity": "Quantity",
+  "entity.stockMovement.selectVariant": "Select Variant",
+  "entity.stockMovement.toWarehouse": "To Warehouse",
+  "entity.stockMovement.variant": "Variant",
+  "entity.layout.product_variants.none": "No variants",
   "entity.stock.noLevels": "No stock levels found",
   "entity.stock.quantity": "Quantity",
   "entity.stock.total": "Total",
@@ -381,11 +393,9 @@
   "entity.workspace.print.cancelButton": "Cancel",
   "entity.workspace.export.csv": "CSV",
   "entity.workspace.export.excel": "Excel",
-  "validation": {
-    "fieldRequired": "This field is required",
-    "mustBeZeroOrGreater": "Must be 0 or greater",
-    "tooLarge": "Too large",
-    "maxChars": "Must be {max} characters or less",
-    "mustBeAlphanumeric": "Must be alphanumeric with dashes only"
-  }
+  "validation.fieldRequired": "This field is required",
+  "validation.mustBeZeroOrGreater": "Must be 0 or greater",
+  "validation.tooLarge": "Too large",
+  "validation.maxChars": "Must be {max} characters or less",
+  "validation.mustBeAlphanumeric": "Must be alphanumeric with dashes only"
 }

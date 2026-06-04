@@ -10,6 +10,7 @@ import type { StockLevelWithVariant } from '@/lib/types/entity'
 import { StockLevelsTable } from './StockLevelsTable'
 import { ProductForm } from '@/components/entity-form'
 import { updateProductSchema } from '@/lib/validation/schemas'
+import { EntityFieldGrid } from './EntityFieldGrid'
 
 interface ProductDetailModalProps {
   open: boolean
@@ -31,18 +32,16 @@ interface Product {
 
 type TabId = 'details' | 'stock' | 'insights' | 'audits'
 
-interface FieldConfig {
-  key: keyof Product
-  label: string
-  type: 'text' | 'date'
-}
-
-const PRODUCT_FIELDS: FieldConfig[] = [
-  { key: 'company', label: 'entity.product.company', type: 'text' },
-  { key: 'name', label: 'entity.product.name', type: 'text' },
-  { key: 'category', label: 'entity.product.category', type: 'text' },
-  { key: 'created_at', label: 'entity.common.createdAt', type: 'date' },
-  { key: 'updated_at', label: 'entity.common.updatedAt', type: 'date' },
+const PRODUCT_ROWS = [
+  [
+    { key: 'company', label: 'entity.product.company', type: 'text' as const },
+    { key: 'category', label: 'entity.product.category', type: 'text' as const },
+  ],
+  [{ key: 'name', label: 'entity.product.name', type: 'text' as const }],
+  [
+    { key: 'updated_at', label: 'entity.common.updatedAt', type: 'date' as const },
+    { key: 'created_at', label: 'entity.common.createdAt', type: 'date' as const },
+  ],
 ]
 
 export function ProductDetailModal({
@@ -262,7 +261,7 @@ export function ProductDetailModal({
           onOpenChange(open)
         }}
       >
-        <DialogContent className="min-w-xl max-w-fit">
+        <DialogContent className="!max-w-5xl max-w-[90vw]">
           <div className="flex flex-col h-full">
             {/* Tab Bar */}
             <div
@@ -316,26 +315,10 @@ export function ProductDetailModal({
                           onSubmit={handleSave}
                           isLoading={isSaving}
                           initialValues={editForm}
+                          submitText={t('entity.update.button')}
                         />
                       ) : (
-                        <div className="grid grid-cols-2 gap-4">
-                          {PRODUCT_FIELDS.map(field => (
-                            <div key={field.key} className="space-y-1">
-                              <label className="text-label-caps text-on-surface-variant">
-                                {t(field.label)}
-                              </label>
-                              <p className="text-body-md text-on-surface">
-                                {field.type === 'date'
-                                  ? entity[field.key]
-                                    ? new Date(
-                                        entity[field.key] as string
-                                      ).toLocaleString()
-                                    : '—'
-                                  : (entity[field.key] ?? '—')}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
+                        <EntityFieldGrid rows={PRODUCT_ROWS} entity={entity} />
                       )}
 
                       {/* Footer Actions */}

@@ -13,6 +13,7 @@ interface ProductFormProps {
   }) => void
   isLoading?: boolean
   initialValues?: { company: string; name: string; category: string }
+  submitText?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema?: any
 }
@@ -22,6 +23,7 @@ export function ProductForm({
   isLoading,
   initialValues,
   schema = createProductSchema,
+  submitText,
 }: ProductFormProps) {
   const { t } = useTranslation()
 
@@ -70,7 +72,7 @@ export function ProductForm({
       <div className="flex justify-end gap-2 pt-4">
         <Button type="submit" disabled={isLoading}>
           {isLoading ? <Spinner /> : null}
-          {t('entity.create.button')}
+          {submitText ?? t('entity.create.button')}
         </Button>
       </div>
     </form>

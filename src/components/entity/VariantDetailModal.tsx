@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { QueryClient } from '@tanstack/react-query'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
 import type { StockLevelWithVariant } from '@/lib/types/entity'
 import type { StockLevel } from '@/lib/bindings'
@@ -10,6 +11,7 @@ import { ConfirmationDialog } from './ConfirmationDialog'
 import { StockLevelsTable } from './StockLevelsTable'
 import { updateVariantSchema } from '@/lib/validation/schemas'
 import { VariantForm } from '@/components/entity-form'
+import { EntityFieldGrid } from './EntityFieldGrid'
 
 interface VariantDetailModalProps {
   open: boolean
@@ -45,14 +47,18 @@ interface EditForm {
 
 type TabId = 'details' | 'stock' | 'insights' | 'audits'
 
-interface EditForm {
-  sku: string
-  variant_name: string
-  uom_id: string
-  retail_price: string
-  wholesale_price: string
-  distribution_price: string
-}
+const VARIANT_ROWS = [
+  [
+    { key: 'sku', label: 'entity.layout.product_variants.columns.sku', type: 'text' as const },
+    { key: 'uom_id', label: 'entity.layout.product_variants.columns.uom', type: 'uom' as const },
+  ],
+  [{ key: 'variant_name', label: 'entity.layout.product_variants.columns.variant_name', type: 'text' as const }],
+  [
+    { key: 'retail_price', label: 'entity.layout.product_variants.columns.retail', type: 'currency' as const },
+    { key: 'wholesale_price', label: 'entity.layout.product_variants.columns.wholesale', type: 'currency' as const },
+    { key: 'distribution_price', label: 'entity.layout.product_variants.columns.distribution', type: 'currency' as const },
+  ],
+]
 
 export function VariantDetailModal({
   open,
@@ -75,6 +81,7 @@ export function VariantDetailModal({
   })
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteError, setDeleteError] = useState('')
   const [loadError, setLoadError] = useState('')
@@ -183,6 +190,7 @@ export function VariantDetailModal({
       setStockLoadError('')
       setWarehouseNames(new Map())
       setIsDirty(false)
+      setIsEditing(false)
     }
   }, [open])
 
@@ -235,6 +243,7 @@ export function VariantDetailModal({
       })
       queryClient.invalidateQueries({ queryKey: ['entity', 'variants'] })
       onSaved?.(result.data)
+      setIsEditing(false)
     }
   }
 
@@ -274,7 +283,7 @@ export function VariantDetailModal({
           onOpenChange(open)
         }}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="!max-w-5xl max-w-[90vw]">
           <div className="flex flex-col h-full">
             {/* Tab Bar */}
             <div
@@ -322,25 +331,64 @@ export function VariantDetailModal({
                     </div>
                   ) : entity ? (
                     <div className="space-y-4">
-                      <VariantForm
-                        onSubmit={handleSave}
-                        isLoading={isSaving}
-                        initialValues={{
-                          sku: editForm.sku,
-                          variant_name: editForm.variant_name,
-                          uom_id: editForm.uom_id,
-                          retail_price: editForm.retail_price
-                            ? parseFloat(editForm.retail_price)
-                            : undefined,
-                          wholesale_price: editForm.wholesale_price
-                            ? parseFloat(editForm.wholesale_price)
-                            : undefined,
-                          distribution_price: editForm.distribution_price
-                            ? parseFloat(editForm.distribution_price)
-                            : undefined,
-                        }}
-                        schema={updateVariantSchema}
-                      />
+                      {isEditing ? (
+                        <VariantForm
+                          onSubmit={handleSave}
+                          isLoading={isSaving}
+                          initialValues={{
+                            sku: editForm.sku,
+                            variant_name: editForm.variant_name,
+                            uom_id: editForm.uom_id,
+                            retail_price: editForm.retail_price
+                              ? parseFloat(editForm.retail_price)
+                              : undefined,
+                            wholesale_price: editForm.wholesale_price
+                              ? parseFloat(editForm.wholesale_price)
+                              : undefined,
+                            distribution_price: editForm.distribution_price
+                              ? parseFloat(editForm.distribution_price)
+                              : undefined,
+                          }}
+                          schema={updateVariantSchema}
+                          submitText={t('entity.update.button')}
+                        />
+                      ) : (
+                        <EntityFieldGrid rows={VARIANT_ROWS} entity={entity} />
+                      )}
+
+                      {/* Footer Actions */}
+                      <div className="flex items-center justify-between pt-4 border-t border-outline-variant">
+                        <Button
+                          variant="ghost"
+                          className="text-error"
+                          onClick={() => setShowDeleteConfirm(true)}
+                        >
+                          <span className="material-symbols-outlined text-sm">
+                            delete
+                          </span>
+                          {t('entity.detail.delete')}
+                        </Button>
+                        <div className="flex gap-2">
+                          {isEditing ? (
+                            <>
+                              <Button
+                                variant="outline"
+                                onClick={() => setIsEditing(false)}
+                                disabled={isSaving}
+                              >
+                                {t('common.cancel')}
+                              </Button>
+                            </>
+                          ) : (
+                            <Button onClick={() => setIsEditing(true)}>
+                              <span className="material-symbols-outlined text-sm">
+                                edit
+                              </span>
+                              {t('entity.detail.edit')}
+                            </Button>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   ) : loadError ? (
                     <p className="text-body-md text-error">{loadError}</p>

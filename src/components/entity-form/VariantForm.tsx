@@ -4,6 +4,7 @@ import { createVariantSchema } from '@/lib/validation/schemas'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
+import { UOM_OPTIONS } from '@/lib/constants'
 
 interface VariantFormProps {
   productId?: string
@@ -25,6 +26,7 @@ interface VariantFormProps {
     wholesale_price?: number
     distribution_price?: number
   }
+  submitText?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema?: any
 }
@@ -35,6 +37,7 @@ export function VariantForm({
   isLoading,
   initialValues,
   schema = createVariantSchema,
+  submitText,
 }: VariantFormProps) {
   const { t } = useTranslation()
 
@@ -85,8 +88,9 @@ export function VariantForm({
         <form.AppField
           name="uom_id"
           children={field => (
-            <field.TextField
+            <field.SelectField
               label={t('entity.layout.product_variants.columns.uom')}
+              options={UOM_OPTIONS}
             />
           )}
         />
@@ -129,7 +133,7 @@ export function VariantForm({
       <div className="flex justify-end gap-2 pt-4">
         <Button type="submit" disabled={isLoading}>
           {isLoading ? <Spinner /> : null}
-          {t('entity.create.button')}
+          {submitText ?? t('entity.create.button')}
         </Button>
       </div>
     </form>

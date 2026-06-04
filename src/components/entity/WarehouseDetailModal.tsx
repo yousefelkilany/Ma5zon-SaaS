@@ -8,6 +8,7 @@ import { commands } from '@/lib/tauri-bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import { WarehouseForm } from '@/components/entity-form'
 import { updateWarehouseSchema } from '@/lib/validation/schemas'
+import { EntityFieldGrid } from './EntityFieldGrid'
 
 interface WarehouseDetailModalProps {
   open: boolean
@@ -27,6 +28,13 @@ interface Warehouse {
 }
 
 type TabId = 'details' | 'insights' | 'audits'
+
+const WAREHOUSE_ROWS = [
+  [
+    { key: 'name', label: 'entity.warehouse.name', type: 'text' as const },
+    { key: 'location', label: 'entity.warehouse.location', type: 'text' as const },
+  ],
+]
 
 export function WarehouseDetailModal({
   open,
@@ -52,8 +60,7 @@ export function WarehouseDetailModal({
   useEffect(() => {
     if (!entity) return
     const isActuallyDirty =
-      editForm.name !== entity.name ||
-      editForm.location !== entity.location
+      editForm.name !== entity.name || editForm.location !== entity.location
     setIsDirty(isActuallyDirty)
   }, [editForm, entity])
 
@@ -235,26 +242,10 @@ export function WarehouseDetailModal({
                           onSubmit={handleSave}
                           isLoading={isSaving}
                           initialValues={editForm}
+                          submitText={t('entity.update.button')}
                         />
                       ) : (
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-1">
-                            <label className="text-label-caps text-on-surface-variant">
-                              {t('entity.warehouse.name')}
-                            </label>
-                            <p className="text-body-md text-on-surface">
-                              {entity.name}
-                            </p>
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-label-caps text-on-surface-variant">
-                              {t('entity.warehouse.location')}
-                            </label>
-                            <p className="text-body-md text-on-surface">
-                              {entity.location}
-                            </p>
-                          </div>
-                        </div>
+                        <EntityFieldGrid rows={WAREHOUSE_ROWS} entity={entity} />
                       )}
 
                       {/* Footer Actions */}

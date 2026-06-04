@@ -386,7 +386,7 @@ function InlineTransferSection({
 
   return (
     <tr className="bg-surface-bright/50">
-      <td colSpan={3} className="px-3 py-3">
+      <td colSpan={100} className="px-3 py-3">
         <div className="flex items-center gap-3">
           <span className="text-body-sm text-on-surface-variant">
             {t('entity.stock.transferFrom')}

@@ -9,6 +9,7 @@ interface WarehouseFormProps {
   onSubmit: (values: { name: string; location: string }) => void
   isLoading?: boolean
   initialValues?: { name: string; location: string }
+  submitText?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema?: any
 }
@@ -18,6 +19,7 @@ export function WarehouseForm({
   isLoading,
   initialValues,
   schema = createWarehouseSchema,
+  submitText,
 }: WarehouseFormProps) {
   const { t } = useTranslation()
 
@@ -56,7 +58,7 @@ export function WarehouseForm({
       <div className="flex justify-end gap-2 pt-4">
         <Button type="submit" disabled={isLoading}>
           {isLoading ? <Spinner /> : null}
-          {t('entity.create.button')}
+          {submitText ?? t('entity.create.button')}
         </Button>
       </div>
     </form>
