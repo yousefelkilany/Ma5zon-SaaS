@@ -112,6 +112,13 @@ pub fn get_movements_by_variant() -> &'static str {
      FROM stock_movements WHERE variant_id = ?1 ORDER BY created_at DESC"
 }
 
+pub fn get_movements_by_warehouse() -> &'static str {
+    "SELECT id, variant_id, product_id, from_warehouse_id, to_warehouse_id, quantity, \"type\", created_at \
+     FROM stock_movements \
+     WHERE from_warehouse_id = ?1 OR to_warehouse_id = ?1 \
+     ORDER BY created_at DESC"
+}
+
 pub fn get_stock_levels_by_product() -> &'static str {
     "SELECT
         v.id AS variant_id,

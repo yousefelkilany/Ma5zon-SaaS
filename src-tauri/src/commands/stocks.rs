@@ -9,7 +9,7 @@ use crate::sql::stocks::{
     create_levels_table, create_movements_table, create_triggers,
     fetch_products_by_warehouse_with_stock, get_levels_all, get_levels_by_variant,
     get_levels_by_warehouse, get_levels_by_warehouse_with_names, get_movements_all,
-    get_movements_by_variant, get_stock_levels_by_product,
+    get_movements_by_variant, get_movements_by_warehouse, get_stock_levels_by_product,
 };
 use crate::types::{PaginatedResponse, ProductWithStock};
 
@@ -204,6 +204,40 @@ pub async fn stock_movements_get_by_variant(
 
     let movements = stmt
         .query_map(params![variant_id_i64], |row| {
+            Ok(StockMovement {
+                id: row.get::<_, i64>(0)?.to_string(),
+                variant_id: row.get::<_, i64>(1)?.to_string(),
+                product_id: row.get::<_, i64>(2)?.to_string(),
+                from_warehouse_id: row.get::<_, Option<i64>>(3)?.map(|v| v.to_string()),
+                to_warehouse_id: row.get::<_, Option<i64>>(4)?.map(|v| v.to_string()),
+                quantity: row.get(5)?,
+                movement_type: row.get(6)?,
+                created_at: row.get(7)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query stock movements: {e}"))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("Failed to collect stock movements: {e}"))?;
+
+    Ok(movements)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn stock_movements_get_by_warehouse(
+    app: AppHandle,
+    warehouse_id: String,
+) -> Result<Vec<StockMovement>, String> {
+    let conn = get_conn(&app)?;
+    let warehouse_id_i64: i64 = warehouse_id
+        .parse()
+        .map_err(|e| format!("Invalid warehouse_id: {e}"))?;
+    let mut stmt = conn
+        .prepare(get_movements_by_warehouse())
+        .map_err(|e| format!("Failed to prepare statement: {e}"))?;
+
+    let movements = stmt
+        .query_map(params![warehouse_id_i64], |row| {
             Ok(StockMovement {
                 id: row.get::<_, i64>(0)?.to_string(),
                 variant_id: row.get::<_, i64>(1)?.to_string(),
