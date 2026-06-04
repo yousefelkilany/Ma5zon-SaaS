@@ -367,17 +367,28 @@ function InlineTransferSection({
     },
   })
 
+  const { data: variant } = useQuery({
+    queryKey: ['variant', variantId],
+    queryFn: async () => {
+      const result = await commands.variantsGetById(variantId)
+      if (result.status === 'ok') return result.data
+      return null
+    },
+    enabled: !!variantId,
+  })
+
   const toWarehouseOptions =
     warehouses
       ?.filter(w => w.id !== warehouseId)
       .map(w => ({ value: w.id, label: w.name })) ?? []
 
   const handleSubmit = async () => {
-    if (!toWarehouseId || !quantity) return
+    if (!toWarehouseId || !quantity || !variant?.product_id) return
     setIsSubmitting(true)
     try {
       await commands.createTransfer(
         variantId,
+        variant.product_id,
         warehouseId,
         toWarehouseId,
         parseInt(quantity)
