@@ -24,10 +24,10 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
     let mut rng = rand::thread_rng();
 
     let mut stmt = conn
-        .prepare("SELECT id FROM product_variants ORDER BY id")
+        .prepare("SELECT id, product_id FROM product_variants ORDER BY id")
         .map_err(|e| format!("Failed to prepare: {e}"))?;
-    let variant_ids: Vec<i64> = stmt
-        .query_map([], |row| row.get(0))
+    let variant_product_ids: Vec<(i64, i64)> = stmt
+        .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))
         .map_err(|e| format!("Failed to query: {e}"))?
         .collect::<Result<Vec<_>, _>>()
         .map_err(|e| format!("Failed to collect: {e}"))?;
@@ -53,11 +53,12 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
     let asyut_wh = warehouse_ids[3];
     let sohag_wh = warehouse_ids[4];
 
-    for variant_id in &variant_ids {
+    for (variant_id, product_id) in &variant_product_ids {
         let purchase_qty: i32 = rng.gen_range(50..=500);
         execute_movement(
             conn,
             *variant_id,
+            *product_id,
             None,
             Some(cairo_wh),
             purchase_qty,
@@ -69,6 +70,7 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
         execute_movement(
             conn,
             *variant_id,
+            *product_id,
             Some(cairo_wh),
             Some(alexandria_wh),
             transfer_alex,
@@ -80,6 +82,7 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
         execute_movement(
             conn,
             *variant_id,
+            *product_id,
             Some(cairo_wh),
             Some(mansoura_wh),
             transfer_mans,
@@ -94,6 +97,7 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
             execute_movement(
                 conn,
                 *variant_id,
+                *product_id,
                 Some(cairo_wh),
                 Some(asyut_wh),
                 transfer_asy,
@@ -108,6 +112,7 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
             execute_movement(
                 conn,
                 *variant_id,
+                *product_id,
                 Some(cairo_wh),
                 Some(sohag_wh),
                 transfer_soh,
@@ -125,7 +130,7 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
                 continue;
             }
             let sale_qty: i32 = rng.gen_range(1..=available.min(20));
-            execute_movement(conn, *variant_id, Some(from_wh), None, sale_qty, "SALE")
+            execute_movement(conn, *variant_id, *product_id, Some(from_wh), None, sale_qty, "SALE")
                 .map_err(|e| format!("Failed sale: {}", e))?;
         }
 
@@ -133,14 +138,14 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
         for _ in 0..num_adjustments {
             let wh = warehouse_ids[rng.gen_range(0..warehouse_ids.len())];
             let adj_qty: i32 = rng.gen_range(1..=15);
-            execute_movement(conn, *variant_id, None, Some(wh), adj_qty, "ADJUST")
+            execute_movement(conn, *variant_id, *product_id, None, Some(wh), adj_qty, "ADJUST")
                 .map_err(|e| format!("Failed positive adjustment: {}", e))?;
         }
     }
 
     log::info!(
         "[seed:movements] Seeded movements for {} variants",
-        variant_ids.len()
+        variant_product_ids.len()
     );
     Ok(())
 }

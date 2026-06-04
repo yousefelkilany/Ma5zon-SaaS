@@ -129,6 +129,7 @@ fn validate_movement(
 pub fn execute_movement(
     conn: &Connection,
     variant_id: i64,
+    product_id: i64,
     from_warehouse_id: Option<i64>,
     to_warehouse_id: Option<i64>,
     quantity: i32,
@@ -174,8 +175,8 @@ pub fn execute_movement(
     }
 
     conn.execute(
-        "INSERT INTO stock_movements (variant_id, from_warehouse_id, to_warehouse_id, quantity, type, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
-        params![variant_id, from_warehouse_id, to_warehouse_id, quantity, movement_type, now],
+        "INSERT INTO stock_movements (variant_id, product_id, from_warehouse_id, to_warehouse_id, quantity, type, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        params![variant_id, product_id, from_warehouse_id, to_warehouse_id, quantity, movement_type, now],
     )
     .map_err(|e| format!("Failed to insert movement: {e}"))?;
 
@@ -235,6 +236,7 @@ fn upsert_stock_level(
 pub async fn create_transfer(
     app: AppHandle,
     variant_id: String,
+    product_id: String,
     from_warehouse: String,
     to_warehouse: String,
     quantity: i32,
@@ -243,6 +245,9 @@ pub async fn create_transfer(
     let variant_id_i64: i64 = variant_id
         .parse()
         .map_err(|e| format!("Invalid variant_id: {e}"))?;
+    let product_id_i64: i64 = product_id
+        .parse()
+        .map_err(|e| format!("Invalid product_id: {e}"))?;
     let from_wh_i64: i64 = from_warehouse
         .parse()
         .map_err(|e| format!("Invalid from_warehouse: {e}"))?;
@@ -253,6 +258,7 @@ pub async fn create_transfer(
     execute_movement(
         &conn,
         variant_id_i64,
+        product_id_i64,
         Some(from_wh_i64),
         Some(to_wh_i64),
         quantity,
@@ -273,6 +279,7 @@ pub async fn create_transfer(
 pub async fn create_purchase(
     app: AppHandle,
     variant_id: String,
+    product_id: String,
     to_warehouse: String,
     quantity: i32,
 ) -> Result<(), String> {
@@ -280,6 +287,9 @@ pub async fn create_purchase(
     let variant_id_i64: i64 = variant_id
         .parse()
         .map_err(|e| format!("Invalid variant_id: {e}"))?;
+    let product_id_i64: i64 = product_id
+        .parse()
+        .map_err(|e| format!("Invalid product_id: {e}"))?;
     let to_wh_i64: i64 = to_warehouse
         .parse()
         .map_err(|e| format!("Invalid to_warehouse: {e}"))?;
@@ -287,6 +297,7 @@ pub async fn create_purchase(
     execute_movement(
         &conn,
         variant_id_i64,
+        product_id_i64,
         None,
         Some(to_wh_i64),
         quantity,
@@ -306,6 +317,7 @@ pub async fn create_purchase(
 pub async fn create_sale(
     app: AppHandle,
     variant_id: String,
+    product_id: String,
     from_warehouse: String,
     quantity: i32,
 ) -> Result<(), String> {
@@ -313,6 +325,9 @@ pub async fn create_sale(
     let variant_id_i64: i64 = variant_id
         .parse()
         .map_err(|e| format!("Invalid variant_id: {e}"))?;
+    let product_id_i64: i64 = product_id
+        .parse()
+        .map_err(|e| format!("Invalid product_id: {e}"))?;
     let from_wh_i64: i64 = from_warehouse
         .parse()
         .map_err(|e| format!("Invalid from_warehouse: {e}"))?;
@@ -320,6 +335,7 @@ pub async fn create_sale(
     execute_movement(
         &conn,
         variant_id_i64,
+        product_id_i64,
         Some(from_wh_i64),
         None,
         quantity,
@@ -339,6 +355,7 @@ pub async fn create_sale(
 pub async fn create_adjustment(
     app: AppHandle,
     variant_id: String,
+    product_id: String,
     warehouse_id: String,
     quantity: i32,
 ) -> Result<(), String> {
@@ -346,6 +363,9 @@ pub async fn create_adjustment(
     let variant_id_i64: i64 = variant_id
         .parse()
         .map_err(|e| format!("Invalid variant_id: {e}"))?;
+    let product_id_i64: i64 = product_id
+        .parse()
+        .map_err(|e| format!("Invalid product_id: {e}"))?;
     let wh_i64: i64 = warehouse_id
         .parse()
         .map_err(|e| format!("Invalid warehouse_id: {e}"))?;
@@ -354,6 +374,7 @@ pub async fn create_adjustment(
         execute_movement(
             &conn,
             variant_id_i64,
+            product_id_i64,
             None,
             Some(wh_i64),
             quantity,
@@ -363,6 +384,7 @@ pub async fn create_adjustment(
         execute_movement(
             &conn,
             variant_id_i64,
+            product_id_i64,
             Some(wh_i64),
             None,
             quantity.abs(),

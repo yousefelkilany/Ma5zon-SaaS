@@ -54,6 +54,7 @@ pub struct StockLevel {
 pub struct StockMovement {
     pub id: String,
     pub variant_id: String,
+    pub product_id: String,
     pub from_warehouse_id: Option<String>,
     pub to_warehouse_id: Option<String>,
     pub quantity: i32,
@@ -172,11 +173,12 @@ pub async fn stock_movements_get_all(app: AppHandle) -> Result<Vec<StockMovement
             Ok(StockMovement {
                 id: row.get::<_, i64>(0)?.to_string(),
                 variant_id: row.get::<_, i64>(1)?.to_string(),
-                from_warehouse_id: row.get::<_, Option<i64>>(2)?.map(|v| v.to_string()),
-                to_warehouse_id: row.get::<_, Option<i64>>(3)?.map(|v| v.to_string()),
-                quantity: row.get(4)?,
-                movement_type: row.get(5)?,
-                created_at: row.get(6)?,
+                product_id: row.get::<_, i64>(2)?.to_string(),
+                from_warehouse_id: row.get::<_, Option<i64>>(3)?.map(|v| v.to_string()),
+                to_warehouse_id: row.get::<_, Option<i64>>(4)?.map(|v| v.to_string()),
+                quantity: row.get(5)?,
+                movement_type: row.get(6)?,
+                created_at: row.get(7)?,
             })
         })
         .map_err(|e| format!("Failed to query stock movements: {e}"))?
@@ -205,11 +207,12 @@ pub async fn stock_movements_get_by_variant(
             Ok(StockMovement {
                 id: row.get::<_, i64>(0)?.to_string(),
                 variant_id: row.get::<_, i64>(1)?.to_string(),
-                from_warehouse_id: row.get::<_, Option<i64>>(2)?.map(|v| v.to_string()),
-                to_warehouse_id: row.get::<_, Option<i64>>(3)?.map(|v| v.to_string()),
-                quantity: row.get(4)?,
-                movement_type: row.get(5)?,
-                created_at: row.get(6)?,
+                product_id: row.get::<_, i64>(2)?.to_string(),
+                from_warehouse_id: row.get::<_, Option<i64>>(3)?.map(|v| v.to_string()),
+                to_warehouse_id: row.get::<_, Option<i64>>(4)?.map(|v| v.to_string()),
+                quantity: row.get(5)?,
+                movement_type: row.get(6)?,
+                created_at: row.get(7)?,
             })
         })
         .map_err(|e| format!("Failed to query stock movements: {e}"))?
