@@ -193,13 +193,15 @@ export function VariantDetailModal({
   }, [open, entityId, loadEntity])
 
   useEffect(() => {
-    setIsDirty(false)
-  }, [entity])
-
-  useEffect(() => {
-    if (entity) {
-      setIsDirty(true)
-    }
+    if (!entity) return
+    const isActuallyDirty =
+      editForm.sku !== entity.sku ||
+      editForm.variant_name !== entity.variant_name ||
+      editForm.uom_id !== entity.uom_id ||
+      editForm.retail_price !== entity.retail_price.toString() ||
+      editForm.wholesale_price !== entity.wholesale_price.toString() ||
+      editForm.distribution_price !== entity.distribution_price.toString()
+    setIsDirty(isActuallyDirty)
   }, [editForm, entity])
 
   async function handleSave(values: {
@@ -223,6 +225,14 @@ export function VariantDetailModal({
     setIsSaving(false)
     if (result.status === 'ok') {
       setEntity(result.data)
+      setEditForm({
+        sku: result.data.sku,
+        variant_name: result.data.variant_name,
+        uom_id: result.data.uom_id,
+        retail_price: result.data.retail_price.toString(),
+        wholesale_price: result.data.wholesale_price.toString(),
+        distribution_price: result.data.distribution_price.toString(),
+      })
       queryClient.invalidateQueries({ queryKey: ['entity', 'variants'] })
       onSaved?.(result.data)
     }

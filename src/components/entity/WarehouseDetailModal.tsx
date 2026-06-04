@@ -50,15 +50,11 @@ export function WarehouseDetailModal({
   const [isDirty, setIsDirty] = useState(false)
 
   useEffect(() => {
-    if (entity) {
-      setIsDirty(false)
-    }
-  }, [entity])
-
-  useEffect(() => {
-    if (entity) {
-      setIsDirty(true)
-    }
+    if (!entity) return
+    const isActuallyDirty =
+      editForm.name !== entity.name ||
+      editForm.location !== entity.location
+    setIsDirty(isActuallyDirty)
   }, [editForm, entity])
 
   const tabs: { id: TabId; label: string }[] = [
@@ -105,6 +101,7 @@ export function WarehouseDetailModal({
       setLoadError('')
       setIsEditing(false)
       setEditForm({ name: '', location: '' })
+      setIsDirty(false)
       setActiveTab('details')
       setDeleteError('')
       setSaveError('')
@@ -134,6 +131,10 @@ export function WarehouseDetailModal({
     setIsSaving(false)
     if (result.status === 'ok') {
       setEntity(result.data)
+      setEditForm({
+        name: result.data.name,
+        location: result.data.location,
+      })
       setIsEditing(false)
       queryClient.invalidateQueries({ queryKey: ['entity', 'warehouses'] })
     } else {

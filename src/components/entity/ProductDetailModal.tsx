@@ -141,6 +141,7 @@ export function ProductDetailModal({
       setIsLoading(true)
       setIsEditing(false)
       setEditForm({ company: '', name: '', category: '' })
+      setIsDirty(false)
       setActiveTab('details')
       setDeleteError('')
       setStockLevels([])
@@ -178,9 +179,12 @@ export function ProductDetailModal({
   }, [showDeleteConfirm])
 
   useEffect(() => {
-    if (entity) {
-      setIsDirty(true)
-    }
+    if (!entity) return
+    const isActuallyDirty =
+      editForm.company !== entity.company ||
+      editForm.name !== entity.name ||
+      editForm.category !== entity.category
+    setIsDirty(isActuallyDirty)
   }, [editForm, entity])
 
   async function handleSave(values: {
@@ -199,6 +203,11 @@ export function ProductDetailModal({
     setIsSaving(false)
     if (saveResult.status === 'ok') {
       setEntity(saveResult.data)
+      setEditForm({
+        company: saveResult.data.company,
+        name: saveResult.data.name,
+        category: saveResult.data.category,
+      })
       setIsEditing(false)
       queryClient.invalidateQueries({ queryKey: ['entity', 'products'] })
     } else {
