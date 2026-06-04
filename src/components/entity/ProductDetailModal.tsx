@@ -155,7 +155,11 @@ export function ProductDetailModal({
     for (const variant of variantsResult.data) {
       const movResult = await commands.stockMovementsGetByVariant(variant.id)
       if (movResult.status === 'ok') {
-        allMovements.push(...movResult.data)
+        const sorted = movResult.data.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        allMovements.push(...sorted.slice(0, 5))
       }
     }
 
