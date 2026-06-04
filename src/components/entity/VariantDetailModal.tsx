@@ -6,9 +6,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
 import type { StockLevelWithVariant } from '@/lib/types/entity'
-import type { StockLevel } from '@/lib/bindings'
+import type { StockLevel, StockMovement } from '@/lib/bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import { StockLevelsTable } from './StockLevelsTable'
+import { StockMovementsTable } from './StockMovementsTable'
 import { updateVariantSchema } from '@/lib/validation/schemas'
 import { VariantForm } from '@/components/entity-form'
 import { EntityFieldGrid } from './EntityFieldGrid'
@@ -92,6 +93,12 @@ export function VariantDetailModal({
   const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
     new Map()
   )
+  const [movements, setMovements] = useState<StockMovement[]>([])
+  const [isLoadingMovements, setIsLoadingMovements] = useState(false)
+  const [movementsError, setMovementsError] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const pageSize = 10
   const [isDirty, setIsDirty] = useState(false)
 
   const tabs: { id: TabId; label: string }[] = [
@@ -154,6 +161,24 @@ export function VariantDetailModal({
     }
   }, [entityId])
 
+  const loadMovements = useCallback(async () => {
+    if (!entityId) return
+    setIsLoadingMovements(true)
+    setMovementsError('')
+
+    const result = await commands.stockMovementsGetByVariant(entityId)
+    setIsLoadingMovements(false)
+
+    if (result.status === 'ok') {
+      setMovements(result.data)
+      const total = Math.ceil(result.data.length / pageSize)
+      setTotalPages(total || 1)
+      setCurrentPage(1)
+    } else {
+      setMovementsError(result.error ?? 'Failed to load movements')
+    }
+  }, [entityId])
+
   useEffect(() => {
     if (
       activeTab === 'stock' &&
@@ -170,6 +195,12 @@ export function VariantDetailModal({
     stockLoadError,
     loadStockLevels,
   ])
+
+  useEffect(() => {
+    if (activeTab === 'audits' && movements.length === 0 && !isLoadingMovements && !movementsError) {
+      loadMovements()
+    }
+  }, [activeTab, movements.length, isLoadingMovements, movementsError, loadMovements])
 
   useEffect(() => {
     if (!open) {
@@ -189,6 +220,10 @@ export function VariantDetailModal({
       setStockLevels([])
       setStockLoadError('')
       setWarehouseNames(new Map())
+      setMovements([])
+      setMovementsError('')
+      setCurrentPage(1)
+      setTotalPages(1)
       setIsDirty(false)
       setIsEditing(false)
     }
@@ -437,23 +472,19 @@ export function VariantDetailModal({
               )}
 
               {activeTab === 'audits' && (
-                <div
-                  id="audits-panel"
-                  role="tabpanel"
-                  aria-labelledby="audits-tab"
-                >
-                  <div className="space-y-3">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <Skeleton className="h-8 w-8 rounded-full" />
-                        <div className="flex-1 space-y-1">
-                          <Skeleton className="h-4 w-48" />
-                          <Skeleton className="h-3 w-24" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <StockMovementsTable
+                  movements={movements}
+                  isLoading={isLoadingMovements}
+                  error={movementsError}
+                  variant="variant"
+                  warehouseNames={warehouseNames}
+                  emptyMessage={t('entity.stockMovement.noMovementsVariant')}
+                  isPaginated
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  onRetry={loadMovements}
+                />
               )}
             </div>
           </div>
