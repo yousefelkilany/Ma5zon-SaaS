@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import type { StockLevelWithVariant } from '@/lib/types/entity'
+import type { StockMovement } from '@/lib/bindings'
 import { StockLevelsTable } from './StockLevelsTable'
+import { StockMovementsTable } from './StockMovementsTable'
 import { ProductForm } from '@/components/entity-form'
 import { updateProductSchema } from '@/lib/validation/schemas'
 import { EntityFieldGrid } from './EntityFieldGrid'
@@ -73,6 +75,9 @@ export function ProductDetailModal({
     new Map()
   )
   const [isDirty, setIsDirty] = useState(false)
+  const [movements, setMovements] = useState<StockMovement[]>([])
+  const [isLoadingMovements, setIsLoadingMovements] = useState(false)
+  const [movementsError, setMovementsError] = useState('')
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -134,6 +139,35 @@ export function ProductDetailModal({
     }
   }, [entityId])
 
+  const loadMovements = useCallback(async () => {
+    if (!entityId) return
+    setIsLoadingMovements(true)
+    setMovementsError('')
+
+    const variantsResult = await commands.variantsGetByProductWithStock(entityId)
+    if (variantsResult.status !== 'ok') {
+      setMovementsError(variantsResult.error ?? 'Failed to load variants')
+      setIsLoadingMovements(false)
+      return
+    }
+
+    const allMovements: StockMovement[] = []
+    for (const variant of variantsResult.data) {
+      const movResult = await commands.stockMovementsGetByVariant(variant.id)
+      if (movResult.status === 'ok') {
+        allMovements.push(...movResult.data)
+      }
+    }
+
+    allMovements.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )
+
+    setMovements(allMovements)
+    setIsLoadingMovements(false)
+  }, [entityId])
+
   useEffect(() => {
     if (!open) {
       setEntity(null)
@@ -145,6 +179,8 @@ export function ProductDetailModal({
       setDeleteError('')
       setStockLevels([])
       setWarehouseNames(new Map())
+      setMovements([])
+      setMovementsError('')
     }
   }, [open])
 
@@ -163,6 +199,23 @@ export function ProductDetailModal({
     isLoadingStock,
     loadError,
     loadStockLevels,
+  ])
+
+  useEffect(() => {
+    if (
+      activeTab === 'audits' &&
+      movements.length === 0 &&
+      !isLoadingMovements &&
+      !movementsError
+    ) {
+      loadMovements()
+    }
+  }, [
+    activeTab,
+    movements.length,
+    isLoadingMovements,
+    movementsError,
+    loadMovements,
   ])
 
   useEffect(() => {
@@ -405,23 +458,14 @@ export function ProductDetailModal({
               )}
 
               {activeTab === 'audits' && (
-                <div
-                  id="audits-panel"
-                  role="tabpanel"
-                  aria-labelledby="audits-tab"
-                >
-                  <div className="space-y-3">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <Skeleton className="h-8 w-8 rounded-full" />
-                        <div className="flex-1 space-y-1">
-                          <Skeleton className="h-4 w-48" />
-                          <Skeleton className="h-3 w-24" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <StockMovementsTable
+                  movements={movements}
+                  isLoading={isLoadingMovements}
+                  error={movementsError}
+                  variant="product"
+                  emptyMessage={t('entity.stockMovement.noMovementsProduct')}
+                  onRetry={loadMovements}
+                />
               )}
             </div>
           </div>
