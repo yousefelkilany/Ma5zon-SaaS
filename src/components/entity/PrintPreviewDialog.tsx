@@ -8,6 +8,11 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import type { ColumnDef, EntityRow } from '@/lib/types/entity'
+import { langDir } from '@/i18n/config'
+import {
+  ibmPlexFont500,
+  ibmPlexFont700,
+} from '@/lib/fonts/ibmPlexFonts'
 
 interface PrintPreviewDialogProps {
   open: boolean
@@ -26,9 +31,10 @@ export function PrintPreviewDialog({
   entityType,
   onPrint,
 }: PrintPreviewDialogProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const visibleCols = columns.filter(c => c.visible && c.type !== 'actions')
+  const direction = langDir(i18n.language)
 
   const handlePrintClick = () => {
     const printFrame = document.getElementById(
@@ -58,8 +64,14 @@ export function PrintPreviewDialog({
         <div className="flex-1 overflow-auto bg-surface border rounded p-4">
           <iframe
             id="print-frame"
-            className="w-full h-full min-h-[400px] border-0"
-            srcDoc={buildPrintHtml(visibleCols, selectedData, entityType, t)}
+            className="w-full h-full min-h-100 border-0"
+            srcDoc={buildPrintHtml(
+              visibleCols,
+              selectedData,
+              entityType,
+              t,
+              direction
+            )}
           />
         </div>
 
@@ -80,7 +92,8 @@ function buildPrintHtml(
   columns: ColumnDef[],
   data: EntityRow[],
   entityType: string,
-  t: (key: string, options?: Record<string, unknown>) => string
+  t: (key: string, options?: Record<string, unknown>) => string,
+  direction: 'ltr' | 'rtl'
 ): string {
   const headers = columns.map(c => `<th>${c.label}</th>`).join('')
   const rows = data
@@ -90,17 +103,35 @@ function buildPrintHtml(
     )
     .join('')
 
+  const textAlign = direction === 'rtl' ? 'right' : 'left'
+  const tableTextAlign = direction === 'rtl' ? 'right' : 'left'
+
   return `<!DOCTYPE html>
-<html>
+<html dir="${direction}">
 <head>
   <title>Ma5zon - ${t('sidebar.nav.' + entityType, { defaultValue: entityType })}</title>
   <style>
-    body { font-family: system-ui, sans-serif; padding: 20px; font-size: 12px; }
-    h2 { margin-bottom: 4px; }
-    p { color: #666; margin-bottom: 16px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; }
+    @font-face {
+      font-family: 'IBM Plex Sans Arabic';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url('${ibmPlexFont500}') format('woff2');
+    }
+    @font-face {
+      font-family: 'IBM Plex Sans Arabic';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('${ibmPlexFont700}') format('woff2');
+    }
+    body { font-family: 'IBM Plex Sans Arabic', 'Segoe UI', sans-serif; padding: 20px; font-size: 12px; direction: ${direction}; }
+    h2 { margin-bottom: 4px; text-align: ${textAlign}; }
+    p { color: #666; margin-bottom: 16px; text-align: ${textAlign}; }
+    table { width: 100%; border-collapse: collapse; direction: ${direction}; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: ${tableTextAlign}; vertical-align: middle; line-height: 1.5; }
     th { background: #f5f5f5; font-weight: 600; }
+    td { height: 1.5em; }
     tr:nth-child(even) { background: #fafafa; }
     @media print {
       body { padding: 0; }

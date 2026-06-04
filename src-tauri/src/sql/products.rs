@@ -1,7 +1,7 @@
 //! SQL statements for products entity.
 
 use crate::{
-    sql::{build_filtered_sorted_paginated_query, build_filtered_sorted_query},
+    sql::{build_filtered_grouped_sorted_paginated_query, build_filtered_sorted_query},
     types::Product,
 };
 use rusqlite::{Connection, Result as DbErr};
@@ -178,7 +178,10 @@ pub fn build_where_clause(filters: &[FilterState]) -> String {
                         String::new()
                     }
                 }
-                _ => String::new(),
+                op => {
+                    log::warn!("[build_where_clause] unknown operator: {}", op);
+                    String::new()
+                }
             }
         })
         .collect();
@@ -200,16 +203,29 @@ pub fn build_with_stock_paginated(
         "SELECT p.id, p.company, p.name, COALESCE(SUM(sl.quantity), 0) as quantity, p.category
         FROM active_products p
         LEFT JOIN product_variants pv ON p.id = pv.product_id
-        LEFT JOIN stock_levels sl ON pv.id = sl.variant_id
-        GROUP BY p.id, p.company, p.name, p.category";
+        LEFT JOIN stock_levels sl ON pv.id = sl.variant_id";
+    let group_by = "p.id";
 
-    build_filtered_sorted_paginated_query(base, where_clause, sort, limit, offset)
+    build_filtered_grouped_sorted_paginated_query(
+        &base,
+        where_clause,
+        &group_by,
+        sort,
+        limit,
+        offset,
+    )
 }
 
-pub fn build_count(where_clause: &str, sort: Option<&SortState>) -> String {
-    let base = "SELECT COUNT(*) FROM active_products p";
+pub fn build_count(where_clause: &str, _sort: Option<&SortState>) -> String {
+    let base = "SELECT COUNT(DISTINCT p.id) FROM active_products p
+        LEFT JOIN product_variants pv ON p.id = pv.product_id
+        LEFT JOIN stock_levels sl ON pv.id = sl.variant_id";
 
-    build_filtered_sorted_query(base, where_clause, sort)
+    if where_clause.is_empty() {
+        base.to_string()
+    } else {
+        format!("{} WHERE {}", base, where_clause)
+    }
 }
 
 pub fn build_by_warehouse_count(where_clause: &str, sort: Option<&SortState>) -> String {
@@ -220,7 +236,7 @@ pub fn build_by_warehouse_count(where_clause: &str, sort: Option<&SortState>) ->
         WHERE sl.warehouse_id = ?
         AND quantity > 0";
 
-    build_filtered_sorted_query(base, where_clause, sort)
+    build_filtered_sorted_query(base, where_clause, "", sort)
 }
 
 pub fn build_with_stock_by_warehouse_paginated(
@@ -236,7 +252,7 @@ pub fn build_with_stock_by_warehouse_paginated(
         LEFT JOIN stock_levels sl ON pv.id = sl.variant_id
         WHERE sl.warehouse_id = ?";
 
-    build_filtered_sorted_paginated_query(base, where_clause, sort, limit, offset)
+    build_filtered_grouped_sorted_paginated_query(base, where_clause, "", sort, limit, offset)
 }
 
 pub fn build_get_all(where_clause: &str, sort: Option<&SortState>) -> String {
