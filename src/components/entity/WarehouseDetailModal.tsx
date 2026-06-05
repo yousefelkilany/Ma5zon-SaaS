@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import type { QueryClient } from '@tanstack/react-query'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -10,7 +11,6 @@ import { WarehouseForm } from '@/components/entity-form'
 import { updateWarehouseSchema } from '@/lib/validation/schemas'
 import { EntityFieldGrid } from './EntityFieldGrid'
 import { StockMovementsTable } from './StockMovementsTable'
-import type { StockMovement } from '@/lib/bindings'
 
 interface WarehouseDetailModalProps {
   open: boolean
@@ -58,9 +58,6 @@ export function WarehouseDetailModal({
   const [activeTab, setActiveTab] = useState<TabId>('details')
   const [loadError, setLoadError] = useState('')
   const [isDirty, setIsDirty] = useState(false)
-  const [movements, setMovements] = useState<StockMovement[]>([])
-  const [isLoadingMovements, setIsLoadingMovements] = useState(false)
-  const [movementsError, setMovementsError] = useState('')
   const [productNames, setProductNames] = useState<Map<string, string>>(new Map())
   const [variantNames, setVariantNames] = useState<Map<string, string>>(new Map())
 
@@ -108,41 +105,45 @@ export function WarehouseDetailModal({
     }
   }, [entityId])
 
-  const loadMovements = useCallback(async () => {
-    if (!entityId) return
-    setIsLoadingMovements(true)
-    setMovementsError('')
+  const { data: movements, isLoading: isLoadingMovements, error: movementsError } = useQuery({
+    queryKey: ['stock-movements-warehouse', entityId],
+    queryFn: async () => {
+      const result = await commands.stockMovementsGetByWarehouse(entityId)
+      if (result.status === 'ok') return result.data
+      throw new Error(result.error)
+    },
+  })
 
-    const result = await commands.stockMovementsGetByWarehouse(entityId)
-    setIsLoadingMovements(false)
+  useEffect(() => {
+    if (!movements || movements.length === 0) {
+      setProductNames(new Map())
+      setVariantNames(new Map())
+      return
+    }
 
-    if (result.status === 'ok') {
-      setMovements(result.data)
+    const uniqueProductIds = [...new Set(movements.map(m => m.product_id))]
+    const uniqueVariantIds = [...new Set(movements.map(m => m.variant_id))]
 
-      const uniqueProductIds = [...new Set(result.data.map(m => m.product_id))]
-      const uniqueVariantIds = [...new Set(result.data.map(m => m.variant_id))]
-
-      const productNamesMap = new Map<string, string>()
-      for (const pid of uniqueProductIds) {
-        const productResult = await commands.getById(pid)
+    const productNamesMap = new Map<string, string>()
+    for (const pid of uniqueProductIds) {
+      commands.getById(pid).then(productResult => {
         if (productResult.status === 'ok' && productResult.data) {
           productNamesMap.set(pid, productResult.data.name)
+          setProductNames(new Map(productNamesMap))
         }
-      }
-      setProductNames(productNamesMap)
+      })
+    }
 
-      const variantNamesMap = new Map<string, string>()
-      for (const vid of uniqueVariantIds) {
-        const variantResult = await commands.variantsGetById(vid)
+    const variantNamesMap = new Map<string, string>()
+    for (const vid of uniqueVariantIds) {
+      commands.variantsGetById(vid).then(variantResult => {
         if (variantResult.status === 'ok' && variantResult.data) {
           variantNamesMap.set(vid, variantResult.data.variant_name)
+          setVariantNames(new Map(variantNamesMap))
         }
-      }
-      setVariantNames(variantNamesMap)
-    } else {
-      setMovementsError(result.error ?? 'Failed to load movements')
+      })
     }
-  }, [entityId])
+  }, [movements])
 
   useEffect(() => {
     if (!open) {
@@ -155,8 +156,6 @@ export function WarehouseDetailModal({
       setActiveTab('details')
       setDeleteError('')
       setSaveError('')
-      setMovements([])
-      setMovementsError('')
       setProductNames(new Map())
       setVariantNames(new Map())
     }
@@ -174,11 +173,7 @@ export function WarehouseDetailModal({
     }
   }, [showDeleteConfirm])
 
-  useEffect(() => {
-    if (activeTab === 'audits' && movements.length === 0 && !isLoadingMovements && !movementsError) {
-      loadMovements()
-    }
-  }, [activeTab, movements.length, isLoadingMovements, movementsError, loadMovements])
+
 
   async function handleSave(values: { name: string; location: string }) {
     if (!entity) return
@@ -370,14 +365,13 @@ export function WarehouseDetailModal({
 
               {activeTab === 'audits' && (
                 <StockMovementsTable
-                  movements={movements}
+                  movements={movements ?? []}
                   isLoading={isLoadingMovements}
-                  error={movementsError}
+                  error={movementsError?.message ?? ''}
                   variant="warehouse"
                   productNames={productNames}
                   variantNames={variantNames}
                   emptyMessage={t('entity.stockMovement.noMovementsWarehouse')}
-                  onRetry={loadMovements}
                 />
               )}
             </div>
