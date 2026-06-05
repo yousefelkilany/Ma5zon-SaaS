@@ -95,6 +95,13 @@ if (REMOVE) {
     }
   }
 
+  console.log('\n=== Keys in code NOT in ar.json ===')
+  for (const key of [...usedKeys].sort()) {
+    if (!arKeys.has(key)) {
+      console.log(key)
+    }
+  }
+
   console.log('\n=== Keys in en.json NOT used in code ===')
   for (const key of [...enKeys].sort()) {
     if (!usedKeys.has(key)) {
