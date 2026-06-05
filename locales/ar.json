@@ -387,6 +387,7 @@
   "entity.stock.noVariants": "لا توجد أصناف",
   "entity.stock.errorLoadingProducts": "خطأ فى عرض المنتجات",
   "entity.stock.errorLoadingVariants": "خطأ في تحميل الأصناف",
+  "entity.stock.date": "التاريخ",
   "entity.stockMovement.fromWarehouse": "من المخزن",
   "entity.stockMovement.movementType": "نوع الحركة",
   "entity.stockMovement.quantity": "الكمية",

@@ -102,19 +102,33 @@ if (REMOVE) {
     }
   }
 
-  console.log('\n=== Keys in en.json NOT used in code ===')
+  console.log('\n=== Keys in en.json NOT in ar.json ===')
   for (const key of [...enKeys].sort()) {
-    if (!usedKeys.has(key)) {
+    if (!arKeys.has(key)) {
       console.log(key)
     }
   }
 
-  console.log('\n=== Keys in ar.json NOT used in code ===')
+  console.log('\n=== Keys in ar.json NOT in en.json ===')
   for (const key of [...arKeys].sort()) {
-    if (!usedKeys.has(key)) {
+    if (!enKeys.has(key)) {
       console.log(key)
     }
   }
+
+  // console.log('\n=== Keys in en.json NOT used in code ===')
+  // for (const key of [...enKeys].sort()) {
+  //   if (!usedKeys.has(key)) {
+  //     console.log(key)
+  //   }
+  // }
+
+  // console.log('\n=== Keys in ar.json NOT used in code ===')
+  // for (const key of [...arKeys].sort()) {
+  //   if (!usedKeys.has(key)) {
+  //     console.log(key)
+  //   }
+  // }
 
   console.log(
     `\nStats: ${usedKeys.size} keys used in code, ${enKeys.size} in en.json, ${arKeys.size} in ar.json`
