@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import type { QueryClient } from '@tanstack/react-query'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
 import type { StockLevelWithVariant } from '@/lib/types/entity'
-import type { StockLevel, StockMovement } from '@/lib/bindings'
+import type { StockLevel } from '@/lib/bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import { StockLevelsTable } from './StockLevelsTable'
 import { StockMovementsTable } from './StockMovementsTable'
@@ -93,9 +94,6 @@ export function VariantDetailModal({
   const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
     new Map()
   )
-  const [movements, setMovements] = useState<StockMovement[]>([])
-  const [isLoadingMovements, setIsLoadingMovements] = useState(false)
-  const [movementsError, setMovementsError] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [isDirty, setIsDirty] = useState(false)
 
@@ -159,21 +157,14 @@ export function VariantDetailModal({
     }
   }, [entityId])
 
-  const loadMovements = useCallback(async () => {
-    if (!entityId) return
-    setIsLoadingMovements(true)
-    setMovementsError('')
-
-    const result = await commands.stockMovementsGetByVariant(entityId)
-    setIsLoadingMovements(false)
-
-    if (result.status === 'ok') {
-      setMovements(result.data)
-      setCurrentPage(1)
-    } else {
-      setMovementsError(result.error ?? 'Failed to load movements')
-    }
-  }, [entityId])
+  const { data: movements, isLoading: isLoadingMovements, error: movementsError } = useQuery({
+    queryKey: ['stock-movements-variant', entityId],
+    queryFn: async () => {
+      const result = await commands.stockMovementsGetByVariant(entityId)
+      if (result.status === 'ok') return result.data
+      throw new Error(result.error)
+    },
+ })
 
   useEffect(() => {
     if (
@@ -193,12 +184,6 @@ export function VariantDetailModal({
   ])
 
   useEffect(() => {
-    if (activeTab === 'audits' && !isLoadingMovements && !movementsError) {
-      loadMovements()
-    }
-  }, [activeTab, entityId, isLoadingMovements, movementsError, loadMovements])
-
-  useEffect(() => {
     if (!open) {
       setEntity(null)
       setIsLoading(true)
@@ -216,8 +201,6 @@ export function VariantDetailModal({
       setStockLevels([])
       setStockLoadError('')
       setWarehouseNames(new Map())
-      setMovements([])
-      setMovementsError('')
       setCurrentPage(1)
       setIsDirty(false)
       setIsEditing(false)
@@ -468,16 +451,15 @@ export function VariantDetailModal({
 
               {activeTab === 'audits' && (
                 <StockMovementsTable
-                  movements={movements}
+                  movements={movements ?? []}
                   isLoading={isLoadingMovements}
-                  error={movementsError}
+                  error={movementsError?.message ?? ''}
                   variant="variant"
                   warehouseNames={warehouseNames}
                   emptyMessage={t('entity.stockMovement.noMovementsVariant')}
                   isPaginated
                   currentPage={currentPage}
                   onPageChange={setCurrentPage}
-                  onRetry={loadMovements}
                 />
               )}
             </div>
