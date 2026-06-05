@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import type { QueryClient } from '@tanstack/react-query'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -75,9 +76,6 @@ export function ProductDetailModal({
     new Map()
   )
   const [isDirty, setIsDirty] = useState(false)
-  const [movements, setMovements] = useState<StockMovement[]>([])
-  const [isLoadingMovements, setIsLoadingMovements] = useState(false)
-  const [movementsError, setMovementsError] = useState('')
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -139,38 +137,32 @@ export function ProductDetailModal({
     }
   }, [entityId])
 
-  const loadMovements = useCallback(async () => {
-    if (!entityId) return
-    setIsLoadingMovements(true)
-    setMovementsError('')
-
-    const variantsResult = await commands.variantsGetByProductWithStock(entityId)
-    if (variantsResult.status !== 'ok') {
-      setMovementsError(variantsResult.error ?? 'Failed to load variants')
-      setIsLoadingMovements(false)
-      return
-    }
-
-    const allMovements: StockMovement[] = []
-    for (const variant of variantsResult.data) {
-      const movResult = await commands.stockMovementsGetByVariant(variant.id)
-      if (movResult.status === 'ok') {
-        const sorted = movResult.data.sort(
-          (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )
-        allMovements.push(...sorted.slice(0, 5))
+  const { data: movements, isLoading: isLoadingMovements, error: movementsError } = useQuery({
+    queryKey: ['stock-movements-product', entityId],
+    queryFn: async () => {
+      const variantsResult = await commands.variantsGetByProductWithStock(entityId)
+      if (variantsResult.status !== 'ok') {
+        throw new Error(variantsResult.error ?? 'Failed to load variants')
       }
-    }
 
-    allMovements.sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    )
+      const allMovements: StockMovement[] = []
+      for (const variant of variantsResult.data) {
+        const movResult = await commands.stockMovementsGetByVariant(variant.id)
+        if (movResult.status === 'ok') {
+          const sorted = movResult.data.sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          )
+          allMovements.push(...sorted.slice(0, 5))
+        }
+      }
 
-    setMovements(allMovements)
-    setIsLoadingMovements(false)
-  }, [entityId])
+      return allMovements.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
+    },
+  })
 
   useEffect(() => {
     if (!open) {
@@ -183,8 +175,6 @@ export function ProductDetailModal({
       setDeleteError('')
       setStockLevels([])
       setWarehouseNames(new Map())
-      setMovements([])
-      setMovementsError('')
     }
   }, [open])
 
@@ -205,22 +195,7 @@ export function ProductDetailModal({
     loadStockLevels,
   ])
 
-  useEffect(() => {
-    if (
-      activeTab === 'audits' &&
-      movements.length === 0 &&
-      !isLoadingMovements &&
-      !movementsError
-    ) {
-      loadMovements()
-    }
-  }, [
-    activeTab,
-    movements.length,
-    isLoadingMovements,
-    movementsError,
-    loadMovements,
-  ])
+
 
   useEffect(() => {
     if (open && entityId) {
@@ -463,12 +438,11 @@ export function ProductDetailModal({
 
               {activeTab === 'audits' && (
                 <StockMovementsTable
-                  movements={movements}
+                  movements={movements ?? []}
                   isLoading={isLoadingMovements}
-                  error={movementsError}
+                  error={movementsError?.message ?? ''}
                   variant="product"
                   emptyMessage={t('entity.stockMovement.noMovementsProduct')}
-                  onRetry={loadMovements}
                 />
               )}
             </div>
