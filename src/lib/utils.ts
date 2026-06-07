@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { invoke } from '@tauri-apps/api/core'
 import * as XLSX from 'xlsx'
+import type { ColumnDef } from './types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -50,13 +51,6 @@ export function normalizeArabic(text: string): string {
 export interface EntityRow {
   id: string
   [key: string]: unknown
-}
-
-export interface ColumnDef {
-  id: string
-  label: string
-  visible?: boolean
-  type?: string
 }
 
 export async function exportSelectedToCSV(

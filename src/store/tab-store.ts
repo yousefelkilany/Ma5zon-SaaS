@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { Tab, TabType } from '@/lib/utils'
+import type { ColumnDef, FilterState } from '@/lib/types/entity'
 import { t } from 'i18next'
 
 const DEFAULT_DASHBOARD_TAB = {
@@ -17,24 +18,16 @@ interface TabUIState {
   selectedIds: Record<string, boolean>
   expandedIds: Record<string, boolean>
   sort: { columnId: string; direction: 'asc' | 'desc' } | null
-  filters: {
-    columnId: string
-    operator:
-      | 'eq'
-      | 'neq'
-      | 'contains'
-      | 'gt'
-      | 'lt'
-      | 'gte'
-      | 'lte'
-      | 'between'
-    value: string | number | [number, number]
-  }[]
+  filters: Record<string, FilterState[]>
   searchValue: string
   page: number
   pageSize: number
   totalCount: number
   totalPages: number
+  filterDialogOpen: Record<string, boolean>
+  columnDialogOpen: Record<string, boolean>
+  deleteDialogOpen: Record<string, boolean>
+  localColumns: Record<string, ColumnDef[]>
 }
 
 interface TabState {
@@ -49,28 +42,13 @@ interface TabState {
   getTabByType: (type: TabType) => Tab | undefined
   getTabByEntityType: (entityType: string) => Tab | undefined
 
-  getSelectedIds: () => Record<string, boolean>
   setSelectedIds: (ids: Record<string, boolean>) => void
   toggleExpanded: (id: string) => void
   isExpanded: (id: string) => boolean
   setSort: (
     sort: { columnId: string; direction: 'asc' | 'desc' } | null
   ) => void
-  setFilters: (
-    filters: {
-      columnId: string
-      operator:
-        | 'eq'
-        | 'neq'
-        | 'contains'
-        | 'gt'
-        | 'lt'
-        | 'gte'
-        | 'lte'
-        | 'between'
-      value: string | number | [number, number]
-    }[]
-  ) => void
+  setFilters: (entityType: string, filters: FilterState[]) => void
   setSearchValue: (value: string) => void
   setPage: (page: number, pageSize?: number) => void
   setPaginationTotal: (
@@ -78,22 +56,38 @@ interface TabState {
     totalPages: number,
     tabId?: string
   ) => void
+  setFilterDialogOpen: (entityType: string, open: boolean) => void
+  setColumnDialogOpen: (entityType: string, open: boolean) => void
+  setDeleteDialogOpen: (entityType: string, open: boolean) => void
+  setLocalColumns: (entityType: string, columns: ColumnDef[]) => void
 }
 
-const defaultUIState: TabUIState = {
+export const defaultUIState: TabUIState = {
   selectedIds: {},
   expandedIds: {},
   sort: null,
-  filters: [],
+  filters: {},
   searchValue: '',
   page: 1,
   pageSize: 10,
   totalCount: 0,
   totalPages: 1,
+  filterDialogOpen: {},
+  columnDialogOpen: {},
+  deleteDialogOpen: {},
+  localColumns: {},
 }
 
 function ensureUIState(state: TabState, tabId: string): TabUIState {
-  return state.tabUIStates[tabId] ?? { ...defaultUIState }
+  const existing = state.tabUIStates[tabId]
+  if (existing) return existing
+  return {
+    ...defaultUIState,
+    filterDialogOpen: {},
+    columnDialogOpen: {},
+    deleteDialogOpen: {},
+    localColumns: {},
+  }
 }
 
 export const useTabStore = create<TabState>()((set, get) => ({
@@ -160,11 +154,6 @@ export const useTabStore = create<TabState>()((set, get) => ({
     return tabs.find(t => t.entityType === entityType)
   },
 
-  getSelectedIds: () => {
-    const state = get()
-    return ensureUIState(state, state.activeTabId).selectedIds
-  },
-
   setSelectedIds: ids => {
     const { activeTabId } = get()
     set(state => {
@@ -221,14 +210,18 @@ export const useTabStore = create<TabState>()((set, get) => ({
     })
   },
 
-  setFilters: filters => {
+  setFilters: (entityType, filters) => {
     const { activeTabId } = get()
     set(state => {
       const current = ensureUIState(state, activeTabId)
       return {
         tabUIStates: {
           ...state.tabUIStates,
-          [activeTabId]: { ...current, filters, page: 1 },
+          [activeTabId]: {
+            ...current,
+            filters: { ...current.filters, [entityType]: filters },
+            page: 1,
+          },
         },
       }
     })
@@ -280,6 +273,79 @@ export const useTabStore = create<TabState>()((set, get) => ({
             ...current,
             totalCount,
             totalPages,
+          },
+        },
+      }
+    })
+  },
+
+  setFilterDialogOpen: (entityType, open) => {
+    const { activeTabId } = get()
+    set(state => {
+      const current = ensureUIState(state, activeTabId)
+      return {
+        tabUIStates: {
+          ...state.tabUIStates,
+          [activeTabId]: {
+            ...current,
+            filterDialogOpen: {
+              ...current.filterDialogOpen,
+              [entityType]: open,
+            },
+          },
+        },
+      }
+    })
+  },
+
+  setColumnDialogOpen: (entityType, open) => {
+    const { activeTabId } = get()
+    set(state => {
+      const current = ensureUIState(state, activeTabId)
+      return {
+        tabUIStates: {
+          ...state.tabUIStates,
+          [activeTabId]: {
+            ...current,
+            columnDialogOpen: {
+              ...current.columnDialogOpen,
+              [entityType]: open,
+            },
+          },
+        },
+      }
+    })
+  },
+
+  setDeleteDialogOpen: (entityType, open) => {
+    const { activeTabId } = get()
+    set(state => {
+      const current = ensureUIState(state, activeTabId)
+      return {
+        tabUIStates: {
+          ...state.tabUIStates,
+          [activeTabId]: {
+            ...current,
+            deleteDialogOpen: {
+              ...current.deleteDialogOpen,
+              [entityType]: open,
+            },
+          },
+        },
+      }
+    })
+  },
+
+  setLocalColumns: (entityType, columns) => {
+    const { activeTabId } = get()
+    set(state => {
+      const current = ensureUIState(state, activeTabId)
+      return {
+        tabUIStates: {
+          ...state.tabUIStates,
+          [activeTabId]: {
+            ...current,
+            localColumns: { ...current.localColumns, [entityType]: columns },
           },
         },
       }

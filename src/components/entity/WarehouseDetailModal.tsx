@@ -125,24 +125,29 @@ export function WarehouseDetailModal({
     const uniqueVariantIds = [...new Set(movements.map(m => m.variant_id))]
 
     const productNamesMap = new Map<string, string>()
-    for (const pid of uniqueProductIds) {
-      commands.getById(pid).then(productResult => {
-        if (productResult.status === 'ok' && productResult.data) {
-          productNamesMap.set(pid, productResult.data.name)
-          setProductNames(new Map(productNamesMap))
-        }
-      })
-    }
-
     const variantNamesMap = new Map<string, string>()
-    for (const vid of uniqueVariantIds) {
-      commands.variantsGetById(vid).then(variantResult => {
-        if (variantResult.status === 'ok' && variantResult.data) {
-          variantNamesMap.set(vid, variantResult.data.variant_name)
-          setVariantNames(new Map(variantNamesMap))
-        }
-      })
-    }
+
+    Promise.all([
+      Promise.all(
+        uniqueProductIds.map(async pid => {
+          const productResult = await commands.getById(pid)
+          if (productResult.status === 'ok' && productResult.data) {
+            productNamesMap.set(pid, productResult.data.name)
+          }
+        })
+      ),
+      Promise.all(
+        uniqueVariantIds.map(async vid => {
+          const variantResult = await commands.variantsGetById(vid)
+          if (variantResult.status === 'ok' && variantResult.data) {
+            variantNamesMap.set(vid, variantResult.data.variant_name)
+          }
+        })
+      ),
+    ]).then(() => {
+      setProductNames(new Map(productNamesMap))
+      setVariantNames(new Map(variantNamesMap))
+    })
   }, [movements])
 
   useEffect(() => {

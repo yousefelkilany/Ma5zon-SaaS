@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { QueryClient } from '@tanstack/react-query'
 import type {
@@ -17,6 +17,7 @@ import { ConfirmationDialog } from './ConfirmationDialog'
 import Fuse from 'fuse.js'
 import { normalizeArabic } from '@/lib/utils'
 import { useTabStore } from '@/store/tab-store'
+import { useActiveTabUI } from '@/hooks/useActiveTabUI'
 
 interface DataTableShellProps {
   entityType: string
@@ -61,27 +62,33 @@ export function DataTableShell({
   onProductClick,
 }: DataTableShellProps) {
   const { t } = useTranslation()
-  const { tabUIStates, activeTabId } = useTabStore()
-  const currentTabState = tabUIStates[activeTabId]
+  const tabUIState = useTabStore(state => state.tabUIStates[state.activeTabId])
   const selectedIds = useMemo(
-    () => currentTabState?.selectedIds ?? {},
-    [currentTabState?.selectedIds]
+    () => tabUIState?.selectedIds ?? {},
+    [tabUIState?.selectedIds]
   )
   const isExpanded = useMemo(
     () => (id: string) => useTabStore.getState().isExpanded(id),
     []
   )
-  const sort = currentTabState?.sort ?? null
-  const filters = currentTabState?.filters ?? []
-  const searchValue = currentTabState?.searchValue ?? ''
   const setSelectedIds = useTabStore(state => state.setSelectedIds)
-  const setSort = useTabStore(state => state.setSort)
-  const setFilters = useTabStore(state => state.setFilters)
-  const setSearchValue = useTabStore(state => state.setSearchValue)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [filterDialogOpen, setFilterDialogOpen] = useState(false)
-  const [columnDialogOpen, setColumnDialogOpen] = useState(false)
-  const [localColumns, setLocalColumns] = useState<ColumnDef[]>(columns)
+
+  const {
+    sort,
+    searchValue,
+    filters,
+    filterDialogOpen,
+    columnDialogOpen,
+    deleteDialogOpen,
+    localColumns,
+    setSort,
+    setSearchValue,
+    setFilters,
+    setFilterDialogOpen,
+    setColumnDialogOpen,
+    setDeleteDialogOpen,
+    setLocalColumns,
+  } = useActiveTabUI(entityType)
 
   const clientSearchIds = useMemo((): Record<string, boolean> | null => {
     if (!searchValue.trim() || searchValue.length < 2) {
@@ -123,7 +130,7 @@ export function DataTableShell({
 
   const handleSearchChange = useCallback(
     (value: string) => {
-      const currentSelectedIds = currentTabState?.selectedIds ?? {}
+      const currentSelectedIds = tabUIState?.selectedIds ?? {}
       if (value.trim().length < 2 || !clientSearchIds) {
         setSearchValue(value)
         return
@@ -136,7 +143,7 @@ export function DataTableShell({
       setSelectedIds(intersectedIds)
       setSearchValue(value)
     },
-    [clientSearchIds, currentTabState, setSearchValue, setSelectedIds]
+    [clientSearchIds, tabUIState, setSearchValue, setSelectedIds]
   )
 
   const cachedDataMap = useRef<Map<string, EntityRow>>(new Map())
@@ -149,7 +156,7 @@ export function DataTableShell({
 
   useEffect(() => {
     setLocalColumns(columns)
-  }, [columns])
+  }, [columns, entityType, setLocalColumns])
 
   const handleSortChange = useCallback(
     (newSort: SortState | null) => {
@@ -196,13 +203,13 @@ export function DataTableShell({
 
   const handleDeleteClick = useCallback(() => {
     setDeleteDialogOpen(true)
-  }, [])
+  }, [setDeleteDialogOpen])
 
   const handleConfirmDelete = useCallback(() => {
     onDelete(new Set(Object.keys(selectedIds)))
     setDeleteDialogOpen(false)
     setSelectedIds({})
-  }, [selectedIds, onDelete, setSelectedIds])
+  }, [selectedIds, onDelete, setSelectedIds, setDeleteDialogOpen])
 
   const handleFiltersApply = useCallback(
     (newFilters: FilterState[]) => {
@@ -253,14 +260,20 @@ export function DataTableShell({
       />
       <FilterDialog
         open={filterDialogOpen}
-        onOpenChange={setFilterDialogOpen}
+        onOpenChange={open => setFilterDialogOpen(open)}
         columns={columns}
         filters={filters}
         onApply={handleFiltersApply}
       />
       <ColumnVisibilityDialog
         open={columnDialogOpen}
-        onOpenChange={setColumnDialogOpen}
+        onOpenChange={open => {
+          setColumnDialogOpen(open)
+          if (!open) {
+            setLocalColumns(columns)
+            onSaveColumnPrefs(columns)
+          }
+        }}
         columns={localColumns}
         onSave={cols => {
           setLocalColumns(cols)
@@ -270,9 +283,7 @@ export function DataTableShell({
       />
       <ConfirmationDialog
         open={deleteDialogOpen}
-        onOpenChange={open => {
-          setDeleteDialogOpen(open)
-        }}
+        onOpenChange={open => setDeleteDialogOpen(open)}
         title={t('entity.workspace.deleteConfirmTitle')}
         description={t('entity.workspace.deleteConfirmDescription', {
           count: Object.keys(selectedIds).length,

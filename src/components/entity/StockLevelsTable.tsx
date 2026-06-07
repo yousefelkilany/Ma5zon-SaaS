@@ -116,7 +116,7 @@ function VariantStockView({
           <Fragment key={`${level.variant_id}-${level.warehouse_id}-${idx}`}>
             <tr className="border-t border-outline-variant/30">
               <td className="px-3 py-2 text-on-surface">
-                {warehouseNames?.get(level.warehouse_id) ?? level.warehouse_id}
+                {level.warehouse_id ? (warehouseNames?.get(level.warehouse_id) ?? level.warehouse_id) : '-'}
               </td>
               <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
                 {level.quantity.toLocaleString(locale)}
@@ -257,7 +257,7 @@ function ProductStockPivot({
               key={wId}
               className="px-3 py-2 text-end text-on-surface-variant font-label-caps"
             >
-              {warehouseNames?.get(wId) ?? wId}
+              {wId ? (warehouseNames?.get(wId) ?? wId) : '-'}
             </th>
           ))}
           <th className="px-3 py-2 text-end text-on-surface-variant font-label-caps">
@@ -414,8 +414,8 @@ function InlineTransferSection({
             disabled
             className="bg-surface-disabled border border-outline-variant rounded px-2 py-1 text-body-sm text-on-surface-variant"
           >
-            <option value={warehouseId}>
-              {warehouseNames?.get(warehouseId) ?? warehouseId}
+            <option value={warehouseId ?? ''}>
+              {warehouseId ? (warehouseNames?.get(warehouseId) ?? warehouseId) : '-'}
             </option>
           </select>
           <select

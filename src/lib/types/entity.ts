@@ -40,9 +40,19 @@ export interface SortState {
   direction: 'asc' | 'desc'
 }
 
+type FilteOperator =
+  | 'eq'
+  | 'neq'
+  | 'contains'
+  | 'gt'
+  | 'lt'
+  | 'gte'
+  | 'lte'
+  | 'between'
+
 export interface FilterState {
   columnId: string
-  operator: 'eq' | 'neq' | 'contains' | 'gt' | 'lt' | 'gte' | 'lte' | 'between'
+  operator: FilteOperator
   value: string | number | [number, number]
 }
 

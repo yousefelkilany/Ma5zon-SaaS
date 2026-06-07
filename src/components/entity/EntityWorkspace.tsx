@@ -84,7 +84,6 @@ function EntityHeader({
 
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const queryClient = useQueryClient()
-  const [activeFilters, setActiveFilters] = useState<FilterState[]>([])
   const [sort, setSort] = useState<SortState | null>(null)
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [createModalType, setCreateModalType] = useState<
@@ -167,10 +166,12 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   )
 
   const { data: entityData, isLoading } = useQuery({
-    queryKey: ['entity', entityType, activeFilters, sort, page, pageSize],
+    queryKey: ['entity', entityType, sort, page, pageSize],
     queryFn: async () => {
       const activeTabIdAtFetch = useTabStore.getState().activeTabId
-      const bindingFilters: BindingFilterState[] = activeFilters.map(f => ({
+      const tabUIStateAtFetch = useTabStore.getState().tabUIStates[activeTabIdAtFetch]
+      const currentFilters = tabUIStateAtFetch?.filters?.[entityType] ?? []
+      const bindingFilters: BindingFilterState[] = currentFilters.map(f => ({
         column_id: f.columnId,
         operator: f.operator,
         value: f.value,
@@ -264,7 +265,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
 
   const handleFiltersApply = useCallback(
     (filters: FilterState[]) => {
-      setActiveFilters(filters)
+      useTabStore.getState().setFilters(entityType, filters)
       useTabStore.getState().setPage(1)
       queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
     },
