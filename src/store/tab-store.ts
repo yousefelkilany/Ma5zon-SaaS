@@ -50,7 +50,7 @@ export const defaultUIState: TabUIState = {
   expandedIds: {},
 }
 
-interface TabState {
+interface WorkspaceState {
   tabs: Tab[]
   activeTabId: string
   tabUIStates: Record<string, TabUIState>
@@ -80,7 +80,7 @@ interface TabState {
   setLocalColumns: (columns: ColumnDef[]) => void
 }
 
-function ensureUIState(state: TabState, tabId: string): TabUIState {
+function ensureUIState(state: WorkspaceState, tabId: string): TabUIState {
   const existing = state.tabUIStates[tabId]
   if (existing) return existing
   return {
@@ -88,7 +88,7 @@ function ensureUIState(state: TabState, tabId: string): TabUIState {
   }
 }
 
-export const useTabStore = create<TabState>()((set, get) => ({
+export const useTabStore = create<WorkspaceState>()((set, get) => ({
   tabs: [DEFAULT_DASHBOARD_TAB],
   activeTabId: 'dashboard',
   tabUIStates: {},
