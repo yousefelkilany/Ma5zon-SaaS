@@ -6,7 +6,6 @@ import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
-import type { StockLevelWithVariant } from '@/lib/types/entity'
 import type { StockLevel } from '@/lib/bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import { StockLevelsTable } from './StockLevelsTable'
@@ -88,9 +87,6 @@ export function VariantDetailModal({
   const [deleteError, setDeleteError] = useState('')
   const [loadError, setLoadError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
-  const [stockLevels, setStockLevels] = useState<StockLevelWithVariant[]>([])
-  const [isLoadingStock, setIsLoadingStock] = useState(false)
-  const [stockLoadError, setStockLoadError] = useState('')
   const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
     new Map()
   )
@@ -128,34 +124,38 @@ export function VariantDetailModal({
     }
   }, [entityId])
 
-  const loadStockLevels = useCallback(async () => {
-    if (!entityId) return
-    setIsLoadingStock(true)
-    const result = await commands.stockLevelsGetByVariant(entityId)
-    console.log('[DEBUG] stockLevelsGetByVariant result:', result)
-    setIsLoadingStock(false)
-    if (result.status === 'ok') {
-      console.log('[DEBUG] stock levels data:', result.data)
-      setStockLevels(
-        result.data.map((l: StockLevel) => ({
-          ...l,
-          variant_name: '',
-          sku: '',
-        }))
-      )
-      const whResult = await commands.warehousesGetAll([], [], null)
-      if (whResult.status === 'ok') {
-        const names = new Map<string, string>()
-        for (const w of whResult.data) {
-          names.set(w.id, w.name)
-        }
-        setWarehouseNames(names)
+  const { data: stockLevels, isLoading: isLoadingStock } = useQuery({
+    queryKey: ['stock-levels-variant', entityId],
+    queryFn: async () => {
+      const result = await commands.stockLevelsGetByVariant(entityId)
+      if (result.status !== 'ok') throw new Error(result.error)
+      return result.data.map((l: StockLevel) => ({
+        ...l,
+        variant_name: '',
+        sku: '',
+      }))
+    },
+    enabled: activeTab === 'stock' && !!entityId,
+  })
+
+  const { data: warehouses } = useQuery({
+    queryKey: ['warehouses', 'all'],
+    queryFn: async () => {
+      const result = await commands.warehousesGetAll([], [], null)
+      if (result.status === 'ok') return result.data
+      return []
+    },
+  })
+
+  useEffect(() => {
+    if (warehouses) {
+      const names = new Map<string, string>()
+      for (const w of warehouses) {
+        names.set(w.id, w.name)
       }
-    } else {
-      console.error('[DEBUG] stock levels error:', result.error)
-      setStockLoadError(result.error ?? 'Failed to load stock')
+      setWarehouseNames(names)
     }
-  }, [entityId])
+  }, [warehouses])
 
   const { data: movements, isLoading: isLoadingMovements, error: movementsError } = useQuery({
     queryKey: ['stock-movements-variant', entityId],
@@ -164,24 +164,9 @@ export function VariantDetailModal({
       if (result.status === 'ok') return result.data
       throw new Error(result.error)
     },
- })
-
-  useEffect(() => {
-    if (
-      activeTab === 'stock' &&
-      stockLevels.length === 0 &&
-      !isLoadingStock &&
-      !stockLoadError
-    ) {
-      loadStockLevels()
-    }
-  }, [
-    activeTab,
-    stockLevels.length,
-    isLoadingStock,
-    stockLoadError,
-    loadStockLevels,
-  ])
+    enabled: !!entityId,
+    retry: false,
+  })
 
   useEffect(() => {
     if (!open) {
@@ -198,8 +183,6 @@ export function VariantDetailModal({
       })
       setActiveTab('details')
       setDeleteError('')
-      setStockLevels([])
-      setStockLoadError('')
       setWarehouseNames(new Map())
       setCurrentPage(1)
       setIsDirty(false)
@@ -420,11 +403,11 @@ export function VariantDetailModal({
                   aria-labelledby="stock-tab"
                 >
                   <StockLevelsTable
-                    stockLevels={stockLevels}
+                    stockLevels={stockLevels ?? []}
                     isLoading={isLoadingStock}
                     view="variant"
                     warehouseNames={warehouseNames}
-                    onTransferSuccess={loadStockLevels}
+                    onTransferSuccess={() => queryClient.invalidateQueries({ queryKey: ['stock-levels-variant', entityId] })}
                   />
                 </div>
               )}

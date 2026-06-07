@@ -124,10 +124,10 @@ pub fn get_stock_levels_by_product() -> &'static str {
         v.id AS variant_id,
         v.variant_name,
         v.sku,
-        COALESCE(s.warehouse_id, 0) AS warehouse_id,
-        CAST(COALESCE(s.quantity, 0) AS INTEGER) AS quantity
+        s.warehouse_id,
+        s.quantity
      FROM active_product_variants v
-     LEFT JOIN stock_levels s ON v.id = s.variant_id
+     INNER JOIN stock_levels s ON v.id = s.variant_id
      WHERE v.product_id = ?1
      ORDER BY v.variant_name"
 }
@@ -137,11 +137,11 @@ pub fn get_levels_by_warehouse_with_names() -> &'static str {
         v.id AS variant_id,
         v.variant_name,
         v.sku,
-        COALESCE(s.warehouse_id, 0) AS warehouse_id,
-        CAST(COALESCE(s.quantity, 0) AS INTEGER) AS quantity
+        s.warehouse_id,
+        s.quantity
      FROM active_product_variants v
      JOIN products p ON v.product_id = p.id
-     LEFT JOIN stock_levels s ON v.id = s.variant_id AND s.warehouse_id = ?1
+     INNER JOIN stock_levels s ON v.id = s.variant_id AND s.warehouse_id = ?1
      ORDER BY v.variant_name"
 }
 
