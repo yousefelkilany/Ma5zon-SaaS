@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { cn } from '@/lib/utils'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { usePlatform, type AppPlatform } from '@/hooks/use-platform'
-import { useTabStore } from '@/store/tab-store'
+import { useTabStore } from '@/store/workspace-store'
 import { MacOSWindowControls } from './MacOSWindowControls'
 import { WindowsWindowControls } from './WindowsWindowControls'
 import {

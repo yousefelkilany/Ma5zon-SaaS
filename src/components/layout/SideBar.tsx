@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
-import { useTabStore } from '@/store/tab-store'
+import { useTabStore } from '@/store/workspace-store'
 import { useAuth } from '@/hooks/useAuth'
 import { requestLogin } from '@/hooks/useAuth'
 

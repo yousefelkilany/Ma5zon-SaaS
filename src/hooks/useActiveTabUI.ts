@@ -1,4 +1,4 @@
-import { defaultUIState, useTabStore } from '@/store/tab-store'
+import { defaultUIState, useTabStore } from '@/store/workspace-store'
 import { useShallow } from 'zustand/react/shallow'
 
 export const useActiveTabUI = () =>

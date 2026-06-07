@@ -16,7 +16,7 @@ import { ColumnVisibilityDialog } from './ColumnVisibilityDialog'
 import { ConfirmationDialog } from './ConfirmationDialog'
 import Fuse from 'fuse.js'
 import { normalizeArabic } from '@/lib/utils'
-import { useTabStore } from '@/store/tab-store'
+import { useTabStore } from '@/store/workspace-store'
 import { useActiveTabUI, useTabActions } from '@/hooks/useActiveTabUI'
 
 interface DataTableShellProps {

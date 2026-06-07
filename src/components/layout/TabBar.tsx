@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { useTabStore } from '@/store/tab-store'
+import { useTabStore } from '@/store/workspace-store'
 import { useAuth } from '@/hooks/useAuth'
 import { requestLogin } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'

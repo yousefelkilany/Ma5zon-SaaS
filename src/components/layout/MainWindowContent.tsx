@@ -6,7 +6,7 @@ import {
   useLocation,
   useParams,
 } from 'react-router-dom'
-import { useTabStore } from '@/store/tab-store'
+import { useTabStore } from '@/store/workspace-store'
 import { DashboardContent, NewTabContent } from '@/components/tabs'
 import { EntityWorkspace } from '@/components/entity'
 
