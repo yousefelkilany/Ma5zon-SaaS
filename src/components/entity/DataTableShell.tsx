@@ -17,7 +17,7 @@ import { ConfirmationDialog } from './ConfirmationDialog'
 import Fuse from 'fuse.js'
 import { normalizeArabic } from '@/lib/utils'
 import { useTabStore } from '@/store/tab-store'
-import { useActiveTabUI } from '@/hooks/useActiveTabUI'
+import { useActiveTabUI, useTabActions } from '@/hooks/useActiveTabUI'
 
 interface DataTableShellProps {
   entityType: string
@@ -35,8 +35,8 @@ interface DataTableShellProps {
   ) => void
   onDelete: (ids: Set<string>) => void
   onPageChange?: (page: number, pageSize: number) => void
-  sort?: SortState | null
-  onSortChange?: (sort: SortState | null) => void
+  sort?: SortState
+  onSortChange?: (sort?: SortState) => void
   onVariantClick?: (variantId: string, productId: string) => void
   onAddVariant?: (productId: string) => void
   onProductClick?: (productId: string) => void
@@ -81,6 +81,9 @@ export function DataTableShell({
     columnDialogOpen,
     deleteDialogOpen,
     localColumns,
+  } = useActiveTabUI()
+
+  const {
     setSort,
     setSearchValue,
     setFilters,
@@ -88,10 +91,10 @@ export function DataTableShell({
     setColumnDialogOpen,
     setDeleteDialogOpen,
     setLocalColumns,
-  } = useActiveTabUI(entityType)
+  } = useTabActions()
 
   const clientSearchIds = useMemo((): Record<string, boolean> | null => {
-    if (!searchValue.trim() || searchValue.length < 2) {
+    if (!searchValue?.trim() || searchValue.length < 2) {
       return null
     }
 
@@ -159,7 +162,7 @@ export function DataTableShell({
   }, [columns, entityType, setLocalColumns])
 
   const handleSortChange = useCallback(
-    (newSort: SortState | null) => {
+    (newSort?: SortState) => {
       setSelectedIds({})
       setSort(newSort)
       onSortChange?.(newSort)

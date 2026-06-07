@@ -66,10 +66,10 @@ export interface DataTableProps {
   queryClient: QueryClient
   columns: ColumnDef[]
   data: EntityRow[]
-  sort: SortState | null
+  sort?: SortState
   isLoading: boolean
   selectedIds: Record<string, boolean>
-  onSort: (sort: SortState | null) => void
+  onSort: (sort?: SortState) => void
   onRowSelect: (ids: Set<string>) => void
   onRowClick: (id: string, row: EntityRow) => void
   stockLevelsCache?: Map<string, StockLevelWithVariant[]>
@@ -84,7 +84,7 @@ export interface PaginationFooterProps {
 }
 
 export interface ToolbarProps {
-  searchValue: string
+  searchValue?: string
   onSearchChange: (value: string) => void
   onFiltersClick: () => void
   onColumnsClick: () => void
