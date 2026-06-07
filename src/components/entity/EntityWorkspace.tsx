@@ -20,7 +20,7 @@ import { ProductDetailModal } from './ProductDetailModal'
 import { cn } from '@/lib/utils'
 import { PrintPreviewDialog } from './PrintPreviewDialog'
 import { exportSelectedToCSV, exportSelectedToExcel } from '@/lib/utils'
-import { useTabStore } from '@/store/tab-store'
+import { useTabStore } from '@/store/workspace-store'
 
 function EntityHeader({
   entityType,
@@ -84,7 +84,7 @@ function EntityHeader({
 
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const queryClient = useQueryClient()
-  const [sort, setSort] = useState<SortState | null>(null)
+  const [sort, setSort] = useState<SortState | undefined>(undefined)
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [createModalType, setCreateModalType] = useState<
     'products' | 'warehouses' | 'product_variants' | null
@@ -248,7 +248,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   )
 
   const handleSortChange = useCallback(
-    (newSort: SortState | null) => {
+    (newSort: SortState | undefined) => {
       setSort(newSort)
       useTabStore.getState().setPage(1)
     },
