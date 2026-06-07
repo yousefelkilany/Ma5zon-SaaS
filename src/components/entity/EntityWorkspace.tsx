@@ -170,7 +170,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     queryFn: async () => {
       const activeTabIdAtFetch = useTabStore.getState().activeTabId
       const tabUIStateAtFetch = useTabStore.getState().tabUIStates[activeTabIdAtFetch]
-      const currentFilters = tabUIStateAtFetch?.filters?.[entityType] ?? []
+      const currentFilters = tabUIStateAtFetch?.filters ?? []
       const bindingFilters: BindingFilterState[] = currentFilters.map(f => ({
         column_id: f.columnId,
         operator: f.operator,
@@ -265,7 +265,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
 
   const handleFiltersApply = useCallback(
     (filters: FilterState[]) => {
-      useTabStore.getState().setFilters(entityType, filters)
+      useTabStore.getState().setFilters(filters)
       useTabStore.getState().setPage(1)
       queryClient.invalidateQueries({ queryKey: ['entity', entityType] })
     },
