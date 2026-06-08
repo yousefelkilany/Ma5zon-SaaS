@@ -1,5 +1,6 @@
-import { useMemo, useCallback, useState, Fragment } from 'react'
+import { useMemo, useCallback, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from '@tanstack/react-router'
 import {
   useReactTable,
   getCoreRowModel,
@@ -15,9 +16,6 @@ import { useTabStore } from '@/store/workspace-store'
 import { commands } from '@/lib/tauri-bindings'
 import { VariantsSubTable } from './VariantsSubTable'
 import { WarehousesSubTable } from './WarehousesSubTable'
-import { ProductModal } from './ProductModal'
-import { WarehouseModal } from './WarehouseModal'
-import { VariantModal } from './VariantModal'
 
 function StatusBadge({ status }: { status: string }) {
   const badgeClass =
@@ -86,7 +84,7 @@ export function DataTable({
   onProductClick,
 }: DataTableProps & ExpandedRowProps) {
   const { t } = useTranslation()
-  const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   const visibleColumns = useMemo(
     () => columns.filter(col => col.visible).sort((a, b) => a.order - b.order),
@@ -163,9 +161,26 @@ export function DataTable({
     return cols
   }, [selectColumn, expandColumn, entityType, visibleColumns])
 
-  const handleRowClick = useCallback((id: string, _row: EntityRow) => {
-    setSelectedEntityId(id)
-  }, [])
+  const handleRowClick = useCallback(
+    (id: string, _row: EntityRow) => {
+      const modalType =
+        entityType === 'products'
+          ? 'product'
+          : entityType === 'warehouses'
+            ? 'warehouse'
+            : entityType === 'variants'
+              ? 'variant'
+              : null
+      if (modalType) {
+        navigate({
+          to: '/entity/:entityType',
+          params: { entityType: entityType },
+          search: { entity_modal: modalType, entity_id: id },
+        })
+      }
+    },
+    [navigate, entityType]
+  )
 
   const internalOnRowClick = useCallback(
     (id: string, row: EntityRow) => {
@@ -388,33 +403,6 @@ export function DataTable({
           </table>
         </div>
       </div>
-      {entityType === 'products' && selectedEntityId && (
-        <ProductModal
-          entityId={selectedEntityId}
-          queryClient={queryClient}
-          onDeleted={() => {
-            setSelectedEntityId(null)
-          }}
-        />
-      )}
-      {entityType === 'warehouses' && selectedEntityId && (
-        <WarehouseModal
-          entityId={selectedEntityId}
-          queryClient={queryClient}
-          onDeleted={() => {
-            setSelectedEntityId(null)
-          }}
-        />
-      )}
-      {entityType === 'variants' && selectedEntityId && (
-        <VariantModal
-          entityId={selectedEntityId}
-          queryClient={queryClient}
-          onDeleted={() => {
-            setSelectedEntityId(null)
-          }}
-        />
-      )}
     </>
   )
 }
