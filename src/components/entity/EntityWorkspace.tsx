@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { commands } from '@/lib/tauri-bindings'
 import type { FilterState as BindingFilterState } from '@/lib/bindings'
 import { getEntityLayout } from '@/lib/entity-layout'
@@ -15,8 +16,6 @@ import { DataTableShell } from './DataTableShell'
 import { ProductCreateModal } from './ProductCreateModal'
 import { WarehouseCreateModal } from './WarehouseCreateModal'
 import { VariantCreateModal } from './VariantCreateModal'
-import { VariantModal } from './VariantModal'
-import { ProductModal } from './ProductModal'
 import { cn } from '@/lib/utils'
 import { PrintPreviewDialog } from './PrintPreviewDialog'
 import { exportSelectedToCSV, exportSelectedToExcel } from '@/lib/utils'
@@ -84,21 +83,14 @@ function EntityHeader({
 
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const [sort, setSort] = useState<SortState | undefined>()
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [createModalType, setCreateModalType] = useState<
     'products' | 'warehouses' | 'product_variants' | null
   >(null)
   const [createModalProductId, setCreateModalProductId] = useState<string>('')
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
-    null
-  )
-  const [selectedVariantProductId, setSelectedVariantProductId] = useState<
-    string | null
-  >(null)
   const [columnPrefs, setColumnPrefs] = useState<ColumnDef[] | null>(null)
-  const [productDetailOpen, setProductDetailOpen] = useState(false)
-  const [productDetailId, setProductDetailId] = useState<string | null>(null)
   const [printPreviewOpen, setPrintPreviewOpen] = useState(false)
   const [selectedForPrint, setSelectedForPrint] = useState<EntityRow[]>([])
   const [_isExporting, setIsExporting] = useState(false)
@@ -134,17 +126,26 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     if (!open) setCreateModalType(null)
   }, [])
 
-  const handleProductClick = useCallback((productId: string) => {
-    setProductDetailId(productId)
-    setProductDetailOpen(true)
-  }, [])
+  const handleProductClick = useCallback(
+    (productId: string) => {
+      navigate({
+        to: '/entity/:entityType',
+        params: { entityType: entityType },
+        search: { entity_modal: 'product', entity_id: productId },
+      })
+    },
+    [navigate, entityType]
+  )
 
   const handleVariantClick = useCallback(
-    (variantId: string, productId: string) => {
-      setSelectedVariantId(variantId)
-      setSelectedVariantProductId(productId)
+    (variantId: string, _productId: string) => {
+      navigate({
+        to: '/entity/:entityType',
+        params: { entityType: entityType },
+        search: { entity_modal: 'variant', entity_id: variantId },
+      })
     },
-    []
+    [navigate, entityType]
   )
 
   const handleAddVariant = useCallback((productId: string) => {
@@ -152,16 +153,6 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     setCreateModalProductId(productId)
     setCreateModalOpen(true)
   }, [])
-
-  const handleVariantSaved = useCallback(
-    async (_variant: { product_id: string }) => {
-      if (!selectedVariantProductId) return
-      queryClient.invalidateQueries({
-        queryKey: ['entity', 'products', 'variants', selectedVariantProductId],
-      })
-    },
-    [selectedVariantProductId, queryClient]
-  )
 
   const { data: entityData, isLoading } = useQuery({
     queryKey: ['entity', entityType, sort, page, pageSize],
@@ -371,26 +362,6 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         queryClient={queryClient}
         productId={createModalProductId}
       />
-      {entityType === 'products' && selectedVariantId && (
-        <VariantModal
-          entityId={selectedVariantId}
-          queryClient={queryClient}
-          onDeleted={() => {
-            setSelectedVariantId(null)
-          }}
-          onSaved={handleVariantSaved}
-        />
-      )}
-      {entityType === 'warehouses' && productDetailId && (
-        <ProductModal
-          entityId={productDetailId}
-          queryClient={queryClient}
-          onDeleted={() => {
-            setProductDetailOpen(false)
-            setProductDetailId(null)
-          }}
-        />
-      )}
       <PrintPreviewDialog
         open={printPreviewOpen}
         onOpenChange={setPrintPreviewOpen}
