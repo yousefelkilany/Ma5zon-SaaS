@@ -14,9 +14,7 @@ import { ProductForm } from '@/components/entity-form'
 import { updateProductSchema } from '@/lib/validation/schemas'
 import { EntityFieldGrid } from './EntityFieldGrid'
 
-interface ProductDetailModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+interface ProductModalProps {
   entityId: string
   queryClient: QueryClient
   onDeleted?: () => void
@@ -46,13 +44,11 @@ const PRODUCT_ROWS = [
   ],
 ]
 
-export function ProductDetailModal({
-  open,
-  onOpenChange,
+export function ProductModal({
   entityId,
   queryClient,
   onDeleted,
-}: ProductDetailModalProps) {
+}: ProductModalProps) {
   const { t } = useTranslation()
   const [entity, setEntity] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -171,23 +167,10 @@ export function ProductDetailModal({
   })
 
   useEffect(() => {
-    if (!open) {
-      setEntity(null)
-      setIsLoading(true)
-      setIsEditing(false)
-      setEditForm({ company: '', name: '', category: '' })
-      setIsDirty(false)
-      setActiveTab('details')
-      setDeleteError('')
-      setWarehouseNames(new Map())
-    }
-  }, [open])
-
-  useEffect(() => {
-    if (open && entityId) {
+    if (entityId) {
       loadEntity()
     }
-  }, [open, entityId, loadEntity])
+  }, [entityId, loadEntity])
 
   useEffect(() => {
     if (!showDeleteConfirm) {
@@ -240,7 +223,6 @@ export function ProductDetailModal({
     setIsDeleting(false)
     if (result.status === 'ok') {
       setShowDeleteConfirm(false)
-      onOpenChange(false)
       queryClient.invalidateQueries({ queryKey: ['entity', 'products'] })
       onDeleted?.()
     } else {
@@ -272,16 +254,9 @@ export function ProductDetailModal({
 
   return (
     <>
-      <Dialog
-        open={open}
-        onOpenChange={open => {
-          if (!open && isDirty) return
-          onOpenChange(open)
-        }}
-      >
+      <Dialog open={true} onOpenChange={() => {}}>
         <DialogContent>
           <div className="flex flex-col h-full">
-            {/* Tab Bar */}
             <div
               className="flex border-b border-outline-variant mb-4"
               role="tablist"
@@ -308,7 +283,6 @@ export function ProductDetailModal({
               ))}
             </div>
 
-            {/* Tab Content */}
             <div className="flex-1 overflow-auto">
               {activeTab === 'details' && (
                 <div
@@ -339,7 +313,6 @@ export function ProductDetailModal({
                         <EntityFieldGrid rows={PRODUCT_ROWS} entity={entity} />
                       )}
 
-                      {/* Footer Actions */}
                       {saveError && (
                         <p className="text-body-sm text-error">{saveError}</p>
                       )}

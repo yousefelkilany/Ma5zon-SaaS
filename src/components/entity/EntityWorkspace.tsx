@@ -16,7 +16,7 @@ import { ProductCreateModal } from './ProductCreateModal'
 import { WarehouseCreateModal } from './WarehouseCreateModal'
 import { VariantCreateModal } from './VariantCreateModal'
 import { VariantDetailModal } from './VariantDetailModal'
-import { ProductDetailModal } from './ProductDetailModal'
+import { ProductModal } from './ProductModal'
 import { cn } from '@/lib/utils'
 import { PrintPreviewDialog } from './PrintPreviewDialog'
 import { exportSelectedToCSV, exportSelectedToExcel } from '@/lib/utils'
@@ -387,12 +387,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         />
       )}
       {entityType === 'warehouses' && productDetailId && (
-        <ProductDetailModal
-          open={productDetailOpen}
-          onOpenChange={open => {
-            setProductDetailOpen(open)
-            if (!open) setProductDetailId(null)
-          }}
+        <ProductModal
           entityId={productDetailId}
           queryClient={queryClient}
           onDeleted={() => {

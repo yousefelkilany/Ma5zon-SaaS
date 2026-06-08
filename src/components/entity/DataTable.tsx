@@ -15,7 +15,7 @@ import { useTabStore } from '@/store/workspace-store'
 import { commands } from '@/lib/tauri-bindings'
 import { VariantsSubTable } from './VariantsSubTable'
 import { WarehousesSubTable } from './WarehousesSubTable'
-import { ProductDetailModal } from './ProductDetailModal'
+import { ProductModal } from './ProductModal'
 import { WarehouseDetailModal } from './WarehouseDetailModal'
 import { VariantDetailModal } from './VariantDetailModal'
 
@@ -391,9 +391,7 @@ export function DataTable({
         </div>
       </div>
       {entityType === 'products' && selectedEntityId && (
-        <ProductDetailModal
-          open={editModalOpen}
-          onOpenChange={setEditModalOpen}
+        <ProductModal
           entityId={selectedEntityId}
           queryClient={queryClient}
           onDeleted={() => {
