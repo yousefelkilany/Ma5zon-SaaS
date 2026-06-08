@@ -12,33 +12,37 @@
 
 ## File Map
 
-| Action | File |
-|--------|------|
-| Rename | `src/store/tab-store.ts` → `src/store/workspace-store.ts` |
+| Action | File                                                                |
+| ------ | ------------------------------------------------------------------- |
+| Rename | `src/store/tab-store.ts` → `src/store/workspace-store.ts`           |
 | Rename | `src/store/tab-store.test.ts` → `src/store/workspace-store.test.ts` |
-| Modify | `src/components/entity/DataTableShell.tsx` |
-| Modify | `src/components/entity/EntityWorkspace.tsx` |
-| Modify | `src/components/entity/DataTable.tsx` |
-| Modify | `src/components/layout/SideBar.tsx` |
-| Modify | `src/components/layout/TabBar.tsx` |
-| Modify | `src/components/layout/MainWindowContent.tsx` |
-| Modify | `src/components/titlebar/TitleBar.tsx` |
-| Modify | `src/hooks/useActiveTabUI.ts` |
+| Modify | `src/components/entity/DataTableShell.tsx`                          |
+| Modify | `src/components/entity/EntityWorkspace.tsx`                         |
+| Modify | `src/components/entity/DataTable.tsx`                               |
+| Modify | `src/components/layout/SideBar.tsx`                                 |
+| Modify | `src/components/layout/TabBar.tsx`                                  |
+| Modify | `src/components/layout/MainWindowContent.tsx`                       |
+| Modify | `src/components/titlebar/TitleBar.tsx`                              |
+| Modify | `src/hooks/useActiveTabUI.ts`                                       |
 
 ---
 
 ## Task 1: Rename TabState → WorkspaceState in store file
 
 **Files:**
+
 - Modify: `src/store/tab-store.ts:53`
 
 - [ ] **Step 1: Rename interface**
 
 Change line 53:
+
 ```typescript
 interface TabState {
 ```
+
 to:
+
 ```typescript
 interface WorkspaceState {
 ```
@@ -46,10 +50,13 @@ interface WorkspaceState {
 - [ ] **Step 2: Update ensureUIState parameter type**
 
 Change line 83:
+
 ```typescript
 function ensureUIState(state: TabState, tabId: string): TabUIState {
 ```
+
 to:
+
 ```typescript
 function ensureUIState(state: WorkspaceState, tabId: string): TabUIState {
 ```
@@ -57,10 +64,13 @@ function ensureUIState(state: WorkspaceState, tabId: string): TabUIState {
 - [ ] **Step 3: Update create call**
 
 Change line 91:
+
 ```typescript
 export const useTabStore = create<TabState>()((set, get) => ({
 ```
+
 to:
+
 ```typescript
 export const useTabStore = create<WorkspaceState>()((set, get) => ({
 ```
@@ -77,6 +87,7 @@ git commit -m "refactor: rename TabState → WorkspaceState in tab-store"
 ## Task 2: Rename tab-store files
 
 **Files:**
+
 - Rename: `src/store/tab-store.ts` → `src/store/workspace-store.ts`
 - Rename: `src/store/tab-store.test.ts` → `src/store/workspace-store.test.ts`
 
@@ -90,10 +101,13 @@ mv src/store/tab-store.test.ts src/store/workspace-store.test.ts
 - [ ] **Step 2: Update import in test file**
 
 In `src/store/workspace-store.test.ts`, change:
+
 ```typescript
 import { useTabStore } from './tab-store'
 ```
+
 to:
+
 ```typescript
 import { useTabStore } from './workspace-store'
 ```
@@ -110,16 +124,20 @@ git commit -m "refactor: rename tab-store files to workspace-store"
 ## Task 3: Fix EntityWorkspace semantic bugs
 
 **Files:**
+
 - Modify: `src/components/entity/EntityWorkspace.tsx:173`
 - Modify: `src/components/entity/EntityWorkspace.tsx:268`
 
 - [ ] **Step 1: Fix filters access (line 173)**
 
 Change:
+
 ```typescript
 const currentFilters = tabUIStateAtFetch?.filters?.[entityType] ?? []
 ```
+
 to:
+
 ```typescript
 const currentFilters = tabUIStateAtFetch?.filters ?? []
 ```
@@ -127,10 +145,13 @@ const currentFilters = tabUIStateAtFetch?.filters ?? []
 - [ ] **Step 2: Fix setFilters call (line 268)**
 
 Change:
+
 ```typescript
 useTabStore.getState().setFilters(entityType, filters)
 ```
+
 to:
+
 ```typescript
 useTabStore.getState().setFilters(filters)
 ```
@@ -147,6 +168,7 @@ git commit -m "fix: use correct setFilters signature and filters access pattern"
 ## Task 4: Update all other imports
 
 **Files:**
+
 - Modify: `src/components/entity/DataTableShell.tsx`
 - Modify: `src/components/entity/DataTable.tsx`
 - Modify: `src/components/layout/SideBar.tsx`
@@ -158,10 +180,13 @@ git commit -m "fix: use correct setFilters signature and filters access pattern"
 - [ ] **Step 1: Update DataTableShell.tsx import**
 
 Change:
+
 ```typescript
 import { useTabStore } from '@/store/tab-store'
 ```
+
 to:
+
 ```typescript
 import { useTabStore } from '@/store/workspace-store'
 ```
@@ -169,10 +194,13 @@ import { useTabStore } from '@/store/workspace-store'
 - [ ] **Step 2: Update DataTable.tsx import**
 
 Change:
+
 ```typescript
 import { useTabStore } from '@/store/tab-store'
 ```
+
 to:
+
 ```typescript
 import { useTabStore } from '@/store/workspace-store'
 ```
@@ -180,10 +208,13 @@ import { useTabStore } from '@/store/workspace-store'
 - [ ] **Step 3: Update SideBar.tsx import**
 
 Change:
+
 ```typescript
 import { useTabStore } from '@/store/tab-store'
 ```
+
 to:
+
 ```typescript
 import { useTabStore } from '@/store/workspace-store'
 ```
@@ -191,10 +222,13 @@ import { useTabStore } from '@/store/workspace-store'
 - [ ] **Step 4: Update TabBar.tsx import**
 
 Change:
+
 ```typescript
 import { useTabStore } from '@/store/tab-store'
 ```
+
 to:
+
 ```typescript
 import { useTabStore } from '@/store/workspace-store'
 ```
@@ -202,10 +236,13 @@ import { useTabStore } from '@/store/workspace-store'
 - [ ] **Step 5: Update MainWindowContent.tsx import**
 
 Change:
+
 ```typescript
 import { useTabStore } from '@/store/tab-store'
 ```
+
 to:
+
 ```typescript
 import { useTabStore } from '@/store/workspace-store'
 ```
@@ -213,10 +250,13 @@ import { useTabStore } from '@/store/workspace-store'
 - [ ] **Step 6: Update TitleBar.tsx import**
 
 Change:
+
 ```typescript
 import { useTabStore } from '@/store/tab-store'
 ```
+
 to:
+
 ```typescript
 import { useTabStore } from '@/store/workspace-store'
 ```
@@ -224,10 +264,13 @@ import { useTabStore } from '@/store/workspace-store'
 - [ ] **Step 7: Update useActiveTabUI.ts import**
 
 Change:
+
 ```typescript
 import { defaultUIState, useTabStore } from '@/store/tab-store'
 ```
+
 to:
+
 ```typescript
 import { defaultUIState, useTabStore } from '@/store/workspace-store'
 ```
@@ -265,9 +308,9 @@ Expected: All tests pass
 
 ## Summary of Changes
 
-| Location | Change |
-|----------|--------|
-| `src/store/workspace-store.ts` | `TabState` → `WorkspaceState`, file renamed |
-| `src/store/workspace-store.test.ts` | File renamed, import updated |
+| Location                                    | Change                                                                                                   |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `src/store/workspace-store.ts`              | `TabState` → `WorkspaceState`, file renamed                                                              |
+| `src/store/workspace-store.test.ts`         | File renamed, import updated                                                                             |
 | `src/components/entity/EntityWorkspace.tsx` | Fixed `filters[entityType]` → `filters`, fixed `setFilters(entityType, filters)` → `setFilters(filters)` |
-| All other component files | Import path updated to `@/store/workspace-store` |
+| All other component files                   | Import path updated to `@/store/workspace-store`                                                         |

@@ -35,6 +35,7 @@ SET product_id = (
 ### 2.3 Seed Script Update
 
 Update `src-tauri/src/seed/movements.rs`:
+
 - `execute_movement` now accepts `product_id` parameter
 - Pass product_id from variant context when seeding
 
@@ -63,11 +64,13 @@ Add `product_id` parameter to movement creation functions.
 ## 4. VariantDetailModal - Audits Tab
 
 ### Query Strategy
+
 - TanStack Query key: `['stock-movements-variant', variantId, page, pageSize]`
 - Page size: 10
 - Sort: `created_at DESC` (newest first)
 
 ### Display
+
 - Table with columns: Type, Quantity, From Warehouse, To Warehouse, Date
 - Pagination controls at bottom (previous/next, page indicator)
 - Loading skeleton (5 rows) while fetching
@@ -78,12 +81,14 @@ Add `product_id` parameter to movement creation functions.
 ## 5. ProductDetailModal - Audits Tab
 
 ### Query Strategy
+
 - Single query fetches all variants' movements for this product
 - Query key: `['stock-movements-product', productId]`
 - Limit 5 most recent per variant (application-side filtering using window function or post-query filter)
 - Sort all results by `created_at DESC`
 
 ### Display
+
 - Scrollable container (max-height with overflow-y: auto)
 - Rows grouped by variant (variant name as sub-header before each variant's movements)
 - Same columns as VariantDetailModal
@@ -95,6 +100,7 @@ Add `product_id` parameter to movement creation functions.
 ## 6. WarehouseDetailModal - Audits Tab
 
 ### Query Strategy
+
 - Query key: `['stock-movements-warehouse', warehouseId]`
 - Fetch all movements for warehouse (from OR to), newest first
 - Grouping done in React after data fetch
@@ -104,6 +110,7 @@ Add `product_id` parameter to movement creation functions.
 Group consecutive movements by `product_id`. Non-consecutive same-product groups get separate headers.
 
 **Format**:
+
 ```
 ProductName (N movements)
   - Type | Quantity | From | To | Date (indented row)
@@ -113,6 +120,7 @@ ProductName (N movements)
 ```
 
 **Example**:
+
 ```
 Alpha Corp (2 movements)
   - PURCHASE | 100 | - | Cairo | 2024-01-15
@@ -124,6 +132,7 @@ Alpha Corp (1 movement)
 ```
 
 **Rules**:
+
 - Header shows product name + count
 - Rows indented under header
 - No collapsible sections
@@ -139,14 +148,15 @@ Reusable component used across all three modals with configurable props:
 
 ```typescript
 interface StockMovementsTableProps {
-  movements: StockMovement[];
-  variant?: 'simple' | 'grouped' | 'warehouse';
-  columns?: MovementColumn[];
-  emptyMessage?: string;
+  movements: StockMovement[]
+  variant?: 'simple' | 'grouped' | 'warehouse'
+  columns?: MovementColumn[]
+  emptyMessage?: string
 }
 ```
 
 **Variants**:
+
 - `simple`: Flat list with optional pagination
 - `grouped`: Grouped by variant with sub-headers
 - `warehouse`: Grouped by product with consecutive product merging
@@ -164,6 +174,7 @@ Header component for grouped views showing product/variant name and movement cou
 ## 8. StockMovementForm Changes
 
 Product ID flows through existing form submission context:
+
 - When creating movement for a variant, product_id is available from that variant's data
 - No new Rust commands needed for product_id lookup
 - Form submission includes product_id in the movement creation payload
@@ -172,11 +183,11 @@ Product ID flows through existing form submission context:
 
 ## 9. Error Handling & States
 
-| State | Display |
-|-------|---------|
-| Loading | Skeleton (5 rows) |
-| Empty | Friendly message per tab context |
-| Error | Error message with retry button |
+| State   | Display                                           |
+| ------- | ------------------------------------------------- |
+| Loading | Skeleton (5 rows)                                 |
+| Empty   | Friendly message per tab context                  |
+| Error   | Error message with retry button                   |
 | Success | Full table with pagination/grouping as applicable |
 
 ---
@@ -184,16 +195,19 @@ Product ID flows through existing form submission context:
 ## 10. Testing Considerations
 
 ### Unit Tests
+
 - Consecutive product grouping logic (warehouse variant)
 - Pagination offset/limit calculations
 - Movement data transformation functions
 
 ### Integration Tests
+
 - Paginated query returns correct page
 - All variants of product are included with 5-movement limit
 - Warehouse movements correctly filtered by from/to warehouse
 
 ### UI Tests
+
 - Empty states render correctly for each context
 - Pagination controls functional
 - Grouped rows display with correct indentation
@@ -203,6 +217,7 @@ Product ID flows through existing form submission context:
 ## 11. Files to Modify/Create
 
 ### Rust
+
 - `src-tauri/src/commands/stock_movements.rs` - Add `stock_movements_get_by_warehouse`
 - `src-tauri/src/commands/stocks.rs` - Update `stock_movements_get_by_variant` pagination
 - `src-tauri/src/sql/stocks.rs` - Schema migration for product_id
@@ -210,6 +225,7 @@ Product ID flows through existing form submission context:
 - Create backfill migration script
 
 ### Frontend
+
 - `src/components/entity/StockMovementsTable.tsx` - New reusable component
 - `src/components/entity/VariantDetailModal.tsx` - Implement audits tab
 - `src/components/entity/ProductDetailModal.tsx` - Implement audits tab

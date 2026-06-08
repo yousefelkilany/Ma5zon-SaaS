@@ -21,18 +21,18 @@ Rename `TabState` → `WorkspaceState` with full propagation across the codebase
 
 Update imports in all files that reference `useTabStore` or `TabState`:
 
-| File | Change |
-|------|--------|
-| `src/components/entity/DataTableShell.tsx` | Import path update |
-| `src/components/entity/EntityWorkspace.tsx` | Import path update |
-| `src/components/entity/DataTable.tsx` | Import path update |
-| `src/components/layout/SideBar.tsx` | Import path update |
-| `src/components/layout/TabBar.tsx` | Import path update |
-| `src/components/layout/MainWindowContent.tsx` | Import path update |
-| `src/components/titlebar/TitleBar.tsx` | Import path update |
-| `src/hooks/useActiveTabUI.ts` | Import path update |
-| `src/store/tab-store.test.ts` | File rename + import update |
-| `src/store/tab-store.ts` | File rename |
+| File                                          | Change                      |
+| --------------------------------------------- | --------------------------- |
+| `src/components/entity/DataTableShell.tsx`    | Import path update          |
+| `src/components/entity/EntityWorkspace.tsx`   | Import path update          |
+| `src/components/entity/DataTable.tsx`         | Import path update          |
+| `src/components/layout/SideBar.tsx`           | Import path update          |
+| `src/components/layout/TabBar.tsx`            | Import path update          |
+| `src/components/layout/MainWindowContent.tsx` | Import path update          |
+| `src/components/titlebar/TitleBar.tsx`        | Import path update          |
+| `src/hooks/useActiveTabUI.ts`                 | Import path update          |
+| `src/store/tab-store.test.ts`                 | File rename + import update |
+| `src/store/tab-store.ts`                      | File rename                 |
 
 ### 3. Test File Rename
 
@@ -46,13 +46,13 @@ Update imports in all files that reference `useTabStore` or `TabState`:
 
 ## Naming Summary
 
-| Before | After |
-|--------|-------|
-| `TabState` interface | `WorkspaceState` interface |
-| `tab-store.ts` | `workspace-store.ts` |
-| `tab-store.test.ts` | `workspace-store.test.ts` |
-| `useTabStore` hook | `useTabStore` (unchanged) |
-| `TabUIState` interface | `TabUIState` (unchanged) |
+| Before                  | After                        |
+| ----------------------- | ---------------------------- |
+| `TabState` interface    | `WorkspaceState` interface   |
+| `tab-store.ts`          | `workspace-store.ts`         |
+| `tab-store.test.ts`     | `workspace-store.test.ts`    |
+| `useTabStore` hook      | `useTabStore` (unchanged)    |
+| `TabUIState` interface  | `TabUIState` (unchanged)     |
 | `defaultUIState` export | `defaultUIState` (unchanged) |
 
 ## Scope

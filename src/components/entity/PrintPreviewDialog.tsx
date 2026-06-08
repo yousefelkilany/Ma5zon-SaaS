@@ -9,10 +9,7 @@ import {
 import { Button } from '@/components/ui/button'
 import type { ColumnDef, EntityRow } from '@/lib/types/entity'
 import { langDir } from '@/i18n/config'
-import {
-  ibmPlexFont500,
-  ibmPlexFont700,
-} from '@/lib/fonts/ibmPlexFonts'
+import { ibmPlexFont500, ibmPlexFont700 } from '@/lib/fonts/ibmPlexFonts'
 
 interface PrintPreviewDialogProps {
   open: boolean

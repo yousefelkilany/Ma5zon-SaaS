@@ -130,16 +130,32 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
                 continue;
             }
             let sale_qty: i32 = rng.gen_range(1..=available.min(20));
-            execute_movement(conn, *variant_id, *product_id, Some(from_wh), None, sale_qty, "SALE")
-                .map_err(|e| format!("Failed sale: {}", e))?;
+            execute_movement(
+                conn,
+                *variant_id,
+                *product_id,
+                Some(from_wh),
+                None,
+                sale_qty,
+                "SALE",
+            )
+            .map_err(|e| format!("Failed sale: {}", e))?;
         }
 
         let num_adjustments = rng.gen_range(0..=2);
         for _ in 0..num_adjustments {
             let wh = warehouse_ids[rng.gen_range(0..warehouse_ids.len())];
             let adj_qty: i32 = rng.gen_range(1..=15);
-            execute_movement(conn, *variant_id, *product_id, None, Some(wh), adj_qty, "ADJUST")
-                .map_err(|e| format!("Failed positive adjustment: {}", e))?;
+            execute_movement(
+                conn,
+                *variant_id,
+                *product_id,
+                None,
+                Some(wh),
+                adj_qty,
+                "ADJUST",
+            )
+            .map_err(|e| format!("Failed positive adjustment: {}", e))?;
         }
     }
 

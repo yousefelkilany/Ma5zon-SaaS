@@ -9,9 +9,9 @@ export const UOM_LIST = [
   'set طقم',
 ]
 
-export const UOM_OPTIONS: { value: string; label: string }[] = UOM_LIST.slice(1).map(
-  (label, i) => ({ value: String(i + 1), label })
-)
+export const UOM_OPTIONS: { value: string; label: string }[] = UOM_LIST.slice(
+  1
+).map((label, i) => ({ value: String(i + 1), label }))
 
 export function getUomLabelByIndex(indexStr: string): string {
   return UOM_LIST[parseInt(indexStr, 10)] ?? '—'

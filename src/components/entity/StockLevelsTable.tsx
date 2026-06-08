@@ -116,7 +116,10 @@ function VariantStockView({
           <Fragment key={`${level.variant_id}-${level.warehouse_id}-${idx}`}>
             <tr className="border-t border-outline-variant/30">
               <td className="px-3 py-2 text-on-surface">
-                {level.warehouse_id ? (warehouseNames?.get(level.warehouse_id) ?? level.warehouse_id) : '-'}
+                {level.warehouse_id
+                  ? (warehouseNames?.get(level.warehouse_id) ??
+                    level.warehouse_id)
+                  : '-'}
               </td>
               <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
                 {level.quantity.toLocaleString(locale)}
@@ -415,7 +418,9 @@ function InlineTransferSection({
             className="bg-surface-disabled border border-outline-variant rounded px-2 py-1 text-body-sm text-on-surface-variant"
           >
             <option value={warehouseId ?? ''}>
-              {warehouseId ? (warehouseNames?.get(warehouseId) ?? warehouseId) : '-'}
+              {warehouseId
+                ? (warehouseNames?.get(warehouseId) ?? warehouseId)
+                : '-'}
             </option>
           </select>
           <select

@@ -13,6 +13,7 @@
 ## Task 1: Database Schema Change - Add product_id Column
 
 **Files:**
+
 - Modify: `src-tauri/src/sql/stocks.rs:73-86`
 - Modify: `src-tauri/src/commands/stock_movements.rs:176-179`
 - Modify: `src-tauri/src/seed/movements.rs:56-66, 68-76, 79-87, 93-101, 107-115, 128, 136`
@@ -85,7 +86,7 @@ pub fn execute_movement(
     movement_type: &str,
 ) -> Result<(), String> {
     // ... existing validation unchanged ...
-    
+
     // INSERT now includes product_id
     conn.execute(
         "INSERT INTO stock_movements (variant_id, product_id, from_warehouse_id, to_warehouse_id, quantity, type, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
@@ -195,6 +196,7 @@ git commit -m "feat: add product_id to stock_movements table with backfill"
 ## Task 2: Add stock_movements_get_by_warehouse Command
 
 **Files:**
+
 - Modify: `src-tauri/src/sql/stocks.rs` - add `get_movements_by_warehouse()` function
 - Modify: `src-tauri/src/commands/stocks.rs` - add `stock_movements_get_by_warehouse` tauri command
 
@@ -315,6 +317,7 @@ git commit -m "feat: add stock_movements_get_by_warehouse command"
 ## Task 3: Create Backfill Migration Script
 
 **Files:**
+
 - Create: `src-tauri/migrations/001_backfill_product_id.sql`
 
 - [ ] **Step 1: Create and run migration**
@@ -337,6 +340,7 @@ git commit -m "chore: add product_id backfill migration"
 ## Task 4: Update tauri-bindings for new commands
 
 **Files:**
+
 - Modify: `src/lib/bindings.ts` (auto-generated, just trigger regeneration)
 
 - [ ] **Step 1: Regenerate bindings**
@@ -356,6 +360,7 @@ Check that `stock_movements_get_by_warehouse` is present in generated bindings.
 ## Task 5: Create StockMovementsTable Component
 
 **Files:**
+
 - Create: `src/components/entity/StockMovementsTable.tsx`
 
 - [ ] **Step 1: Create component with types**
@@ -444,6 +449,7 @@ git commit -m "feat: add StockMovementsTable component"
 ## Task 6: Implement VariantDetailModal Audits Tab
 
 **Files:**
+
 - Modify: `src/components/entity/VariantDetailModal.tsx`
 
 - [ ] **Step 1: Add state for stock movements**
@@ -463,7 +469,11 @@ const pageSize = 10
 const loadMovements = useCallback(async () => {
   if (!entityId) return
   setIsLoadingMovements(true)
-  const result = await commands.stockMovementsGetByVariant(entityId, pageSize, (currentPage - 1) * pageSize)
+  const result = await commands.stockMovementsGetByVariant(
+    entityId,
+    pageSize,
+    (currentPage - 1) * pageSize
+  )
   setIsLoadingMovements(false)
   if (result.status === 'ok') {
     setMovements(result.data.movements)
@@ -514,6 +524,7 @@ git commit -m "feat: implement audits tab in VariantDetailModal with pagination"
 ## Task 7: Implement ProductDetailModal Audits Tab
 
 **Files:**
+
 - Modify: `src/components/entity/ProductDetailModal.tsx`
 
 - [ ] **Step 1: Add state for stock movements**
@@ -532,7 +543,7 @@ Need to fetch all variants for this product, then for each variant get its 5 mos
 const loadMovements = useCallback(async () => {
   if (!entityId) return
   setIsLoadingMovements(true)
-  
+
   // First get all variant IDs for this product
   const variantsResult = await commands.variantsGetByProduct(entityId)
   if (variantsResult.status !== 'ok') {
@@ -540,20 +551,27 @@ const loadMovements = useCallback(async () => {
     setIsLoadingMovements(false)
     return
   }
-  
+
   // For each variant, fetch 5 most recent movements
   // This could be one query if we add a dedicated command
   const allMovements: StockMovement[] = []
   for (const variant of variantsResult.data) {
-    const movResult = await commands.stockMovementsGetByVariant(variant.id, 5, 0)
+    const movResult = await commands.stockMovementsGetByVariant(
+      variant.id,
+      5,
+      0
+    )
     if (movResult.status === 'ok') {
       allMovements.push(...movResult.data.movements)
     }
   }
-  
+
   // Sort by created_at DESC
-  allMovements.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-  
+  allMovements.sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  )
+
   setMovements(allMovements)
   setIsLoadingMovements(false)
 }, [entityId])
@@ -587,6 +605,7 @@ git commit -m "feat: implement audits tab in ProductDetailModal with variant gro
 ## Task 8: Implement WarehouseDetailModal Audits Tab with Product Grouping
 
 **Files:**
+
 - Modify: `src/components/entity/WarehouseDetailModal.tsx`
 
 - [ ] **Step 1: Add state for stock movements and product/variant names**
@@ -605,17 +624,17 @@ const [variantNames, setVariantNames] = useState<Map<string, string>>(new Map())
 const loadMovements = useCallback(async () => {
   if (!entityId) return
   setIsLoadingMovements(true)
-  
+
   const result = await commands.stockMovementsGetByWarehouse(entityId)
   setIsLoadingMovements(false)
-  
+
   if (result.status === 'ok') {
     setMovements(result.data)
-    
+
     // Fetch product names for grouping display
     const uniqueProductIds = [...new Set(result.data.map(m => m.product_id))]
     // Batch fetch products...
-    
+
     // Fetch variant names
     const uniqueVariantIds = [...new Set(result.data.map(m => m.variant_id))]
     // Batch fetch variants...
@@ -653,6 +672,7 @@ git commit -m "feat: implement audits tab in WarehouseDetailModal with product g
 ## Task 9: Update StockMovementForm to pass product_id
 
 **Files:**
+
 - Modify: `src/components/entity-form/StockMovementForm.tsx`
 
 - [ ] **Step 1: Ensure product_id flows through to movement creation**
@@ -671,6 +691,7 @@ git commit -m "feat: pass product_id in stock movement form submission"
 ## Task 10: Verify and test
 
 **Files:**
+
 - Test various flows in the application
 
 - [ ] **Step 1: Start the app and verify builds**
@@ -706,6 +727,7 @@ Fix any lint or type errors.
 ## File Summary
 
 ### Rust Files Modified
+
 - `src-tauri/src/sql/stocks.rs` - Schema and queries
 - `src-tauri/src/commands/stocks.rs` - StockMovement struct and new command
 - `src-tauri/src/commands/stock_movements.rs` - execute_movement signature update
@@ -713,12 +735,15 @@ Fix any lint or type errors.
 - `src-tauri/src/lib.rs` - Export new command
 
 ### Rust Files Created
+
 - `src-tauri/migrations/001_backfill_product_id.sql` - Migration
 
 ### Frontend Files Created
+
 - `src/components/entity/StockMovementsTable.tsx` - Reusable component
 
 ### Frontend Files Modified
+
 - `src/components/entity/VariantDetailModal.tsx` - Audits tab
 - `src/components/entity/ProductDetailModal.tsx` - Audits tab
 - `src/components/entity/WarehouseDetailModal.tsx` - Audits tab
