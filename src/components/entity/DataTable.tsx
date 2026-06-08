@@ -163,21 +163,12 @@ export function DataTable({
 
   const handleRowClick = useCallback(
     (id: string, _row: EntityRow) => {
-      const modalType =
-        entityType === 'products'
-          ? 'product'
-          : entityType === 'warehouses'
-            ? 'warehouse'
-            : entityType === 'variants'
-              ? 'variant'
-              : null
-      if (modalType) {
-        navigate({
-          to: '/entity/:entityType',
-          params: { entityType: entityType },
-          search: { entity_modal: modalType, entity_id: id },
-        })
-      }
+      const modalType = entityType.slice(0, -1)
+      navigate({
+        to: '/entity/:entityType',
+        params: { entityType: entityType },
+        search: { entity_modal: modalType, entity_id: id },
+      })
     },
     [navigate, entityType]
   )
