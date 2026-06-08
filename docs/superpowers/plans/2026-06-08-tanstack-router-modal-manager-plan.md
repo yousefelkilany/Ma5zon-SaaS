@@ -2,9 +2,14 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace React Router with TanStack Router and implement a URL-driven ModalManager as single source of truth for modal state.
+**Goal:** Replace React Router with TanStack Router and implement a URL-driven ModalManager as single source of truth for ALL modal state (both detail and create modals).
 
-**Architecture:** TanStack Router with code-based config. ModalManager monitors routes, parses `entity_modal` and `entity_id` from URL, renders appropriate modal, and clears params on close. Detail modals renamed from `*DetailModal` to `*Modal` and no longer receive `open`/`onOpenChange` props.
+**Architecture:** TanStack Router with code-based config. ModalManager monitors routes, parses `entity_modal` and `entity_id` from URL, renders appropriate modal, and clears params on close. All modals renamed from `*DetailModal`/`*CreateModal` to `*Modal` and no longer receive `open`/`onOpenChange` props.
+
+**URL Shape:**
+- Detail modals: `/entity/products?entity_modal=product&entity_id=123`
+- Create modals: `/entity/products?entity_modal=create-product`
+- Create variant (needs productId): `/entity/products?entity_modal=create-variant&entity_id=123`
 
 **Tech Stack:** @tanstack/react-router v1.x, @tanstack/react-query
 
@@ -15,14 +20,14 @@
 ```
 src/
 ├── router/
-│   └── index.ts              # TanStack Router config (NEW)
+│   └── index.tsx # TanStack Router config
 ├── components/
 │   ├── modal/
-│   │   └── ModalManager.tsx  # URL-driven modal manager (NEW)
+│   │   └── ModalManager.tsx  # URL-driven modal manager (handles all modals)
 │   └── entity/
-│       ├── ProductModal.tsx        # renamed from ProductDetailModal
-│       ├── VariantModal.tsx        # renamed from VariantDetailModal
-│       └── WarehouseModal.tsx      # renamed from WarehouseDetailModal
+│       ├── ProductModal.tsx        # handles both view and create modes
+│       ├── VariantModal.tsx        # handles both view and create modes
+│       └── WarehouseModal.tsx      # handles both view and create modes
 ```
 
 **Files to modify:**
@@ -32,6 +37,9 @@ src/
 - `src/components/entity/EntityWorkspace.tsx` - Remove modal state and components
 - `src/components/entity/DataTable.tsx` - Remove modal state and components
 - `package.json` - Dependencies update
+- `src/components/entity/ProductCreateModal.tsx` - Delete (merged into ProductModal)
+- `src/components/entity/WarehouseCreateModal.tsx` - Delete (merged into WarehouseModal)
+- `src/components/entity/VariantCreateModal.tsx` - Delete (merged into VariantModal)
 
 ---
 
@@ -515,13 +523,253 @@ git commit -m "refactor: rename WarehouseDetailModal to WarehouseModal"
 
 ---
 
+## Task 13: Rename ProductCreateModal to ProductModal (Create)
+
+**Files:**
+
+- Create: `src/components/entity/ProductModal.tsx` (create variant)
+- Modify: `src/components/entity/EntityWorkspace.tsx`
+
+**Note:** ProductModal already exists (detail modal). Rename create modal to `ProductCreateModal.tsx` temporarily, or merge into existing modal with mode prop. For simplicity, use `mode` prop:
+
+```typescript
+interface ProductModalProps {
+  entityId: string
+  queryClient: QueryClient
+  mode: 'view' | 'create'
+  onDeleted?: () => void
+}
+```
+
+- [ ] **Step 1: Update ProductModal to support both modes**
+
+Update `ProductModal` to accept `mode` prop:
+
+```typescript
+interface ProductModalProps {
+  entityId?: string  // undefined for create mode
+  queryClient: QueryClient
+  mode: 'view' | 'create'
+  onDeleted?: () => void
+}
+```
+
+- [ ] **Step 2: Update imports in EntityWorkspace.tsx**
+
+Remove ProductCreateModal import and usage since it's now handled by ProductModal with mode='create'.
+
+- [ ] **Step 3: Verify build**
+
+Run: `pnpm run typecheck`
+Expected: No errors
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/components/entity/ProductModal.tsx src/components/entity/EntityWorkspace.tsx
+git commit -m "refactor: merge ProductCreateModal into ProductModal with mode prop"
+```
+
+---
+
+## Task 14: Rename WarehouseCreateModal to WarehouseModal (Create)
+
+**Files:**
+
+- Modify: `src/components/entity/WarehouseModal.tsx`
+- Modify: `src/components/entity/EntityWorkspace.tsx`
+
+- [ ] **Step 1: Update WarehouseModal to support both modes**
+
+```typescript
+interface WarehouseModalProps {
+  entityId?: string
+  queryClient: QueryClient
+  mode: 'view' | 'create'
+  onDeleted?: () => void
+}
+```
+
+- [ ] **Step 2: Update imports in EntityWorkspace.tsx**
+
+Remove WarehouseCreateModal import and usage.
+
+- [ ] **Step 3: Verify build**
+
+Run: `pnpm run typecheck`
+Expected: No errors
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/components/entity/WarehouseModal.tsx src/components/entity/EntityWorkspace.tsx
+git commit -m "refactor: merge WarehouseCreateModal into WarehouseModal with mode prop"
+```
+
+---
+
+## Task 15: Rename VariantCreateModal to VariantModal (Create)
+
+**Files:**
+
+- Modify: `src/components/entity/VariantModal.tsx`
+- Modify: `src/components/entity/EntityWorkspace.tsx`
+
+- [ ] **Step 1: Update VariantModal to support both modes**
+
+```typescript
+interface VariantModalProps {
+  entityId?: string  // undefined for create mode
+  productId?: string  // needed for create mode
+  queryClient: QueryClient
+  mode: 'view' | 'create'
+  onDeleted?: () => void
+  onSaved?: (variant: Variant) => void
+}
+```
+
+- [ ] **Step 2: Update imports in EntityWorkspace.tsx**
+
+Remove VariantCreateModal import and usage.
+
+- [ ] **Step 3: Verify build**
+
+Run: `pnpm run typecheck`
+Expected: No errors
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/components/entity/VariantModal.tsx src/components/entity/EntityWorkspace.tsx
+git commit -m "refactor: merge VariantCreateModal into VariantModal with mode prop"
+```
+
+---
+
+## Task 16: Update ModalManager for Create Modals
+
+**Files:**
+
+- Modify: `src/components/modal/ModalManager.tsx`
+
+- [ ] **Step 1: Update ModalManager to handle create modals**
+
+```typescript
+type ModalType = 'product' | 'variant' | 'warehouse' | 'create-product' | 'create-warehouse' | 'create-variant' | null
+
+export function ModalManager() {
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  const entity_modal = useSearch({
+    select: (search) => search.entity_modal as ModalType,
+  })
+  const entity_id = useSearch({
+    select: (search) => search.entity_id as string | null,
+  })
+
+  function handleClose() {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        entity_modal: null,
+        entity_id: null,
+      }),
+    })
+  }
+
+  // Detail modals
+  if (entity_modal === 'product' && entity_id) {
+    return <ProductModal entityId={entity_id} queryClient={queryClient} mode="view" onDeleted={handleClose} />
+  }
+  if (entity_modal === 'variant' && entity_id) {
+    return <VariantModal entityId={entity_id} queryClient={queryClient} mode="view" onDeleted={handleClose} />
+  }
+  if (entity_modal === 'warehouse' && entity_id) {
+    return <WarehouseModal entityId={entity_id} queryClient={queryClient} mode="view" onDeleted={handleClose} />
+  }
+
+  // Create modals
+  if (entity_modal === 'create-product') {
+    return <ProductModal queryClient={queryClient} mode="create" onDeleted={handleClose} />
+  }
+  if (entity_modal === 'create-warehouse') {
+    return <WarehouseModal queryClient={queryClient} mode="create" onDeleted={handleClose} />
+  }
+  if (entity_modal === 'create-variant' && entity_id) {
+    return <VariantModal productId={entity_id} queryClient={queryClient} mode="create" onDeleted={handleClose} />
+  }
+
+  return null
+}
+```
+
+- [ ] **Step 2: Verify build**
+
+Run: `pnpm run typecheck`
+Expected: No errors
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add src/components/modal/ModalManager.tsx
+git commit -m "feat(modal): extend ModalManager to handle create modals"
+```
+
+---
+
+## Task 17: Update EntityWorkspace for Create Modal Navigation
+
+**Files:**
+
+- Modify: `src/components/entity/EntityWorkspace.tsx`
+
+- [ ] **Step 1: Update handleAddNewClick to navigate to create modal**
+
+```typescript
+const handleAddNewClick = useCallback(() => {
+  const createModal = entityType === 'products' ? 'create-product'
+    : entityType === 'warehouses' ? 'create-warehouse'
+    : entityType === 'product_variants' ? 'create-variant'
+    : null
+  if (createModal) {
+    navigate({
+      to: '/entity/$entityType',
+      params: { entityType: entityType },
+      search: createModal === 'create-variant' ? { entity_modal: createModal, entity_id: createModalProductId } : { entity_modal: createModal },
+    })
+  }
+}, [navigate, entityType])
+```
+
+- [ ] **Step 2: Remove create modal state and JSX**
+
+Remove:
+- `createModalOpen` state
+- `createModalType` state
+- `createModalProductId` state
+- Modal components from JSX
+
+- [ ] **Step 3: Verify build**
+
+Run: `pnpm run typecheck`
+Expected: No errors
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/components/entity/EntityWorkspace.tsx
+git commit -m "refactor: update EntityWorkspace to navigate to create modals via URL"
+```
+
+---
+
 ## Task 8: Remove prop drilling from EntityWorkspace
 
 **Files:**
 
 - Modify: `src/components/entity/EntityWorkspace.tsx`
 
-- [ ] **Step 1: Remove modal state and callbacks**
+- [ ] **Step 1: Remove detail modal state and callbacks**
 
 Remove these state declarations:
 
@@ -566,16 +814,16 @@ const handleVariantSaved = useCallback(
 )
 ```
 
-- [ ] **Step 2: Remove modal JSX**
+- [ ] **Step 2: Remove detail modal JSX**
 
 Remove the modal components from JSX:
 
 ```tsx
 {entityType === 'products' && selectedVariantId && (
-  <VariantDetailModal ... />
+  <VariantModal ... />
 )}
 {entityType === 'warehouses' && productDetailId && (
-  <ProductDetailModal ... />
+  <ProductModal ... />
 )}
 ```
 
@@ -798,6 +1046,9 @@ git commit -m "refactor: update MainWindowContent for tanstack router"
 **Files:**
 
 - Modify: `src/test/test-utils.tsx`
+- Delete: `src/components/entity/ProductCreateModal.tsx`
+- Delete: `src/components/entity/WarehouseCreateModal.tsx`
+- Delete: `src/components/entity/VariantCreateModal.tsx`
 - Check: Various files for react-router-dom imports
 
 - [ ] **Step 1: Update test utilities**
@@ -811,32 +1062,40 @@ import { BrowserRouter } from 'react-router-dom'
 
 Replace with TanStack Router test utilities or wrap with RouterProvider in tests.
 
-- [ ] **Step 2: Search for remaining react-router-dom imports**
+- [ ] **Step 2: Delete create modal files**
+
+```bash
+rm src/components/entity/ProductCreateModal.tsx
+rm src/components/entity/WarehouseCreateModal.tsx
+rm src/components/entity/VariantCreateModal.tsx
+```
+
+- [ ] **Step 3: Search for remaining react-router-dom imports**
 
 Run: `grep -r "react-router-dom" src/ --include="*.tsx" --include="*.ts"`
 Expected: No matches
 
-- [ ] **Step 3: Run full check**
+- [ ] **Step 4: Run full check**
 
 Run: `pnpm run check:all`
 Expected: All checks pass
 
-- [ ] **Step 4: Commit cleanup**
+- [ ] **Step 5: Commit cleanup**
 
 ```bash
 git add -A
-git commit -m "chore: remove react-router-dom references and cleanup"
+git commit -m "chore: remove react-router-dom references and delete merged create modals"
 ```
 
 ---
 
-## Task 12: Verify end-to-end
+## Task 18: Verify end-to-end
 
 - [ ] **Step 1: Start dev server**
 
 Run: `pnpm run dev`
 
-- [ ] **Step 2: Test modal navigation**
+- [ ] **Step 2: Test detail modal navigation**
 
 1. Navigate to `/entity/products`
 2. Click on a product row
@@ -845,7 +1104,26 @@ Run: `pnpm run dev`
 5. Close modal
 6. Verify URL clears modal params
 
-- [ ] **Step 3: Test back/forward navigation**
+- [ ] **Step 3: Test create modal navigation**
+
+1. Navigate to `/entity/products`
+2. Click "Add New" button
+3. Verify URL updates to `/entity/products?entity_modal=create-product`
+4. Verify create modal opens
+5. Close modal
+6. Verify URL clears modal params
+
+- [ ] **Step 4: Test create variant modal**
+
+1. Navigate to `/entity/products`
+2. Click expand on a product row
+3. Click "Add Variant"
+4. Verify URL updates to `/entity/products?entity_modal=create-variant&entity_id=<productId>`
+5. Verify create variant modal opens
+6. Close modal
+7. Verify URL clears modal params
+
+- [ ] **Step 5: Test back/forward navigation**
 
 1. Open a modal
 2. Click browser back
@@ -853,7 +1131,10 @@ Run: `pnpm run dev`
 4. Click browser forward
 5. Verify modal reopens with correct entity
 
-- [ ] **Step 4: Test direct URL access**
+- [ ] **Step 6: Test direct URL access**
 
 1. Navigate directly to `/entity/products?entity_modal=product&entity_id=<id>`
-2. Verify modal opens with correct entity data
+2. Verify detail modal opens with correct entity data
+
+3. Navigate directly to `/entity/products?entity_modal=create-product`
+4. Verify create modal opens
