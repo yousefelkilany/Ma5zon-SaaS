@@ -9,6 +9,7 @@ import {
 import { useTabStore } from '@/store/workspace-store'
 import { DashboardContent, NewTabContent } from '@/components/tabs'
 import { EntityWorkspace } from '@/components/entity'
+import { ModalManager } from '@/components/modal/ModalManager'
 
 function EntityRoute() {
   const params = useParams()
@@ -57,6 +58,7 @@ export function MainWindowContent() {
         <Route path="/entity/:entityType" element={<EntityRoute />} />
         <Route path="*" element={<DashboardContent />} />
       </Routes>
+      <ModalManager />
     </div>
   )
 }
