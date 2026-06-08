@@ -16,7 +16,7 @@ import { commands } from '@/lib/tauri-bindings'
 import { VariantsSubTable } from './VariantsSubTable'
 import { WarehousesSubTable } from './WarehousesSubTable'
 import { ProductModal } from './ProductModal'
-import { WarehouseDetailModal } from './WarehouseDetailModal'
+import { WarehouseModal } from './WarehouseModal'
 import { VariantModal } from './VariantModal'
 
 function StatusBadge({ status }: { status: string }) {
@@ -86,7 +86,6 @@ export function DataTable({
   onProductClick,
 }: DataTableProps & ExpandedRowProps) {
   const { t } = useTranslation()
-  const [editModalOpen, setEditModalOpen] = useState(false)
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
 
   const visibleColumns = useMemo(
@@ -166,7 +165,6 @@ export function DataTable({
 
   const handleRowClick = useCallback((id: string, _row: EntityRow) => {
     setSelectedEntityId(id)
-    setEditModalOpen(true)
   }, [])
 
   const internalOnRowClick = useCallback(
@@ -395,19 +393,15 @@ export function DataTable({
           entityId={selectedEntityId}
           queryClient={queryClient}
           onDeleted={() => {
-            setEditModalOpen(false)
             setSelectedEntityId(null)
           }}
         />
       )}
       {entityType === 'warehouses' && selectedEntityId && (
-        <WarehouseDetailModal
-          open={editModalOpen}
-          onOpenChange={setEditModalOpen}
+        <WarehouseModal
           entityId={selectedEntityId}
           queryClient={queryClient}
           onDeleted={() => {
-            setEditModalOpen(false)
             setSelectedEntityId(null)
           }}
         />

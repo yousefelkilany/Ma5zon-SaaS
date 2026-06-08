@@ -12,9 +12,7 @@ import { updateWarehouseSchema } from '@/lib/validation/schemas'
 import { EntityFieldGrid } from './EntityFieldGrid'
 import { StockMovementsTable } from './StockMovementsTable'
 
-interface WarehouseDetailModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+interface WarehouseModalProps {
   entityId: string
   queryClient: QueryClient
   onDeleted?: () => void
@@ -38,13 +36,11 @@ const WAREHOUSE_ROWS = [
   ],
 ]
 
-export function WarehouseDetailModal({
-  open,
-  onOpenChange,
+export function WarehouseModal({
   entityId,
   queryClient,
   onDeleted,
-}: WarehouseDetailModalProps) {
+}: WarehouseModalProps) {
   const { t } = useTranslation()
   const [entity, setEntity] = useState<Warehouse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -57,16 +53,8 @@ export function WarehouseDetailModal({
   const [deleteError, setDeleteError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
   const [loadError, setLoadError] = useState('')
-  const [isDirty, setIsDirty] = useState(false)
   const [productNames, setProductNames] = useState<Map<string, string>>(new Map())
   const [variantNames, setVariantNames] = useState<Map<string, string>>(new Map())
-
-  useEffect(() => {
-    if (!entity) return
-    const isActuallyDirty =
-      editForm.name !== entity.name || editForm.location !== entity.location
-    setIsDirty(isActuallyDirty)
-  }, [editForm, entity])
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -151,26 +139,23 @@ export function WarehouseDetailModal({
   }, [movements])
 
   useEffect(() => {
-    if (!open) {
-      setEntity(null)
-      setIsLoading(true)
-      setLoadError('')
-      setIsEditing(false)
-      setEditForm({ name: '', location: '' })
-      setIsDirty(false)
-      setActiveTab('details')
-      setDeleteError('')
-      setSaveError('')
-      setProductNames(new Map())
-      setVariantNames(new Map())
-    }
-  }, [open])
+    setEntity(null)
+    setIsLoading(true)
+    setLoadError('')
+    setIsEditing(false)
+    setEditForm({ name: '', location: '' })
+    setActiveTab('details')
+    setDeleteError('')
+    setSaveError('')
+    setProductNames(new Map())
+    setVariantNames(new Map())
+  }, [entityId])
 
   useEffect(() => {
-    if (open && entityId) {
+    if (entityId) {
       loadEntity()
     }
-  }, [open, entityId, loadEntity])
+  }, [entityId, loadEntity])
 
   useEffect(() => {
     if (!showDeleteConfirm) {
@@ -210,7 +195,6 @@ export function WarehouseDetailModal({
     setIsDeleting(false)
     if (result.status === 'ok') {
       setShowDeleteConfirm(false)
-      onOpenChange(false)
       queryClient.invalidateQueries({ queryKey: ['entity', 'warehouses'] })
       onDeleted?.()
     } else {
@@ -234,13 +218,7 @@ export function WarehouseDetailModal({
 
   return (
     <>
-      <Dialog
-        open={open}
-        onOpenChange={open => {
-          if (!open && isDirty) return
-          onOpenChange(open)
-        }}
-      >
+      <Dialog open={true}>
         <DialogContent>
           <div className="flex flex-col h-full">
             {/* Tab Bar */}
