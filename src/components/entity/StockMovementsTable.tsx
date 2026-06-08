@@ -89,7 +89,8 @@ export function StockMovementsTable({
     return (
       <div className="p-4 text-center">
         <p className="text-body-sm text-on-surface-variant">
-          {emptyMessage ?? t('entity.stockMovement.noMovements', 'No stock movements')}
+          {emptyMessage ??
+            t('entity.stockMovement.noMovements', 'No stock movements')}
         </p>
       </div>
     )
@@ -160,14 +161,18 @@ function VariantMovementsView({
   }, [movements])
 
   const totalGroups = groupedMovements.size
-  const totalPages = externalTotalPages ?? Math.ceil(totalGroups / effectivePageSize)
+  const totalPages =
+    externalTotalPages ?? Math.ceil(totalGroups / effectivePageSize)
   const startIndex = ((currentPage ?? 1) - 1) * effectivePageSize
   const endIndex = startIndex + effectivePageSize
-  const paginatedGroups = Array.from(groupedMovements.entries()).slice(startIndex, endIndex)
+  const paginatedGroups = Array.from(groupedMovements.entries()).slice(
+    startIndex,
+    endIndex
+  )
 
   return (
     <div className="flex flex-col">
-      <div className="flex-1 overflow-auto">
+      <div className="max-h-150 overflow-auto">
         {paginatedGroups.map(([variantId, variantMovements]) => (
           <div key={variantId} className="border-b border-outline-variant">
             <div className="bg-surface-bright px-4 py-2">
@@ -197,7 +202,10 @@ function VariantMovementsView({
               </thead>
               <tbody>
                 {variantMovements.map((movement, idx) => (
-                  <tr key={`${movement.id}-${idx}`} className="border-t border-outline-variant/30">
+                  <tr
+                    key={`${movement.id}-${idx}`}
+                    className="border-t border-outline-variant/30"
+                  >
                     <td className="px-3 py-2 text-on-surface">
                       {movement.movement_type}
                     </td>
@@ -206,12 +214,14 @@ function VariantMovementsView({
                     </td>
                     <td className="px-3 py-2 text-on-surface">
                       {movement.from_warehouse_id
-                        ? warehouseNames?.get(movement.from_warehouse_id) ?? '-'
+                        ? (warehouseNames?.get(movement.from_warehouse_id) ??
+                          movement.from_warehouse_id)
                         : '-'}
                     </td>
                     <td className="px-3 py-2 text-on-surface">
                       {movement.to_warehouse_id
-                        ? warehouseNames?.get(movement.to_warehouse_id) ?? '-'
+                        ? (warehouseNames?.get(movement.to_warehouse_id) ??
+                          movement.to_warehouse_id)
                         : '-'}
                     </td>
                     <td className="px-3 py-2 text-on-surface">
@@ -273,62 +283,69 @@ function ProductMovementsView({
   }, [movements])
 
   return (
-    <div className="max-h-96 overflow-y-auto">
-      {Array.from(groupedMovements.entries()).map(([variantId, variantMovements]) => (
-        <div key={variantId} className="border-b border-outline-variant">
-          <div className="bg-surface-bright px-4 py-2">
-            <span className="text-body-sm font-medium text-on-surface">
-              {variantNames?.get(variantId) ?? variantId}
-            </span>
-          </div>
-          <table className="w-full text-body-sm">
-            <thead>
-              <tr className="border-b border-outline-variant">
-                <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-                  {t('entity.stockMovement.movementType')}
-                </th>
-                <th className="px-3 py-2 text-end text-on-surface-variant font-label-caps">
-                  {t('entity.stockMovement.quantity')}
-                </th>
-                <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-                  {t('entity.stockMovement.fromWarehouse')}
-                </th>
-                <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-                  {t('entity.stockMovement.toWarehouse')}
-                </th>
-                <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-                  {t('entity.stock.date')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {variantMovements.map((movement, idx) => (
-                <tr key={`${movement.id}-${idx}`} className="border-t border-outline-variant/30">
-                  <td className="px-3 py-2 text-on-surface">
-                    {movement.movement_type}
-                  </td>
-                  <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
-                    {movement.quantity.toLocaleString(locale)}
-                  </td>
-                  <td className="px-3 py-2 text-on-surface">
-                    {movement.from_warehouse_id
-                      ? warehouseNames?.get(movement.from_warehouse_id) ?? '-'
-                      : '-'}
-                  </td>
-                  <td className="px-3 py-2 text-on-surface">
-                    {movement.to_warehouse_id
-                      ? warehouseNames?.get(movement.to_warehouse_id) ?? '-'
-                      : '-'}
-                  </td>
-                  <td className="px-3 py-2 text-on-surface">
-                    {new Date(movement.created_at).toLocaleDateString(locale)}
-                  </td>
+    <div className="max-h-150 overflow-y-auto">
+      {Array.from(groupedMovements.entries()).map(
+        ([variantId, variantMovements]) => (
+          <div key={variantId} className="border-b border-outline-variant">
+            <div className="bg-surface-bright px-4 py-2">
+              <span className="text-body-sm font-medium text-on-surface">
+                {variantNames?.get(variantId) ?? variantId}
+              </span>
+            </div>
+            <table className="w-full text-body-sm">
+              <thead>
+                <tr className="border-b border-outline-variant">
+                  <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
+                    {t('entity.stockMovement.movementType')}
+                  </th>
+                  <th className="px-3 py-2 text-end text-on-surface-variant font-label-caps">
+                    {t('entity.stockMovement.quantity')}
+                  </th>
+                  <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
+                    {t('entity.stockMovement.fromWarehouse')}
+                  </th>
+                  <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
+                    {t('entity.stockMovement.toWarehouse')}
+                  </th>
+                  <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
+                    {t('entity.stock.date')}
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ))}
+              </thead>
+              <tbody>
+                {variantMovements.map((movement, idx) => (
+                  <tr
+                    key={`${movement.id}-${idx}`}
+                    className="border-t border-outline-variant/30"
+                  >
+                    <td className="px-3 py-2 text-on-surface">
+                      {movement.movement_type}
+                    </td>
+                    <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
+                      {movement.quantity.toLocaleString(locale)}
+                    </td>
+                    <td className="px-3 py-2 text-on-surface">
+                      {movement.from_warehouse_id
+                        ? (warehouseNames?.get(movement.from_warehouse_id) ??
+                          movement.from_warehouse_id)
+                        : '-'}
+                    </td>
+                    <td className="px-3 py-2 text-on-surface">
+                      {movement.to_warehouse_id
+                        ? (warehouseNames?.get(movement.to_warehouse_id) ??
+                          movement.to_warehouse_id)
+                        : '-'}
+                    </td>
+                    <td className="px-3 py-2 text-on-surface">
+                      {new Date(movement.created_at).toLocaleDateString(locale)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      )}
     </div>
   )
 }
@@ -347,14 +364,20 @@ function WarehouseMovementsView({
   const { t } = useTranslation()
 
   const groupedMovements = useMemo(() => {
-    const groups = new Map<string, { productId: string; movements: StockMovement[] }>()
+    const groups = new Map<
+      string,
+      { productId: string; movements: StockMovement[] }
+    >()
     let currentProductId: string | null = null
     let currentGroup: StockMovement[] = []
 
     for (const movement of movements) {
       if (currentProductId !== movement.product_id) {
         if (currentProductId !== null && currentGroup.length > 0) {
-          groups.set(currentProductId, { productId: currentProductId, movements: currentGroup })
+          groups.set(currentProductId, {
+            productId: currentProductId,
+            movements: currentGroup,
+          })
         }
         currentProductId = movement.product_id
         currentGroup = [movement]
@@ -363,7 +386,10 @@ function WarehouseMovementsView({
       }
     }
     if (currentProductId !== null && currentGroup.length > 0) {
-      groups.set(currentProductId, { productId: currentProductId, movements: currentGroup })
+      groups.set(currentProductId, {
+        productId: currentProductId,
+        movements: currentGroup,
+      })
     }
 
     return groups
@@ -371,61 +397,69 @@ function WarehouseMovementsView({
 
   return (
     <div>
-      {Array.from(groupedMovements.entries()).map(([productId, { movements: productMovements }]) => (
-        <div key={productId} className="border-b border-outline-variant">
-          <div className="bg-surface-bright px-4 py-2">
-            <span className="text-body-sm font-medium text-on-surface">
-              {productNames?.get(productId) ?? productId} ({productMovements.length} movements)
-            </span>
-          </div>
-          <table className="w-full text-body-sm">
-            <thead>
-              <tr className="border-b border-outline-variant">
-                <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-                  {t('entity.stockMovement.movementType')}
-                </th>
-                <th className="px-3 py-2 text-end text-on-surface-variant font-label-caps">
-                  {t('entity.stockMovement.quantity')}
-                </th>
-                <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-                  {t('entity.stockMovement.fromWarehouse')}
-                </th>
-                <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-                  {t('entity.stockMovement.toWarehouse')}
-                </th>
-                <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
-                  {t('entity.stock.date')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {productMovements.map((movement, idx) => (
-                <tr key={`${movement.id}-${idx}`} className="border-t border-outline-variant/30">
-                  <td className="px-3 py-2 pl-8 text-on-surface">
-                    {movement.movement_type}
-                  </td>
-                  <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
-                    {movement.quantity.toLocaleString(locale)}
-                  </td>
-                  <td className="px-3 py-2 text-on-surface">
-                    {movement.from_warehouse_id
-                      ? warehouseNames?.get(movement.from_warehouse_id) ?? '-'
-                      : '-'}
-                  </td>
-                  <td className="px-3 py-2 text-on-surface">
-                    {movement.to_warehouse_id
-                      ? warehouseNames?.get(movement.to_warehouse_id) ?? '-'
-                      : '-'}
-                  </td>
-                  <td className="px-3 py-2 text-on-surface">
-                    {new Date(movement.created_at).toLocaleDateString(locale)}
-                  </td>
+      {Array.from(groupedMovements.entries()).map(
+        ([productId, { movements: productMovements }]) => (
+          <div key={productId} className="border-b border-outline-variant">
+            <div className="bg-surface-bright px-4 py-2">
+              <span className="text-body-sm font-medium text-on-surface">
+                {productNames?.get(productId) ?? productId} (
+                {productMovements.length} movements)
+              </span>
+            </div>
+            <table className="w-full text-body-sm">
+              <thead>
+                <tr className="border-b border-outline-variant">
+                  <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
+                    {t('entity.stockMovement.movementType')}
+                  </th>
+                  <th className="px-3 py-2 text-end text-on-surface-variant font-label-caps">
+                    {t('entity.stockMovement.quantity')}
+                  </th>
+                  <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
+                    {t('entity.stockMovement.fromWarehouse')}
+                  </th>
+                  <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
+                    {t('entity.stockMovement.toWarehouse')}
+                  </th>
+                  <th className="px-3 py-2 text-start text-on-surface-variant font-label-caps">
+                    {t('entity.stock.date')}
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ))}
+              </thead>
+              <tbody>
+                {productMovements.map((movement, idx) => (
+                  <tr
+                    key={`${movement.id}-${idx}`}
+                    className="border-t border-outline-variant/30"
+                  >
+                    <td className="px-3 py-2 pl-8 text-on-surface">
+                      {movement.movement_type}
+                    </td>
+                    <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
+                      {movement.quantity.toLocaleString(locale)}
+                    </td>
+                    <td className="px-3 py-2 text-on-surface">
+                      {movement.from_warehouse_id
+                        ? (warehouseNames?.get(movement.from_warehouse_id) ??
+                          movement.from_warehouse_id)
+                        : '-'}
+                    </td>
+                    <td className="px-3 py-2 text-on-surface">
+                      {movement.to_warehouse_id
+                        ? (warehouseNames?.get(movement.to_warehouse_id) ??
+                          movement.to_warehouse_id)
+                        : '-'}
+                    </td>
+                    <td className="px-3 py-2 text-on-surface">
+                      {new Date(movement.created_at).toLocaleDateString(locale)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      )}
     </div>
   )
 }

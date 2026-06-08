@@ -428,6 +428,7 @@ export function ProductDetailModal({
                   isLoading={isLoadingMovements}
                   error={movementsError?.message ?? ''}
                   variant="product"
+                  warehouseNames={warehouseNames}
                   emptyMessage={t('entity.stockMovement.noMovementsProduct')}
                 />
               )}

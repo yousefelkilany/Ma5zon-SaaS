@@ -221,7 +221,7 @@ export function DataTable({
         if (sort.direction === 'asc') {
           onSort({ columnId, direction: 'desc' })
         } else {
-          onSort(undefined)
+          onSort()
         }
       } else {
         onSort({ columnId, direction: 'asc' })

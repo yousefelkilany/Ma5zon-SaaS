@@ -84,7 +84,7 @@ function EntityHeader({
 
 export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   const queryClient = useQueryClient()
-  const [sort, setSort] = useState<SortState | undefined>(undefined)
+  const [sort, setSort] = useState<SortState | undefined>()
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [createModalType, setCreateModalType] = useState<
     'products' | 'warehouses' | 'product_variants' | null
@@ -169,7 +169,8 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     queryKey: ['entity', entityType, sort, page, pageSize],
     queryFn: async () => {
       const activeTabIdAtFetch = useTabStore.getState().activeTabId
-      const tabUIStateAtFetch = useTabStore.getState().tabUIStates[activeTabIdAtFetch]
+      const tabUIStateAtFetch =
+        useTabStore.getState().tabUIStates[activeTabIdAtFetch]
       const currentFilters = tabUIStateAtFetch?.filters ?? []
       const bindingFilters: BindingFilterState[] = currentFilters.map(f => ({
         column_id: f.columnId,
@@ -248,7 +249,7 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
   )
 
   const handleSortChange = useCallback(
-    (newSort: SortState | undefined) => {
+    (newSort?: SortState) => {
       setSort(newSort)
       useTabStore.getState().setPage(1)
     },

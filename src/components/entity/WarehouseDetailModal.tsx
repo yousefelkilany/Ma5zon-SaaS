@@ -271,7 +271,7 @@ export function WarehouseDetailModal({
             </div>
 
             {/* Tab Content */}
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 max-h-150 overflow-auto">
               {activeTab === 'details' && (
                 <div
                   id="details-panel"
