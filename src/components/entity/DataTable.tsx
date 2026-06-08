@@ -17,7 +17,7 @@ import { VariantsSubTable } from './VariantsSubTable'
 import { WarehousesSubTable } from './WarehousesSubTable'
 import { ProductModal } from './ProductModal'
 import { WarehouseDetailModal } from './WarehouseDetailModal'
-import { VariantDetailModal } from './VariantDetailModal'
+import { VariantModal } from './VariantModal'
 
 function StatusBadge({ status }: { status: string }) {
   const badgeClass =
@@ -413,13 +413,10 @@ export function DataTable({
         />
       )}
       {entityType === 'variants' && selectedEntityId && (
-        <VariantDetailModal
-          open={editModalOpen}
-          onOpenChange={setEditModalOpen}
+        <VariantModal
           entityId={selectedEntityId}
           queryClient={queryClient}
           onDeleted={() => {
-            setEditModalOpen(false)
             setSelectedEntityId(null)
           }}
         />

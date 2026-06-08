@@ -15,7 +15,7 @@ import { DataTableShell } from './DataTableShell'
 import { ProductCreateModal } from './ProductCreateModal'
 import { WarehouseCreateModal } from './WarehouseCreateModal'
 import { VariantCreateModal } from './VariantCreateModal'
-import { VariantDetailModal } from './VariantDetailModal'
+import { VariantModal } from './VariantModal'
 import { ProductModal } from './ProductModal'
 import { cn } from '@/lib/utils'
 import { PrintPreviewDialog } from './PrintPreviewDialog'
@@ -97,7 +97,6 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     string | null
   >(null)
   const [columnPrefs, setColumnPrefs] = useState<ColumnDef[] | null>(null)
-  const [variantDetailOpen, setVariantDetailOpen] = useState(false)
   const [productDetailOpen, setProductDetailOpen] = useState(false)
   const [productDetailId, setProductDetailId] = useState<string | null>(null)
   const [printPreviewOpen, setPrintPreviewOpen] = useState(false)
@@ -144,7 +143,6 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
     (variantId: string, productId: string) => {
       setSelectedVariantId(variantId)
       setSelectedVariantProductId(productId)
-      setVariantDetailOpen(true)
     },
     []
   )
@@ -374,13 +372,10 @@ export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
         productId={createModalProductId}
       />
       {entityType === 'products' && selectedVariantId && (
-        <VariantDetailModal
-          open={variantDetailOpen}
-          onOpenChange={setVariantDetailOpen}
+        <VariantModal
           entityId={selectedVariantId}
           queryClient={queryClient}
           onDeleted={() => {
-            setVariantDetailOpen(false)
             setSelectedVariantId(null)
           }}
           onSaved={handleVariantSaved}

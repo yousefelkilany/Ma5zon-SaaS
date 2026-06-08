@@ -14,9 +14,7 @@ import { updateVariantSchema } from '@/lib/validation/schemas'
 import { VariantForm } from '@/components/entity-form'
 import { EntityFieldGrid } from './EntityFieldGrid'
 
-interface VariantDetailModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+interface VariantModalProps {
   entityId: string
   queryClient: QueryClient
   onDeleted?: () => void
@@ -61,14 +59,12 @@ const VARIANT_ROWS = [
   ],
 ]
 
-export function VariantDetailModal({
-  open,
-  onOpenChange,
+export function VariantModal({
   entityId,
   queryClient,
   onDeleted,
   onSaved,
-}: VariantDetailModalProps) {
+}: VariantModalProps) {
   const { t } = useTranslation()
   const [entity, setEntity] = useState<Variant | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -91,7 +87,6 @@ export function VariantDetailModal({
     new Map()
   )
   const [currentPage, setCurrentPage] = useState(1)
-  const [isDirty, setIsDirty] = useState(false)
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -169,44 +164,8 @@ export function VariantDetailModal({
   })
 
   useEffect(() => {
-    if (!open) {
-      setEntity(null)
-      setIsLoading(true)
-      setLoadError('')
-      setEditForm({
-        sku: '',
-        variant_name: '',
-        uom_id: '',
-        retail_price: '',
-        wholesale_price: '',
-        distribution_price: '',
-      })
-      setActiveTab('details')
-      setDeleteError('')
-      setWarehouseNames(new Map())
-      setCurrentPage(1)
-      setIsDirty(false)
-      setIsEditing(false)
-    }
-  }, [open])
-
-  useEffect(() => {
-    if (open && entityId) {
-      loadEntity()
-    }
-  }, [open, entityId, loadEntity])
-
-  useEffect(() => {
-    if (!entity) return
-    const isActuallyDirty =
-      editForm.sku !== entity.sku ||
-      editForm.variant_name !== entity.variant_name ||
-      editForm.uom_id !== entity.uom_id ||
-      editForm.retail_price !== entity.retail_price.toString() ||
-      editForm.wholesale_price !== entity.wholesale_price.toString() ||
-      editForm.distribution_price !== entity.distribution_price.toString()
-    setIsDirty(isActuallyDirty)
-  }, [editForm, entity])
+    loadEntity()
+  }, [loadEntity])
 
   async function handleSave(values: {
     sku: string
@@ -251,7 +210,6 @@ export function VariantDetailModal({
     setIsDeleting(false)
     if (result.status === 'ok') {
       setShowDeleteConfirm(false)
-      onOpenChange(false)
       queryClient.invalidateQueries({ queryKey: ['entity', 'variants'] })
       onDeleted?.()
     } else {
@@ -272,13 +230,7 @@ export function VariantDetailModal({
 
   return (
     <>
-      <Dialog
-        open={open}
-        onOpenChange={open => {
-          if (!open && isDirty) return
-          onOpenChange(open)
-        }}
-      >
+      <Dialog open={true}>
         <DialogContent>
           <div className="flex flex-col h-full">
             {/* Tab Bar */}
