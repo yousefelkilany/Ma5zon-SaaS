@@ -12,7 +12,7 @@ import type {
   EntityRow,
 } from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
-import { cn } from '@/lib/utils'
+import { cn, type ModalType, ModalTypes } from '@/lib/utils'
 import { PrintPreviewDialog } from './PrintPreviewDialog'
 import { exportSelectedToCSV, exportSelectedToExcel } from '@/lib/utils'
 import { useTabStore } from '@/store/workspace-store'
@@ -109,18 +109,14 @@ export function EntityWorkspace() {
   }, [entityType])
 
   const handleAddNewClick = useCallback(() => {
-    const createModalMap: Record<string, string> = {
-      products: 'create-product',
-      warehouses: 'create-warehouse',
-    }
-    const modalType = createModalMap[entityType]
-    if (modalType) {
-      navigate({
-        to: '/entity/$entityType',
-        params: { entityType: entityType },
-        search: { entity_modal: modalType },
-      })
-    }
+    if (!entityType) return
+    const entity_modal = `create-${entityType}`
+    if (!(ModalTypes as readonly string[]).includes(entity_modal)) return
+    navigate({
+      to: '/entity/$entityType',
+      params: { entityType },
+      search: { entity_modal: entity_modal as ModalType },
+    })
   }, [navigate, entityType])
 
   const handleProductClick = useCallback(

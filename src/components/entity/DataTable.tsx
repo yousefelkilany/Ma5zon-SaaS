@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useIsRTL } from '@/hooks/user-is-rtl'
 import { useTabStore } from '@/store/workspace-store'
 import { commands } from '@/lib/tauri-bindings'
+import { ModalTypes } from '@/lib/utils'
 import { VariantsSubTable } from './VariantsSubTable'
 import { WarehousesSubTable } from './WarehousesSubTable'
 
@@ -164,9 +165,10 @@ export function DataTable({
   const handleRowClick = useCallback(
     (id: string, _row: EntityRow) => {
       const modalType = entityType.slice(0, -1)
+      if (!(ModalTypes as readonly string[]).includes(modalType)) return
       navigate({
         to: '/entity/$entityType',
-        params: { entityType: entityType },
+        params: { entityType },
         search: { entity_modal: modalType, entity_id: id },
       })
     },

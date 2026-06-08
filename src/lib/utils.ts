@@ -24,12 +24,24 @@ export function formatCurrency(
   }).format(price)
 }
 
-export type TabType =
-  | 'dashboard'
-  | 'new-tab'
-  | 'sales-invoice'
-  | 'purchase-invoice'
-  | 'entity'
+export const ModalTypes = [
+  'product',
+  'variant',
+  'warehouse',
+  'create-product',
+  'create-warehouse',
+  'create-variant',
+] as const
+export type ModalType = (typeof ModalTypes)[number] | null
+
+export const TabTypes = [
+  'dashboard',
+  'new-tab',
+  'sales-invoice',
+  'purchase-invoice',
+  'entity',
+] as const
+export type TabType = (typeof TabTypes)[number]
 
 export interface Tab {
   id: string

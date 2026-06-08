@@ -3,15 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { ProductModal } from '@/components/entity/ProductModal'
 import { VariantModal } from '@/components/entity/VariantModal'
 import { WarehouseModal } from '@/components/entity/WarehouseModal'
-
-type ModalType =
-  | 'product'
-  | 'variant'
-  | 'warehouse'
-  | 'create-product'
-  | 'create-warehouse'
-  | 'create-variant'
-  | null
+import type { ModalType } from '@/lib/utils'
 
 export function ModalManager() {
   const queryClient = useQueryClient()
