@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { useTabStore } from '@/store/workspace-store'
 import { useAuth } from '@/hooks/useAuth'
@@ -145,7 +145,7 @@ export function SideBar({ className }: SideBarProps) {
         setActiveTab(newTabId)
       }
 
-      navigate(`/entity/${entityType}`)
+      navigate({ to: '/entity/:entityType', params: { entityType } })
     },
     [addTab, setActiveTab, navigate, isLoggedIn]
   )

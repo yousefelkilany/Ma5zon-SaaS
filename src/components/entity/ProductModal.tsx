@@ -68,7 +68,7 @@ export function ProductModal({
   const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
     new Map()
   )
-  const [isDirty, setIsDirty] = useState(false)
+  const [_isDirty, setIsDirty] = useState(false)
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },

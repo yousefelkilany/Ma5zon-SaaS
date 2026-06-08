@@ -1,4 +1,4 @@
-import { useSearch, useNavigate } from '@tanstack/react-router'
+import { useLocation, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { ProductModal } from '@/components/entity/ProductModal'
 import { VariantModal } from '@/components/entity/VariantModal'
@@ -9,23 +9,22 @@ type ModalType = 'product' | 'variant' | 'warehouse' | null
 export function ModalManager() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const entity_modal = useSearch({
-    select: (search) => search.entity_modal as ModalType,
+  const location = useLocation({
+    select: state => ({
+      pathname: state.pathname,
+      search: state.href.split('?')[1] || '',
+    }),
   })
-  const entity_id = useSearch({
-    select: (search) => search.entity_id as string | null,
-  })
+  const searchParams = new URLSearchParams(location.search)
+  const entity_modal = searchParams.get('entity_modal') as ModalType
+  const entity_id = searchParams.get('entity_id')
 
   const isOpen = entity_modal && entity_id
 
   function handleClose() {
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        entity_modal: null,
-        entity_id: null,
-      }),
-    })
+    searchParams.delete('entity_modal')
+    searchParams.delete('entity_id')
+    navigate({ to: location.pathname, search: {} })
   }
 
   if (!isOpen || !entity_id) return null

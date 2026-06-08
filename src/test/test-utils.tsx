@@ -1,8 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { render, type RenderOptions } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { I18nextProvider } from 'react-i18next'
-import { BrowserRouter } from 'react-router-dom'
+import {
+  RouterContextProvider,
+  createRouter,
+  createRootRoute,
+  createRoute,
+} from '@tanstack/react-router'
 import i18n from '@/i18n/config'
 import {
   ThemeProviderContext,
@@ -26,9 +31,6 @@ interface AllTheProvidersProps {
   children: React.ReactNode
 }
 
-/**
- * Mock ThemeProvider for tests that doesn't depend on Tauri or localStorage
- */
 function MockThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light')
 
@@ -44,15 +46,27 @@ function MockThemeProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
+const rootRoute = createRootRoute({})
+
+const testRouter = createRouter({
+  routeTree: rootRoute.addChildren([
+    createRoute({
+      path: '/',
+      getParentRoute: () => rootRoute,
+      component: () => null,
+    }),
+  ]),
+})
+
 const AllTheProviders = ({ children }: AllTheProvidersProps) => {
-  const queryClient = createTestQueryClient()
+  const queryClient = useMemo(() => createTestQueryClient(), [])
 
   return (
     <QueryClientProvider client={queryClient}>
       <I18nextProvider i18n={i18n}>
-        <BrowserRouter>
+        <RouterContextProvider router={testRouter}>
           <MockThemeProvider>{children}</MockThemeProvider>
-        </BrowserRouter>
+        </RouterContextProvider>
       </I18nextProvider>
     </QueryClientProvider>
   )
