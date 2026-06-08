@@ -145,7 +145,7 @@ export function SideBar({ className }: SideBarProps) {
         setActiveTab(newTabId)
       }
 
-      navigate({ to: '/entity/:entityType', params: { entityType } })
+      navigate({ to: '/entity/$entityType', params: { entityType } })
     },
     [addTab, setActiveTab, navigate, isLoggedIn]
   )

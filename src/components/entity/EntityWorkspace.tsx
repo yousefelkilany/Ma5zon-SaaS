@@ -78,7 +78,7 @@ function EntityHeader({
 }
 
 export function EntityWorkspace() {
-  const { entityType } = useParams({ from: '/entity/:entityType' }) as {
+  const { entityType } = useParams({ from: '/entity/$entityType' }) as {
     entityType: string
   }
   const queryClient = useQueryClient()
@@ -116,7 +116,7 @@ export function EntityWorkspace() {
     const modalType = createModalMap[entityType]
     if (modalType) {
       navigate({
-        to: '/entity/:entityType',
+        to: '/entity/$entityType',
         params: { entityType: entityType },
         search: { entity_modal: modalType },
       })
@@ -126,7 +126,7 @@ export function EntityWorkspace() {
   const handleProductClick = useCallback(
     (productId: string) => {
       navigate({
-        to: '/entity/:entityType',
+        to: '/entity/$entityType',
         params: { entityType: entityType },
         search: { entity_modal: 'product', entity_id: productId },
       })
@@ -137,7 +137,7 @@ export function EntityWorkspace() {
   const handleVariantClick = useCallback(
     (variantId: string, _productId: string) => {
       navigate({
-        to: '/entity/:entityType',
+        to: '/entity/$entityType',
         params: { entityType: entityType },
         search: { entity_modal: 'variant', entity_id: variantId },
       })
@@ -148,7 +148,7 @@ export function EntityWorkspace() {
   const handleAddVariant = useCallback(
     (productId: string) => {
       navigate({
-        to: '/entity/:entityType',
+        to: '/entity/$entityType',
         params: { entityType: entityType },
         search: { entity_modal: 'create-variant', entity_id: productId },
       })

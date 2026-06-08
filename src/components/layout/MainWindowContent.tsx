@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useNavigate, useLocation } from '@tanstack/react-router'
+import { Outlet, useNavigate, useLocation } from '@tanstack/react-router'
 import { useTabStore } from '@/store/workspace-store'
 import { ModalManager } from '@/components/modal/ModalManager'
 
@@ -33,6 +33,7 @@ export function MainWindowContent() {
 
   return (
     <div className="flex h-full flex-col bg-background">
+      <Outlet />
       <ModalManager />
     </div>
   )

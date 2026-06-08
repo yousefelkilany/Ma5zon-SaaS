@@ -13,7 +13,7 @@ const rootRoute = createRootRoute({
 
 const entityRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/entity/:entityType',
+  path: '/entity/$entityType',
   component: EntityWorkspace,
 })
 

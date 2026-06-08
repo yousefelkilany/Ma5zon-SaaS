@@ -165,7 +165,7 @@ export function DataTable({
     (id: string, _row: EntityRow) => {
       const modalType = entityType.slice(0, -1)
       navigate({
-        to: '/entity/:entityType',
+        to: '/entity/$entityType',
         params: { entityType: entityType },
         search: { entity_modal: modalType, entity_id: id },
       })
