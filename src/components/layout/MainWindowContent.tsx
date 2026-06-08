@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { Outlet, useNavigate, useLocation } from '@tanstack/react-router'
 import { useTabStore } from '@/store/workspace-store'
 import { ModalManager } from '@/components/modal/ModalManager'
@@ -8,28 +8,20 @@ export function MainWindowContent() {
   const location = useLocation()
   const activeTabId = useTabStore(state => state.activeTabId)
   const tabs = useTabStore(state => state.tabs)
-  const isNavigatingRef = useRef(false)
 
   useEffect(() => {
-    if (isNavigatingRef.current) return
-
     const activeTab = tabs.find(t => t.id === activeTabId)
+    if (!activeTab) return
 
-    if (activeTab) {
-      let targetPath = ''
-      if (activeTab.type === 'entity' && activeTab.entityType) {
-        targetPath = `/entity/${activeTab.entityType}`
-      } else {
-        targetPath = `/${activeTab.type}`
-      }
+    const targetPath =
+      activeTab.type === 'entity' && activeTab.entityType
+        ? `/entity/${activeTab.entityType}`
+        : `/${activeTab.type}`
 
-      if (location.pathname !== targetPath) {
-        isNavigatingRef.current = true
-        navigate({ to: targetPath, search: {} })
-        isNavigatingRef.current = false
-      }
+    if (location.pathname !== targetPath) {
+      navigate({ to: targetPath, search: {} })
     }
-  }, [location.pathname, activeTabId, tabs, navigate])
+  }, [activeTabId, tabs, navigate, location.pathname])
 
   return (
     <div className="flex h-full flex-col bg-background">

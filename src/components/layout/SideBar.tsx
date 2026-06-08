@@ -23,20 +23,19 @@ interface NavItemProps {
 function NavItem({
   icon,
   label,
-  href = '#',
   active = false,
   collapsed,
   onClick,
 }: NavItemProps) {
   return (
-    <a
+    <button
+      type="button"
       className={cn(
-        'flex items-center gap-compact-gap pe-4 ps-1 py-2 rounded transition-all duration-300',
+        'flex w-full items-center gap-compact-gap pe-4 ps-1 py-2 rounded transition-all duration-300 text-start',
         active
           ? 'text-secondary bg-surface-container-high'
           : 'text-on-surface-variant hover:bg-surface-container-high'
       )}
-      href={href}
       onClick={onClick}
     >
       <span className="material-symbols-outlined text-[20px] shrink-0">
@@ -53,7 +52,7 @@ function NavItem({
       >
         {label}
       </span>
-    </a>
+    </button>
   )
 }
 
