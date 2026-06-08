@@ -26,6 +26,7 @@ src/
 ```
 
 **Files to modify:**
+
 - `src/main.tsx` - Replace BrowserRouter with RouterProvider
 - `src/components/layout/MainWindowContent.tsx` - Remove React Router hooks
 - `src/components/entity/EntityWorkspace.tsx` - Remove modal state and components
@@ -37,6 +38,7 @@ src/
 ## Task 1: Install TanStack Router, remove React Router
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Update package.json dependencies**
@@ -66,6 +68,7 @@ git commit -m "chore: replace react-router-dom with @tanstack/react-router"
 ## Task 2: Create TanStack Router config
 
 **Files:**
+
 - Create: `src/router/index.ts`
 
 - [ ] **Step 1: Create router config**
@@ -143,22 +146,26 @@ git commit -m "feat(router): add tanstack router config"
 ## Task 3: Update main.tsx to use RouterProvider
 
 **Files:**
+
 - Modify: `src/main.tsx`
 
 - [ ] **Step 1: Update main.tsx**
 
 Replace:
+
 ```typescript
 import { BrowserRouter } from 'react-router-dom'
 ```
 
 With:
+
 ```typescript
 import { RouterProvider } from '@tanstack/react-router'
 import { router } from '@/router'
 ```
 
 Replace `<BrowserRouter>` with `<RouterProvider router={router}>`:
+
 ```tsx
 <RouterProvider router={router}>
   <ThemeProvider>
@@ -171,6 +178,7 @@ Replace `<BrowserRouter>` with `<RouterProvider router={router}>`:
 - [ ] **Step 2: Type declaration**
 
 Create `src/router/router.d.ts`:
+
 ```typescript
 import '@tanstack/react-router'
 import { router } from '@/router'
@@ -199,6 +207,7 @@ git commit -m "feat(router): wire tanstack router in main.tsx"
 ## Task 4: Create ModalManager
 
 **Files:**
+
 - Create: `src/components/modal/ModalManager.tsx`
 
 - [ ] **Step 1: Create ModalManager component**
@@ -275,7 +284,7 @@ Modify `src/components/layout/MainWindowContent.tsx` to include ModalManager aft
 import { ModalManager } from '@/components/modal/ModalManager'
 
 // Add inside the div, after Routes:
-<ModalManager />
+;<ModalManager />
 ```
 
 - [ ] **Step 3: Verify build**
@@ -295,6 +304,7 @@ git commit -m "feat(modal): add ModalManager with URL-driven state"
 ## Task 5: Rename ProductDetailModal to ProductModal
 
 **Files:**
+
 - Create: `src/components/entity/ProductModal.tsx`
 - Delete: `src/components/entity/ProductDetailModal.tsx`
 - Modify: `src/components/entity/EntityWorkspace.tsx`
@@ -303,6 +313,7 @@ git commit -m "feat(modal): add ModalManager with URL-driven state"
 - [ ] **Step 1: Copy ProductDetailModal.tsx to ProductModal.tsx**
 
 Copy file content and update:
+
 - Change interface name from `ProductDetailModalProps` to `ProductModalProps`
 - Change function name from `ProductDetailModal` to `ProductModal`
 - Remove `open` and `onOpenChange` from props interface
@@ -317,6 +328,7 @@ interface ProductModalProps {
 ```
 
 Update the Dialog:
+
 ```tsx
 <Dialog open={true} onOpenChange={() => {}}>
 ```
@@ -328,10 +340,13 @@ Run: `rm src/components/entity/ProductDetailModal.tsx`
 - [ ] **Step 3: Update imports in EntityWorkspace.tsx**
 
 Change:
+
 ```typescript
 import { ProductDetailModal } from './ProductDetailModal'
 ```
+
 To:
+
 ```typescript
 import { ProductModal } from './ProductModal'
 ```
@@ -339,10 +354,13 @@ import { ProductModal } from './ProductModal'
 - [ ] **Step 4: Update imports in DataTable.tsx**
 
 Change:
+
 ```typescript
 import { ProductDetailModal } from './ProductDetailModal'
 ```
+
 To:
+
 ```typescript
 import { ProductModal } from './ProductModal'
 ```
@@ -366,6 +384,7 @@ git commit -m "refactor: rename ProductDetailModal to ProductModal"
 ## Task 6: Rename VariantDetailModal to VariantModal
 
 **Files:**
+
 - Create: `src/components/entity/VariantModal.tsx`
 - Delete: `src/components/entity/VariantDetailModal.tsx`
 - Modify: `src/components/entity/EntityWorkspace.tsx`
@@ -374,6 +393,7 @@ git commit -m "refactor: rename ProductDetailModal to ProductModal"
 - [ ] **Step 1: Copy VariantDetailModal.tsx to VariantModal.tsx**
 
 Copy file content and update:
+
 - Change interface name from `VariantDetailModalProps` to `VariantModalProps`
 - Change function name from `VariantDetailModal` to `VariantModal`
 - Remove `open` and `onOpenChange` from props interface
@@ -395,10 +415,13 @@ Run: `rm src/components/entity/VariantDetailModal.tsx`
 - [ ] **Step 3: Update imports in EntityWorkspace.tsx**
 
 Change:
+
 ```typescript
 import { VariantDetailModal } from './VariantDetailModal'
 ```
+
 To:
+
 ```typescript
 import { VariantModal } from './VariantModal'
 ```
@@ -406,10 +429,13 @@ import { VariantModal } from './VariantModal'
 - [ ] **Step 4: Update imports in DataTable.tsx**
 
 Change:
+
 ```typescript
 import { VariantDetailModal } from './VariantDetailModal'
 ```
+
 To:
+
 ```typescript
 import { VariantModal } from './VariantModal'
 ```
@@ -433,6 +459,7 @@ git commit -m "refactor: rename VariantDetailModal to VariantModal"
 ## Task 7: Rename WarehouseDetailModal to WarehouseModal
 
 **Files:**
+
 - Create: `src/components/entity/WarehouseModal.tsx`
 - Delete: `src/components/entity/WarehouseDetailModal.tsx`
 - Modify: `src/components/entity/DataTable.tsx`
@@ -440,6 +467,7 @@ git commit -m "refactor: rename VariantDetailModal to VariantModal"
 - [ ] **Step 1: Copy WarehouseDetailModal.tsx to WarehouseModal.tsx**
 
 Copy file content and update:
+
 - Change interface name from `WarehouseDetailModalProps` to `WarehouseModalProps`
 - Change function name from `WarehouseDetailModal` to `WarehouseModal`
 - Remove `open` and `onOpenChange` from props interface
@@ -460,10 +488,13 @@ Run: `rm src/components/entity/WarehouseDetailModal.tsx`
 - [ ] **Step 3: Update imports in DataTable.tsx**
 
 Change:
+
 ```typescript
 import { WarehouseDetailModal } from './WarehouseDetailModal'
 ```
+
 To:
+
 ```typescript
 import { WarehouseModal } from './WarehouseModal'
 ```
@@ -487,20 +518,25 @@ git commit -m "refactor: rename WarehouseDetailModal to WarehouseModal"
 ## Task 8: Remove prop drilling from EntityWorkspace
 
 **Files:**
+
 - Modify: `src/components/entity/EntityWorkspace.tsx`
 
 - [ ] **Step 1: Remove modal state and callbacks**
 
 Remove these state declarations:
+
 ```typescript
 const [variantDetailOpen, setVariantDetailOpen] = useState(false)
 const [productDetailOpen, setProductDetailOpen] = useState(false)
 const [productDetailId, setProductDetailId] = useState<string | null>(null)
 const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
-const [selectedVariantProductId, setSelectedVariantProductId] = useState<string | null>(null)
+const [selectedVariantProductId, setSelectedVariantProductId] = useState<
+  string | null
+>(null)
 ```
 
 Remove these callbacks:
+
 ```typescript
 const handleProductClick = useCallback((productId: string) => {
   setProductDetailId(productId)
@@ -518,10 +554,13 @@ const handleVariantClick = useCallback(
 ```
 
 Modify `handleVariantSaved` to not need selectedVariantProductId:
+
 ```typescript
 const handleVariantSaved = useCallback(
   async (_variant: { product_id: string }) => {
-    queryClient.invalidateQueries({ queryKey: ['entity', 'products', 'variants'] })
+    queryClient.invalidateQueries({
+      queryKey: ['entity', 'products', 'variants'],
+    })
   },
   [queryClient]
 )
@@ -530,6 +569,7 @@ const handleVariantSaved = useCallback(
 - [ ] **Step 2: Remove modal JSX**
 
 Remove the modal components from JSX:
+
 ```tsx
 {entityType === 'products' && selectedVariantId && (
   <VariantDetailModal ... />
@@ -548,13 +588,16 @@ import { useNavigate } from '@tanstack/react-router'
 
 const navigate = useNavigate()
 
-const handleProductClick = useCallback((productId: string) => {
-  navigate({
-    to: '/entity/$entityType',
-    params: { entityType: entityType },
-    search: { entity_modal: 'product', entity_id: productId },
-  })
-}, [navigate, entityType])
+const handleProductClick = useCallback(
+  (productId: string) => {
+    navigate({
+      to: '/entity/$entityType',
+      params: { entityType: entityType },
+      search: { entity_modal: 'product', entity_id: productId },
+    })
+  },
+  [navigate, entityType]
+)
 
 const handleVariantClick = useCallback(
   (variantId: string, _productId: string) => {
@@ -585,11 +628,13 @@ git commit -m "refactor: remove modal prop drilling from EntityWorkspace"
 ## Task 9: Remove prop drilling from DataTable
 
 **Files:**
+
 - Modify: `src/components/entity/DataTable.tsx`
 
 - [ ] **Step 1: Remove modal state**
 
 Remove:
+
 ```typescript
 const [editModalOpen, setEditModalOpen] = useState(false)
 const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
@@ -598,6 +643,7 @@ const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null)
 - [ ] **Step 2: Update handleRowClick to navigate**
 
 Replace the callback:
+
 ```typescript
 const handleRowClick = useCallback((id: string, _row: EntityRow) => {
   setSelectedEntityId(id)
@@ -606,28 +652,38 @@ const handleRowClick = useCallback((id: string, _row: EntityRow) => {
 ```
 
 With navigation:
+
 ```typescript
 import { useNavigate } from '@tanstack/react-router'
 
 const navigate = useNavigate()
 
-const handleRowClick = useCallback((id: string, _row: EntityRow) => {
-  const modalType = entityType === 'products' ? 'product' 
-    : entityType === 'warehouses' ? 'warehouse' 
-    : entityType === 'variants' ? 'variant' : null
-  if (modalType) {
-    navigate({
-      to: '/entity/$entityType',
-      params: { entityType },
-      search: { entity_modal: modalType, entity_id: id },
-    })
-  }
-}, [navigate, entityType])
+const handleRowClick = useCallback(
+  (id: string, _row: EntityRow) => {
+    const modalType =
+      entityType === 'products'
+        ? 'product'
+        : entityType === 'warehouses'
+          ? 'warehouse'
+          : entityType === 'variants'
+            ? 'variant'
+            : null
+    if (modalType) {
+      navigate({
+        to: '/entity/$entityType',
+        params: { entityType },
+        search: { entity_modal: modalType, entity_id: id },
+      })
+    }
+  },
+  [navigate, entityType]
+)
 ```
 
 - [ ] **Step 3: Remove modal JSX**
 
 Remove the modal components from the return JSX:
+
 ```tsx
 {entityType === 'products' && selectedEntityId && (
   <ProductModal ... />
@@ -657,11 +713,13 @@ git commit -m "refactor: remove modal prop drilling from DataTable"
 ## Task 10: Update MainWindowContent
 
 **Files:**
+
 - Modify: `src/components/layout/MainWindowContent.tsx`
 
 - [ ] **Step 1: Replace React Router hooks with TanStack Router**
 
 Remove:
+
 ```typescript
 import {
   Routes,
@@ -673,6 +731,7 @@ import {
 ```
 
 Add:
+
 ```typescript
 import { useNavigate, useLocation } from '@tanstack/react-router'
 ```
@@ -737,6 +796,7 @@ git commit -m "refactor: update MainWindowContent for tanstack router"
 ## Task 11: Clean up and verify
 
 **Files:**
+
 - Modify: `src/test/test-utils.tsx`
 - Check: Various files for react-router-dom imports
 
@@ -744,6 +804,7 @@ git commit -m "refactor: update MainWindowContent for tanstack router"
 
 Modify `src/test/test-utils.tsx`:
 Remove:
+
 ```typescript
 import { BrowserRouter } from 'react-router-dom'
 ```

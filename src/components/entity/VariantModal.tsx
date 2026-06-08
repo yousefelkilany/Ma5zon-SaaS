@@ -48,14 +48,40 @@ type TabId = 'details' | 'stock' | 'insights' | 'audits'
 
 const VARIANT_ROWS = [
   [
-    { key: 'sku', label: 'entity.layout.product_variants.columns.sku', type: 'text' as const },
-    { key: 'uom_id', label: 'entity.layout.product_variants.columns.uom', type: 'uom' as const },
+    {
+      key: 'sku',
+      label: 'entity.layout.product_variants.columns.sku',
+      type: 'text' as const,
+    },
+    {
+      key: 'uom_id',
+      label: 'entity.layout.product_variants.columns.uom',
+      type: 'uom' as const,
+    },
   ],
-  [{ key: 'variant_name', label: 'entity.layout.product_variants.columns.variant_name', type: 'text' as const }],
   [
-    { key: 'retail_price', label: 'entity.layout.product_variants.columns.retail', type: 'currency' as const },
-    { key: 'wholesale_price', label: 'entity.layout.product_variants.columns.wholesale', type: 'currency' as const },
-    { key: 'distribution_price', label: 'entity.layout.product_variants.columns.distribution', type: 'currency' as const },
+    {
+      key: 'variant_name',
+      label: 'entity.layout.product_variants.columns.variant_name',
+      type: 'text' as const,
+    },
+  ],
+  [
+    {
+      key: 'retail_price',
+      label: 'entity.layout.product_variants.columns.retail',
+      type: 'currency' as const,
+    },
+    {
+      key: 'wholesale_price',
+      label: 'entity.layout.product_variants.columns.wholesale',
+      type: 'currency' as const,
+    },
+    {
+      key: 'distribution_price',
+      label: 'entity.layout.product_variants.columns.distribution',
+      type: 'currency' as const,
+    },
   ],
 ]
 
@@ -152,7 +178,11 @@ export function VariantModal({
     }
   }, [warehouses])
 
-  const { data: movements, isLoading: isLoadingMovements, error: movementsError } = useQuery({
+  const {
+    data: movements,
+    isLoading: isLoadingMovements,
+    error: movementsError,
+  } = useQuery({
     queryKey: ['stock-movements-variant', entityId],
     queryFn: async () => {
       const result = await commands.stockMovementsGetByVariant(entityId)
@@ -359,7 +389,11 @@ export function VariantModal({
                     isLoading={isLoadingStock}
                     view="variant"
                     warehouseNames={warehouseNames}
-                    onTransferSuccess={() => queryClient.invalidateQueries({ queryKey: ['stock-levels-variant', entityId] })}
+                    onTransferSuccess={() =>
+                      queryClient.invalidateQueries({
+                        queryKey: ['stock-levels-variant', entityId],
+                      })
+                    }
                   />
                 </div>
               )}

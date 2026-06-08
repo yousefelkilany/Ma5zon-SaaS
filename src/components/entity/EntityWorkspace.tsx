@@ -1,12 +1,11 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useParams } from '@tanstack/react-router'
 import { commands } from '@/lib/tauri-bindings'
 import type { FilterState as BindingFilterState } from '@/lib/bindings'
 import { getEntityLayout } from '@/lib/entity-layout'
 import type {
-  EntityWorkspaceProps,
   ColumnDef,
   FilterState,
   SortState,
@@ -81,7 +80,11 @@ function EntityHeader({
   )
 }
 
-export function EntityWorkspace({ entityType }: EntityWorkspaceProps) {
+export function EntityWorkspace() {
+  const params = useParams({ from: '/entity/:entityType' }) as {
+    entityType: string
+  }
+  const entityType = params.entityType
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [sort, setSort] = useState<SortState | undefined>()

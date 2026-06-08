@@ -32,7 +32,11 @@ type TabId = 'details' | 'insights' | 'audits'
 const WAREHOUSE_ROWS = [
   [
     { key: 'name', label: 'entity.warehouse.name', type: 'text' as const },
-    { key: 'location', label: 'entity.warehouse.location', type: 'text' as const },
+    {
+      key: 'location',
+      label: 'entity.warehouse.location',
+      type: 'text' as const,
+    },
   ],
 ]
 
@@ -53,8 +57,12 @@ export function WarehouseModal({
   const [deleteError, setDeleteError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
   const [loadError, setLoadError] = useState('')
-  const [productNames, setProductNames] = useState<Map<string, string>>(new Map())
-  const [variantNames, setVariantNames] = useState<Map<string, string>>(new Map())
+  const [productNames, setProductNames] = useState<Map<string, string>>(
+    new Map()
+  )
+  const [variantNames, setVariantNames] = useState<Map<string, string>>(
+    new Map()
+  )
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'details', label: t('entity.detail.tabs.details') },
@@ -93,7 +101,11 @@ export function WarehouseModal({
     }
   }, [entityId])
 
-  const { data: movements, isLoading: isLoadingMovements, error: movementsError } = useQuery({
+  const {
+    data: movements,
+    isLoading: isLoadingMovements,
+    error: movementsError,
+  } = useQuery({
     queryKey: ['stock-movements-warehouse', entityId],
     queryFn: async () => {
       const result = await commands.stockMovementsGetByWarehouse(entityId)
@@ -162,8 +174,6 @@ export function WarehouseModal({
       setDeleteError('')
     }
   }, [showDeleteConfirm])
-
-
 
   async function handleSave(values: { name: string; location: string }) {
     if (!entity) return
@@ -276,7 +286,10 @@ export function WarehouseModal({
                           submitText={t('entity.update.button')}
                         />
                       ) : (
-                        <EntityFieldGrid rows={WAREHOUSE_ROWS} entity={entity} />
+                        <EntityFieldGrid
+                          rows={WAREHOUSE_ROWS}
+                          entity={entity}
+                        />
                       )}
 
                       {/* Footer Actions */}

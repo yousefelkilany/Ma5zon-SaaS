@@ -35,12 +35,24 @@ type TabId = 'details' | 'stock' | 'insights' | 'audits'
 const PRODUCT_ROWS = [
   [
     { key: 'company', label: 'entity.product.company', type: 'text' as const },
-    { key: 'category', label: 'entity.product.category', type: 'text' as const },
+    {
+      key: 'category',
+      label: 'entity.product.category',
+      type: 'text' as const,
+    },
   ],
   [{ key: 'name', label: 'entity.product.name', type: 'text' as const }],
   [
-    { key: 'updated_at', label: 'entity.common.updatedAt', type: 'date' as const },
-    { key: 'created_at', label: 'entity.common.createdAt', type: 'date' as const },
+    {
+      key: 'updated_at',
+      label: 'entity.common.updatedAt',
+      type: 'date' as const,
+    },
+    {
+      key: 'created_at',
+      label: 'entity.common.createdAt',
+      type: 'date' as const,
+    },
   ],
 ]
 
@@ -139,10 +151,15 @@ export function ProductModal({
     }
   }, [warehouses])
 
-  const { data: movements, isLoading: isLoadingMovements, error: movementsError } = useQuery({
+  const {
+    data: movements,
+    isLoading: isLoadingMovements,
+    error: movementsError,
+  } = useQuery({
     queryKey: ['stock-movements-product', entityId],
     queryFn: async () => {
-      const variantsResult = await commands.variantsGetByProductWithStock(entityId)
+      const variantsResult =
+        await commands.variantsGetByProductWithStock(entityId)
       if (variantsResult.status !== 'ok') {
         throw new Error(variantsResult.error ?? 'Failed to load variants')
       }
@@ -153,7 +170,8 @@ export function ProductModal({
         if (movResult.status === 'ok') {
           const sorted = movResult.data.sort(
             (a, b) =>
-              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
           )
           allMovements.push(...sorted.slice(0, 5))
         }
@@ -254,7 +272,7 @@ export function ProductModal({
 
   return (
     <>
-      <Dialog open={true} onOpenChange={() => {}}>
+      <Dialog open={true}>
         <DialogContent>
           <div className="flex flex-col h-full">
             <div
@@ -370,7 +388,11 @@ export function ProductModal({
                     isLoading={isLoadingStock}
                     view="product"
                     warehouseNames={warehouseNames}
-                    onTransferSuccess={() => queryClient.invalidateQueries({ queryKey: ['stock-levels-product', entityId] })}
+                    onTransferSuccess={() =>
+                      queryClient.invalidateQueries({
+                        queryKey: ['stock-levels-product', entityId],
+                      })
+                    }
                   />
                 </div>
               )}

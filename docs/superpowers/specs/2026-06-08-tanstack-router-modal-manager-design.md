@@ -54,6 +54,7 @@ export const router = createRouter({
 **File:** `src/components/modal/ModalManager.tsx`
 
 **Responsibilities:**
+
 - Parse `entity_modal` and `entity_id` from URL search params
 - Render the appropriate modal based on `entity_modal` value
 - Handle modal close by clearing URL params
@@ -69,16 +70,17 @@ interface ModalParams {
 ```
 
 **Behavior:**
+
 - On route change → parse URL → if `entity_modal` + `entity_id` present → open corresponding modal
 - On modal close → clear `entity_modal` and `entity_id` from URL (navigate to same path without modal params)
 - Modal state is derived from URL; no local open/close state
 
 ### Modal Renaming
 
-| Old Name | New Name |
-|----------|----------|
-| `ProductDetailModal` | `ProductModal` |
-| `VariantDetailModal` | `VariantModal` |
+| Old Name               | New Name         |
+| ---------------------- | ---------------- |
+| `ProductDetailModal`   | `ProductModal`   |
+| `VariantDetailModal`   | `VariantModal`   |
 | `WarehouseDetailModal` | `WarehouseModal` |
 
 ### Updated Modal Interface
