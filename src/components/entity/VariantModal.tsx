@@ -1,8 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import type { QueryClient } from '@tanstack/react-query'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
@@ -15,8 +21,10 @@ import { VariantForm } from '@/components/entity-form'
 import { EntityFieldGrid } from './EntityFieldGrid'
 
 interface VariantModalProps {
-  entityId: string
+  entityId?: string
+  productId?: string
   queryClient: QueryClient
+  mode: 'view' | 'create'
   onDeleted?: () => void
   onSaved?: (variant: Variant) => void
 }
@@ -87,11 +95,14 @@ const VARIANT_ROWS = [
 
 export function VariantModal({
   entityId,
+  productId,
   queryClient,
+  mode,
   onDeleted,
   onSaved,
 }: VariantModalProps) {
   const { t } = useTranslation()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [entity, setEntity] = useState<Variant | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [editForm, setEditForm] = useState<EditForm>({
@@ -122,6 +133,7 @@ export function VariantModal({
   ]
 
   const loadEntity = useCallback(async () => {
+    if (!entityId) return
     setIsLoading(true)
     setLoadError('')
     const result = await commands.variantsGetById(entityId)
@@ -148,6 +160,7 @@ export function VariantModal({
   const { data: stockLevels, isLoading: isLoadingStock } = useQuery({
     queryKey: ['stock-levels-variant', entityId],
     queryFn: async () => {
+      if (!entityId) throw new Error('entityId required')
       const result = await commands.stockLevelsGetByVariant(entityId)
       if (result.status !== 'ok') throw new Error(result.error)
       return result.data.map((l: StockLevel) => ({
@@ -185,6 +198,7 @@ export function VariantModal({
   } = useQuery({
     queryKey: ['stock-movements-variant', entityId],
     queryFn: async () => {
+      if (!entityId) throw new Error('entityId required')
       const result = await commands.stockMovementsGetByVariant(entityId)
       if (result.status === 'ok') return result.data
       throw new Error(result.error)
@@ -194,8 +208,10 @@ export function VariantModal({
   })
 
   useEffect(() => {
-    loadEntity()
-  }, [loadEntity])
+    if (entityId) {
+      loadEntity()
+    }
+  }, [entityId, loadEntity])
 
   async function handleSave(values: {
     sku: string
@@ -258,12 +274,62 @@ export function VariantModal({
     }
   }
 
+  if (mode === 'create') {
+    if (!productId) return null
+    return (
+      <Dialog open={true}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('entity.create.variant.title')}</DialogTitle>
+          </DialogHeader>
+          <VariantForm
+            productId={productId}
+            onSubmit={async values => {
+              setIsSubmitting(true)
+              try {
+                const result = await commands.variantsCreate({
+                  product_id: productId,
+                  sku: values.sku,
+                  variant_name: values.variant_name,
+                  uom_id: values.uom_id ?? '',
+                  retail_price: values.retail_price ?? 0,
+                  wholesale_price: values.wholesale_price ?? 0,
+                  distribution_price: values.distribution_price ?? 0,
+                })
+                if (result.status === 'ok') {
+                  queryClient.invalidateQueries({
+                    queryKey: ['entity', 'product_variants'],
+                  })
+                  onDeleted?.()
+                } else {
+                  toast.error(result.error)
+                }
+              } catch (err: unknown) {
+                toast.error(err instanceof Error ? err.message : String(err))
+              } finally {
+                setIsSubmitting(false)
+              }
+            }}
+            isLoading={isSubmitting}
+            initialValues={{
+              sku: '',
+              variant_name: '',
+              uom_id: '',
+              retail_price: undefined,
+              wholesale_price: undefined,
+              distribution_price: undefined,
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
   return (
     <>
       <Dialog open={true}>
         <DialogContent>
           <div className="flex flex-col h-full">
-            {/* Tab Bar */}
             <div
               className="flex border-b border-outline-variant mb-4"
               role="tablist"
@@ -290,7 +356,6 @@ export function VariantModal({
               ))}
             </div>
 
-            {/* Tab Content */}
             <div className="flex-1 overflow-auto">
               {activeTab === 'details' && (
                 <div
@@ -334,7 +399,6 @@ export function VariantModal({
                         <EntityFieldGrid rows={VARIANT_ROWS} entity={entity} />
                       )}
 
-                      {/* Footer Actions */}
                       <div className="flex items-center justify-between pt-4 border-t border-outline-variant">
                         <Button
                           variant="ghost"

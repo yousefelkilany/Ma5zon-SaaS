@@ -1,8 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import type { QueryClient } from '@tanstack/react-query'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
@@ -13,8 +19,9 @@ import { EntityFieldGrid } from './EntityFieldGrid'
 import { StockMovementsTable } from './StockMovementsTable'
 
 interface WarehouseModalProps {
-  entityId: string
+  entityId?: string
   queryClient: QueryClient
+  mode: 'view' | 'create'
   onDeleted?: () => void
 }
 
@@ -43,9 +50,11 @@ const WAREHOUSE_ROWS = [
 export function WarehouseModal({
   entityId,
   queryClient,
+  mode,
   onDeleted,
 }: WarehouseModalProps) {
   const { t } = useTranslation()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [entity, setEntity] = useState<Warehouse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
@@ -82,6 +91,7 @@ export function WarehouseModal({
   }
 
   const loadEntity = useCallback(async () => {
+    if (!entityId) return
     setIsLoading(true)
     setLoadError('')
     const result = await commands.warehousesGetById(entityId)
@@ -108,6 +118,7 @@ export function WarehouseModal({
   } = useQuery({
     queryKey: ['stock-movements-warehouse', entityId],
     queryFn: async () => {
+      if (!entityId) throw new Error('entityId required')
       const result = await commands.stockMovementsGetByWarehouse(entityId)
       if (result.status === 'ok') return result.data
       throw new Error(result.error)
@@ -151,6 +162,7 @@ export function WarehouseModal({
   }, [movements])
 
   useEffect(() => {
+    if (!entityId) return
     setEntity(null)
     setIsLoading(true)
     setLoadError('')
@@ -226,12 +238,48 @@ export function WarehouseModal({
     setIsEditing(true)
   }
 
+  if (mode === 'create') {
+    return (
+      <Dialog open={true}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('entity.create.warehouse.title')}</DialogTitle>
+          </DialogHeader>
+          <WarehouseForm
+            onSubmit={async values => {
+              setIsSubmitting(true)
+              try {
+                const result = await commands.warehousesCreate(
+                  values.name,
+                  values.location
+                )
+                if (result.status === 'ok') {
+                  queryClient.invalidateQueries({
+                    queryKey: ['entity', 'warehouses'],
+                  })
+                  onDeleted?.()
+                } else {
+                  toast.error(result.error)
+                }
+              } catch (err: unknown) {
+                toast.error(err instanceof Error ? err.message : String(err))
+              } finally {
+                setIsSubmitting(false)
+              }
+            }}
+            isLoading={isSubmitting}
+            initialValues={{ name: '', location: '' }}
+          />
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
   return (
     <>
       <Dialog open={true}>
         <DialogContent>
           <div className="flex flex-col h-full">
-            {/* Tab Bar */}
             <div
               className="flex border-b border-outline-variant mb-4"
               role="tablist"
@@ -258,7 +306,6 @@ export function WarehouseModal({
               ))}
             </div>
 
-            {/* Tab Content */}
             <div className="flex-1 max-h-150 overflow-auto">
               {activeTab === 'details' && (
                 <div
@@ -292,7 +339,6 @@ export function WarehouseModal({
                         />
                       )}
 
-                      {/* Footer Actions */}
                       {saveError && (
                         <p className="text-body-sm text-error">{saveError}</p>
                       )}

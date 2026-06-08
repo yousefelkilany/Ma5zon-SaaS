@@ -4,7 +4,14 @@ import { ProductModal } from '@/components/entity/ProductModal'
 import { VariantModal } from '@/components/entity/VariantModal'
 import { WarehouseModal } from '@/components/entity/WarehouseModal'
 
-type ModalType = 'product' | 'variant' | 'warehouse' | null
+type ModalType =
+  | 'product'
+  | 'variant'
+  | 'warehouse'
+  | 'create-product'
+  | 'create-warehouse'
+  | 'create-variant'
+  | null
 
 export function ModalManager() {
   const queryClient = useQueryClient()
@@ -19,38 +26,68 @@ export function ModalManager() {
   const entity_modal = searchParams.get('entity_modal') as ModalType
   const entity_id = searchParams.get('entity_id')
 
-  const isOpen = entity_modal && entity_id
-
   function handleClose() {
     searchParams.delete('entity_modal')
     searchParams.delete('entity_id')
     navigate({ to: location.pathname, search: {} })
   }
 
-  if (!isOpen || !entity_id) return null
+  if (!entity_modal) return null
 
   switch (entity_modal) {
     case 'product':
+      if (!entity_id) return null
       return (
         <ProductModal
           entityId={entity_id}
           queryClient={queryClient}
+          mode="view"
           onDeleted={handleClose}
         />
       )
     case 'variant':
+      if (!entity_id) return null
       return (
         <VariantModal
           entityId={entity_id}
           queryClient={queryClient}
+          mode="view"
           onDeleted={handleClose}
         />
       )
     case 'warehouse':
+      if (!entity_id) return null
       return (
         <WarehouseModal
           entityId={entity_id}
           queryClient={queryClient}
+          mode="view"
+          onDeleted={handleClose}
+        />
+      )
+    case 'create-product':
+      return (
+        <ProductModal
+          queryClient={queryClient}
+          mode="create"
+          onDeleted={handleClose}
+        />
+      )
+    case 'create-warehouse':
+      return (
+        <WarehouseModal
+          queryClient={queryClient}
+          mode="create"
+          onDeleted={handleClose}
+        />
+      )
+    case 'create-variant':
+      if (!entity_id) return null
+      return (
+        <VariantModal
+          productId={entity_id}
+          queryClient={queryClient}
+          mode="create"
           onDeleted={handleClose}
         />
       )

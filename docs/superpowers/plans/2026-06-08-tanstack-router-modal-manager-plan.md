@@ -7,6 +7,7 @@
 **Architecture:** TanStack Router with code-based config. ModalManager monitors routes, parses `entity_modal` and `entity_id` from URL, renders appropriate modal, and clears params on close. All modals renamed from `*DetailModal`/`*CreateModal` to `*Modal` and no longer receive `open`/`onOpenChange` props.
 
 **URL Shape:**
+
 - Detail modals: `/entity/products?entity_modal=product&entity_id=123`
 - Create modals: `/entity/products?entity_modal=create-product`
 - Create variant (needs productId): `/entity/products?entity_modal=create-variant&entity_id=123`
@@ -547,7 +548,7 @@ Update `ProductModal` to accept `mode` prop:
 
 ```typescript
 interface ProductModalProps {
-  entityId?: string  // undefined for create mode
+  entityId?: string // undefined for create mode
   queryClient: QueryClient
   mode: 'view' | 'create'
   onDeleted?: () => void
@@ -619,8 +620,8 @@ git commit -m "refactor: merge WarehouseCreateModal into WarehouseModal with mod
 
 ```typescript
 interface VariantModalProps {
-  entityId?: string  // undefined for create mode
-  productId?: string  // needed for create mode
+  entityId?: string // undefined for create mode
+  productId?: string // needed for create mode
   queryClient: QueryClient
   mode: 'view' | 'create'
   onDeleted?: () => void
@@ -727,15 +728,22 @@ git commit -m "feat(modal): extend ModalManager to handle create modals"
 
 ```typescript
 const handleAddNewClick = useCallback(() => {
-  const createModal = entityType === 'products' ? 'create-product'
-    : entityType === 'warehouses' ? 'create-warehouse'
-    : entityType === 'product_variants' ? 'create-variant'
-    : null
+  const createModal =
+    entityType === 'products'
+      ? 'create-product'
+      : entityType === 'warehouses'
+        ? 'create-warehouse'
+        : entityType === 'product_variants'
+          ? 'create-variant'
+          : null
   if (createModal) {
     navigate({
       to: '/entity/$entityType',
       params: { entityType: entityType },
-      search: createModal === 'create-variant' ? { entity_modal: createModal, entity_id: createModalProductId } : { entity_modal: createModal },
+      search:
+        createModal === 'create-variant'
+          ? { entity_modal: createModal, entity_id: createModalProductId }
+          : { entity_modal: createModal },
     })
   }
 }, [navigate, entityType])
@@ -744,6 +752,7 @@ const handleAddNewClick = useCallback(() => {
 - [ ] **Step 2: Remove create modal state and JSX**
 
 Remove:
+
 - `createModalOpen` state
 - `createModalType` state
 - `createModalProductId` state

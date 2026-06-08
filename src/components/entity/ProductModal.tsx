@@ -1,8 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import type { QueryClient } from '@tanstack/react-query'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { commands } from '@/lib/tauri-bindings'
@@ -15,8 +21,9 @@ import { updateProductSchema } from '@/lib/validation/schemas'
 import { EntityFieldGrid } from './EntityFieldGrid'
 
 interface ProductModalProps {
-  entityId: string
+  entityId?: string
   queryClient: QueryClient
+  mode: 'view' | 'create'
   onDeleted?: () => void
 }
 
@@ -59,9 +66,11 @@ const PRODUCT_ROWS = [
 export function ProductModal({
   entityId,
   queryClient,
+  mode,
   onDeleted,
 }: ProductModalProps) {
   const { t } = useTranslation()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [entity, setEntity] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
@@ -101,6 +110,7 @@ export function ProductModal({
   }
 
   const loadEntity = useCallback(async () => {
+    if (!entityId) return
     setIsLoading(true)
     setLoadError('')
     const result = await commands.getById(entityId)
@@ -125,6 +135,7 @@ export function ProductModal({
   const { data: stockLevels, isLoading: isLoadingStock } = useQuery({
     queryKey: ['stock-levels-product', entityId],
     queryFn: async () => {
+      if (!entityId) throw new Error('entityId required')
       const result = await commands.stockLevelsGetByProduct(entityId)
       if (result.status !== 'ok') throw new Error(result.error)
       return result.data
@@ -158,6 +169,7 @@ export function ProductModal({
   } = useQuery({
     queryKey: ['stock-movements-product', entityId],
     queryFn: async () => {
+      if (!entityId) throw new Error('entityId required')
       const variantsResult =
         await commands.variantsGetByProductWithStock(entityId)
       if (variantsResult.status !== 'ok') {
@@ -268,6 +280,44 @@ export function ProductModal({
       })
     }
     setIsEditing(true)
+  }
+
+  if (mode === 'create') {
+    return (
+      <Dialog open={true}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('entity.create.product.title')}</DialogTitle>
+          </DialogHeader>
+          <ProductForm
+            onSubmit={async values => {
+              setIsSubmitting(true)
+              try {
+                const result = await commands.create(
+                  values.company,
+                  values.name,
+                  values.category
+                )
+                if (result.status === 'ok') {
+                  queryClient.invalidateQueries({
+                    queryKey: ['entity', 'products'],
+                  })
+                  onDeleted?.()
+                } else {
+                  toast.error(result.error)
+                }
+              } catch (err: unknown) {
+                toast.error(err instanceof Error ? err.message : String(err))
+              } finally {
+                setIsSubmitting(false)
+              }
+            }}
+            isLoading={isSubmitting}
+            initialValues={{ company: '', name: '', category: '' }}
+          />
+        </DialogContent>
+      </Dialog>
+    )
   }
 
   return (

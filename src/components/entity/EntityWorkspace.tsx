@@ -12,9 +12,6 @@ import type {
   EntityRow,
 } from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
-import { ProductCreateModal } from './ProductCreateModal'
-import { WarehouseCreateModal } from './WarehouseCreateModal'
-import { VariantCreateModal } from './VariantCreateModal'
 import { cn } from '@/lib/utils'
 import { PrintPreviewDialog } from './PrintPreviewDialog'
 import { exportSelectedToCSV, exportSelectedToExcel } from '@/lib/utils'
@@ -81,18 +78,12 @@ function EntityHeader({
 }
 
 export function EntityWorkspace() {
-  const params = useParams({ from: '/entity/:entityType' }) as {
+  const { entityType } = useParams({ from: '/entity/:entityType' }) as {
     entityType: string
   }
-  const entityType = params.entityType
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [sort, setSort] = useState<SortState | undefined>()
-  const [createModalOpen, setCreateModalOpen] = useState(false)
-  const [createModalType, setCreateModalType] = useState<
-    'products' | 'warehouses' | 'product_variants' | null
-  >(null)
-  const [createModalProductId, setCreateModalProductId] = useState<string>('')
   const [columnPrefs, setColumnPrefs] = useState<ColumnDef[] | null>(null)
   const [printPreviewOpen, setPrintPreviewOpen] = useState(false)
   const [selectedForPrint, setSelectedForPrint] = useState<EntityRow[]>([])
@@ -118,16 +109,19 @@ export function EntityWorkspace() {
   }, [entityType])
 
   const handleAddNewClick = useCallback(() => {
-    setCreateModalType(
-      entityType as 'products' | 'warehouses' | 'product_variants'
-    )
-    setCreateModalOpen(true)
-  }, [entityType])
-
-  const handleModalOpenChange = useCallback((open: boolean) => {
-    setCreateModalOpen(open)
-    if (!open) setCreateModalType(null)
-  }, [])
+    const createModalMap: Record<string, string> = {
+      products: 'create-product',
+      warehouses: 'create-warehouse',
+    }
+    const modalType = createModalMap[entityType]
+    if (modalType) {
+      navigate({
+        to: '/entity/:entityType',
+        params: { entityType: entityType },
+        search: { entity_modal: modalType },
+      })
+    }
+  }, [navigate, entityType])
 
   const handleProductClick = useCallback(
     (productId: string) => {
@@ -151,11 +145,16 @@ export function EntityWorkspace() {
     [navigate, entityType]
   )
 
-  const handleAddVariant = useCallback((productId: string) => {
-    setCreateModalType('product_variants')
-    setCreateModalProductId(productId)
-    setCreateModalOpen(true)
-  }, [])
+  const handleAddVariant = useCallback(
+    (productId: string) => {
+      navigate({
+        to: '/entity/:entityType',
+        params: { entityType: entityType },
+        search: { entity_modal: 'create-variant', entity_id: productId },
+      })
+    },
+    [navigate, entityType]
+  )
 
   const { data: entityData, isLoading } = useQuery({
     queryKey: ['entity', entityType, sort, page, pageSize],
@@ -348,22 +347,6 @@ export function EntityWorkspace() {
         onVariantClick={handleVariantClick}
         onAddVariant={handleAddVariant}
         onProductClick={handleProductClick}
-      />
-      <ProductCreateModal
-        open={createModalOpen && createModalType === 'products'}
-        onOpenChange={handleModalOpenChange}
-        queryClient={queryClient}
-      />
-      <WarehouseCreateModal
-        open={createModalOpen && createModalType === 'warehouses'}
-        onOpenChange={handleModalOpenChange}
-        queryClient={queryClient}
-      />
-      <VariantCreateModal
-        open={createModalOpen && createModalType === 'product_variants'}
-        onOpenChange={handleModalOpenChange}
-        queryClient={queryClient}
-        productId={createModalProductId}
       />
       <PrintPreviewDialog
         open={printPreviewOpen}
