@@ -151,6 +151,16 @@ export function VariantModal({
   const isDirtyRef = useRef(isDirty)
   isDirtyRef.current = isDirty
 
+  const saveAndCloseRef = useRef<(() => Promise<void> | void) | undefined>(undefined)
+  saveAndCloseRef.current = async () => {
+    if (mode === 'create') {
+      if (!productId) return
+      await createVariantMut.mutateAsync({ values: editForm as never, productId })
+    } else if (entity) {
+      await updateVariant.mutateAsync({ id: entity.id, values: editForm as never })
+    }
+  }
+
   useEffect(() => {
     if (mode !== 'view' && !entityId) return
     const handle: ModalHandle = {
@@ -173,6 +183,7 @@ export function VariantModal({
         }
         useUIStore.getState().clearTabState(entityType)
       },
+      saveAndClose: () => saveAndCloseRef.current?.(),
     }
     return registerModalHandle(entityType, handle)
     // eslint-disable-next-line react-hooks/exhaustive-deps

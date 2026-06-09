@@ -13,6 +13,12 @@ interface TabModalState {
 
 type TabStateSlice = Partial<Record<EntityTabKey, TabModalState>>
 
+export interface InterceptedNavigation {
+  targetTabId: string
+  onDiscard: () => void
+  onSaveAndClose?: () => Promise<void> | void
+}
+
 interface UIState {
   sidebarVisible: boolean
   commandPaletteOpen: boolean
@@ -20,6 +26,7 @@ interface UIState {
   lastQuickPaneEntry: string | null
   userPreferences: UserPreferences
   tabState: TabStateSlice
+  interceptedNavigation: InterceptedNavigation | null
 
   toggleSidebar: () => void
   setSidebarVisible: (visible: boolean) => void
@@ -46,6 +53,7 @@ interface UIState {
   setTabIsDirty: (tabId: EntityTabKey, dirty: boolean) => void
   clearTabState: (tabId: EntityTabKey) => void
   clearAllTabState: () => void
+  setInterceptedNavigation: (nav: InterceptedNavigation | null) => void
 }
 
 export interface UserPreferences {
@@ -65,6 +73,7 @@ export const useUIStore = create<UIState>()(set => ({
     dateFormat: 'yyyy-MM-dd',
   },
   tabState: {} as TabStateSlice,
+  interceptedNavigation: null,
 
   toggleSidebar: () =>
     set(state => ({ sidebarVisible: !state.sidebarVisible })),
@@ -163,4 +172,6 @@ export const useUIStore = create<UIState>()(set => ({
     })),
 
   clearAllTabState: () => set({ tabState: {} }),
+
+  setInterceptedNavigation: nav => set({ interceptedNavigation: nav }),
 }))

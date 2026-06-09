@@ -1,9 +1,17 @@
 import { useEffect, useRef } from 'react'
 import { Outlet, useNavigate, useLocation } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useTabStore } from '@/store/workspace-store'
 import { useUIStore } from '@/store/ui-store'
 import { ModalManager } from '@/components/modal/ModalManager'
 import { useWorkspacePortalTarget } from '@/components/entity/workspace-portal-context'
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 import type { ModalType } from '@/lib/utils'
 
 // Imperative handle exposed by an entity modal so this effect can read
@@ -13,6 +21,7 @@ export interface ModalHandle {
   getCreateDraft: () => Record<string, unknown> | undefined
   getEditDraft: () => Record<string, unknown> | undefined
   discardDrafts: () => void
+  saveAndClose?: () => Promise<void> | void
 }
 
 const tabHandles = new Map<string, ModalHandle>()
@@ -26,7 +35,12 @@ export function registerModalHandle(tabKey: string, handle: ModalHandle) {
   }
 }
 
+export function getModalHandle(tabKey: string): ModalHandle | undefined {
+  return tabHandles.get(tabKey)
+}
+
 export function MainWindowContent() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const activeTabId = useTabStore(state => state.activeTabId)
@@ -39,7 +53,8 @@ export function MainWindowContent() {
   const setTabEditDraft = useUIStore(state => state.setTabEditDraft)
   const setTabIsDirty = useUIStore(state => state.setTabIsDirty)
   const tabState = useUIStore(state => state.tabState)
-  const clearTabState = useUIStore(state => state.clearTabState)
+  const interceptedNavigation = useUIStore(state => state.interceptedNavigation)
+  const setInterceptedNavigation = useUIStore(state => state.setInterceptedNavigation)
 
   useEffect(() => {
     const activeTab = tabs.find(t => t.id === activeTabId)
@@ -104,10 +119,59 @@ export function MainWindowContent() {
     tabState,
   ])
 
+  const handleInterceptedDiscard = () => {
+    interceptedNavigation?.onDiscard()
+    setInterceptedNavigation(null)
+  }
+
+  const handleInterceptedSaveAndClose = async () => {
+    const nav = interceptedNavigation
+    if (!nav) return
+    if (nav.onSaveAndClose) {
+      try {
+        await nav.onSaveAndClose()
+      } catch {
+        setInterceptedNavigation(null)
+        return
+      }
+    }
+    nav.onDiscard()
+    setInterceptedNavigation(null)
+  }
+
   return (
     <div className="flex h-full flex-col bg-background">
       <Outlet />
       <ModalManager portalTarget={portalTarget?.current ?? null} />
+      <Dialog
+        open={interceptedNavigation !== null}
+        onClose={() => setInterceptedNavigation(null)}
+      >
+        <DialogPanel
+          className="max-w-sm"
+          onClose={() => setInterceptedNavigation(null)}
+          showCloseButton={false}
+        >
+          <DialogTitle>{t('common.unsavedChanges.discardTitle')}</DialogTitle>
+          <DialogDescription>{t('common.unsavedChanges.body')}</DialogDescription>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              variant="ghost"
+              onClick={() => setInterceptedNavigation(null)}
+            >
+              {t('common.unsavedChanges.keepEditing')}
+            </Button>
+            {interceptedNavigation?.onSaveAndClose && (
+              <Button onClick={handleInterceptedSaveAndClose}>
+                {t('common.unsavedChanges.saveAndClose')}
+              </Button>
+            )}
+            <Button variant="destructive" onClick={handleInterceptedDiscard}>
+              {t('common.unsavedChanges.discard')}
+            </Button>
+          </div>
+        </DialogPanel>
+      </Dialog>
     </div>
   )
 }

@@ -96,6 +96,20 @@ export function WarehouseModal({
   const isDirtyRef = useRef(isDirty)
   isDirtyRef.current = isDirty
 
+  const saveAndCloseRef = useRef<(() => Promise<void> | void) | undefined>(undefined)
+  saveAndCloseRef.current = async () => {
+    if (mode === 'create') {
+      await createWarehouseMut.mutateAsync({
+        values: editForm as unknown as WarehouseUpdateValues,
+      })
+    } else if (entity) {
+      await updateWarehouse.mutateAsync({
+        id: entity.id,
+        values: editForm as unknown as WarehouseUpdateValues,
+      })
+    }
+  }
+
   useEffect(() => {
     if (mode !== 'view' && !entityId) return
     const handle: ModalHandle = {
@@ -111,6 +125,7 @@ export function WarehouseModal({
         }
         useUIStore.getState().clearTabState(entityType)
       },
+      saveAndClose: () => saveAndCloseRef.current?.(),
     }
     return registerModalHandle(entityType, handle)
     // eslint-disable-next-line react-hooks/exhaustive-deps

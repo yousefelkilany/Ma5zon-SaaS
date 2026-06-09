@@ -1,5 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { useTabStore } from '@/store/workspace-store'
+import { useUIStore } from '@/store/ui-store'
+import { getModalHandle } from '@/components/layout/MainWindowContent'
+import { shouldInterceptTabSwitch } from '@/lib/utils/tab-switch-guard'
 import { useAuth } from '@/hooks/useAuth'
 import { requestLogin } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
@@ -11,10 +14,41 @@ export function TabBar() {
   const setActiveTab = useTabStore(state => state.setActiveTab)
   const addTab = useTabStore(state => state.addTab)
   const removeTab = useTabStore(state => state.removeTab)
+  const tabState = useUIStore(state => state.tabState)
+  const setInterceptedNavigation = useUIStore(state => state.setInterceptedNavigation)
   const { isLoggedIn } = useAuth()
 
   const handleTabClick = (tabId: string) => {
-    setActiveTab(tabId)
+    if (tabId === activeTabId) {
+      setActiveTab(tabId)
+      return
+    }
+    const currentTab = tabs.find(t => t.id === activeTabId)
+    if (!shouldInterceptTabSwitch(tabState, currentTab)) {
+      setActiveTab(tabId)
+      return
+    }
+    const currentEntityType = currentTab?.entityType as
+      | 'products'
+      | 'variants'
+      | 'warehouses'
+      | undefined
+    if (!currentEntityType) {
+      setActiveTab(tabId)
+      return
+    }
+    setInterceptedNavigation({
+      targetTabId: tabId,
+      onDiscard: () => {
+        useUIStore.getState().clearTabState(currentEntityType)
+        setActiveTab(tabId)
+      },
+      onSaveAndClose: async () => {
+        const handle = getModalHandle(currentEntityType)
+        await handle?.saveAndClose?.()
+        setActiveTab(tabId)
+      },
+    })
   }
 
   const handleAddTab = () => {
