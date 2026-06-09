@@ -1,31 +1,4 @@
-import type { commands } from '@/lib/tauri-bindings'
-
-type Product = NonNullable<
-  Awaited<ReturnType<typeof commands.getById>> extends {
-    status: 'ok'
-    data: infer D
-  }
-    ? D
-    : never
->
-
-type Variant = NonNullable<
-  Awaited<ReturnType<typeof commands.variantsGetById>> extends {
-    status: 'ok'
-    data: infer D
-  }
-    ? D
-    : never
->
-
-type Warehouse = NonNullable<
-  Awaited<ReturnType<typeof commands.warehousesGetById>> extends {
-    status: 'ok'
-    data: infer D
-  }
-    ? D
-    : never
->
+import type { Product, Variant, Warehouse } from '@/lib/bindings'
 
 type ProductUpdateValues = {
   company: string
