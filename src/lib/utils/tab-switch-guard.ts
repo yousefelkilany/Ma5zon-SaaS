@@ -1,6 +1,5 @@
 import type { Tab } from '@/lib/utils'
-
-type EntityTabKey = 'products' | 'variants' | 'warehouses'
+import type { EntityTabKey } from '@/store/ui-store'
 
 type TabStateSlice = Partial<
   Record<

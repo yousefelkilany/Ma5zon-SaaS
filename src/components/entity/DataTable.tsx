@@ -14,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useIsRTL } from '@/hooks/user-is-rtl'
 import { useTabStore } from '@/store/workspace-store'
 import { commands } from '@/lib/tauri-bindings'
-import { ModalTypes } from '@/lib/utils'
+import { ModalTypes, type ModalType } from '@/lib/utils'
 import { VariantsSubTable } from './VariantsSubTable'
 import { WarehousesSubTable } from './WarehousesSubTable'
 
@@ -79,7 +79,6 @@ export function DataTable({
   selectedIds,
   onSort,
   onRowSelect,
-  onRowClick,
   onVariantClick,
   onAddVariant,
   onProductClick,
@@ -163,24 +162,16 @@ export function DataTable({
   }, [selectColumn, expandColumn, entityType, visibleColumns])
 
   const handleRowClick = useCallback(
-    (id: string, _row: EntityRow) => {
-      const modalType = entityType.slice(0, -1)
-      if (!(ModalTypes as readonly string[]).includes(modalType)) return
+    (entity_id: string, _row: EntityRow) => {
+      const entity_modal = entityType as ModalType
+      if (!entity_modal || !ModalTypes.includes(entity_modal)) return
       navigate({
         to: '/entity/$entityType',
         params: { entityType },
-        search: { entity_modal: modalType, entity_id: id },
+        search: { entity_modal, entity_id   },
       })
     },
     [navigate, entityType]
-  )
-
-  const internalOnRowClick = useCallback(
-    (id: string, row: EntityRow) => {
-      handleRowClick(id, row)
-      onRowClick?.(id, row)
-    },
-    [handleRowClick, onRowClick]
   )
 
   const table = useReactTable({
@@ -367,10 +358,7 @@ export function DataTable({
                           onClick={
                             isDataCol
                               ? () =>
-                                  internalOnRowClick(
-                                    row.original.id,
-                                    row.original
-                                  )
+                                  handleRowClick(row.original.id, row.original)
                               : undefined
                           }
                         >

@@ -16,7 +16,7 @@ import { updateVariantSchema } from '@/lib/validation/schemas'
 import { VariantForm } from '@/components/entity-form'
 import { EntityFieldGrid } from './EntityFieldGrid'
 import { useUnsavedGuard } from '@/hooks/use-unsaved-guard'
-import { useUIStore } from '@/store/ui-store'
+import { type EntityTabKey, useUIStore } from '@/store/ui-store'
 import {
   useGetVariant,
   useStockLevelsForVariant,
@@ -40,7 +40,7 @@ interface VariantModalProps {
   mode: 'view' | 'create'
   onDeleted?: () => void
   container?: HTMLElement
-  entityType?: 'products' | 'variants' | 'warehouses'
+  entityType?: EntityTabKey
 }
 
 interface EditForm {
@@ -99,7 +99,7 @@ export function VariantModal({
   mode,
   onDeleted,
   container,
-  entityType = 'variants',
+  entityType = 'variant',
 }: VariantModalProps) {
   const { t } = useTranslation()
   const reactQueryClient = useQueryClient()
@@ -173,6 +173,7 @@ export function VariantModal({
 
   useEffect(() => {
     if (mode !== 'view' && !entityId) return
+
     const handle: ModalHandle = {
       getIsDirty: () => isDirtyRef.current,
       getCreateDraft: () => createDraftRef.current ?? undefined,

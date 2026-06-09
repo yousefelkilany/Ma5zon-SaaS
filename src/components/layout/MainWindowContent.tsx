@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Outlet, useNavigate, useLocation } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTabStore } from '@/store/workspace-store'
-import { useUIStore } from '@/store/ui-store'
+import { type EntityTabKey, useUIStore } from '@/store/ui-store'
 import { ModalManager } from '@/components/modal/ModalManager'
 import { useWorkspacePortalTarget } from '@/components/entity/workspace-portal-context'
 import {
@@ -40,8 +40,8 @@ export function MainWindowContent() {
 
     const prevTabId = prevTabIdRef.current
     const prevTab = prevTabId ? tabs.find(t => t.id === prevTabId) : undefined
-    const prevEntityType = prevTab?.entityType
-    const newEntityType = activeTab.entityType
+    const prevEntityType = prevTab?.entityType as EntityTabKey
+    const newEntityType = activeTab.entityType as EntityTabKey
 
     // 1) Capture previous tab's live modal state (if any) into the Zustand slice.
     if (prevTabId && prevEntityType) {
@@ -49,27 +49,19 @@ export function MainWindowContent() {
       if (handle) {
         const search = new URLSearchParams(location.search)
         const entity_modal = (search.get('entity_modal') as ModalType) ?? null
-        const entity_id = search.get('entity_id')
-        setTabModal(prevEntityType as 'products' | 'variants' | 'warehouses', {
+        const raw_entity_id = decodeURIComponent(search.get('entity_id') || '')
+        const entity_id = raw_entity_id.replace(/["\\]/g, '')
+        setTabModal(prevEntityType as EntityTabKey, {
           entity_modal,
           entity_id,
         })
-        setTabIsDirty(
-          prevEntityType as 'products' | 'variants' | 'warehouses',
-          handle.getIsDirty()
-        )
+        setTabIsDirty(prevEntityType as EntityTabKey, handle.getIsDirty())
         const createDraft = handle.getCreateDraft()
         const editDraft = handle.getEditDraft()
         if (createDraft)
-          setTabCreateDraft(
-            prevEntityType as 'products' | 'variants' | 'warehouses',
-            createDraft
-          )
+          setTabCreateDraft(prevEntityType as EntityTabKey, createDraft)
         if (editDraft)
-          setTabEditDraft(
-            prevEntityType as 'products' | 'variants' | 'warehouses',
-            editDraft
-          )
+          setTabEditDraft(prevEntityType as EntityTabKey, editDraft)
       }
     }
 
@@ -81,22 +73,14 @@ export function MainWindowContent() {
         ? `/entity/${activeTab.entityType}`
         : `/${activeTab.type}`
 
-    const stored = newEntityType
-      ? tabState[newEntityType as 'products' | 'variants' | 'warehouses']
-      : undefined
-    const search = stored?.entity_modal
-      ? {
-          entity_modal: stored.entity_modal as ModalType,
-          entity_id: stored.entity_id ?? undefined,
-        }
-      : {}
+    const stored = newEntityType ? tabState[newEntityType] : undefined
+    if (!stored) return
+    const entity_modal = stored?.entity_modal as ModalType
+    if (!entity_modal) return
+    const entity_id = stored.entity_id ?? undefined
 
-    // 3) Navigate. The unsaved-guard prompt is fired by the user clicking
-    // the tab (handled by the tab bar consumer wiring in a follow-up task);
-    // here we just navigate to the restored URL.
-    if (location.pathname !== targetPath) {
-      navigate({ to: targetPath, search })
-    }
+    const search = { entity_modal, entity_id }
+    if (location.pathname !== targetPath) navigate({ to: targetPath, search })
   }, [
     activeTabId,
     tabs,

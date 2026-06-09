@@ -185,10 +185,6 @@ export function DataTableShell({
     [setSelectedIds]
   )
 
-  const handleRowClick = useCallback((_id: string) => {
-    // Row click handling is done in DataTable with typed modals
-  }, [])
-
   const handlePrintSelected = useCallback(() => {
     const selectedData = data.filter(row => selectedIds[row.id])
     if (selectedData.length === 0) return
@@ -248,7 +244,6 @@ export function DataTableShell({
             selectedIds={selectedIds}
             onSort={handleSortChange}
             onRowSelect={handleRowSelect}
-            onRowClick={handleRowClick}
             isExpanded={isExpanded}
             onVariantClick={onVariantClick}
             onAddVariant={onAddVariant}

@@ -112,12 +112,12 @@ export function EntityWorkspace() {
 
   const handleAddNewClick = useCallback(() => {
     if (!entityType) return
-    const entity_modal = `create-${entityType}`
-    if (!(ModalTypes as readonly string[]).includes(entity_modal)) return
+    const entity_modal = `create-${entityType}` as ModalType
+    if (!entity_modal || !ModalTypes.includes(entity_modal)) return
     navigate({
       to: '/entity/$entityType',
       params: { entityType },
-      search: { entity_modal: entity_modal as ModalType },
+      search: { entity_modal },
     })
   }, [navigate, entityType])
 
@@ -133,13 +133,12 @@ export function EntityWorkspace() {
   )
 
   const handleVariantClick = useCallback(
-    (variantId: string, _productId: string) => {
+    (variantId: string, _productId: string) =>
       navigate({
         to: '/entity/$entityType',
         params: { entityType: entityType },
         search: { entity_modal: 'variant', entity_id: variantId },
-      })
-    },
+      }),
     [navigate, entityType]
   )
 

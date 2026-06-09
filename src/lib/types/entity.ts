@@ -71,7 +71,6 @@ export interface DataTableProps {
   selectedIds: Record<string, boolean>
   onSort: (sort?: SortState) => void
   onRowSelect: (ids: Set<string>) => void
-  onRowClick: (id: string, row: EntityRow) => void
   stockLevelsCache?: Map<string, StockLevelWithVariant[]>
   isLoadingStockLevels?: (id: string) => boolean
 }

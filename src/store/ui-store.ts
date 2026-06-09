@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { ModalType } from '@/lib/utils'
 
-type EntityTabKey = 'products' | 'variants' | 'warehouses'
+export type EntityTabKey = 'product' | 'variant' | 'warehouse'
 
 interface TabModalState {
   entity_modal: ModalType
@@ -20,6 +20,7 @@ export interface InterceptedNavigation {
 }
 
 interface UIState {
+  isAppReady: boolean,
   sidebarVisible: boolean
   commandPaletteOpen: boolean
   preferencesOpen: boolean
@@ -28,6 +29,7 @@ interface UIState {
   tabState: TabStateSlice
   interceptedNavigation: InterceptedNavigation | null
 
+  setAppReady: (isAppReady: boolean) => void,
   toggleSidebar: () => void
   setSidebarVisible: (visible: boolean) => void
   toggleCommandPalette: () => void
@@ -63,6 +65,8 @@ export interface UserPreferences {
 }
 
 export const useUIStore = create<UIState>()(set => ({
+  isAppReady: false,
+  setAppReady: (ready: boolean) => set({ isAppReady: ready }),
   sidebarVisible: true,
   commandPaletteOpen: false,
   preferencesOpen: false,

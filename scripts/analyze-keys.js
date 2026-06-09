@@ -85,6 +85,9 @@ if (REMOVE) {
     `\nTotal ${DRY_RUN ? 'would be removed' : 'removed'}: ${totalRemoved} unused keys`
   )
 } else {
+
+  console.log("=== Add the following keys if there's any as flatten keys ===")
+
   const enKeys = getJsonKeys(join(localesDir, 'en.json'))
   const arKeys = getJsonKeys(join(localesDir, 'ar.json'))
 
