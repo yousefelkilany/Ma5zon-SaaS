@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogPanel } from '@/components/ui/dialog'
 import { commands } from '@/lib/bindings'
 
 interface LoginModalProps {
@@ -34,7 +34,6 @@ export function LoginModal({
     isLoading: false,
   })
   const [shake, setShake] = useState(false)
-  const contentRef = useRef<HTMLDivElement>(null)
 
   const { username, password, showPassword, error, isLoading } = formState
 
@@ -104,29 +103,19 @@ export function LoginModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        title=""
+    <Dialog open={open} onClose={onOpenChange}>
+      <DialogPanel
         aria-describedby={t('auth.login.dialogDescription')}
-        ref={contentRef}
         className="bg-surface-container border-outline-variant rounded-lg shadow-2xl overflow-hidden transition-all duration-300"
         style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
           margin: 0,
           maxWidth: '28rem',
           width: 'calc(100% - 2rem)',
           maxHeight: '85vh',
           overflow: 'auto',
-          zIndex: 51,
         }}
-        onEscapeKeyDown={e => {
-          if (isLoading) {
-            e.preventDefault()
-          }
-        }}
+        onClose={isLoading ? undefined : () => onOpenChange(false)}
+        showCloseButton={!isLoading}
       >
         <div className={shake ? 'animate-shake' : ''}>
           <div className="px-cozy-padding pt-cozy-padding pb-gutter text-center">
@@ -248,7 +237,7 @@ export function LoginModal({
             </form>
           </div>
         </div>
-      </DialogContent>
+      </DialogPanel>
     </Dialog>
   )
 }
