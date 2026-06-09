@@ -74,21 +74,21 @@ export function ProductForm({
           name="company"
           children={field => (
             <field.TextField
-              label={t('entity.layout.products.columns.company')}
+              label={t('entity.layout.product.columns.company')}
             />
           )}
         />
         <form.AppField
           name="name"
           children={field => (
-            <field.TextField label={t('entity.layout.products.columns.name')} />
+            <field.TextField label={t('entity.layout.product.columns.name')} />
           )}
         />
         <form.AppField
           name="category"
           children={field => (
             <field.TextField
-              label={t('entity.layout.products.columns.category')}
+              label={t('entity.layout.product.columns.category')}
             />
           )}
         />

@@ -56,7 +56,7 @@ export function WarehousesSubTable({
 
   const WAREHOUSE_PRODUCT_COLUMNS = useMemo(() => {
     const columnsNames = ['name', 'company', 'quantity']
-    return getEntityLayout('products', t, columnsNames)
+    return getEntityLayout('product', t, columnsNames)
   }, [t])
 
   const products = productsData?.data ?? []

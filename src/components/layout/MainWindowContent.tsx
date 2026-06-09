@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Outlet, useNavigate, useLocation } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTabStore } from '@/store/workspace-store'
-import { type EntityTabKey, useUIStore } from '@/store/ui-store'
+import { useUIStore } from '@/store/ui-store'
 import { ModalManager } from '@/components/modal/ModalManager'
 import { useWorkspacePortalTarget } from '@/components/entity/workspace-portal-context'
 import {
@@ -12,7 +12,8 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import type { ModalType } from '@/lib/utils'
+import { ModalTypes } from '@/lib/utils'
+import type { EntityType, ModalType } from '@/lib/utils'
 import { getModalHandle } from './modal-handle-registry'
 
 export function MainWindowContent() {
@@ -40,28 +41,31 @@ export function MainWindowContent() {
 
     const prevTabId = prevTabIdRef.current
     const prevTab = prevTabId ? tabs.find(t => t.id === prevTabId) : undefined
-    const prevEntityType = prevTab?.entityType as EntityTabKey
-    const newEntityType = activeTab.entityType as EntityTabKey
+    const prevEntityType = prevTab?.entityType as EntityType
+    const newEntityType = activeTab.entityType as EntityType
 
     // 1) Capture previous tab's live modal state (if any) into the Zustand slice.
     if (prevTabId && prevEntityType) {
+      const prevEntityTab = prevEntityType as EntityType
       const handle = getModalHandle(prevEntityType)
       if (handle) {
         const search = new URLSearchParams(location.search)
-        const entity_modal = (search.get('entity_modal') as ModalType) ?? null
+        const rawEntityModal = search.get('entity_modal') as ModalType
+        const entity_modal =
+          rawEntityModal && ModalTypes.includes(rawEntityModal)
+            ? (rawEntityModal as ModalType)
+            : null
+        if (!entity_modal) return
+
         const raw_entity_id = decodeURIComponent(search.get('entity_id') || '')
         const entity_id = raw_entity_id.replace(/["\\]/g, '')
-        setTabModal(prevEntityType as EntityTabKey, {
-          entity_modal,
-          entity_id,
-        })
-        setTabIsDirty(prevEntityType as EntityTabKey, handle.getIsDirty())
+
+        setTabModal(prevEntityTab, { entity_modal, entity_id })
+        setTabIsDirty(prevEntityTab, handle.getIsDirty())
         const createDraft = handle.getCreateDraft()
         const editDraft = handle.getEditDraft()
-        if (createDraft)
-          setTabCreateDraft(prevEntityType as EntityTabKey, createDraft)
-        if (editDraft)
-          setTabEditDraft(prevEntityType as EntityTabKey, editDraft)
+        if (createDraft) setTabCreateDraft(prevEntityTab, createDraft)
+        if (editDraft) setTabEditDraft(prevEntityTab, editDraft)
       }
     }
 
@@ -75,7 +79,11 @@ export function MainWindowContent() {
 
     const stored = newEntityType ? tabState[newEntityType] : undefined
     if (!stored) return
-    const entity_modal = stored?.entity_modal as ModalType
+    const rawEntityModal = stored?.entity_modal
+    const entity_modal =
+      rawEntityModal && ModalTypes.includes(rawEntityModal)
+        ? rawEntityModal
+        : null
     if (!entity_modal) return
     const entity_id = stored.entity_id ?? undefined
 

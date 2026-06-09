@@ -1,7 +1,13 @@
-export type EntityType = 'products' | 'variants' | 'warehouses'
+import {
+  productEntity,
+  variantEntity,
+  warehouseEntity,
+  type EntityType,
+} from '@/lib/utils'
 
 export type StockScope = 'product' | 'variant'
-export type MovementScope = 'product' | 'variant' | 'warehouse'
+const _MovementScopeEntities = [productEntity, variantEntity, warehouseEntity]
+export type MovementScope = (typeof _MovementScopeEntities)[number]
 
 export const entityQueryKeys = {
   all: ['entity'] as const,
@@ -29,7 +35,7 @@ export const entityQueryKeys = {
   stockMovements: (scope: MovementScope, id: string) =>
     ['stock-movements-' + scope, id] as const,
   warehouses: () => ['warehouses', 'all'] as const,
-  variantsByProduct: (productId: string) => ['variants', productId] as const,
+  variantsByProduct: (productId: string) => [variantEntity, productId] as const,
   productsByWarehouse: (warehouseId: string) =>
-    ['products', warehouseId] as const,
+    [productEntity, warehouseId] as const,
 }

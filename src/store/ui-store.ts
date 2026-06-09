@@ -1,7 +1,5 @@
 import { create } from 'zustand'
-import type { ModalType } from '@/lib/utils'
-
-export type EntityTabKey = 'product' | 'variant' | 'warehouse'
+import type { EntityType, ModalType } from '@/lib/utils'
 
 interface TabModalState {
   entity_modal: ModalType
@@ -11,7 +9,7 @@ interface TabModalState {
   isDirty: boolean
 }
 
-type TabStateSlice = Partial<Record<EntityTabKey, TabModalState>>
+type TabStateSlice = Partial<Record<EntityType, TabModalState>>
 
 export interface InterceptedNavigation {
   targetTabId: string
@@ -20,7 +18,7 @@ export interface InterceptedNavigation {
 }
 
 interface UIState {
-  isAppReady: boolean,
+  isAppReady: boolean
   sidebarVisible: boolean
   commandPaletteOpen: boolean
   preferencesOpen: boolean
@@ -29,7 +27,7 @@ interface UIState {
   tabState: TabStateSlice
   interceptedNavigation: InterceptedNavigation | null
 
-  setAppReady: (isAppReady: boolean) => void,
+  setAppReady: (isAppReady: boolean) => void
   toggleSidebar: () => void
   setSidebarVisible: (visible: boolean) => void
   toggleCommandPalette: () => void
@@ -41,19 +39,19 @@ interface UIState {
   setUserPreferences: (prefs: UserPreferences) => void
   updateUserPreferences: (partial: Partial<UserPreferences>) => void
   setTabModal: (
-    tabId: EntityTabKey,
+    tabId: EntityType,
     modal: { entity_modal: ModalType; entity_id: string | null }
   ) => void
   setTabCreateDraft: (
-    tabId: EntityTabKey,
+    tabId: EntityType,
     draft: Record<string, unknown> | undefined
   ) => void
   setTabEditDraft: (
-    tabId: EntityTabKey,
+    tabId: EntityType,
     draft: Record<string, unknown> | undefined
   ) => void
-  setTabIsDirty: (tabId: EntityTabKey, dirty: boolean) => void
-  clearTabState: (tabId: EntityTabKey) => void
+  setTabIsDirty: (tabId: EntityType, dirty: boolean) => void
+  clearTabState: (tabId: EntityType) => void
   clearAllTabState: () => void
   setInterceptedNavigation: (nav: InterceptedNavigation | null) => void
 }

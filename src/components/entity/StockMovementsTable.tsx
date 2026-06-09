@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import type { StockMovement } from '@/lib/bindings'
 import { Skeleton } from '@/components/ui/skeleton'
 import i18n from '@/i18n/config'
-import { cn } from '@/lib/utils'
+import { cn, productEntity, variantEntity, warehouseEntity } from '@/lib/utils'
+import type { MovementScope } from '@/services/entity/queryKeys'
 
 function groupMovementsByVariantId(
   movements: StockMovement[]
@@ -20,7 +21,7 @@ interface StockMovementsTableProps {
   movements: StockMovement[]
   isLoading: boolean
   error?: string
-  variant?: 'variant' | 'product' | 'warehouse'
+  entity?: MovementScope
   warehouseNames?: Map<string, string>
   productNames?: Map<string, string>
   variantNames?: Map<string, string>
@@ -36,7 +37,7 @@ export function StockMovementsTable({
   movements,
   isLoading,
   error,
-  variant = 'variant',
+  entity = variantEntity,
   warehouseNames,
   productNames,
   variantNames,
@@ -96,7 +97,7 @@ export function StockMovementsTable({
     )
   }
 
-  if (variant === 'product') {
+  if (entity === productEntity) {
     return (
       <ProductMovementsView
         movements={movements}
@@ -107,7 +108,7 @@ export function StockMovementsTable({
     )
   }
 
-  if (variant === 'warehouse') {
+  if (entity === warehouseEntity) {
     return (
       <WarehouseMovementsView
         movements={movements}

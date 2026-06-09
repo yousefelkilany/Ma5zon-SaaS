@@ -1,7 +1,7 @@
 import type { VariantRow } from '@/lib/types/entity'
 import { useTranslation } from 'react-i18next'
 import { getEntityLayout } from '@/lib/entity-layout'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, productEntity } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { useMemo } from 'react'
@@ -21,7 +21,7 @@ export function VariantsSubTable({
   onAddVariant,
 }: VariantsSubTableProps) {
   const { data: variants = [], isLoading } = useQuery({
-    queryKey: ['entity', 'products', 'variants', productId],
+    queryKey: ['entity', productEntity, 'variants', productId],
     queryFn: async () => {
       const result = await commands.variantsGetByProductWithStock(productId)
       if (result.status === 'ok') {
@@ -34,7 +34,7 @@ export function VariantsSubTable({
   })
   const { t } = useTranslation()
 
-  const columns = useMemo(() => getEntityLayout('product_variants', t), [t])
+  const columns = useMemo(() => getEntityLayout('variant', t), [t])
   const locale = i18n.language
 
   if (isLoading) {
@@ -48,7 +48,7 @@ export function VariantsSubTable({
   if (variants.length === 0) {
     return (
       <div className="pl-8 py-3 bg-surface-container-low text-on-surface-variant text-body-sm flex justify-between items-center pr-4">
-        <span>{t('entity.layout.product_variants.none')}</span>
+        <span>{t('entity.layout.variant.none')}</span>
         <Button
           size="sm"
           variant="ghost"

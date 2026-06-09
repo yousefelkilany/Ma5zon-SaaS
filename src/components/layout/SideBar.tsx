@@ -157,17 +157,17 @@ export function SideBar({ className }: SideBarProps) {
           items: [
             {
               icon: 'inventory_2',
-              label: t('sidebar.nav.products'),
-              entityType: 'products',
+              label: t('sidebar.nav.product'),
+              entityType: 'product',
               onClick: () =>
-                handleEntityClick('products', t('sidebar.nav.products')),
+                handleEntityClick('product', t('sidebar.nav.product')),
             },
             {
               icon: 'warehouse',
-              label: t('sidebar.nav.warehouses'),
-              entityType: 'warehouses',
+              label: t('sidebar.nav.warehouse'),
+              entityType: 'warehouse',
               onClick: () =>
-                handleEntityClick('warehouses', t('sidebar.nav.warehouses')),
+                handleEntityClick('warehouse', t('sidebar.nav.warehouse')),
             },
           ],
         },
@@ -176,17 +176,17 @@ export function SideBar({ className }: SideBarProps) {
           items: [
             {
               icon: 'receipt',
-              label: t('sidebar.nav.invoices'),
-              entityType: 'invoices',
+              label: t('sidebar.nav.invoice'),
+              entityType: 'invoice',
               onClick: () =>
-                handleEntityClick('invoices', t('sidebar.nav.invoices')),
+                handleEntityClick('invoice', t('sidebar.nav.invoice')),
             },
             {
               icon: 'groups',
-              label: t('sidebar.nav.customers'),
-              entityType: 'customers',
+              label: t('sidebar.nav.customer'),
+              entityType: 'customer',
               onClick: () =>
-                handleEntityClick('customers', t('sidebar.nav.customers')),
+                handleEntityClick('customer', t('sidebar.nav.customer')),
             },
           ],
         },
@@ -195,16 +195,16 @@ export function SideBar({ className }: SideBarProps) {
           items: [
             {
               icon: 'shopping_cart',
-              label: t('sidebar.nav.bills'),
-              entityType: 'bills',
-              onClick: () => handleEntityClick('bills', t('sidebar.nav.bills')),
+              label: t('sidebar.nav.bill'),
+              entityType: 'bill',
+              onClick: () => handleEntityClick('bill', t('sidebar.nav.bill')),
             },
             {
               icon: 'store',
-              label: t('sidebar.nav.vendors'),
-              entityType: 'vendors',
+              label: t('sidebar.nav.vendor'),
+              entityType: 'vendor',
               onClick: () =>
-                handleEntityClick('vendors', t('sidebar.nav.vendors')),
+                handleEntityClick('vendor', t('sidebar.nav.vendor')),
             },
           ],
         },

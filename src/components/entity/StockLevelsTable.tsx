@@ -5,11 +5,13 @@ import type { StockLevelWithVariant } from '@/lib/types/entity'
 import { commands } from '@/lib/tauri-bindings'
 import i18n from '@/i18n/config'
 import { Skeleton } from '@/components/ui/skeleton'
+import type { StockScope } from '@/services/entity/queryKeys'
+import { productEntity, transferState, variantEntity } from '@/lib/utils'
 
 interface StockLevelsTableProps {
   stockLevels: StockLevelWithVariant[]
   isLoading?: boolean
-  view: 'variant' | 'product'
+  entity: StockScope
   warehouseNames?: Map<string, string>
   onTransferSuccess?: () => void
 }
@@ -17,17 +19,13 @@ interface StockLevelsTableProps {
 export function StockLevelsTable({
   stockLevels,
   isLoading,
-  view,
+  entity,
   warehouseNames,
   onTransferSuccess,
 }: StockLevelsTableProps) {
   const { t } = useTranslation()
   const locale = i18n.language
-  const [transferState, setTransferState] = useState<{
-    variantId: string
-    warehouseId: string
-    fromWarehouseId: string
-  } | null>(null)
+  const [transferState, setTransferState] = useState<transferState | null>(null)
 
   if (isLoading) {
     return (
@@ -47,7 +45,7 @@ export function StockLevelsTable({
     )
   }
 
-  if (view === 'variant') {
+  if (entity === variantEntity) {
     return (
       <VariantStockView
         stockLevels={stockLevels}
@@ -60,16 +58,18 @@ export function StockLevelsTable({
     )
   }
 
-  return (
-    <ProductStockPivot
-      stockLevels={stockLevels}
-      warehouseNames={warehouseNames}
-      locale={locale}
-      transferState={transferState}
-      setTransferState={setTransferState}
-      onTransferSuccess={onTransferSuccess}
-    />
-  )
+  if (entity === productEntity) {
+    return (
+      <ProductStockPivot
+        stockLevels={stockLevels}
+        warehouseNames={warehouseNames}
+        locale={locale}
+        transferState={transferState}
+        setTransferState={setTransferState}
+        onTransferSuccess={onTransferSuccess}
+      />
+    )
+  }
 }
 
 function VariantStockView({
@@ -83,17 +83,9 @@ function VariantStockView({
   stockLevels: StockLevelWithVariant[]
   warehouseNames?: Map<string, string>
   locale: string
-  transferState: {
-    variantId: string
-    warehouseId: string
-    fromWarehouseId: string
-  } | null
+  transferState: transferState | null
   setTransferState: React.Dispatch<
-    React.SetStateAction<{
-      variantId: string
-      warehouseId: string
-      fromWarehouseId: string
-    } | null>
+    React.SetStateAction<transferState | null>
   >
   onTransferSuccess?: () => void
 }) {
@@ -167,18 +159,8 @@ function ProductStockPivot({
   stockLevels: StockLevelWithVariant[]
   warehouseNames?: Map<string, string>
   locale: string
-  transferState: {
-    variantId: string
-    warehouseId: string
-    fromWarehouseId: string
-  } | null
-  setTransferState: React.Dispatch<
-    React.SetStateAction<{
-      variantId: string
-      warehouseId: string
-      fromWarehouseId: string
-    } | null>
-  >
+  transferState: transferState | null
+  setTransferState: React.Dispatch<React.SetStateAction<transferState | null>>
   onTransferSuccess?: () => void
 }) {
   const { t } = useTranslation()

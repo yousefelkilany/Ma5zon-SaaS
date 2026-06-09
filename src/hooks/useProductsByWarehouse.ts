@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
+import { productEntity } from '@/lib/utils'
 
 export function useProductsByWarehouse(
   warehouseId: string,
@@ -8,7 +9,7 @@ export function useProductsByWarehouse(
   enabled = true
 ) {
   return useQuery({
-    queryKey: ['products', 'warehouse', warehouseId, { page, pageSize }],
+    queryKey: [productEntity, 'warehouse', warehouseId, { page, pageSize }],
     queryFn: async () => {
       const result = await commands.productsGetByWarehousePaginated(
         warehouseId,

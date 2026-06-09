@@ -5,6 +5,7 @@ import type {
   FilterState as BindingFilterState,
   SortState as BindingSortState,
 } from '@/lib/bindings'
+import { productEntity } from '@/lib/utils'
 
 export function useProductsPagination(
   filters: FilterState[],
@@ -14,7 +15,7 @@ export function useProductsPagination(
   pageSize: number
 ) {
   return useQuery({
-    queryKey: ['products', 'paginated', { filters, sort, page, pageSize }],
+    queryKey: [productEntity, 'paginated', { filters, sort, page, pageSize }],
     queryFn: async () => {
       const bindingFilters: BindingFilterState[] = filters.map(f => ({
         column_id: f.columnId,

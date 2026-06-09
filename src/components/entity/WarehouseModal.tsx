@@ -31,6 +31,7 @@ import {
   registerModalHandle,
   type ModalHandle,
 } from '@/components/layout/modal-handle-registry'
+import { warehouseEntity, type EntityType } from '@/lib/utils'
 
 interface WarehouseModalProps {
   entityId?: string
@@ -38,7 +39,7 @@ interface WarehouseModalProps {
   mode: 'view' | 'create'
   onDeleted?: () => void
   container?: HTMLElement
-  entityType?: 'products' | 'variants' | 'warehouses'
+  entityType?: EntityType
 }
 
 interface EditForm {
@@ -46,7 +47,8 @@ interface EditForm {
   location: string
 }
 
-type TabId = 'details' | 'movements' | 'insights'
+const TabTypes = ['details', 'audits', 'insights'] as const
+type TabId = (typeof TabTypes)[number]
 
 const WAREHOUSE_ROWS = [
   [
@@ -64,7 +66,7 @@ export function WarehouseModal({
   mode,
   onDeleted,
   container,
-  entityType = 'warehouses',
+  entityType = warehouseEntity,
 }: WarehouseModalProps) {
   const { t } = useTranslation()
   const reactQueryClient = useQueryClient()
@@ -316,7 +318,7 @@ export function WarehouseModal({
           <DialogDescription>{entity ? entity.location : ''}</DialogDescription>
 
           <div role="tablist" className="flex border-b mb-4">
-            {(['details', 'movements', 'insights'] as const).map(id => (
+            {TabTypes.map(id => (
               <button
                 key={id}
                 role="tab"
@@ -417,12 +419,12 @@ export function WarehouseModal({
             </div>
           )}
 
-          {activeTab === 'movements' && (
+          {activeTab === 'audits' && (
             <StockMovementsTable
               movements={movements ?? []}
               isLoading={isLoadingMovements}
               error={movementsError?.message ?? ''}
-              variant="warehouse"
+              entity={warehouseEntity}
               warehouseNames={warehouseNames}
               emptyMessage={t('entity.stockMovement.noMovementsWarehouse')}
             />

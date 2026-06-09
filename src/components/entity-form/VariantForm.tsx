@@ -111,7 +111,7 @@ export function VariantForm({
           name="sku"
           children={field => (
             <field.TextField
-              label={t('entity.layout.product_variants.columns.sku')}
+              label={t('entity.layout.variant.columns.sku')}
             />
           )}
         />
@@ -119,7 +119,7 @@ export function VariantForm({
           name="variant_name"
           children={field => (
             <field.TextField
-              label={t('entity.layout.product_variants.columns.variant_name')}
+              label={t('entity.layout.variant.columns.variant_name')}
             />
           )}
         />
@@ -129,7 +129,7 @@ export function VariantForm({
           name="uom_id"
           children={field => (
             <field.SelectField
-              label={t('entity.layout.product_variants.columns.uom')}
+              label={t('entity.layout.variant.columns.uom')}
               options={UOM_OPTIONS}
             />
           )}
@@ -140,7 +140,7 @@ export function VariantForm({
           name="retail_price"
           children={field => (
             <field.NumberField
-              label={t('entity.layout.product_variants.columns.retail')}
+              label={t('entity.layout.variant.columns.retail')}
               min={0}
               max={999999}
               precision={2}
@@ -151,7 +151,7 @@ export function VariantForm({
           name="wholesale_price"
           children={field => (
             <field.NumberField
-              label={t('entity.layout.product_variants.columns.wholesale')}
+              label={t('entity.layout.variant.columns.wholesale')}
               min={0}
               max={999999}
               precision={2}
@@ -162,7 +162,7 @@ export function VariantForm({
           name="distribution_price"
           children={field => (
             <field.NumberField
-              label={t('entity.layout.product_variants.columns.distribution')}
+              label={t('entity.layout.variant.columns.distribution')}
               min={0}
               max={999999}
               precision={2}

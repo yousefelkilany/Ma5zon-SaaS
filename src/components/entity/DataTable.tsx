@@ -14,7 +14,12 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useIsRTL } from '@/hooks/user-is-rtl'
 import { useTabStore } from '@/store/workspace-store'
 import { commands } from '@/lib/tauri-bindings'
-import { ModalTypes, type ModalType } from '@/lib/utils'
+import {
+  ModalTypes,
+  productEntity,
+  warehouseEntity,
+  type ModalType,
+} from '@/lib/utils'
 import { VariantsSubTable } from './VariantsSubTable'
 import { WarehousesSubTable } from './WarehousesSubTable'
 
@@ -142,7 +147,7 @@ export function DataTable({
 
   const tableColumns = useMemo<TanstackColumnDef<EntityRow>[]>(() => {
     const cols: TanstackColumnDef<EntityRow>[] = [selectColumn]
-    if (entityType === 'products' || entityType === 'warehouses')
+    if (entityType === productEntity || entityType === warehouseEntity)
       cols.push(expandColumn)
     cols.push(
       ...visibleColumns.map((col, idx) => ({
@@ -168,7 +173,7 @@ export function DataTable({
       navigate({
         to: '/entity/$entityType',
         params: { entityType },
-        search: { entity_modal, entity_id   },
+        search: { entity_modal, entity_id },
       })
     },
     [navigate, entityType]
@@ -301,12 +306,12 @@ export function DataTable({
                               onMouseDown={header.getResizeHandler()}
                               onTouchStart={header.getResizeHandler()}
                               onClick={e => e.stopPropagation()}
-                              className={`absolute top-0 h-full w-4 cursor-col-resize touch-none flex items-center justify-center
+                              className={`absolute top-0 h-full w-2 cursor-col-resize touch-none flex items-center justify-center
                               ${isRTLlayout ? 'inset-e-0' : 'inset-s-0'}
                             `}
                             >
                               <div
-                                className={`h-full w-0.5 transition-colors  ${header.column.getIsResizing() ? 'bg-secondary' : 'bg-outline-variant hover:bg-secondary'}`}
+                                className={`h-full w-0.5 cursor-col-resize transition-colors  ${header.column.getIsResizing() ? 'bg-secondary' : 'bg-outline-variant hover:bg-secondary'}`}
                               />
                             </div>
                           )}
@@ -401,12 +406,12 @@ function ExpandCell({
     state => state.tabUIStates[state.activeTabId]?.expandedIds[rowId] === true
   )
 
-  const onToggle = useCallback(
+  const onToggleExpandRow = useCallback(
     (id: string) => {
       useTabStore.getState().toggleExpanded(id)
       const nowExpanded = useTabStore.getState().isExpanded(id)
       if (nowExpanded) {
-        if (entityType === 'products') {
+        if (entityType === 'product') {
           queryClient.prefetchQuery({
             queryKey: ['entity', entityType, 'variants', id],
             queryFn: async () => {
@@ -415,7 +420,7 @@ function ExpandCell({
             },
           })
         }
-        if (entityType === 'warehouses') {
+        if (entityType === 'warehouse') {
           queryClient.prefetchQuery({
             queryKey: ['entity', entityType, 'stockLevels', id],
             queryFn: async () => {
@@ -435,7 +440,7 @@ function ExpandCell({
       className="p-1 hover:bg-surface-bright rounded transition-colors"
       onClick={e => {
         e.stopPropagation()
-        onToggle(rowId)
+        onToggleExpandRow(rowId)
       }}
     >
       <span
@@ -471,14 +476,14 @@ function ExpandedRow({
   return (
     <tr>
       <td colSpan={columnsLength + 2} className="p-0">
-        {entityType === 'products' && (
+        {entityType === productEntity && (
           <VariantsSubTable
             productId={rowId}
             onVariantClick={onVariantClick}
             onAddVariant={onAddVariant}
           />
         )}
-        {entityType === 'warehouses' && (
+        {entityType === warehouseEntity && (
           <WarehousesSubTable
             warehouseId={rowId}
             onProductClick={onProductClick}

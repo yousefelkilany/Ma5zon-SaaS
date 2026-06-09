@@ -58,36 +58,36 @@ const VARIANT_ROWS = [
   [
     {
       key: 'sku',
-      label: 'entity.layout.product_variants.columns.sku',
+      label: 'entity.layout.variant.columns.sku',
       type: 'text' as const,
     },
     {
       key: 'uom_id',
-      label: 'entity.layout.product_variants.columns.uom',
+      label: 'entity.layout.variant.columns.uom',
       type: 'uom' as const,
     },
   ],
   [
     {
       key: 'variant_name',
-      label: 'entity.layout.product_variants.columns.variant_name',
+      label: 'entity.layout.variant.columns.variant_name',
       type: 'text' as const,
     },
   ],
   [
     {
       key: 'retail_price',
-      label: 'entity.layout.product_variants.columns.retail',
+      label: 'entity.layout.variant.columns.retail',
       type: 'currency' as const,
     },
     {
       key: 'wholesale_price',
-      label: 'entity.layout.product_variants.columns.wholesale',
+      label: 'entity.layout.variant.columns.wholesale',
       type: 'currency' as const,
     },
     {
       key: 'distribution_price',
-      label: 'entity.layout.product_variants.columns.distribution',
+      label: 'entity.layout.variant.columns.distribution',
       type: 'currency' as const,
     },
   ],

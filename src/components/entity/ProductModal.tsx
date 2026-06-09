@@ -32,6 +32,7 @@ import {
   registerModalHandle,
   type ModalHandle,
 } from '@/components/layout/modal-handle-registry'
+import { type EntityType, productEntity } from '@/lib/utils'
 
 interface ProductModalProps {
   entityId?: string
@@ -39,7 +40,7 @@ interface ProductModalProps {
   mode: 'view' | 'create'
   onDeleted?: () => void
   container?: HTMLElement
-  entityType?: 'products' | 'variants' | 'warehouses'
+  entityType?: EntityType
 }
 
 type TabId = 'details' | 'stock' | 'insights' | 'audits'
@@ -73,7 +74,7 @@ export function ProductModal({
   mode,
   onDeleted,
   container,
-  entityType = 'products',
+  entityType = productEntity,
 }: ProductModalProps) {
   const { t } = useTranslation()
   const reactQueryClient = useQueryClient()
@@ -178,7 +179,9 @@ export function ProductModal({
   const createProduct = useCreateProduct({
     onSettled: (data, error) => {
       if (!error && data) {
-        reactQueryClient.invalidateQueries({ queryKey: ['entity', 'products'] })
+        reactQueryClient.invalidateQueries({
+          queryKey: ['entity', productEntity],
+        })
         useUIStore.getState().clearTabState(entityType)
         onDeleted?.()
       }
@@ -188,7 +191,9 @@ export function ProductModal({
     onSettled: (_data, error) => {
       if (!error) {
         setShowDeleteConfirm(false)
-        reactQueryClient.invalidateQueries({ queryKey: ['entity', 'products'] })
+        reactQueryClient.invalidateQueries({
+          queryKey: ['entity', productEntity],
+        })
         onDeleted?.()
       }
     },
@@ -445,7 +450,7 @@ export function ProductModal({
             <StockLevelsTable
               stockLevels={stockLevels ?? []}
               isLoading={isLoadingStock}
-              view="product"
+              entity={productEntity}
               warehouseNames={warehouseNames}
               onTransferSuccess={() =>
                 reactQueryClient.invalidateQueries({
@@ -460,7 +465,7 @@ export function ProductModal({
               movements={movements ?? []}
               isLoading={isLoadingMovements}
               error={movementsError?.message ?? ''}
-              variant="product"
+              entity={productEntity}
               warehouseNames={warehouseNames}
               emptyMessage={t('entity.stockMovement.noMovementsProduct')}
             />

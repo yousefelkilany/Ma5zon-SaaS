@@ -24,15 +24,27 @@ export function formatCurrency(
   }).format(price)
 }
 
-export const ModalTypes = [
-  'product',
-  'variant',
-  'warehouse',
-  'create-product',
-  'create-warehouse',
-  'create-variant',
+export const productEntity = 'product' as const
+export const variantEntity = 'variant' as const
+export const warehouseEntity = 'warehouse' as const
+export const EntityTypes = [
+  productEntity,
+  variantEntity,
+  warehouseEntity,
 ] as const
-export type ModalType = (typeof ModalTypes)[number] | null
+export type EntityType = (typeof EntityTypes)[number]
+export type NullableEntityType = EntityType | null
+
+export const ModalTypes = [
+  productEntity,
+  variantEntity,
+  warehouseEntity,
+  `create-${productEntity}`,
+  `create-${warehouseEntity}`,
+  `create-${variantEntity}`,
+] as const
+export type ModalType = (typeof ModalTypes)[number]
+export type NullableModalType = ModalType | null
 
 export const TabTypes = [
   'dashboard',
@@ -42,6 +54,7 @@ export const TabTypes = [
   'entity',
 ] as const
 export type TabType = (typeof TabTypes)[number]
+export type NullableTabType = TabType | null
 
 export interface Tab {
   id: string
@@ -63,6 +76,12 @@ export function normalizeArabic(text: string): string {
 export interface EntityRow {
   id: string
   [key: string]: unknown
+}
+
+export interface transferState {
+  variantId: string
+  warehouseId: string
+  fromWarehouseId: string
 }
 
 export async function exportSelectedToCSV(

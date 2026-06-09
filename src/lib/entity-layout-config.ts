@@ -1,185 +1,185 @@
 export const entityLayoutConfig = {
-  products: {
-    labelKey: 'entity.layout.products.label',
+  product: {
+    labelKey: 'entity.layout.product.label',
     columns: {
       name: {
-        labelKey: 'entity.layout.products.columns.name',
+        labelKey: 'entity.layout.product.columns.name',
         type: 'text',
         width: 400,
       },
       company: {
-        labelKey: 'entity.layout.products.columns.company',
+        labelKey: 'entity.layout.product.columns.company',
         type: 'text',
         width: 400,
       },
       category: {
-        labelKey: 'entity.layout.products.columns.category',
+        labelKey: 'entity.layout.product.columns.category',
         type: 'text',
         width: 275,
       },
       quantity: {
-        labelKey: 'entity.layout.products.columns.qty_in_stock',
+        labelKey: 'entity.layout.product.columns.qty_in_stock',
         type: 'number',
         width: 110,
         sortable: false,
       },
     },
   },
-  product_variants: {
-    labelKey: 'entity.layout.product_variants.label',
+  variant: {
+    labelKey: 'entity.layout.variant.label',
     columns: {
       sku: {
-        labelKey: 'entity.layout.product_variants.columns.sku',
+        labelKey: 'entity.layout.variant.columns.sku',
         type: 'text',
         width: 275,
       },
       variant_name: {
-        labelKey: 'entity.layout.product_variants.columns.variant_name',
+        labelKey: 'entity.layout.variant.columns.variant_name',
         type: 'text',
         width: 220,
       },
       uom_id: {
-        labelKey: 'entity.layout.product_variants.columns.uom',
+        labelKey: 'entity.layout.variant.columns.uom',
         type: 'text',
         width: 80,
       },
       quantity: {
-        labelKey: 'entity.layout.products.columns.qty_in_stock',
+        labelKey: 'entity.layout.product.columns.qty_in_stock',
         type: 'number',
         width: 110,
       },
       retail_price: {
-        labelKey: 'entity.layout.product_variants.columns.retail',
+        labelKey: 'entity.layout.variant.columns.retail',
         type: 'currency',
         width: 170,
       },
       wholesale_price: {
-        labelKey: 'entity.layout.product_variants.columns.wholesale',
+        labelKey: 'entity.layout.variant.columns.wholesale',
         type: 'currency',
         width: 110,
       },
       distribution_price: {
-        labelKey: 'entity.layout.product_variants.columns.distribution',
+        labelKey: 'entity.layout.variant.columns.distribution',
         type: 'currency',
         width: 275,
       },
     },
   },
-  warehouses: {
-    labelKey: 'entity.layout.warehouses.label',
+  warehouse: {
+    labelKey: 'entity.layout.warehouse.label',
     columns: {
       name: {
-        labelKey: 'entity.layout.warehouses.columns.name',
+        labelKey: 'entity.layout.warehouse.columns.name',
         type: 'text',
         width: 400,
       },
       location: {
-        labelKey: 'entity.layout.warehouses.columns.location',
+        labelKey: 'entity.layout.warehouse.columns.location',
         type: 'text',
         width: 220,
       },
     },
   },
-  stock_levels: {
-    labelKey: 'entity.layout.stock_levels.label',
+  stock_level: {
+    labelKey: 'entity.layout.stock_level.label',
     columns: {
       variant_name: {
-        labelKey: 'entity.layout.stock_levels.columns.variant_name',
+        labelKey: 'entity.layout.stock_level.columns.variant_name',
         type: 'text',
         width: 275,
       },
       sku: {
-        labelKey: 'entity.layout.stock_levels.columns.sku',
+        labelKey: 'entity.layout.stock_level.columns.sku',
         type: 'text',
         width: 220,
       },
       quantity: {
-        labelKey: 'entity.layout.stock_levels.columns.quantity',
+        labelKey: 'entity.layout.stock_level.columns.quantity',
         type: 'number',
         width: 110,
       },
     },
   },
-  invoices: {
-    labelKey: 'entity.layout.invoices.label',
+  invoice: {
+    labelKey: 'entity.layout.invoice.label',
     columns: {
       invoice_number: {
-        labelKey: 'entity.layout.invoices.columns.invoice_number',
+        labelKey: 'entity.layout.invoice.columns.invoice_number',
         type: 'text',
         width: 275,
       },
       customer_name: {
-        labelKey: 'entity.layout.invoices.columns.customer_name',
+        labelKey: 'entity.layout.invoice.columns.customer_name',
         type: 'text',
         width: 180,
       },
       total_amount: {
-        labelKey: 'entity.layout.invoices.columns.total_amount',
+        labelKey: 'entity.layout.invoice.columns.total_amount',
         type: 'currency',
         width: 275,
       },
       status: {
-        labelKey: 'entity.layout.invoices.columns.status',
+        labelKey: 'entity.layout.invoice.columns.status',
         type: 'status',
         width: 170,
       },
       created_at: {
-        labelKey: 'entity.layout.invoices.columns.created_at',
+        labelKey: 'entity.layout.invoice.columns.created_at',
         type: 'text',
         width: 170,
       },
     },
   },
-  customers: {
-    labelKey: 'entity.layout.customers.label',
+  customer: {
+    labelKey: 'entity.layout.customer.label',
     columns: {
       name: {
-        labelKey: 'entity.layout.customers.columns.name',
+        labelKey: 'entity.layout.customer.columns.name',
         type: 'text',
         width: 400,
       },
       email: {
-        labelKey: 'entity.layout.customers.columns.email',
+        labelKey: 'entity.layout.customer.columns.email',
         type: 'text',
         width: 400,
       },
     },
   },
-  bills: {
-    labelKey: 'entity.layout.bills.label',
+  bill: {
+    labelKey: 'entity.layout.bill.label',
     columns: {
       bill_number: {
-        labelKey: 'entity.layout.bills.columns.bill_number',
+        labelKey: 'entity.layout.bill.columns.bill_number',
         type: 'text',
         width: 275,
       },
       vendor_name: {
-        labelKey: 'entity.layout.bills.columns.vendor_name',
+        labelKey: 'entity.layout.bill.columns.vendor_name',
         type: 'text',
         width: 180,
       },
       total_amount: {
-        labelKey: 'entity.layout.bills.columns.total_amount',
+        labelKey: 'entity.layout.bill.columns.total_amount',
         type: 'currency',
         width: 275,
       },
       status: {
-        labelKey: 'entity.layout.bills.columns.status',
+        labelKey: 'entity.layout.bill.columns.status',
         type: 'status',
         width: 170,
       },
     },
   },
-  vendors: {
-    labelKey: 'entity.layout.vendors.label',
+  vendor: {
+    labelKey: 'entity.layout.vendor.label',
     columns: {
       name: {
-        labelKey: 'entity.layout.vendors.columns.name',
+        labelKey: 'entity.layout.vendor.columns.name',
         type: 'text',
         width: 400,
       },
       email: {
-        labelKey: 'entity.layout.vendors.columns.email',
+        labelKey: 'entity.layout.vendor.columns.email',
         type: 'text',
         width: 400,
       },

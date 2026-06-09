@@ -5,7 +5,7 @@ import { getModalHandle } from './modal-handle-registry'
 import { shouldInterceptTabSwitch } from '@/lib/utils/tab-switch-guard'
 import { useAuth } from '@/hooks/useAuth'
 import { requestLogin } from '@/hooks/useAuth'
-import { cn } from '@/lib/utils'
+import { cn, EntityType } from '@/lib/utils'
 
 export function TabBar() {
   const { t } = useTranslation()
@@ -30,11 +30,7 @@ export function TabBar() {
       setActiveTab(tabId)
       return
     }
-    const currentEntityType = currentTab?.entityType as
-      | 'products'
-      | 'variants'
-      | 'warehouses'
-      | undefined
+    const currentEntityType = currentTab?.entityType as EntityType
     if (!currentEntityType) {
       setActiveTab(tabId)
       return

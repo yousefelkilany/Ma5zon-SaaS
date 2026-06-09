@@ -12,7 +12,13 @@ import type {
   EntityRow,
 } from '@/lib/types/entity'
 import { DataTableShell } from './DataTableShell'
-import { cn, type ModalType, ModalTypes } from '@/lib/utils'
+import {
+  cn,
+  type ModalType,
+  ModalTypes,
+  productEntity,
+  warehouseEntity,
+} from '@/lib/utils'
 import { PrintPreviewDialog } from './PrintPreviewDialog'
 import { exportSelectedToCSV, exportSelectedToExcel } from '@/lib/utils'
 import { useTabStore } from '@/store/workspace-store'
@@ -169,7 +175,7 @@ export function EntityWorkspace() {
         ? { column_id: sort.columnId, direction: sort.direction }
         : null
       switch (entityType) {
-        case 'products': {
+        case 'product': {
           const result = await commands.getProductsWithStockPaginated(
             bindingFilters,
             [],
@@ -187,7 +193,7 @@ export function EntityWorkspace() {
           }
           return []
         }
-        case 'warehouses': {
+        case 'warehouse': {
           const result = await commands.warehousesGetPaginated(
             bindingFilters,
             [],
@@ -295,11 +301,11 @@ export function EntityWorkspace() {
           let result: { status: 'ok' | 'error'; error?: string } | null = null
 
           switch (entityType) {
-            case 'products': {
+            case productEntity: {
               result = await commands.softDelete(id)
               break
             }
-            case 'warehouses': {
+            case warehouseEntity: {
               result = await commands.warehousesDelete(id)
               break
             }

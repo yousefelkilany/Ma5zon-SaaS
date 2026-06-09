@@ -6,6 +6,7 @@ import {
   type MovementScope,
   type StockScope,
 } from './queryKeys'
+import { productEntity } from '@/lib/utils'
 
 async function unwrap<T>(
   result: { status: 'ok'; data: T } | { status: 'error'; error: string }
@@ -17,8 +18,8 @@ async function unwrap<T>(
 export function useGetProduct(id: string | undefined) {
   return useQuery({
     queryKey: id
-      ? entityQueryKeys.detail('products', id)
-      : ['entity', 'products', 'detail', '__none__'],
+      ? entityQueryKeys.detail('product', id)
+      : ['entity', productEntity, 'detail', '__none__'],
     queryFn: async () => {
       const idOrThrow = id
       if (!idOrThrow) throw new Error('id required')
@@ -31,7 +32,7 @@ export function useGetProduct(id: string | undefined) {
 export function useGetVariant(id: string | undefined) {
   return useQuery({
     queryKey: id
-      ? entityQueryKeys.detail('variants', id)
+      ? entityQueryKeys.detail('variant', id)
       : ['entity', 'variants', 'detail', '__none__'],
     queryFn: async () => {
       const idOrThrow = id
@@ -45,7 +46,7 @@ export function useGetVariant(id: string | undefined) {
 export function useGetWarehouse(id: string | undefined) {
   return useQuery({
     queryKey: id
-      ? entityQueryKeys.detail('warehouses', id)
+      ? entityQueryKeys.detail('warehouse', id)
       : ['entity', 'warehouses', 'detail', '__none__'],
     queryFn: async () => {
       const idOrThrow = id
