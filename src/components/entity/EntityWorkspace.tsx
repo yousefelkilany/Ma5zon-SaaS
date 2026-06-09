@@ -22,7 +22,6 @@ import {
 import { PrintPreviewDialog } from './PrintPreviewDialog'
 import { exportSelectedToCSV, exportSelectedToExcel } from '@/lib/utils'
 import { useTabStore } from '@/store/workspace-store'
-import { WorkspacePortalContext } from './workspace-portal-context'
 
 function EntityHeader({
   entityType,
@@ -330,46 +329,41 @@ export function EntityWorkspace() {
       style={{ position: 'relative' }}
       className="px-margin-edge flex flex-col h-full bg-background py-6"
     >
-      <WorkspacePortalContext.Provider value={workspaceRef}>
-        <EntityHeader
-          entityType={entityType}
-          onAddNewClick={handleAddNewClick}
-        />
-        <DataTableShell
-          entityType={entityType}
-          queryClient={queryClient}
-          columns={columns}
-          data={entityData ?? []}
-          pagination={{
-            page,
-            pageSize,
-            totalRows: totalCount,
-            totalPages,
-          }}
-          onPageChange={handlePageChange}
-          isLoading={isLoading}
-          onSaveColumnPrefs={handleSaveColumnPrefs}
-          onFiltersApply={handleFiltersApply}
-          onPrintSelected={handleBulkPrint}
-          onExportFormatSelect={handleExportFormatSelect}
-          onDelete={handleBulkDelete}
-          sort={sort}
-          onSortChange={handleSortChange}
-          onVariantClick={handleVariantClick}
-          onAddVariant={handleAddVariant}
-          onProductClick={handleProductClick}
-        />
-        <PrintPreviewDialog
-          open={printPreviewOpen}
-          onOpenChange={setPrintPreviewOpen}
-          columns={columns}
-          selectedData={selectedForPrint}
-          entityType={entityType}
-          onPrint={() => {
-            setPrintPreviewOpen(false)
-          }}
-        />
-      </WorkspacePortalContext.Provider>
+      <EntityHeader entityType={entityType} onAddNewClick={handleAddNewClick} />
+      <DataTableShell
+        entityType={entityType}
+        queryClient={queryClient}
+        columns={columns}
+        data={entityData ?? []}
+        pagination={{
+          page,
+          pageSize,
+          totalRows: totalCount,
+          totalPages,
+        }}
+        onPageChange={handlePageChange}
+        isLoading={isLoading}
+        onSaveColumnPrefs={handleSaveColumnPrefs}
+        onFiltersApply={handleFiltersApply}
+        onPrintSelected={handleBulkPrint}
+        onExportFormatSelect={handleExportFormatSelect}
+        onDelete={handleBulkDelete}
+        sort={sort}
+        onSortChange={handleSortChange}
+        onVariantClick={handleVariantClick}
+        onAddVariant={handleAddVariant}
+        onProductClick={handleProductClick}
+      />
+      <PrintPreviewDialog
+        open={printPreviewOpen}
+        onOpenChange={setPrintPreviewOpen}
+        columns={columns}
+        selectedData={selectedForPrint}
+        entityType={entityType}
+        onPrint={() => {
+          setPrintPreviewOpen(false)
+        }}
+      />
     </div>
   )
 }

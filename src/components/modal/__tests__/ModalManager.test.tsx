@@ -65,7 +65,7 @@ describe('ModalManager', () => {
   })
 
   it('returns null when there are no modal search params', () => {
-    const { container } = render(<ModalManager portalTarget={null} />, {
+    const { container } = render(<ModalManager />, {
       wrapper: QueryWrapper,
     })
     expect(container).toBeEmptyDOMElement()
@@ -73,7 +73,7 @@ describe('ModalManager', () => {
 
   it('renders the product modal when entity_modal=product and entity_id is set', async () => {
     mockSearch = 'entity_modal=product&entity_id=P1'
-    render(<ModalManager portalTarget={null} />, { wrapper: QueryWrapper })
+    render(<ModalManager />, { wrapper: QueryWrapper })
     await waitFor(
       () => {
         const title = document.querySelector('[data-slot="dialog-title"]')

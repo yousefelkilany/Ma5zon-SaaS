@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { useTabStore } from '@/store/workspace-store'
 import { useUIStore } from '@/store/ui-store'
 import { ModalManager } from '@/components/modal/ModalManager'
-import { useWorkspacePortalTarget } from '@/components/entity/workspace-portal-context'
 import {
   Dialog,
   DialogPanel,
@@ -22,7 +21,6 @@ export function MainWindowContent() {
   const location = useLocation()
   const activeTabId = useTabStore(state => state.activeTabId)
   const tabs = useTabStore(state => state.tabs)
-  const portalTarget = useWorkspacePortalTarget()
   const prevTabIdRef = useRef<string | null>(null)
 
   const setTabModal = useUIStore(state => state.setTabModal)
@@ -125,7 +123,7 @@ export function MainWindowContent() {
   return (
     <div className="flex h-full flex-col bg-background">
       <Outlet />
-      <ModalManager portalTarget={portalTarget?.current ?? null} />
+      <ModalManager />
       <Dialog
         open={interceptedNavigation !== null}
         onClose={() => setInterceptedNavigation(null)}
