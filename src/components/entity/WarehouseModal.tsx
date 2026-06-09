@@ -1,234 +1,189 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useQuery } from '@tanstack/react-query'
-import { toast } from 'sonner'
-import type { QueryClient } from '@tanstack/react-query'
+import { useQueryClient, type QueryClient } from '@tanstack/react-query'
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
+  DialogPanel,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { commands } from '@/lib/tauri-bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
+import { StockMovementsTable } from './StockMovementsTable'
 import { WarehouseForm } from '@/components/entity-form'
 import { updateWarehouseSchema } from '@/lib/validation/schemas'
 import { EntityFieldGrid } from './EntityFieldGrid'
-import { StockMovementsTable } from './StockMovementsTable'
+import { useUnsavedGuard } from '@/hooks/use-unsaved-guard'
+import { useUIStore } from '@/store/ui-store'
+import {
+  useGetWarehouse,
+  useStockMovements,
+  useWarehouses,
+} from '@/services/entity/queries'
+import {
+  useCreateWarehouse,
+  useUpdateWarehouse,
+  useSoftDeleteWarehouse,
+} from '@/services/entity/mutations'
+import type { WarehouseUpdateValues } from '@/services/entity/types'
+import { registerModalHandle, type ModalHandle } from '@/components/layout/MainWindowContent'
 
 interface WarehouseModalProps {
   entityId?: string
   queryClient: QueryClient
   mode: 'view' | 'create'
   onDeleted?: () => void
+  container?: HTMLElement
+  entityType?: 'products' | 'variants' | 'warehouses'
 }
 
-interface Warehouse {
-  id: string
+interface EditForm {
   name: string
   location: string
-  created_at: string | null
-  updated_at: string | null
-  deleted_at: string | null
 }
 
-type TabId = 'details' | 'insights' | 'audits'
+type TabId = 'details' | 'movements' | 'insights'
 
 const WAREHOUSE_ROWS = [
   [
     { key: 'name', label: 'entity.warehouse.name', type: 'text' as const },
-    {
-      key: 'location',
-      label: 'entity.warehouse.location',
-      type: 'text' as const,
-    },
+    { key: 'location', label: 'entity.warehouse.location', type: 'text' as const },
   ],
 ]
 
 export function WarehouseModal({
   entityId,
-  queryClient,
   mode,
   onDeleted,
+  container,
+  entityType = 'warehouses',
 }: WarehouseModalProps) {
   const { t } = useTranslation()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [entity, setEntity] = useState<Warehouse | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const reactQueryClient = useQueryClient()
   const [isEditing, setIsEditing] = useState(false)
-  const [editForm, setEditForm] = useState({ name: '', location: '' })
-  const [isSaving, setIsSaving] = useState(false)
-  const [saveError, setSaveError] = useState('')
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [editForm, setEditForm] = useState<EditForm>({ name: '', location: '' })
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [deleteError, setDeleteError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
-  const [loadError, setLoadError] = useState('')
-  const [productNames, setProductNames] = useState<Map<string, string>>(
-    new Map()
-  )
-  const [variantNames, setVariantNames] = useState<Map<string, string>>(
-    new Map()
-  )
+  const [createDraft, setCreateDraft] = useState<Record<string, unknown> | null>(null)
+  const [editDraft, setEditDraft] = useState<Record<string, unknown> | null>(null)
+  const [isDirty, setIsDirty] = useState(false)
 
-  const tabs: { id: TabId; label: string }[] = [
-    { id: 'details', label: t('entity.detail.tabs.details') },
-    { id: 'audits', label: t('entity.detail.tabs.audits') },
-    { id: 'insights', label: t('entity.detail.tabs.insights') },
-  ]
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    const currentIndex = tabs.findIndex(tab => tab.id === activeTab)
-    if (e.key === 'ArrowRight') {
-      const nextTab = tabs[(currentIndex + 1) % tabs.length]
-      if (nextTab) setActiveTab(nextTab.id)
-    } else if (e.key === 'ArrowLeft') {
-      const prevTab = tabs[(currentIndex - 1 + tabs.length) % tabs.length]
-      if (prevTab) setActiveTab(prevTab.id)
-    }
-  }
-
-  const loadEntity = useCallback(async () => {
-    if (!entityId) return
-    setIsLoading(true)
-    setLoadError('')
-    const result = await commands.warehousesGetById(entityId)
-    setIsLoading(false)
-    if (result.status === 'ok') {
-      if (result.data) {
-        setEntity(result.data)
-        setEditForm({
-          name: result.data.name,
-          location: result.data.location,
-        })
-      } else {
-        setLoadError('Warehouse not found')
-      }
-    } else {
-      setLoadError(result.error ?? 'Failed to load warehouse')
-    }
-  }, [entityId])
-
+  // ----- Data hooks -----
+  const { data: entity, isLoading } = useGetWarehouse(mode === 'view' ? entityId : undefined)
   const {
     data: movements,
     isLoading: isLoadingMovements,
     error: movementsError,
-  } = useQuery({
-    queryKey: ['stock-movements-warehouse', entityId],
-    queryFn: async () => {
-      if (!entityId) throw new Error('entityId required')
-      const result = await commands.stockMovementsGetByWarehouse(entityId)
-      if (result.status === 'ok') return result.data
-      throw new Error(result.error)
-    },
-  })
+  } = useStockMovements('warehouse', mode === 'view' ? entityId : undefined)
+  const { data: warehouses } = useWarehouses()
 
+  const warehouseNames = new Map<string, string>()
+  if (warehouses) for (const w of warehouses) warehouseNames.set(w.id, w.name)
+
+  // ----- Sync edit form when entity loads -----
   useEffect(() => {
-    if (!movements || movements.length === 0) {
-      setProductNames(new Map())
-      setVariantNames(new Map())
-      return
-    }
-
-    const uniqueProductIds = [...new Set(movements.map(m => m.product_id))]
-    const uniqueVariantIds = [...new Set(movements.map(m => m.variant_id))]
-
-    const productNamesMap = new Map<string, string>()
-    const variantNamesMap = new Map<string, string>()
-
-    Promise.all([
-      Promise.all(
-        uniqueProductIds.map(async pid => {
-          const productResult = await commands.getById(pid)
-          if (productResult.status === 'ok' && productResult.data) {
-            productNamesMap.set(pid, productResult.data.name)
-          }
-        })
-      ),
-      Promise.all(
-        uniqueVariantIds.map(async vid => {
-          const variantResult = await commands.variantsGetById(vid)
-          if (variantResult.status === 'ok' && variantResult.data) {
-            variantNamesMap.set(vid, variantResult.data.variant_name)
-          }
-        })
-      ),
-    ]).then(() => {
-      setProductNames(new Map(productNamesMap))
-      setVariantNames(new Map(variantNamesMap))
-    })
-  }, [movements])
-
-  useEffect(() => {
-    if (!entityId) return
-    setEntity(null)
-    setIsLoading(true)
-    setLoadError('')
-    setIsEditing(false)
-    setEditForm({ name: '', location: '' })
-    setActiveTab('details')
-    setDeleteError('')
-    setSaveError('')
-    setProductNames(new Map())
-    setVariantNames(new Map())
-  }, [entityId])
-
-  useEffect(() => {
-    if (entityId) {
-      loadEntity()
-    }
-  }, [entityId, loadEntity])
-
-  useEffect(() => {
-    if (!showDeleteConfirm) {
-      setDeleteError('')
-    }
-  }, [showDeleteConfirm])
-
-  async function handleSave(values: { name: string; location: string }) {
-    if (!entity) return
-    setIsSaving(true)
-    const result = await commands.warehousesUpdate(
-      entity.id,
-      values.name,
-      values.location
-    )
-    setIsSaving(false)
-    if (result.status === 'ok') {
-      setEntity(result.data)
-      setEditForm({
-        name: result.data.name,
-        location: result.data.location,
-      })
-      setIsEditing(false)
-      queryClient.invalidateQueries({ queryKey: ['entity', 'warehouses'] })
-    } else {
-      setSaveError(result.error ?? 'Save failed')
-    }
-  }
-
-  async function handleDelete() {
-    if (!entity) return
-    setIsDeleting(true)
-    setDeleteError('')
-    const result = await commands.warehousesDelete(entity.id)
-    setIsDeleting(false)
-    if (result.status === 'ok') {
-      setShowDeleteConfirm(false)
-      queryClient.invalidateQueries({ queryKey: ['entity', 'warehouses'] })
-      onDeleted?.()
-    } else {
-      setDeleteError(result.error ?? 'Delete failed')
-    }
-  }
-
-  function handleCancelEdit() {
     if (entity) {
       setEditForm({ name: entity.name, location: entity.location })
     }
-    setIsEditing(false)
+  }, [entity])
+
+  // ----- Register imperative handle for the per-tab effect in MainWindowContent -----
+  const editDraftRef = useRef(editDraft)
+  editDraftRef.current = editDraft
+  const createDraftRef = useRef(createDraft)
+  createDraftRef.current = createDraft
+  const isDirtyRef = useRef(isDirty)
+  isDirtyRef.current = isDirty
+
+  useEffect(() => {
+    if (mode !== 'view' && !entityId) return
+    const handle: ModalHandle = {
+      getIsDirty: () => isDirtyRef.current,
+      getCreateDraft: () => createDraftRef.current ?? undefined,
+      getEditDraft: () => editDraftRef.current ?? undefined,
+      discardDrafts: () => {
+        setEditDraft(null)
+        setCreateDraft(null)
+        setIsDirty(false)
+        if (entity) {
+          setEditForm({ name: entity.name, location: entity.location })
+        }
+        useUIStore.getState().clearTabState(entityType)
+      },
+    }
+    return registerModalHandle(entityType, handle)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, entityId, entityType])
+
+  // ----- Mutations -----
+  const updateWarehouse = useUpdateWarehouse({
+    onSettled: (data, error) => {
+      if (!error && data) {
+        setIsEditing(false)
+        setIsDirty(false)
+        setEditDraft(null)
+        useUIStore.getState().setTabIsDirty(entityType, false)
+        useUIStore.getState().setTabEditDraft(entityType, undefined)
+      }
+    },
+  })
+  const createWarehouseMut = useCreateWarehouse({
+    onSettled: (data, error) => {
+      if (!error && data) {
+        reactQueryClient.invalidateQueries({ queryKey: ['entity', 'warehouses'] })
+        useUIStore.getState().clearTabState(entityType)
+        onDeleted?.()
+      }
+    },
+  })
+  const deleteWarehouse = useSoftDeleteWarehouse({
+    onSettled: (_data, error) => {
+      if (!error) {
+        setShowDeleteConfirm(false)
+        reactQueryClient.invalidateQueries({ queryKey: ['entity', 'warehouses'] })
+        onDeleted?.()
+      }
+    },
+  })
+
+  // ----- Unsaved guard -----
+  const guard = useUnsavedGuard({
+    isDirty,
+    onDiscard: () => {
+      if (entity) {
+        setEditForm({ name: entity.name, location: entity.location })
+      }
+      setIsEditing(false)
+      setIsDirty(false)
+      setEditDraft(null)
+      setCreateDraft(null)
+      useUIStore.getState().setTabIsDirty(entityType, false)
+      useUIStore.getState().setTabEditDraft(entityType, undefined)
+      useUIStore.getState().setTabCreateDraft(entityType, undefined)
+      onDeleted?.()
+    },
+    onSaveAndClose: async () => {
+      if (mode === 'create') {
+        createWarehouseMut.mutate({ values: editForm as unknown as WarehouseUpdateValues })
+      } else if (entity) {
+        updateWarehouse.mutate({ id: entity.id, values: editForm as unknown as WarehouseUpdateValues })
+      }
+    },
+    context: { entityName: entity?.name ?? '' },
+  })
+
+  // ----- Save handlers -----
+  function handleSave(values: EditForm) {
+    if (mode === 'create') {
+      createWarehouseMut.mutate({ values: values as unknown as WarehouseUpdateValues })
+    } else if (entity) {
+      updateWarehouse.mutate({ id: entity.id, values: values as unknown as WarehouseUpdateValues })
+    }
+  }
+
+  function handleDelete() {
+    if (entity) deleteWarehouse.mutate({ id: entity.id })
   }
 
   function handleEdit() {
@@ -238,200 +193,179 @@ export function WarehouseModal({
     setIsEditing(true)
   }
 
+  function handleCancelEdit() {
+    if (entity) {
+      setEditForm({ name: entity.name, location: entity.location })
+    }
+    setIsEditing(false)
+    setIsDirty(false)
+    setEditDraft(null)
+  }
+
+  // Track form changes for the unsaved guard
+  useEffect(() => {
+    if (mode === 'create') {
+      setIsDirty(!!createDraft && Object.keys(createDraft).length > 0)
+      return
+    }
+    if (!entity) return
+    const isChanged = editForm.name !== entity.name || editForm.location !== entity.location
+    setIsDirty(isChanged)
+  }, [editForm, entity, createDraft, mode])
+
+  // ----- Render -----
   if (mode === 'create') {
     return (
-      <Dialog open={true}>
-        <DialogContent>
-          <DialogHeader>
+      <>
+        <Dialog open={true} onClose={guard.requestClose} modal={false} {...(container ? { container } : {})}>
+          <DialogPanel onClose={guard.requestClose}>
             <DialogTitle>{t('entity.create.warehouse.title')}</DialogTitle>
-          </DialogHeader>
-          <WarehouseForm
-            onSubmit={async values => {
-              setIsSubmitting(true)
-              try {
-                const result = await commands.warehousesCreate(
-                  values.name,
-                  values.location
-                )
-                if (result.status === 'ok') {
-                  queryClient.invalidateQueries({
-                    queryKey: ['entity', 'warehouses'],
-                  })
-                  onDeleted?.()
-                } else {
-                  toast.error(result.error)
-                }
-              } catch (err: unknown) {
-                toast.error(err instanceof Error ? err.message : String(err))
-              } finally {
-                setIsSubmitting(false)
-              }
-            }}
-            isLoading={isSubmitting}
-            initialValues={{ name: '', location: '' }}
-          />
-        </DialogContent>
-      </Dialog>
+            <WarehouseForm
+              onSubmit={handleSave}
+              isLoading={createWarehouseMut.isPending}
+              initialValues={editForm}
+              onChange={(values) => {
+                setEditForm(values)
+                setCreateDraft(values as unknown as Record<string, unknown>)
+                useUIStore.getState().setTabCreateDraft(entityType, values as unknown as Record<string, unknown>)
+              }}
+            />
+          </DialogPanel>
+        </Dialog>
+        <guard.ConfirmDialog />
+      </>
     )
   }
 
   return (
     <>
-      <Dialog open={true}>
-        <DialogContent>
-          <div className="flex flex-col h-full">
-            <div
-              className="flex border-b border-outline-variant mb-4"
-              role="tablist"
-              onKeyDown={handleKeyDown}
-            >
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  id={`${tab.id}-tab`}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeTab === tab.id}
-                  aria-controls={`${tab.id}-panel`}
-                  tabIndex={activeTab === tab.id ? 0 : -1}
-                  className={`px-4 py-2 text-body-sm font-medium transition-colors border-b-2 -mb-px ${
-                    activeTab === tab.id
-                      ? 'border-secondary text-secondary'
-                      : 'border-transparent text-on-surface-variant hover:text-on-surface'
-                  }`}
-                  onClick={() => setActiveTab(tab.id)}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+      <Dialog open={true} onClose={guard.requestClose} modal={false} {...(container ? { container } : {})}>
+        <DialogPanel onClose={guard.requestClose}>
+          <DialogTitle>{entity?.name ?? t('entity.detail.loading')}</DialogTitle>
+          <DialogDescription>
+            {entity ? entity.location : ''}
+          </DialogDescription>
 
-            <div className="flex-1 max-h-150 overflow-auto">
-              {activeTab === 'details' && (
-                <div
-                  id="details-panel"
-                  role="tabpanel"
-                  aria-labelledby="details-tab"
-                >
-                  {isLoading ? (
-                    <div className="grid grid-cols-2 gap-4">
-                      {Array.from({ length: 4 }).map((_, i) => (
-                        <div key={i} className="space-y-1">
-                          <Skeleton className="h-3 w-20" />
-                          <Skeleton className="h-5 w-full" />
-                        </div>
-                      ))}
-                    </div>
-                  ) : entity ? (
-                    <div className="space-y-4">
-                      {isEditing ? (
-                        <WarehouseForm
-                          schema={updateWarehouseSchema}
-                          onSubmit={handleSave}
-                          isLoading={isSaving}
-                          initialValues={editForm}
-                          submitText={t('entity.update.button')}
-                        />
-                      ) : (
-                        <EntityFieldGrid
-                          rows={WAREHOUSE_ROWS}
-                          entity={entity}
-                        />
-                      )}
+          <div role="tablist" className="flex border-b mb-4">
+            {(['details', 'movements', 'insights'] as const).map(id => (
+              <button
+                key={id}
+                role="tab"
+                aria-selected={activeTab === id}
+                onClick={() => setActiveTab(id)}
+                className={`px-4 py-2 ${activeTab === id ? 'border-b-2 border-secondary' : ''}`}
+              >
+                {t('entity.detail.tabs.' + id)}
+              </button>
+            ))}
+          </div>
 
-                      {saveError && (
-                        <p className="text-body-sm text-error">{saveError}</p>
-                      )}
-                      <div className="flex items-center justify-between pt-4 border-t border-outline-variant">
-                        <Button
-                          variant="ghost"
-                          className="text-error"
-                          onClick={() => setShowDeleteConfirm(true)}
-                        >
-                          <span className="material-symbols-outlined text-sm">
-                            delete
-                          </span>
-                          {t('entity.detail.delete')}
-                        </Button>
-                        <div className="flex gap-2">
-                          {isEditing ? (
-                            <>
-                              <Button
-                                variant="outline"
-                                onClick={handleCancelEdit}
-                                disabled={isSaving}
-                              >
-                                {t('common.cancel')}
-                              </Button>
-                            </>
-                          ) : (
-                            <Button onClick={handleEdit}>
-                              <span className="material-symbols-outlined text-sm">
-                                edit
-                              </span>
-                              {t('entity.detail.edit')}
-                            </Button>
-                          )}
-                        </div>
-                      </div>
+          {activeTab === 'details' && (
+            <div>
+              {isLoading ? (
+                <div className="grid grid-cols-2 gap-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="space-y-1">
+                      <Skeleton className="h-3 w-20" />
+                      <Skeleton className="h-5 w-full" />
                     </div>
-                  ) : loadError ? (
-                    <p className="text-body-md text-error">{loadError}</p>
+                  ))}
+                </div>
+              ) : entity ? (
+                <div className="space-y-4">
+                  {isEditing ? (
+                    <WarehouseForm
+                      schema={updateWarehouseSchema}
+                      onSubmit={handleSave}
+                      isLoading={updateWarehouse.isPending}
+                      initialValues={editForm}
+                      onChange={(values) => {
+                        setEditForm(values)
+                        setEditDraft(values as unknown as Record<string, unknown>)
+                        useUIStore.getState().setTabEditDraft(entityType, values as unknown as Record<string, unknown>)
+                      }}
+                      submitText={t('entity.update.button')}
+                    />
                   ) : (
-                    <p className="text-body-md text-on-surface-variant">
-                      {t('entity.detail.notFound')}
+                    <EntityFieldGrid rows={WAREHOUSE_ROWS} entity={entity} />
+                  )}
+
+                  {updateWarehouse.isError && (
+                    <p className="text-body-sm text-error">
+                      {(updateWarehouse.error as Error).message}
                     </p>
                   )}
-                </div>
-              )}
 
-              {activeTab === 'insights' && (
-                <div
-                  id="insights-panel"
-                  role="tabpanel"
-                  aria-labelledby="insights-tab"
-                >
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-3 gap-4">
-                      {Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} className="space-y-1">
-                          <Skeleton className="h-3 w-16" />
-                          <Skeleton className="h-8 w-full" />
-                        </div>
-                      ))}
+                  <div className="flex items-center justify-between pt-4 border-t">
+                    <Button
+                      variant="ghost"
+                      className="text-error"
+                      onClick={() => setShowDeleteConfirm(true)}
+                    >
+                      <span className="material-symbols-outlined text-sm">delete</span>
+                      {t('entity.detail.delete')}
+                    </Button>
+                    <div className="flex gap-2">
+                      {isEditing ? (
+                        <>
+                          <Button variant="outline" onClick={handleCancelEdit}>
+                            {t('common.cancel')}
+                          </Button>
+                          <Button
+                            onClick={() => handleSave(editForm)}
+                            disabled={!isDirty || updateWarehouse.isPending}
+                          >
+                            {t('entity.update.button')}
+                          </Button>
+                          <Button
+                            onClick={guard.requestClose}
+                            disabled={!isDirty || updateWarehouse.isPending}
+                          >
+                            {t('common.saveAndClose')}
+                          </Button>
+                        </>
+                      ) : (
+                        <Button onClick={handleEdit}>
+                          <span className="material-symbols-outlined text-sm">edit</span>
+                          {t('entity.detail.edit')}
+                        </Button>
+                      )}
                     </div>
-                    <Skeleton className="h-48 w-full rounded-lg" />
                   </div>
                 </div>
-              )}
-
-              {activeTab === 'audits' && (
-                <StockMovementsTable
-                  movements={movements ?? []}
-                  isLoading={isLoadingMovements}
-                  error={movementsError?.message ?? ''}
-                  variant="warehouse"
-                  productNames={productNames}
-                  variantNames={variantNames}
-                  emptyMessage={t('entity.stockMovement.noMovementsWarehouse')}
-                />
-              )}
+              ) : null}
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          )}
 
+          {activeTab === 'movements' && (
+            <StockMovementsTable
+              movements={movements ?? []}
+              isLoading={isLoadingMovements}
+              error={movementsError?.message ?? ''}
+              variant="warehouse"
+              warehouseNames={warehouseNames}
+              emptyMessage={t('entity.stockMovement.noMovementsWarehouse')}
+            />
+          )}
+
+          {activeTab === 'insights' && (
+            <div className="space-y-4">
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-48 w-full rounded-lg" />
+            </div>
+          )}
+        </DialogPanel>
+      </Dialog>
+      <guard.ConfirmDialog />
       <ConfirmationDialog
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
-        title={t('entity.detail.deleteConfirmTitle', {
-          name: entity?.name ?? '',
-        })}
+        title={t('entity.detail.deleteConfirmTitle', { name: entity?.name ?? '' })}
         description={t('entity.detail.deleteConfirmMessage')}
         onConfirm={handleDelete}
         isDestructive
-        isLoading={isDeleting}
-        error={deleteError}
+        isLoading={deleteWarehouse.isPending}
+        error={deleteWarehouse.isError ? (deleteWarehouse.error as Error).message : ''}
       />
     </>
   )

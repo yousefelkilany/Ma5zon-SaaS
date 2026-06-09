@@ -1,15 +1,22 @@
 /* eslint-disable react/no-children-prop */
+import { useEffect, useRef } from 'react'
 import { useAppForm } from './createFormHook'
 import { createWarehouseSchema } from '@/lib/validation/schemas'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 
+interface WarehouseFormValues {
+  name: string
+  location: string
+}
+
 interface WarehouseFormProps {
-  onSubmit: (values: { name: string; location: string }) => void
+  onSubmit: (values: WarehouseFormValues) => void
   isLoading?: boolean
-  initialValues?: { name: string; location: string }
+  initialValues?: WarehouseFormValues
   submitText?: string
+  onChange?: (values: WarehouseFormValues) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema?: any
 }
@@ -20,8 +27,11 @@ export function WarehouseForm({
   initialValues,
   schema = createWarehouseSchema,
   submitText,
+  onChange,
 }: WarehouseFormProps) {
   const { t } = useTranslation()
+  const onChangeRef = useRef(onChange)
+  onChangeRef.current = onChange
 
   const form = useAppForm({
     defaultValues: initialValues ?? { name: '', location: '' },
@@ -32,6 +42,15 @@ export function WarehouseForm({
       onSubmit(value)
     },
   })
+
+  useEffect(() => {
+    const name = form.state.values.name
+    const location = form.state.values.location
+    onChangeRef.current?.({
+      name: name ?? '',
+      location: location ?? '',
+    })
+  }, [form.state.values.name, form.state.values.location])
 
   return (
     <form
