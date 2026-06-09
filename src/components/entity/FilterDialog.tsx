@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ColumnDef, FilterState } from '@/lib/types/entity'
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
+  DialogPanel,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { useUnsavedGuard } from '@/hooks/use-unsaved-guard'
 
 interface FilterDialogProps {
   open: boolean
@@ -16,6 +15,35 @@ interface FilterDialogProps {
   columns: ColumnDef[]
   filters: FilterState[]
   onApply: (filters: FilterState[]) => void
+}
+
+type LocalValue = string | string[] | { min?: string; max?: string }
+
+function localFiltersToArray(
+  local: Record<string, LocalValue>
+): FilterState[] {
+  return Object.entries(local)
+    .filter(([_, v]) => v !== '' && (Array.isArray(v) ? v.length > 0 : true))
+    .map(([columnId, value]) => {
+      if (typeof value === 'string') {
+        return { columnId, operator: 'contains' as const, value }
+      } else if (Array.isArray(value)) {
+        return { columnId, operator: 'eq' as const, value }
+      }
+      return {
+        columnId,
+        operator: 'between' as const,
+        value: [value.min ?? '', value.max ?? ''],
+      }
+    }) as FilterState[]
+}
+
+function arraysEqual(a: FilterState[], b: FilterState[]): boolean {
+  if (a.length !== b.length) return false
+  const sortFn = (x: FilterState) => `${x.columnId}:${x.operator}:${JSON.stringify(x.value)}`
+  const sa = [...a].map(sortFn).sort()
+  const sb = [...b].map(sortFn).sort()
+  return sa.every((v, i) => v === sb[i])
 }
 
 export function FilterDialog({
@@ -26,16 +54,11 @@ export function FilterDialog({
   onApply,
 }: FilterDialogProps) {
   const { t } = useTranslation()
-  const [localFilters, setLocalFilters] = useState<
-    Record<string, string | string[] | { min?: string; max?: string }>
-  >({})
+  const [localFilters, setLocalFilters] = useState<Record<string, LocalValue>>({})
 
   useEffect(() => {
     if (!open) return
-    const initialized: Record<
-      string,
-      string | string[] | { min?: string; max?: string }
-    > = {}
+    const initialized: Record<string, LocalValue> = {}
     filters.forEach(f => {
       const val = f.value
       if (typeof val === 'string') {
@@ -64,6 +87,15 @@ export function FilterDialog({
     return Array.isArray(val) ? val : []
   }
 
+  const isDirty = useMemo(() => {
+    return !arraysEqual(localFiltersToArray(localFilters), filters)
+  }, [localFilters, filters])
+
+  const guard = useUnsavedGuard({
+    isDirty,
+    onDiscard: () => onOpenChange(false),
+  })
+
   const filterableColumns = columns.filter(col => col.filterable && col.visible)
 
   const statusOptions = [
@@ -78,31 +110,14 @@ export function FilterDialog({
   }
 
   const handleApply = () => {
-    const appliedFilters = Object.entries(localFilters)
-      .filter(([_, v]) => v !== '' && (Array.isArray(v) ? v.length > 0 : true))
-      .map(([columnId, value]) => {
-        if (typeof value === 'string') {
-          return { columnId, operator: 'contains' as const, value }
-        } else if (Array.isArray(value)) {
-          return { columnId, operator: 'eq' as const, value }
-        } else {
-          return {
-            columnId,
-            operator: 'between' as const,
-            value: [value.min ?? '', value.max ?? ''],
-          }
-        }
-      }) as FilterState[]
-    onApply(appliedFilters)
+    onApply(localFiltersToArray(localFilters))
     onOpenChange(false)
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('entity.workspace.toolbar.filters')}</DialogTitle>
-        </DialogHeader>
+    <Dialog open={open} onClose={guard.requestClose}>
+      <DialogPanel onClose={guard.requestClose}>
+        <DialogTitle>{t('entity.workspace.toolbar.filters')}</DialogTitle>
         <div className="space-y-4 py-4">
           {filterableColumns.map(col => (
             <div key={col.id} className="space-y-2">
@@ -209,18 +224,19 @@ export function FilterDialog({
             </div>
           ))}
         </div>
-        <DialogFooter className="flex justify-between">
+        <div className="flex justify-between">
           <Button variant="ghost" onClick={handleClearAll}>
             {t('entity.filter.clearAll')}
           </Button>
           <div className="flex gap-2">
-            <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            <Button variant="ghost" onClick={guard.requestClose}>
               {t('entity.filter.cancel')}
             </Button>
             <Button onClick={handleApply}>{t('entity.filter.apply')}</Button>
           </div>
-        </DialogFooter>
-      </DialogContent>
+        </div>
+        <guard.ConfirmDialog />
+      </DialogPanel>
     </Dialog>
   )
 }
