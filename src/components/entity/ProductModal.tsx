@@ -28,7 +28,7 @@ import {
   useUpdateProduct,
   useSoftDeleteProduct,
 } from '@/services/entity/mutations'
-import { registerModalHandle, type ModalHandle } from '@/components/layout/MainWindowContent'
+import { registerModalHandle, type ModalHandle } from '@/components/layout/modal-handle-registry'
 
 interface ProductModalProps {
   entityId?: string
@@ -93,20 +93,19 @@ export function ProductModal({
 
   // ----- Register imperative handle for the per-tab effect in MainWindowContent -----
   const editDraftRef = useRef(editDraft)
-  editDraftRef.current = editDraft
+  useEffect(() => {
+    editDraftRef.current = editDraft
+  }, [editDraft])
   const createDraftRef = useRef(createDraft)
-  createDraftRef.current = createDraft
+  useEffect(() => {
+    createDraftRef.current = createDraft
+  }, [createDraft])
   const isDirtyRef = useRef(isDirty)
-  isDirtyRef.current = isDirty
+  useEffect(() => {
+    isDirtyRef.current = isDirty
+  }, [isDirty])
 
   const saveAndCloseRef = useRef<(() => Promise<void> | void) | undefined>(undefined)
-  saveAndCloseRef.current = async () => {
-    if (mode === 'create') {
-      await createProduct.mutateAsync({ values: editForm })
-    } else if (entity) {
-      await updateProduct.mutateAsync({ id: entity.id, values: editForm })
-    }
-  }
 
   useEffect(() => {
     if (mode !== 'view' && !entityId) return
@@ -126,8 +125,7 @@ export function ProductModal({
       saveAndClose: () => saveAndCloseRef.current?.(),
     }
     return registerModalHandle(entityType, handle)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, entityId, entityType])
+  }, [mode, entityId, entityType, entity])
 
   // ----- Mutations -----
   const updateProduct = useUpdateProduct({
@@ -158,6 +156,16 @@ export function ProductModal({
         onDeleted?.()
       }
     },
+  })
+
+  useEffect(() => {
+    saveAndCloseRef.current = async () => {
+      if (mode === 'create') {
+        await createProduct.mutateAsync({ values: editForm })
+      } else if (entity) {
+        await updateProduct.mutateAsync({ id: entity.id, values: editForm })
+      }
+    }
   })
 
   // ----- Unsaved guard -----

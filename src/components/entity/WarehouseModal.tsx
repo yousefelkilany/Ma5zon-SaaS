@@ -27,7 +27,7 @@ import {
   useSoftDeleteWarehouse,
 } from '@/services/entity/mutations'
 import type { WarehouseUpdateValues } from '@/services/entity/types'
-import { registerModalHandle, type ModalHandle } from '@/components/layout/MainWindowContent'
+import { registerModalHandle, type ModalHandle } from '@/components/layout/modal-handle-registry'
 
 interface WarehouseModalProps {
   entityId?: string
@@ -90,25 +90,19 @@ export function WarehouseModal({
 
   // ----- Register imperative handle for the per-tab effect in MainWindowContent -----
   const editDraftRef = useRef(editDraft)
-  editDraftRef.current = editDraft
+  useEffect(() => {
+    editDraftRef.current = editDraft
+  }, [editDraft])
   const createDraftRef = useRef(createDraft)
-  createDraftRef.current = createDraft
+  useEffect(() => {
+    createDraftRef.current = createDraft
+  }, [createDraft])
   const isDirtyRef = useRef(isDirty)
-  isDirtyRef.current = isDirty
+  useEffect(() => {
+    isDirtyRef.current = isDirty
+  }, [isDirty])
 
   const saveAndCloseRef = useRef<(() => Promise<void> | void) | undefined>(undefined)
-  saveAndCloseRef.current = async () => {
-    if (mode === 'create') {
-      await createWarehouseMut.mutateAsync({
-        values: editForm as unknown as WarehouseUpdateValues,
-      })
-    } else if (entity) {
-      await updateWarehouse.mutateAsync({
-        id: entity.id,
-        values: editForm as unknown as WarehouseUpdateValues,
-      })
-    }
-  }
 
   useEffect(() => {
     if (mode !== 'view' && !entityId) return
@@ -128,8 +122,7 @@ export function WarehouseModal({
       saveAndClose: () => saveAndCloseRef.current?.(),
     }
     return registerModalHandle(entityType, handle)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, entityId, entityType])
+  }, [mode, entityId, entityType, entity])
 
   // ----- Mutations -----
   const updateWarehouse = useUpdateWarehouse({
@@ -160,6 +153,21 @@ export function WarehouseModal({
         onDeleted?.()
       }
     },
+  })
+
+  useEffect(() => {
+    saveAndCloseRef.current = async () => {
+      if (mode === 'create') {
+        await createWarehouseMut.mutateAsync({
+          values: editForm as unknown as WarehouseUpdateValues,
+        })
+      } else if (entity) {
+        await updateWarehouse.mutateAsync({
+          id: entity.id,
+          values: editForm as unknown as WarehouseUpdateValues,
+        })
+      }
+    }
   })
 
   // ----- Unsaved guard -----

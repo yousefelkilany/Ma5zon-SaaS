@@ -55,7 +55,7 @@ export function useUpdateProduct(options?: SettledOptions<Product>) {
       })
       for (const [key, data] of previousLists) {
         if (Array.isArray(data)) {
-          const arr = data as Array<Product & Record<string, unknown>>
+          const arr = data as (Product & Record<string, unknown>)[]
           queryClient.setQueryData(
             key,
             arr.map((r) => (r.id === id ? { ...r, ...values } : r))

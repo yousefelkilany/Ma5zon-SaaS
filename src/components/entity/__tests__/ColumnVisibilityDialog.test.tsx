@@ -56,9 +56,10 @@ describe('ColumnVisibilityDialog', () => {
   it('closing with staged changes opens the confirm popover', async () => {
     const user = userEvent.setup()
     const { onOpenChange } = renderDialog()
-    await user.click(
-      screen.getAllByRole('checkbox', { name: /Toggle \{column\} visibility/i })[0]!
-    )
+    const checkboxes = screen.getAllByRole('checkbox', {
+      name: /Toggle \{column\} visibility/i,
+    })
+    await user.click(checkboxes[0] as HTMLElement)
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(onOpenChange).not.toHaveBeenCalled()
     expect(screen.getByText('Keep editing')).toBeInTheDocument()
@@ -68,9 +69,10 @@ describe('ColumnVisibilityDialog', () => {
   it('discarding calls onOpenChange(false)', async () => {
     const user = userEvent.setup()
     const { onOpenChange } = renderDialog()
-    await user.click(
-      screen.getAllByRole('checkbox', { name: /Toggle \{column\} visibility/i })[0]!
-    )
+    const checkboxes = screen.getAllByRole('checkbox', {
+      name: /Toggle \{column\} visibility/i,
+    })
+    await user.click(checkboxes[0] as HTMLElement)
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
     await user.click(screen.getByText('Discard'))
     expect(onOpenChange).toHaveBeenCalledWith(false)
@@ -79,9 +81,10 @@ describe('ColumnVisibilityDialog', () => {
   it('"Keep editing" closes the prompt without calling onOpenChange', async () => {
     const user = userEvent.setup()
     const { onOpenChange } = renderDialog()
-    await user.click(
-      screen.getAllByRole('checkbox', { name: /Toggle \{column\} visibility/i })[0]!
-    )
+    const checkboxes = screen.getAllByRole('checkbox', {
+      name: /Toggle \{column\} visibility/i,
+    })
+    await user.click(checkboxes[0] as HTMLElement)
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
     await user.click(screen.getByText('Keep editing'))
     expect(onOpenChange).not.toHaveBeenCalled()

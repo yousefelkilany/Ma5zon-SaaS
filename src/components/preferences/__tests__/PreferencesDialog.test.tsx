@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { QueryWrapper, createTestQueryClient } from '@/lib/test-utils/query-wrapper'
+import { QueryWrapper } from '@/lib/test-utils/query-wrapper'
+import { createTestQueryClient } from '@/lib/test-utils/create-test-query-client'
 import { useUIStore } from '@/store/ui-store'
 
 const mutateMock = vi.fn()

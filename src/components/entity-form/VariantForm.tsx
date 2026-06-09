@@ -53,7 +53,9 @@ export function VariantForm({
 }: VariantFormProps) {
   const { t } = useTranslation()
   const onChangeRef = useRef(onChange)
-  onChangeRef.current = onChange
+  useEffect(() => {
+    onChangeRef.current = onChange
+  }, [onChange])
 
   const form = useAppForm({
     defaultValues: initialValues ?? {

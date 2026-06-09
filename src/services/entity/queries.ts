@@ -19,7 +19,11 @@ export function useGetProduct(id: string | undefined) {
     queryKey: id
       ? entityQueryKeys.detail('products', id)
       : ['entity', 'products', 'detail', '__none__'],
-    queryFn: async () => unwrap(await commands.getById(id!)),
+    queryFn: async () => {
+      const idOrThrow = id
+      if (!idOrThrow) throw new Error('id required')
+      return unwrap(await commands.getById(idOrThrow))
+    },
     enabled: !!id,
   })
 }
@@ -29,7 +33,11 @@ export function useGetVariant(id: string | undefined) {
     queryKey: id
       ? entityQueryKeys.detail('variants', id)
       : ['entity', 'variants', 'detail', '__none__'],
-    queryFn: async () => unwrap(await commands.variantsGetById(id!)),
+    queryFn: async () => {
+      const idOrThrow = id
+      if (!idOrThrow) throw new Error('id required')
+      return unwrap(await commands.variantsGetById(idOrThrow))
+    },
     enabled: !!id,
   })
 }
@@ -39,7 +47,11 @@ export function useGetWarehouse(id: string | undefined) {
     queryKey: id
       ? entityQueryKeys.detail('warehouses', id)
       : ['entity', 'warehouses', 'detail', '__none__'],
-    queryFn: async () => unwrap(await commands.warehousesGetById(id!)),
+    queryFn: async () => {
+      const idOrThrow = id
+      if (!idOrThrow) throw new Error('id required')
+      return unwrap(await commands.warehousesGetById(idOrThrow))
+    },
     enabled: !!id,
   })
 }
@@ -52,7 +64,11 @@ export function useStockLevelsForProduct(
     queryKey: id
       ? entityQueryKeys.stockLevels(scope, id)
       : ['stock-levels-' + scope, '__none__'],
-    queryFn: async () => unwrap(await commands.stockLevelsGetByProduct(id!)),
+    queryFn: async () => {
+      const idOrThrow = id
+      if (!idOrThrow) throw new Error('id required')
+      return unwrap(await commands.stockLevelsGetByProduct(idOrThrow))
+    },
     enabled: !!id,
   })
 }
@@ -62,7 +78,11 @@ export function useStockLevelsForVariant(id: string | undefined) {
     queryKey: id
       ? entityQueryKeys.stockLevels('variant', id)
       : ['stock-levels-variant', '__none__'],
-    queryFn: async () => unwrap(await commands.stockLevelsGetByVariant(id!)),
+    queryFn: async () => {
+      const idOrThrow = id
+      if (!idOrThrow) throw new Error('id required')
+      return unwrap(await commands.stockLevelsGetByVariant(idOrThrow))
+    },
     enabled: !!id,
   })
 }
@@ -73,9 +93,11 @@ export function useStockMovements(scope: MovementScope, id: string | undefined) 
       ? entityQueryKeys.stockMovements(scope, id)
       : ['stock-movements-' + scope, '__none__'],
     queryFn: async (): Promise<StockMovement[]> => {
+      const idOrThrow = id
+      if (!idOrThrow) throw new Error('id required')
       if (scope === 'product') {
         const variants = await unwrap(
-          await commands.variantsGetByProductWithStock(id!)
+          await commands.variantsGetByProductWithStock(idOrThrow)
         )
         const all: StockMovement[] = []
         for (const v of variants) {
@@ -96,9 +118,9 @@ export function useStockMovements(scope: MovementScope, id: string | undefined) 
         )
       }
       if (scope === 'variant') {
-        return await unwrap(await commands.stockMovementsGetByVariant(id!))
+        return await unwrap(await commands.stockMovementsGetByVariant(idOrThrow))
       }
-      return await unwrap(await commands.stockMovementsGetByWarehouse(id!))
+      return await unwrap(await commands.stockMovementsGetByWarehouse(idOrThrow))
     },
     enabled: !!id,
   })

@@ -13,31 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import type { ModalType } from '@/lib/utils'
-
-// Imperative handle exposed by an entity modal so this effect can read
-// (and clear) per-tab modal state at navigation time.
-export interface ModalHandle {
-  getIsDirty: () => boolean
-  getCreateDraft: () => Record<string, unknown> | undefined
-  getEditDraft: () => Record<string, unknown> | undefined
-  discardDrafts: () => void
-  saveAndClose?: () => Promise<void> | void
-}
-
-const tabHandles = new Map<string, ModalHandle>()
-
-export function registerModalHandle(tabKey: string, handle: ModalHandle) {
-  tabHandles.set(tabKey, handle)
-  return () => {
-    if (tabHandles.get(tabKey) === handle) {
-      tabHandles.delete(tabKey)
-    }
-  }
-}
-
-export function getModalHandle(tabKey: string): ModalHandle | undefined {
-  return tabHandles.get(tabKey)
-}
+import { getModalHandle } from './modal-handle-registry'
 
 export function MainWindowContent() {
   const { t } = useTranslation()
@@ -66,9 +42,10 @@ export function MainWindowContent() {
     const newEntityType = activeTab.entityType
 
     // 1) Capture previous tab's live modal state (if any) into the Zustand slice.
-    if (prevTabId && prevEntityType && tabHandles.has(prevEntityType)) {
-      const handle = tabHandles.get(prevEntityType)!
-      const search = new URLSearchParams(location.search)
+    if (prevTabId && prevEntityType) {
+      const handle = getModalHandle(prevEntityType)
+      if (handle) {
+        const search = new URLSearchParams(location.search)
       const entity_modal = (search.get('entity_modal') as ModalType) ?? null
       const entity_id = search.get('entity_id')
       setTabModal(
@@ -80,6 +57,7 @@ export function MainWindowContent() {
       const editDraft = handle.getEditDraft()
       if (createDraft) setTabCreateDraft(prevEntityType as 'products' | 'variants' | 'warehouses', createDraft)
       if (editDraft) setTabEditDraft(prevEntityType as 'products' | 'variants' | 'warehouses', editDraft)
+      }
     }
 
     prevTabIdRef.current = activeTabId

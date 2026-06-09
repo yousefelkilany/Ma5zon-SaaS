@@ -20,7 +20,7 @@ describe('useUIStore tabState slice', () => {
     useUIStore
       .getState()
       .setTabModal('products', { entity_modal: 'product', entity_id: 'P1' })
-    expect(useUIStore.getState().tabState.products!).toEqual({
+    expect(useUIStore.getState().tabState['products']).toEqual({
       ...emptyTabState,
       entity_modal: 'product',
       entity_id: 'P1',
@@ -31,10 +31,10 @@ describe('useUIStore tabState slice', () => {
     useUIStore
       .getState()
       .setTabCreateDraft('products', { name: 'Draft Name' })
-    expect(useUIStore.getState().tabState.products!.createDraft).toEqual({
+    expect(useUIStore.getState().tabState['products']?.createDraft).toEqual({
       name: 'Draft Name',
     })
-    expect(useUIStore.getState().tabState.products!.entity_modal).toBeNull()
+    expect(useUIStore.getState().tabState['products']?.entity_modal).toBeNull()
   })
 
   it('setTabEditDraft and setTabIsDirty update the right fields', () => {
@@ -42,10 +42,10 @@ describe('useUIStore tabState slice', () => {
       .getState()
       .setTabEditDraft('products', { company: 'ACME 2' })
     useUIStore.getState().setTabIsDirty('products', true)
-    expect(useUIStore.getState().tabState.products!.editDraft).toEqual({
+    expect(useUIStore.getState().tabState['products']?.editDraft).toEqual({
       company: 'ACME 2',
     })
-    expect(useUIStore.getState().tabState.products!.isDirty).toBe(true)
+    expect(useUIStore.getState().tabState['products']?.isDirty).toBe(true)
   })
 
   it('clearTabState wipes the tab back to empty defaults', () => {
@@ -55,7 +55,7 @@ describe('useUIStore tabState slice', () => {
     useUIStore.getState().setTabEditDraft('products', { company: 'ACME 2' })
     useUIStore.getState().setTabIsDirty('products', true)
     useUIStore.getState().clearTabState('products')
-    expect(useUIStore.getState().tabState.products!).toEqual(emptyTabState)
+    expect(useUIStore.getState().tabState['products']).toEqual(emptyTabState)
   })
 
   it('clearAllTabState empties the entire slice', () => {

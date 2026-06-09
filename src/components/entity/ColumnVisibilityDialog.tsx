@@ -90,8 +90,9 @@ interface ColumnVisibilityDialogProps {
 function columnsEqual(a: ColumnDef[], b: ColumnDef[]): boolean {
   if (a.length !== b.length) return false
   for (let i = 0; i < a.length; i++) {
-    const x = a[i]!
-    const y = b[i]!
+    const x = a[i]
+    const y = b[i]
+    if (!x || !y) return false
     if (
       x.id !== y.id ||
       x.visible !== y.visible ||

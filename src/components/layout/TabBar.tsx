@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useTabStore } from '@/store/workspace-store'
 import { useUIStore } from '@/store/ui-store'
-import { getModalHandle } from '@/components/layout/MainWindowContent'
+import { getModalHandle } from './modal-handle-registry'
 import { shouldInterceptTabSwitch } from '@/lib/utils/tab-switch-guard'
 import { useAuth } from '@/hooks/useAuth'
 import { requestLogin } from '@/hooks/useAuth'

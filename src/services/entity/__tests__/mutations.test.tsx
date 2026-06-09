@@ -58,7 +58,7 @@ function makeClient() {
 
 function seedProductsList(
   client: QueryClient,
-  rows: Array<{ id: string; name: string; company: string; category: string }>
+  rows: { id: string; name: string; company: string; category: string }[]
 ) {
   client.setQueryData(entityQueryKeys.listFor('products'), rows)
 }
@@ -99,7 +99,7 @@ describe('useUpdateProduct', () => {
 
     // Optimistic update applied
     await waitFor(() => {
-      const data = client.getQueryData<Array<{ id: string; name: string }>>(
+      const data = client.getQueryData<{ id: string; name: string }[]>(
         entityQueryKeys.listFor('products')
       )
       expect(data?.find((r) => r.id === 'P1')?.name).toBe('New')
@@ -146,7 +146,7 @@ describe('useUpdateProduct', () => {
 
     await waitFor(() => expect(result.current.m.isError).toBe(true))
 
-    const data = client.getQueryData<Array<{ id: string; name: string }>>(
+    const data = client.getQueryData<{ id: string; name: string }[]>(
       entityQueryKeys.listFor('products')
     )
     expect(data?.find((r) => r.id === 'P1')?.name).toBe('Old')
@@ -177,7 +177,8 @@ describe('useUpdateProduct', () => {
     })
 
     await waitFor(() => expect(onSettled).toHaveBeenCalled())
-    const [data, err] = onSettled.mock.calls[0]!
+    const firstCall = onSettled.mock.calls[0]
+    const [data, err] = firstCall as [unknown, unknown]
     expect(data).toEqual({
       id: 'P1',
       name: 'New',
@@ -235,7 +236,7 @@ describe('useSoftDeleteProduct', () => {
     })
 
     await waitFor(() => expect(result.current.isError).toBe(true))
-    const data = client.getQueryData<Array<{ id: string }>>(
+    const data = client.getQueryData<{ id: string }[]>(
       entityQueryKeys.listFor('products')
     )
     expect(data?.some((r) => r.id === 'P1')).toBe(true)

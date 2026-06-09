@@ -26,11 +26,9 @@ const mockOk = <T,>(data: T) => ({ status: 'ok' as const, data })
 
 let mockSearch = ''
 vi.mock('@tanstack/react-router', async () => {
-  const actual = await vi.importActual<typeof import('@tanstack/react-router')>(
-    '@tanstack/react-router'
-  )
+  const actual = await vi.importActual('@tanstack/react-router')
   return {
-    ...actual,
+    ...(actual as Record<string, unknown>),
     useLocation: (_opts?: unknown) => {
       const href = '/entity/products' + (mockSearch ? '?' + mockSearch : '')
       return {

@@ -28,7 +28,7 @@ import {
   useUpdateVariant,
   useSoftDeleteVariant,
 } from '@/services/entity/mutations'
-import { registerModalHandle, type ModalHandle } from '@/components/layout/MainWindowContent'
+import { registerModalHandle, type ModalHandle } from '@/components/layout/modal-handle-registry'
 
 interface VariantModalProps {
   entityId?: string
@@ -145,21 +145,19 @@ export function VariantModal({
 
   // ----- Register imperative handle for the per-tab effect in MainWindowContent -----
   const editDraftRef = useRef(editDraft)
-  editDraftRef.current = editDraft
+  useEffect(() => {
+    editDraftRef.current = editDraft
+  }, [editDraft])
   const createDraftRef = useRef(createDraft)
-  createDraftRef.current = createDraft
+  useEffect(() => {
+    createDraftRef.current = createDraft
+  }, [createDraft])
   const isDirtyRef = useRef(isDirty)
-  isDirtyRef.current = isDirty
+  useEffect(() => {
+    isDirtyRef.current = isDirty
+  }, [isDirty])
 
   const saveAndCloseRef = useRef<(() => Promise<void> | void) | undefined>(undefined)
-  saveAndCloseRef.current = async () => {
-    if (mode === 'create') {
-      if (!productId) return
-      await createVariantMut.mutateAsync({ values: editForm as never, productId })
-    } else if (entity) {
-      await updateVariant.mutateAsync({ id: entity.id, values: editForm as never })
-    }
-  }
 
   useEffect(() => {
     if (mode !== 'view' && !entityId) return
@@ -186,8 +184,7 @@ export function VariantModal({
       saveAndClose: () => saveAndCloseRef.current?.(),
     }
     return registerModalHandle(entityType, handle)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, entityId, entityType])
+  }, [mode, entityId, entityType, entity])
 
   // ----- Mutations -----
   const updateVariant = useUpdateVariant({
@@ -218,6 +215,17 @@ export function VariantModal({
         onDeleted?.()
       }
     },
+  })
+
+  useEffect(() => {
+    saveAndCloseRef.current = async () => {
+      if (mode === 'create') {
+        if (!productId) return
+        await createVariantMut.mutateAsync({ values: editForm as never, productId })
+      } else if (entity) {
+        await updateVariant.mutateAsync({ id: entity.id, values: editForm as never })
+      }
+    }
   })
 
   // ----- Unsaved guard -----
