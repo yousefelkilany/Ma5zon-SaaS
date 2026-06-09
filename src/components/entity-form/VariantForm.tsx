@@ -1,10 +1,20 @@
 /* eslint-disable react/no-children-prop */
+import { useEffect, useRef } from 'react'
 import { useAppForm } from './createFormHook'
 import { createVariantSchema } from '@/lib/validation/schemas'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 import { UOM_OPTIONS } from '@/lib/constants'
+
+interface VariantFormValues {
+  sku: string
+  variant_name: string
+  uom_id: string
+  retail_price: number | undefined
+  wholesale_price: number | undefined
+  distribution_price: number | undefined
+}
 
 interface VariantFormProps {
   productId?: string
@@ -27,6 +37,7 @@ interface VariantFormProps {
     distribution_price?: number
   }
   submitText?: string
+  onChange?: (values: VariantFormValues) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema?: any
 }
@@ -38,8 +49,11 @@ export function VariantForm({
   initialValues,
   schema = createVariantSchema,
   submitText,
+  onChange,
 }: VariantFormProps) {
   const { t } = useTranslation()
+  const onChangeRef = useRef(onChange)
+  onChangeRef.current = onChange
 
   const form = useAppForm({
     defaultValues: initialValues ?? {
@@ -57,6 +71,30 @@ export function VariantForm({
       onSubmit(productId ? { ...value, product_id: productId } : value)
     },
   })
+
+  useEffect(() => {
+    const sku = form.state.values.sku
+    const variant_name = form.state.values.variant_name
+    const uom_id = form.state.values.uom_id
+    const retail_price = form.state.values.retail_price
+    const wholesale_price = form.state.values.wholesale_price
+    const distribution_price = form.state.values.distribution_price
+    onChangeRef.current?.({
+      sku: sku ?? '',
+      variant_name: variant_name ?? '',
+      uom_id: uom_id ?? '',
+      retail_price: retail_price ?? undefined,
+      wholesale_price: wholesale_price ?? undefined,
+      distribution_price: distribution_price ?? undefined,
+    })
+  }, [
+    form.state.values.sku,
+    form.state.values.variant_name,
+    form.state.values.uom_id,
+    form.state.values.retail_price,
+    form.state.values.wholesale_price,
+    form.state.values.distribution_price,
+  ])
 
   return (
     <form
