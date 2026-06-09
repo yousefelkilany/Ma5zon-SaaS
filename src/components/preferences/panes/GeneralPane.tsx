@@ -10,6 +10,7 @@ import { SettingsField, SettingsSection } from '../shared/SettingsComponents'
 import { usePreferences, useSavePreferences } from '@/services/preferences'
 import { commands } from '@/lib/tauri-bindings'
 import { logger } from '@/lib/logger'
+import { setPreferencesDirty } from '../preferences-dirty'
 
 export function GeneralPane() {
   const { t } = useTranslation()
@@ -19,6 +20,8 @@ export function GeneralPane() {
   // 2. Use usePreferencesManager() and updatePreferences()
   const [exampleText, setExampleText] = useState('Example value')
   const [exampleToggle, setExampleToggle] = useState(true)
+
+  const markDirty = () => setPreferencesDirty(true)
 
   // Load preferences for keyboard shortcuts
   const { data: preferences } = usePreferences()
@@ -35,6 +38,7 @@ export function GeneralPane() {
 
   const handleShortcutChange = async (newShortcut: string | null) => {
     if (!preferences) return
+    markDirty()
 
     // Capture old shortcut for rollback if save fails
     const oldShortcut = preferences.quick_pane_shortcut
@@ -109,7 +113,10 @@ export function GeneralPane() {
         >
           <Input
             value={exampleText}
-            onChange={e => setExampleText(e.target.value)}
+            onChange={e => {
+              setExampleText(e.target.value)
+              markDirty()
+            }}
             placeholder={t('preferences.general.exampleTextPlaceholder')}
           />
         </SettingsField>
@@ -122,7 +129,10 @@ export function GeneralPane() {
             <Switch
               id="example-toggle"
               checked={exampleToggle}
-              onCheckedChange={setExampleToggle}
+              onCheckedChange={v => {
+                setExampleToggle(v)
+                markDirty()
+              }}
             />
             <Label htmlFor="example-toggle" className="text-sm">
               {exampleToggle ? t('common.enabled') : t('common.disabled')}

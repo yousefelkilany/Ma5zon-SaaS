@@ -13,6 +13,7 @@ import { SettingsField, SettingsSection } from '../shared/SettingsComponents'
 import { usePreferences, useSavePreferences } from '@/services/preferences'
 import { availableLanguages } from '@/i18n'
 import { logger } from '@/lib/logger'
+import { setPreferencesDirty } from '../preferences-dirty'
 
 // Language display names (native names)
 const languageNames: Record<string, string> = {
@@ -29,6 +30,7 @@ export function AppearancePane() {
   const handleThemeChange = (value: 'light' | 'dark' | 'system') => {
     // Update the theme provider immediately for instant UI feedback
     setTheme(value)
+    setPreferencesDirty(true)
 
     // Persist the theme preference to disk, preserving other preferences
     if (preferences) {
@@ -41,6 +43,7 @@ export function AppearancePane() {
 
     try {
       // Change the language immediately for instant UI feedback
+      setPreferencesDirty(true)
       if (language) {
         await i18n.changeLanguage(language)
       } else {
