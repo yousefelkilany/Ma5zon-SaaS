@@ -1,4 +1,17 @@
 import { create } from 'zustand'
+import type { ModalType } from '@/lib/utils'
+
+type EntityTabKey = 'products' | 'variants' | 'warehouses'
+
+interface TabModalState {
+  entity_modal: ModalType
+  entity_id: string | null
+  createDraft?: Record<string, unknown>
+  editDraft?: Record<string, unknown>
+  isDirty: boolean
+}
+
+type TabStateSlice = Partial<Record<EntityTabKey, TabModalState>>
 
 interface UIState {
   sidebarVisible: boolean
@@ -6,6 +19,7 @@ interface UIState {
   preferencesOpen: boolean
   lastQuickPaneEntry: string | null
   userPreferences: UserPreferences
+  tabState: TabStateSlice
 
   toggleSidebar: () => void
   setSidebarVisible: (visible: boolean) => void
@@ -17,6 +31,21 @@ interface UIState {
   setSquareCorners: (enabled: boolean) => void
   setUserPreferences: (prefs: UserPreferences) => void
   updateUserPreferences: (partial: Partial<UserPreferences>) => void
+  setTabModal: (
+    tabId: EntityTabKey,
+    modal: { entity_modal: ModalType; entity_id: string | null }
+  ) => void
+  setTabCreateDraft: (
+    tabId: EntityTabKey,
+    draft: Record<string, unknown> | undefined
+  ) => void
+  setTabEditDraft: (
+    tabId: EntityTabKey,
+    draft: Record<string, unknown> | undefined
+  ) => void
+  setTabIsDirty: (tabId: EntityTabKey, dirty: boolean) => void
+  clearTabState: (tabId: EntityTabKey) => void
+  clearAllTabState: () => void
 }
 
 export interface UserPreferences {
@@ -35,6 +64,7 @@ export const useUIStore = create<UIState>()(set => ({
     theme: 'system',
     dateFormat: 'yyyy-MM-dd',
   },
+  tabState: {} as TabStateSlice,
 
   toggleSidebar: () =>
     set(state => ({ sidebarVisible: !state.sidebarVisible })),
@@ -63,4 +93,74 @@ export const useUIStore = create<UIState>()(set => ({
     set(state => ({
       userPreferences: { ...state.userPreferences, ...partial },
     })),
+
+  setTabModal: (tabId, modal) =>
+    set(state => {
+      const existing = state.tabState[tabId] ?? {
+        entity_modal: null,
+        entity_id: null,
+        isDirty: false,
+      }
+      return {
+        tabState: {
+          ...state.tabState,
+          [tabId]: { ...existing, ...modal },
+        },
+      }
+    }),
+
+  setTabCreateDraft: (tabId, draft) =>
+    set(state => {
+      const existing = state.tabState[tabId] ?? {
+        entity_modal: null,
+        entity_id: null,
+        isDirty: false,
+      }
+      return {
+        tabState: {
+          ...state.tabState,
+          [tabId]: { ...existing, createDraft: draft },
+        },
+      }
+    }),
+
+  setTabEditDraft: (tabId, draft) =>
+    set(state => {
+      const existing = state.tabState[tabId] ?? {
+        entity_modal: null,
+        entity_id: null,
+        isDirty: false,
+      }
+      return {
+        tabState: {
+          ...state.tabState,
+          [tabId]: { ...existing, editDraft: draft },
+        },
+      }
+    }),
+
+  setTabIsDirty: (tabId, dirty) =>
+    set(state => {
+      const existing = state.tabState[tabId] ?? {
+        entity_modal: null,
+        entity_id: null,
+        isDirty: false,
+      }
+      return {
+        tabState: {
+          ...state.tabState,
+          [tabId]: { ...existing, isDirty: dirty },
+        },
+      }
+    }),
+
+  clearTabState: tabId =>
+    set(state => ({
+      tabState: {
+        ...state.tabState,
+        [tabId]: { entity_modal: null, entity_id: null, isDirty: false },
+      },
+    })),
+
+  clearAllTabState: () => set({ tabState: {} }),
 }))
