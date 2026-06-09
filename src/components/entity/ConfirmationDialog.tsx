@@ -1,10 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import {
   Dialog,
-  DialogContent,
+  DialogPanel,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -37,14 +35,12 @@ export function ConfirmationDialog({
   const { t } = useTranslation()
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false}>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-          {error && <p className="text-error text-body-sm mt-2">{error}</p>}
-        </DialogHeader>
-        <DialogFooter className="gap-2">
+    <Dialog open={open} onClose={onOpenChange}>
+      <DialogPanel showCloseButton={false}>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
+        {error && <p className="text-error text-body-sm mt-2">{error}</p>}
+        <div className="flex justify-end gap-2 pt-4">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
@@ -64,8 +60,8 @@ export function ConfirmationDialog({
             ) : null}
             {confirmLabel ?? t('common.confirm')}
           </Button>
-        </DialogFooter>
-      </DialogContent>
+        </div>
+      </DialogPanel>
     </Dialog>
   )
 }
