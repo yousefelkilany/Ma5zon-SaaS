@@ -28,9 +28,7 @@ describe('useUIStore tabState slice', () => {
   })
 
   it('setTabCreateDraft stores the draft without touching the modal state', () => {
-    useUIStore
-      .getState()
-      .setTabCreateDraft('products', { name: 'Draft Name' })
+    useUIStore.getState().setTabCreateDraft('products', { name: 'Draft Name' })
     expect(useUIStore.getState().tabState['products']?.createDraft).toEqual({
       name: 'Draft Name',
     })
@@ -38,9 +36,7 @@ describe('useUIStore tabState slice', () => {
   })
 
   it('setTabEditDraft and setTabIsDirty update the right fields', () => {
-    useUIStore
-      .getState()
-      .setTabEditDraft('products', { company: 'ACME 2' })
+    useUIStore.getState().setTabEditDraft('products', { company: 'ACME 2' })
     useUIStore.getState().setTabIsDirty('products', true)
     expect(useUIStore.getState().tabState['products']?.editDraft).toEqual({
       company: 'ACME 2',
@@ -62,12 +58,10 @@ describe('useUIStore tabState slice', () => {
     useUIStore
       .getState()
       .setTabModal('products', { entity_modal: 'product', entity_id: 'P1' })
-    useUIStore
-      .getState()
-      .setTabModal('warehouses', {
-        entity_modal: 'warehouse',
-        entity_id: 'W1',
-      })
+    useUIStore.getState().setTabModal('warehouses', {
+      entity_modal: 'warehouse',
+      entity_id: 'W1',
+    })
     useUIStore.getState().clearAllTabState()
     expect(useUIStore.getState().tabState).toEqual({})
   })

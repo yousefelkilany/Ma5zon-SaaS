@@ -28,7 +28,10 @@ import {
   useUpdateVariant,
   useSoftDeleteVariant,
 } from '@/services/entity/mutations'
-import { registerModalHandle, type ModalHandle } from '@/components/layout/modal-handle-registry'
+import {
+  registerModalHandle,
+  type ModalHandle,
+} from '@/components/layout/modal-handle-registry'
 
 interface VariantModalProps {
   entityId?: string
@@ -111,19 +114,26 @@ export function VariantModal({
   })
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [activeTab, setActiveTab] = useState<TabId>('details')
-  const [createDraft, setCreateDraft] = useState<Record<string, unknown> | null>(null)
-  const [editDraft, setEditDraft] = useState<Record<string, unknown> | null>(null)
+  const [createDraft, setCreateDraft] = useState<Record<
+    string,
+    unknown
+  > | null>(null)
+  const [editDraft, setEditDraft] = useState<Record<string, unknown> | null>(
+    null
+  )
   const [isDirty, setIsDirty] = useState(false)
 
   // ----- Data hooks -----
-  const { data: entity, isLoading } = useGetVariant(mode === 'view' ? entityId : undefined)
-  const { data: stockLevels, isLoading: isLoadingStock } = useStockLevelsForVariant(
+  const { data: entity, isLoading } = useGetVariant(
     mode === 'view' ? entityId : undefined
   )
-  const { data: movements, isLoading: isLoadingMovements, error: movementsError } = useStockMovements(
-    'variant',
-    mode === 'view' ? entityId : undefined
-  )
+  const { data: stockLevels, isLoading: isLoadingStock } =
+    useStockLevelsForVariant(mode === 'view' ? entityId : undefined)
+  const {
+    data: movements,
+    isLoading: isLoadingMovements,
+    error: movementsError,
+  } = useStockMovements('variant', mode === 'view' ? entityId : undefined)
   const { data: warehouses } = useWarehouses()
 
   const warehouseNames = new Map<string, string>()
@@ -157,7 +167,9 @@ export function VariantModal({
     isDirtyRef.current = isDirty
   }, [isDirty])
 
-  const saveAndCloseRef = useRef<(() => Promise<void> | void) | undefined>(undefined)
+  const saveAndCloseRef = useRef<(() => Promise<void> | void) | undefined>(
+    undefined
+  )
 
   useEffect(() => {
     if (mode !== 'view' && !entityId) return
@@ -221,9 +233,15 @@ export function VariantModal({
     saveAndCloseRef.current = async () => {
       if (mode === 'create') {
         if (!productId) return
-        await createVariantMut.mutateAsync({ values: editForm as never, productId })
+        await createVariantMut.mutateAsync({
+          values: editForm as never,
+          productId,
+        })
       } else if (entity) {
-        await updateVariant.mutateAsync({ id: entity.id, values: editForm as never })
+        await updateVariant.mutateAsync({
+          id: entity.id,
+          values: editForm as never,
+        })
       }
     }
   })
@@ -343,7 +361,12 @@ export function VariantModal({
     if (!productId) return null
     return (
       <>
-        <Dialog open={true} onClose={guard.requestClose} modal={false} {...(container ? { container } : {})}>
+        <Dialog
+          open={true}
+          onClose={guard.requestClose}
+          modal={false}
+          {...(container ? { container } : {})}
+        >
           <DialogPanel onClose={guard.requestClose}>
             <DialogTitle>{t('entity.create.variant.title')}</DialogTitle>
             <VariantForm
@@ -351,10 +374,15 @@ export function VariantModal({
               onSubmit={handleSave}
               isLoading={createVariantMut.isPending}
               initialValues={editForm}
-              onChange={(values) => {
+              onChange={values => {
                 setEditForm(values)
                 setCreateDraft(values as unknown as Record<string, unknown>)
-                useUIStore.getState().setTabCreateDraft(entityType, values as unknown as Record<string, unknown>)
+                useUIStore
+                  .getState()
+                  .setTabCreateDraft(
+                    entityType,
+                    values as unknown as Record<string, unknown>
+                  )
               }}
             />
           </DialogPanel>
@@ -366,12 +394,17 @@ export function VariantModal({
 
   return (
     <>
-      <Dialog open={true} onClose={guard.requestClose} modal={false} {...(container ? { container } : {})}>
+      <Dialog
+        open={true}
+        onClose={guard.requestClose}
+        modal={false}
+        {...(container ? { container } : {})}
+      >
         <DialogPanel onClose={guard.requestClose}>
-          <DialogTitle>{entity?.variant_name ?? t('entity.detail.loading')}</DialogTitle>
-          <DialogDescription>
-            {entity ? entity.sku : ''}
-          </DialogDescription>
+          <DialogTitle>
+            {entity?.variant_name ?? t('entity.detail.loading')}
+          </DialogTitle>
+          <DialogDescription>{entity ? entity.sku : ''}</DialogDescription>
 
           <div role="tablist" className="flex border-b mb-4">
             {(['details', 'stock', 'insights', 'audits'] as const).map(id => (
@@ -405,10 +438,17 @@ export function VariantModal({
                       onSubmit={handleSave}
                       isLoading={updateVariant.isPending}
                       initialValues={editForm}
-                      onChange={(values) => {
+                      onChange={values => {
                         setEditForm(values)
-                        setEditDraft(values as unknown as Record<string, unknown>)
-                        useUIStore.getState().setTabEditDraft(entityType, values as unknown as Record<string, unknown>)
+                        setEditDraft(
+                          values as unknown as Record<string, unknown>
+                        )
+                        useUIStore
+                          .getState()
+                          .setTabEditDraft(
+                            entityType,
+                            values as unknown as Record<string, unknown>
+                          )
                       }}
                       schema={updateVariantSchema}
                       submitText={t('entity.update.button')}
@@ -429,7 +469,9 @@ export function VariantModal({
                       className="text-error"
                       onClick={() => setShowDeleteConfirm(true)}
                     >
-                      <span className="material-symbols-outlined text-sm">delete</span>
+                      <span className="material-symbols-outlined text-sm">
+                        delete
+                      </span>
                       {t('entity.detail.delete')}
                     </Button>
                     <div className="flex gap-2">
@@ -453,7 +495,9 @@ export function VariantModal({
                         </>
                       ) : (
                         <Button onClick={handleEdit}>
-                          <span className="material-symbols-outlined text-sm">edit</span>
+                          <span className="material-symbols-outlined text-sm">
+                            edit
+                          </span>
                           {t('entity.detail.edit')}
                         </Button>
                       )}
@@ -505,12 +549,16 @@ export function VariantModal({
       <ConfirmationDialog
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
-        title={t('entity.detail.deleteConfirmTitle', { name: entity?.variant_name ?? '' })}
+        title={t('entity.detail.deleteConfirmTitle', {
+          name: entity?.variant_name ?? '',
+        })}
         description={t('entity.detail.deleteConfirmMessage')}
         onConfirm={handleDelete}
         isDestructive
         isLoading={deleteVariant.isPending}
-        error={deleteVariant.isError ? (deleteVariant.error as Error).message : ''}
+        error={
+          deleteVariant.isError ? (deleteVariant.error as Error).message : ''
+        }
       />
     </>
   )

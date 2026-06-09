@@ -15,7 +15,9 @@ export function TabBar() {
   const addTab = useTabStore(state => state.addTab)
   const removeTab = useTabStore(state => state.removeTab)
   const tabState = useUIStore(state => state.tabState)
-  const setInterceptedNavigation = useUIStore(state => state.setInterceptedNavigation)
+  const setInterceptedNavigation = useUIStore(
+    state => state.setInterceptedNavigation
+  )
   const { isLoggedIn } = useAuth()
 
   const handleTabClick = (tabId: string) => {

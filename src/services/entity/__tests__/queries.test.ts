@@ -27,7 +27,7 @@ vi.mock('@/lib/tauri-bindings', () => ({
   },
 }))
 
-const mockOk = <T,>(data: T) => ({ status: 'ok' as const, data })
+const mockOk = <T>(data: T) => ({ status: 'ok' as const, data })
 const mockErr = (error: string) => ({ status: 'error' as const, error })
 
 describe('entity read hooks', () => {
@@ -40,7 +40,12 @@ describe('entity read hooks', () => {
 
   it('useGetProduct returns data on success', async () => {
     vi.mocked(commands.getById).mockResolvedValue(
-      mockOk({ id: 'P1', company: 'ACME', name: 'Widget', category: 'A' }) as never
+      mockOk({
+        id: 'P1',
+        company: 'ACME',
+        name: 'Widget',
+        category: 'A',
+      }) as never
     )
     const { result } = renderHook(() => useGetProduct('P1'), {
       wrapper: QueryWrapper,
@@ -141,10 +146,9 @@ describe('entity read hooks', () => {
     vi.mocked(commands.stockMovementsGetByWarehouse).mockResolvedValue(
       mockOk([{ id: 'M1' }]) as never
     )
-    const { result } = renderHook(
-      () => useStockMovements('warehouse', 'W1'),
-      { wrapper: QueryWrapper }
-    )
+    const { result } = renderHook(() => useStockMovements('warehouse', 'W1'), {
+      wrapper: QueryWrapper,
+    })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(commands.stockMovementsGetByWarehouse).toHaveBeenCalledWith('W1')
     expect(result.current.data).toEqual([{ id: 'M1' }])

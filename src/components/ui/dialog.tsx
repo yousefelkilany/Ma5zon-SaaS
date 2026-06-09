@@ -35,7 +35,7 @@ function Dialog({
   className,
   container,
 }: DialogProps) {
-  const handleClose: (value: boolean) => void = (value) => {
+  const handleClose: (value: boolean) => void = value => {
     if (onClose) onClose(value)
     else if (onOpenChange) onOpenChange(value)
   }

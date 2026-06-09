@@ -1,9 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogPanel, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import type { ColumnDef, EntityRow } from '@/lib/types/entity'
 import { langDir } from '@/i18n/config'

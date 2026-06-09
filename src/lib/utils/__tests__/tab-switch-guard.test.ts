@@ -34,8 +34,8 @@ describe('shouldInterceptTabSwitch', () => {
     expect(
       shouldInterceptTabSwitch(
         { products: { entity_modal: null, entity_id: null, isDirty: false } },
-        productsTab,
-      ),
+        productsTab
+      )
     ).toBe(false)
   })
 
@@ -43,8 +43,8 @@ describe('shouldInterceptTabSwitch', () => {
     expect(
       shouldInterceptTabSwitch(
         { products: { entity_modal: 'view', entity_id: 'p1', isDirty: true } },
-        productsTab,
-      ),
+        productsTab
+      )
     ).toBe(true)
   })
 })

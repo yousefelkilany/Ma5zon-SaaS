@@ -58,7 +58,9 @@ describe('ModalManager', () => {
     )
     vi.mocked(commands.warehousesGetAll).mockResolvedValue(mockOk([]))
     vi.mocked(commands.stockLevelsGetByProduct).mockResolvedValue(mockOk([]))
-    vi.mocked(commands.variantsGetByProductWithStock).mockResolvedValue(mockOk([]))
+    vi.mocked(commands.variantsGetByProductWithStock).mockResolvedValue(
+      mockOk([])
+    )
     vi.mocked(commands.stockMovementsGetByVariant).mockResolvedValue(mockOk([]))
   })
 

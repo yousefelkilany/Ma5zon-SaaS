@@ -1,11 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ColumnDef } from '@/lib/types/entity'
-import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogPanel, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { useUnsavedGuard } from '@/hooks/use-unsaved-guard'
 import {
@@ -93,11 +89,7 @@ function columnsEqual(a: ColumnDef[], b: ColumnDef[]): boolean {
     const x = a[i]
     const y = b[i]
     if (!x || !y) return false
-    if (
-      x.id !== y.id ||
-      x.visible !== y.visible ||
-      x.order !== y.order
-    ) {
+    if (x.id !== y.id || x.visible !== y.visible || x.order !== y.order) {
       return false
     }
   }

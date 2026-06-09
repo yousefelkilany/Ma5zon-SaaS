@@ -42,7 +42,7 @@ describe('PreferencesDialog', () => {
     const user = userEvent.setup()
     const client = createTestQueryClient()
     render(<PreferencesDialog />, {
-      wrapper: (p) => <QueryWrapper {...p} client={client} />,
+      wrapper: p => <QueryWrapper {...p} client={client} />,
     })
     act(() => {
       setPreferencesDirty(true)
@@ -60,7 +60,7 @@ describe('PreferencesDialog', () => {
     })
     const client = createTestQueryClient()
     render(<PreferencesDialog />, {
-      wrapper: (p) => <QueryWrapper {...p} client={client} />,
+      wrapper: p => <QueryWrapper {...p} client={client} />,
     })
     act(() => {
       setPreferencesDirty(true)
@@ -75,7 +75,7 @@ describe('PreferencesDialog', () => {
     const user = userEvent.setup()
     const client = createTestQueryClient()
     render(<PreferencesDialog />, {
-      wrapper: (p) => <QueryWrapper {...p} client={client} />,
+      wrapper: p => <QueryWrapper {...p} client={client} />,
     })
     act(() => {
       setPreferencesDirty(true)
@@ -90,7 +90,7 @@ describe('PreferencesDialog', () => {
     const user = userEvent.setup()
     const client = createTestQueryClient()
     render(<PreferencesDialog />, {
-      wrapper: (p) => <QueryWrapper {...p} client={client} />,
+      wrapper: p => <QueryWrapper {...p} client={client} />,
     })
     act(() => {
       setPreferencesDirty(true)

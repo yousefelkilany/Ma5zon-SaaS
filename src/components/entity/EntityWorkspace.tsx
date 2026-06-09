@@ -326,7 +326,10 @@ export function EntityWorkspace() {
       className="px-margin-edge flex flex-col h-full bg-background py-6"
     >
       <WorkspacePortalContext.Provider value={workspaceRef}>
-        <EntityHeader entityType={entityType} onAddNewClick={handleAddNewClick} />
+        <EntityHeader
+          entityType={entityType}
+          onAddNewClick={handleAddNewClick}
+        />
         <DataTableShell
           entityType={entityType}
           queryClient={queryClient}

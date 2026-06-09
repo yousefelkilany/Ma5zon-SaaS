@@ -4,10 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { ColumnVisibilityDialog } from '../ColumnVisibilityDialog'
 import type { ColumnDef } from '@/lib/types/entity'
 
-function makeColumn(
-  id: string,
-  overrides: Partial<ColumnDef> = {}
-): ColumnDef {
+function makeColumn(id: string, overrides: Partial<ColumnDef> = {}): ColumnDef {
   return {
     id,
     label: id,

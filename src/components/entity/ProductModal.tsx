@@ -28,7 +28,10 @@ import {
   useUpdateProduct,
   useSoftDeleteProduct,
 } from '@/services/entity/mutations'
-import { registerModalHandle, type ModalHandle } from '@/components/layout/modal-handle-registry'
+import {
+  registerModalHandle,
+  type ModalHandle,
+} from '@/components/layout/modal-handle-registry'
 
 interface ProductModalProps {
   entityId?: string
@@ -44,12 +47,24 @@ type TabId = 'details' | 'stock' | 'insights' | 'audits'
 const PRODUCT_ROWS = [
   [
     { key: 'company', label: 'entity.product.company', type: 'text' as const },
-    { key: 'category', label: 'entity.product.category', type: 'text' as const },
+    {
+      key: 'category',
+      label: 'entity.product.category',
+      type: 'text' as const,
+    },
   ],
   [{ key: 'name', label: 'entity.product.name', type: 'text' as const }],
   [
-    { key: 'updated_at', label: 'entity.common.updatedAt', type: 'date' as const },
-    { key: 'created_at', label: 'entity.common.createdAt', type: 'date' as const },
+    {
+      key: 'updated_at',
+      label: 'entity.common.updatedAt',
+      type: 'date' as const,
+    },
+    {
+      key: 'created_at',
+      label: 'entity.common.createdAt',
+      type: 'date' as const,
+    },
   ],
 ]
 
@@ -63,22 +78,33 @@ export function ProductModal({
   const { t } = useTranslation()
   const reactQueryClient = useQueryClient()
   const [isEditing, setIsEditing] = useState(false)
-  const [editForm, setEditForm] = useState({ company: '', name: '', category: '' })
+  const [editForm, setEditForm] = useState({
+    company: '',
+    name: '',
+    category: '',
+  })
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [activeTab, setActiveTab] = useState<TabId>('details')
-  const [createDraft, setCreateDraft] = useState<Record<string, unknown> | null>(null)
-  const [editDraft, setEditDraft] = useState<Record<string, unknown> | null>(null)
+  const [createDraft, setCreateDraft] = useState<Record<
+    string,
+    unknown
+  > | null>(null)
+  const [editDraft, setEditDraft] = useState<Record<string, unknown> | null>(
+    null
+  )
   const [isDirty, setIsDirty] = useState(false)
 
   // ----- Data hooks -----
-  const { data: entity, isLoading } = useGetProduct(mode === 'view' ? entityId : undefined)
-  const { data: stockLevels, isLoading: isLoadingStock } = useStockLevelsForProduct(
+  const { data: entity, isLoading } = useGetProduct(
     mode === 'view' ? entityId : undefined
   )
-  const { data: movements, isLoading: isLoadingMovements, error: movementsError } = useStockMovements(
-    'product',
-    mode === 'view' ? entityId : undefined
-  )
+  const { data: stockLevels, isLoading: isLoadingStock } =
+    useStockLevelsForProduct(mode === 'view' ? entityId : undefined)
+  const {
+    data: movements,
+    isLoading: isLoadingMovements,
+    error: movementsError,
+  } = useStockMovements('product', mode === 'view' ? entityId : undefined)
   const { data: warehouses } = useWarehouses()
 
   const warehouseNames = new Map<string, string>()
@@ -87,7 +113,11 @@ export function ProductModal({
   // ----- Sync edit form when entity loads -----
   useEffect(() => {
     if (entity) {
-      setEditForm({ company: entity.company, name: entity.name, category: entity.category })
+      setEditForm({
+        company: entity.company,
+        name: entity.name,
+        category: entity.category,
+      })
     }
   }, [entity])
 
@@ -105,7 +135,9 @@ export function ProductModal({
     isDirtyRef.current = isDirty
   }, [isDirty])
 
-  const saveAndCloseRef = useRef<(() => Promise<void> | void) | undefined>(undefined)
+  const saveAndCloseRef = useRef<(() => Promise<void> | void) | undefined>(
+    undefined
+  )
 
   useEffect(() => {
     if (mode !== 'view' && !entityId) return
@@ -118,7 +150,11 @@ export function ProductModal({
         setCreateDraft(null)
         setIsDirty(false)
         if (entity) {
-          setEditForm({ company: entity.company, name: entity.name, category: entity.category })
+          setEditForm({
+            company: entity.company,
+            name: entity.name,
+            category: entity.category,
+          })
         }
         useUIStore.getState().clearTabState(entityType)
       },
@@ -173,7 +209,11 @@ export function ProductModal({
     isDirty,
     onDiscard: () => {
       if (entity) {
-        setEditForm({ company: entity.company, name: entity.name, category: entity.category })
+        setEditForm({
+          company: entity.company,
+          name: entity.name,
+          category: entity.category,
+        })
       }
       setIsEditing(false)
       setIsDirty(false)
@@ -195,7 +235,11 @@ export function ProductModal({
   })
 
   // ----- Save handlers -----
-  function handleSave(values: { company: string; name: string; category: string }) {
+  function handleSave(values: {
+    company: string
+    name: string
+    category: string
+  }) {
     if (mode === 'create') {
       createProduct.mutate({ values })
     } else if (entity) {
@@ -209,14 +253,22 @@ export function ProductModal({
 
   function handleEdit() {
     if (entity) {
-      setEditForm({ company: entity.company, name: entity.name, category: entity.category })
+      setEditForm({
+        company: entity.company,
+        name: entity.name,
+        category: entity.category,
+      })
     }
     setIsEditing(true)
   }
 
   function handleCancelEdit() {
     if (entity) {
-      setEditForm({ company: entity.company, name: entity.name, category: entity.category })
+      setEditForm({
+        company: entity.company,
+        name: entity.name,
+        category: entity.category,
+      })
     }
     setIsEditing(false)
     setIsDirty(false)
@@ -241,17 +293,27 @@ export function ProductModal({
   if (mode === 'create') {
     return (
       <>
-        <Dialog open={true} onClose={guard.requestClose} modal={false} {...(container ? { container } : {})}>
+        <Dialog
+          open={true}
+          onClose={guard.requestClose}
+          modal={false}
+          {...(container ? { container } : {})}
+        >
           <DialogPanel onClose={guard.requestClose}>
             <DialogTitle>{t('entity.create.product.title')}</DialogTitle>
             <ProductForm
               onSubmit={handleSave}
               isLoading={createProduct.isPending}
               initialValues={editForm}
-              onChange={(values) => {
+              onChange={values => {
                 setEditForm(values)
                 setCreateDraft(values as unknown as Record<string, unknown>)
-                useUIStore.getState().setTabCreateDraft(entityType, values as unknown as Record<string, unknown>)
+                useUIStore
+                  .getState()
+                  .setTabCreateDraft(
+                    entityType,
+                    values as unknown as Record<string, unknown>
+                  )
               }}
             />
           </DialogPanel>
@@ -263,9 +325,16 @@ export function ProductModal({
 
   return (
     <>
-      <Dialog open={true} onClose={guard.requestClose} modal={false} {...(container ? { container } : {})}>
+      <Dialog
+        open={true}
+        onClose={guard.requestClose}
+        modal={false}
+        {...(container ? { container } : {})}
+      >
         <DialogPanel onClose={guard.requestClose}>
-          <DialogTitle>{entity?.name ?? t('entity.detail.loading')}</DialogTitle>
+          <DialogTitle>
+            {entity?.name ?? t('entity.detail.loading')}
+          </DialogTitle>
           <DialogDescription>
             {entity ? `${entity.company} — ${entity.category}` : ''}
           </DialogDescription>
@@ -303,10 +372,17 @@ export function ProductModal({
                       onSubmit={handleSave}
                       isLoading={updateProduct.isPending}
                       initialValues={editForm}
-                      onChange={(values) => {
+                      onChange={values => {
                         setEditForm(values)
-                        setEditDraft(values as unknown as Record<string, unknown>)
-                        useUIStore.getState().setTabEditDraft(entityType, values as unknown as Record<string, unknown>)
+                        setEditDraft(
+                          values as unknown as Record<string, unknown>
+                        )
+                        useUIStore
+                          .getState()
+                          .setTabEditDraft(
+                            entityType,
+                            values as unknown as Record<string, unknown>
+                          )
                       }}
                       submitText={t('entity.update.button')}
                     />
@@ -326,7 +402,9 @@ export function ProductModal({
                       className="text-error"
                       onClick={() => setShowDeleteConfirm(true)}
                     >
-                      <span className="material-symbols-outlined text-sm">delete</span>
+                      <span className="material-symbols-outlined text-sm">
+                        delete
+                      </span>
                       {t('entity.detail.delete')}
                     </Button>
                     <div className="flex gap-2">
@@ -350,7 +428,9 @@ export function ProductModal({
                         </>
                       ) : (
                         <Button onClick={handleEdit}>
-                          <span className="material-symbols-outlined text-sm">edit</span>
+                          <span className="material-symbols-outlined text-sm">
+                            edit
+                          </span>
                           {t('entity.detail.edit')}
                         </Button>
                       )}
@@ -398,12 +478,16 @@ export function ProductModal({
       <ConfirmationDialog
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
-        title={t('entity.detail.deleteConfirmTitle', { name: entity?.name ?? '' })}
+        title={t('entity.detail.deleteConfirmTitle', {
+          name: entity?.name ?? '',
+        })}
         description={t('entity.detail.deleteConfirmMessage')}
         onConfirm={handleDelete}
         isDestructive
         isLoading={deleteProduct.isPending}
-        error={deleteProduct.isError ? (deleteProduct.error as Error).message : ''}
+        error={
+          deleteProduct.isError ? (deleteProduct.error as Error).message : ''
+        }
       />
     </>
   )

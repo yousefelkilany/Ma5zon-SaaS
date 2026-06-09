@@ -1,11 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ColumnDef, FilterState } from '@/lib/types/entity'
-import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogPanel, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { useUnsavedGuard } from '@/hooks/use-unsaved-guard'
 
@@ -19,9 +15,7 @@ interface FilterDialogProps {
 
 type LocalValue = string | string[] | { min?: string; max?: string }
 
-function localFiltersToArray(
-  local: Record<string, LocalValue>
-): FilterState[] {
+function localFiltersToArray(local: Record<string, LocalValue>): FilterState[] {
   return Object.entries(local)
     .filter(([_, v]) => v !== '' && (Array.isArray(v) ? v.length > 0 : true))
     .map(([columnId, value]) => {
@@ -40,7 +34,8 @@ function localFiltersToArray(
 
 function arraysEqual(a: FilterState[], b: FilterState[]): boolean {
   if (a.length !== b.length) return false
-  const sortFn = (x: FilterState) => `${x.columnId}:${x.operator}:${JSON.stringify(x.value)}`
+  const sortFn = (x: FilterState) =>
+    `${x.columnId}:${x.operator}:${JSON.stringify(x.value)}`
   const sa = [...a].map(sortFn).sort()
   const sb = [...b].map(sortFn).sort()
   return sa.every((v, i) => v === sb[i])
@@ -54,7 +49,9 @@ export function FilterDialog({
   onApply,
 }: FilterDialogProps) {
   const { t } = useTranslation()
-  const [localFilters, setLocalFilters] = useState<Record<string, LocalValue>>({})
+  const [localFilters, setLocalFilters] = useState<Record<string, LocalValue>>(
+    {}
+  )
 
   useEffect(() => {
     if (!open) return

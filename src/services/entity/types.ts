@@ -6,9 +6,9 @@ interface ProductUpdateValues {
   category: string
 }
 
-type VariantUpdateValues = Record<string, string | number | boolean | null>;
+type VariantUpdateValues = Record<string, string | number | boolean | null>
 
-type WarehouseUpdateValues = Record<string, string | number | boolean | null>;
+type WarehouseUpdateValues = Record<string, string | number | boolean | null>
 
 export type {
   Product,

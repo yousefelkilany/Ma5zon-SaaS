@@ -34,7 +34,7 @@ function renderModal(
       onDeleted={vi.fn()}
       {...props}
     />,
-    { wrapper: (p) => <QueryWrapper {...p} client={client} /> }
+    { wrapper: p => <QueryWrapper {...p} client={client} /> }
   )
   return { ...utils, client }
 }
@@ -50,7 +50,7 @@ describe('WarehouseModal', () => {
     const client = createTestQueryClient()
     render(
       <WarehouseModal queryClient={client} mode="create" onDeleted={vi.fn()} />,
-      { wrapper: (p) => <QueryWrapper {...p} client={client} /> }
+      { wrapper: p => <QueryWrapper {...p} client={client} /> }
     )
     expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
@@ -67,7 +67,9 @@ describe('WarehouseModal', () => {
       } as never)
     )
     vi.mocked(commands.warehousesGetAll).mockResolvedValue(mockOk([]))
-    vi.mocked(commands.stockMovementsGetByWarehouse).mockResolvedValue(mockOk([]))
+    vi.mocked(commands.stockMovementsGetByWarehouse).mockResolvedValue(
+      mockOk([])
+    )
 
     renderModal()
     await waitFor(
@@ -89,7 +91,9 @@ describe('WarehouseModal', () => {
       } as never)
     )
     vi.mocked(commands.warehousesGetAll).mockResolvedValue(mockOk([]))
-    vi.mocked(commands.stockMovementsGetByWarehouse).mockResolvedValue(mockOk([]))
+    vi.mocked(commands.stockMovementsGetByWarehouse).mockResolvedValue(
+      mockOk([])
+    )
 
     renderModal()
     await waitFor(() => screen.getByRole('heading', { name: 'Main Warehouse' }))

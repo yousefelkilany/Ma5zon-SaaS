@@ -30,7 +30,9 @@ export function MainWindowContent() {
   const setTabIsDirty = useUIStore(state => state.setTabIsDirty)
   const tabState = useUIStore(state => state.tabState)
   const interceptedNavigation = useUIStore(state => state.interceptedNavigation)
-  const setInterceptedNavigation = useUIStore(state => state.setInterceptedNavigation)
+  const setInterceptedNavigation = useUIStore(
+    state => state.setInterceptedNavigation
+  )
 
   useEffect(() => {
     const activeTab = tabs.find(t => t.id === activeTabId)
@@ -46,17 +48,28 @@ export function MainWindowContent() {
       const handle = getModalHandle(prevEntityType)
       if (handle) {
         const search = new URLSearchParams(location.search)
-      const entity_modal = (search.get('entity_modal') as ModalType) ?? null
-      const entity_id = search.get('entity_id')
-      setTabModal(
-        prevEntityType as 'products' | 'variants' | 'warehouses',
-        { entity_modal, entity_id }
-      )
-      setTabIsDirty(prevEntityType as 'products' | 'variants' | 'warehouses', handle.getIsDirty())
-      const createDraft = handle.getCreateDraft()
-      const editDraft = handle.getEditDraft()
-      if (createDraft) setTabCreateDraft(prevEntityType as 'products' | 'variants' | 'warehouses', createDraft)
-      if (editDraft) setTabEditDraft(prevEntityType as 'products' | 'variants' | 'warehouses', editDraft)
+        const entity_modal = (search.get('entity_modal') as ModalType) ?? null
+        const entity_id = search.get('entity_id')
+        setTabModal(prevEntityType as 'products' | 'variants' | 'warehouses', {
+          entity_modal,
+          entity_id,
+        })
+        setTabIsDirty(
+          prevEntityType as 'products' | 'variants' | 'warehouses',
+          handle.getIsDirty()
+        )
+        const createDraft = handle.getCreateDraft()
+        const editDraft = handle.getEditDraft()
+        if (createDraft)
+          setTabCreateDraft(
+            prevEntityType as 'products' | 'variants' | 'warehouses',
+            createDraft
+          )
+        if (editDraft)
+          setTabEditDraft(
+            prevEntityType as 'products' | 'variants' | 'warehouses',
+            editDraft
+          )
       }
     }
 
@@ -131,7 +144,9 @@ export function MainWindowContent() {
           showCloseButton={false}
         >
           <DialogTitle>{t('common.unsavedChanges.discardTitle')}</DialogTitle>
-          <DialogDescription>{t('common.unsavedChanges.body')}</DialogDescription>
+          <DialogDescription>
+            {t('common.unsavedChanges.body')}
+          </DialogDescription>
           <div className="flex justify-end gap-2 pt-2">
             <Button
               variant="ghost"

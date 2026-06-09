@@ -14,7 +14,7 @@ export function setPreferencesDirty(dirty: boolean) {
 export function usePreferencesDirty(): boolean {
   const [dirty, setDirty] = useState(currentDirty)
   useEffect(() => {
-    const listener: Listener = (next) => setDirty(next)
+    const listener: Listener = next => setDirty(next)
     listeners.add(listener)
     return () => {
       listeners.delete(listener)

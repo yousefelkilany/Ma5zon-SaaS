@@ -24,7 +24,9 @@ vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
 
 const mockOk = <T,>(data: T) => ({ status: 'ok' as const, data })
 
-function renderModal(props: Partial<React.ComponentProps<typeof ProductModal>> = {}) {
+function renderModal(
+  props: Partial<React.ComponentProps<typeof ProductModal>> = {}
+) {
   const client = createTestQueryClient()
   const utils = render(
     <ProductModal
@@ -34,7 +36,7 @@ function renderModal(props: Partial<React.ComponentProps<typeof ProductModal>> =
       onDeleted={vi.fn()}
       {...props}
     />,
-    { wrapper: (p) => <QueryWrapper {...p} client={client} /> }
+    { wrapper: p => <QueryWrapper {...p} client={client} /> }
   )
   return { ...utils, client }
 }
@@ -50,7 +52,7 @@ describe('ProductModal', () => {
     const client = createTestQueryClient()
     render(
       <ProductModal queryClient={client} mode="create" onDeleted={vi.fn()} />,
-      { wrapper: (p) => <QueryWrapper {...p} client={client} /> }
+      { wrapper: p => <QueryWrapper {...p} client={client} /> }
     )
     expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
@@ -69,11 +71,15 @@ describe('ProductModal', () => {
     )
     vi.mocked(commands.warehousesGetAll).mockResolvedValue(mockOk([]))
     vi.mocked(commands.stockLevelsGetByProduct).mockResolvedValue(mockOk([]))
-    vi.mocked(commands.variantsGetByProductWithStock).mockResolvedValue(mockOk([]))
+    vi.mocked(commands.variantsGetByProductWithStock).mockResolvedValue(
+      mockOk([])
+    )
     vi.mocked(commands.stockMovementsGetByVariant).mockResolvedValue(mockOk([]))
 
     renderModal()
-    await waitFor(() => screen.getByRole('heading', { name: 'Widget' }), { timeout: 5000 })
+    await waitFor(() => screen.getByRole('heading', { name: 'Widget' }), {
+      timeout: 5000,
+    })
     expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 
@@ -91,7 +97,9 @@ describe('ProductModal', () => {
     )
     vi.mocked(commands.warehousesGetAll).mockResolvedValue(mockOk([]))
     vi.mocked(commands.stockLevelsGetByProduct).mockResolvedValue(mockOk([]))
-    vi.mocked(commands.variantsGetByProductWithStock).mockResolvedValue(mockOk([]))
+    vi.mocked(commands.variantsGetByProductWithStock).mockResolvedValue(
+      mockOk([])
+    )
     vi.mocked(commands.stockMovementsGetByVariant).mockResolvedValue(mockOk([]))
 
     renderModal()

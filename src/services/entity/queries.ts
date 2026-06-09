@@ -87,7 +87,10 @@ export function useStockLevelsForVariant(id: string | undefined) {
   })
 }
 
-export function useStockMovements(scope: MovementScope, id: string | undefined) {
+export function useStockMovements(
+  scope: MovementScope,
+  id: string | undefined
+) {
   return useQuery({
     queryKey: id
       ? entityQueryKeys.stockMovements(scope, id)
@@ -113,14 +116,17 @@ export function useStockMovements(scope: MovementScope, id: string | undefined) 
         }
         return all.sort(
           (a, b) =>
-            new Date(b.created_at).getTime() -
-            new Date(a.created_at).getTime()
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
       }
       if (scope === 'variant') {
-        return await unwrap(await commands.stockMovementsGetByVariant(idOrThrow))
+        return await unwrap(
+          await commands.stockMovementsGetByVariant(idOrThrow)
+        )
       }
-      return await unwrap(await commands.stockMovementsGetByWarehouse(idOrThrow))
+      return await unwrap(
+        await commands.stockMovementsGetByWarehouse(idOrThrow)
+      )
     },
     enabled: !!id,
   })

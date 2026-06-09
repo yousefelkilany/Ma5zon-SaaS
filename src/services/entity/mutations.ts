@@ -22,8 +22,7 @@ interface SettledOptions<T> {
 
 async function unwrapOk<T>(
   result: Promise<
-    | { status: 'ok'; data: T }
-    | { status: 'error'; error: string }
+    { status: 'ok'; data: T } | { status: 'error'; error: string }
   >
 ): Promise<T> {
   const r = await result
@@ -46,7 +45,12 @@ export function useUpdateProduct(options?: SettledOptions<Product>) {
   return useMutation({
     mutationFn: (input: { id: string; values: ProductUpdateValues }) =>
       unwrapOk(
-        commands.update(input.id, input.values.company, input.values.name, input.values.category)
+        commands.update(
+          input.id,
+          input.values.company,
+          input.values.name,
+          input.values.category
+        )
       ),
     onMutate: async ({ id, values }) => {
       await queryClient.cancelQueries({ queryKey: listFor('products') })
@@ -58,7 +62,7 @@ export function useUpdateProduct(options?: SettledOptions<Product>) {
           const arr = data as (Product & Record<string, unknown>)[]
           queryClient.setQueryData(
             key,
-            arr.map((r) => (r.id === id ? { ...r, ...values } : r))
+            arr.map(r => (r.id === id ? { ...r, ...values } : r))
           )
         }
       }
@@ -72,7 +76,7 @@ export function useUpdateProduct(options?: SettledOptions<Product>) {
       }
       toast.error(err instanceof Error ? err.message : 'Update failed')
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.setQueryData(detailFor('products', data.id), data)
       queryClient.invalidateQueries({ queryKey: listFor('products') })
       queryClient.invalidateQueries({
@@ -90,8 +94,14 @@ export function useCreateProduct(options?: SettledOptions<Product>) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (input: { values: ProductUpdateValues }) =>
-      unwrapOk(commands.create(input.values.company, input.values.name, input.values.category)),
-    onSuccess: (data) => {
+      unwrapOk(
+        commands.create(
+          input.values.company,
+          input.values.name,
+          input.values.category
+        )
+      ),
+    onSuccess: data => {
       queryClient.setQueryData(detailFor('products', data.id), data)
       queryClient.invalidateQueries({ queryKey: listFor('products') })
       toast.success('Product created')
@@ -105,7 +115,8 @@ export function useCreateProduct(options?: SettledOptions<Product>) {
 export function useSoftDeleteProduct(options?: SettledOptions<{ id: string }>) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (input: { id: string }) => unwrapOk(commands.softDelete(input.id)),
+    mutationFn: (input: { id: string }) =>
+      unwrapOk(commands.softDelete(input.id)),
     onMutate: async ({ id }) => {
       await queryClient.cancelQueries({ queryKey: listFor('products') })
       const previousLists = queryClient.getQueriesData<Product[]>({
@@ -115,7 +126,7 @@ export function useSoftDeleteProduct(options?: SettledOptions<{ id: string }>) {
         if (Array.isArray(data)) {
           queryClient.setQueryData<Product[]>(
             key,
-            data.filter((r) => r.id !== id)
+            data.filter(r => r.id !== id)
           )
         }
       }
@@ -135,7 +146,10 @@ export function useSoftDeleteProduct(options?: SettledOptions<{ id: string }>) {
       toast.success('Product deleted')
     },
     onSettled: (data, error) => {
-      options?.onSettled?.((data as { id: string } | null) ?? null, error as Error | null)
+      options?.onSettled?.(
+        (data as { id: string } | null) ?? null,
+        error as Error | null
+      )
     },
   })
 }
@@ -157,7 +171,7 @@ export function useUpdateVariant(options?: SettledOptions<Variant>) {
           const arr = data as Variant[]
           queryClient.setQueryData<Variant[]>(
             key,
-            arr.map((r) => (r.id === id ? { ...r, ...values } : r))
+            arr.map(r => (r.id === id ? { ...r, ...values } : r))
           )
         }
       }
@@ -171,7 +185,7 @@ export function useUpdateVariant(options?: SettledOptions<Variant>) {
       }
       toast.error(err instanceof Error ? err.message : 'Update failed')
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.setQueryData(detailFor('variants', data.id), data)
       queryClient.invalidateQueries({ queryKey: listFor('variants') })
       toast.success('Variant updated')
@@ -186,8 +200,13 @@ export function useCreateVariant(options?: SettledOptions<Variant>) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (input: { values: VariantUpdateValues; productId: string }) =>
-      unwrapOk(commands.variantsCreate({ ...input.values, product_id: input.productId } as never)),
-    onSuccess: (data) => {
+      unwrapOk(
+        commands.variantsCreate({
+          ...input.values,
+          product_id: input.productId,
+        } as never)
+      ),
+    onSuccess: data => {
       queryClient.setQueryData(detailFor('variants', data.id), data)
       queryClient.invalidateQueries({ queryKey: listFor('variants') })
       toast.success('Variant created')
@@ -201,7 +220,8 @@ export function useCreateVariant(options?: SettledOptions<Variant>) {
 export function useSoftDeleteVariant(options?: SettledOptions<{ id: string }>) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (input: { id: string }) => unwrapOk(commands.variantsDelete(input.id)),
+    mutationFn: (input: { id: string }) =>
+      unwrapOk(commands.variantsDelete(input.id)),
     onMutate: async ({ id }) => {
       await queryClient.cancelQueries({ queryKey: listFor('variants') })
       const previousLists = queryClient.getQueriesData<Variant[]>({
@@ -212,7 +232,7 @@ export function useSoftDeleteVariant(options?: SettledOptions<{ id: string }>) {
           const arr = data as Variant[]
           queryClient.setQueryData<Variant[]>(
             key,
-            arr.filter((r) => r.id !== id)
+            arr.filter(r => r.id !== id)
           )
         }
       }
@@ -232,7 +252,10 @@ export function useSoftDeleteVariant(options?: SettledOptions<{ id: string }>) {
       toast.success('Variant deleted')
     },
     onSettled: (data, error) => {
-      options?.onSettled?.((data as { id: string } | null) ?? null, error as Error | null)
+      options?.onSettled?.(
+        (data as { id: string } | null) ?? null,
+        error as Error | null
+      )
     },
   })
 }
@@ -259,7 +282,7 @@ export function useUpdateWarehouse(options?: SettledOptions<Warehouse>) {
         if (Array.isArray(data)) {
           queryClient.setQueryData<Warehouse[]>(
             key,
-            data.map((r) => (r.id === id ? { ...r, ...values } : r))
+            data.map(r => (r.id === id ? { ...r, ...values } : r))
           )
         }
       }
@@ -273,7 +296,7 @@ export function useUpdateWarehouse(options?: SettledOptions<Warehouse>) {
       }
       toast.error(err instanceof Error ? err.message : 'Update failed')
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.setQueryData(detailFor('warehouses', data.id), data)
       queryClient.invalidateQueries({ queryKey: listFor('warehouses') })
       toast.success('Warehouse updated')
@@ -294,7 +317,7 @@ export function useCreateWarehouse(options?: SettledOptions<Warehouse>) {
           String(input.values.location ?? '')
         )
       ),
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.setQueryData(detailFor('warehouses', data.id), data)
       queryClient.invalidateQueries({ queryKey: listFor('warehouses') })
       toast.success('Warehouse created')
@@ -305,10 +328,13 @@ export function useCreateWarehouse(options?: SettledOptions<Warehouse>) {
   })
 }
 
-export function useSoftDeleteWarehouse(options?: SettledOptions<{ id: string }>) {
+export function useSoftDeleteWarehouse(
+  options?: SettledOptions<{ id: string }>
+) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (input: { id: string }) => unwrapOk(commands.warehousesDelete(input.id)),
+    mutationFn: (input: { id: string }) =>
+      unwrapOk(commands.warehousesDelete(input.id)),
     onMutate: async ({ id }) => {
       await queryClient.cancelQueries({ queryKey: listFor('warehouses') })
       const previousLists = queryClient.getQueriesData<Warehouse[]>({
@@ -318,7 +344,7 @@ export function useSoftDeleteWarehouse(options?: SettledOptions<{ id: string }>)
         if (Array.isArray(data)) {
           queryClient.setQueryData<Warehouse[]>(
             key,
-            data.filter((r) => r.id !== id)
+            data.filter(r => r.id !== id)
           )
         }
       }
@@ -338,7 +364,10 @@ export function useSoftDeleteWarehouse(options?: SettledOptions<{ id: string }>)
       toast.success('Warehouse deleted')
     },
     onSettled: (data, error) => {
-      options?.onSettled?.((data as { id: string } | null) ?? null, error as Error | null)
+      options?.onSettled?.(
+        (data as { id: string } | null) ?? null,
+        error as Error | null
+      )
     },
   })
 }

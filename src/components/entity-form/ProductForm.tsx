@@ -55,7 +55,11 @@ export function ProductForm({
       name: name ?? '',
       category: category ?? '',
     })
-  }, [form.state.values.company, form.state.values.name, form.state.values.category])
+  }, [
+    form.state.values.company,
+    form.state.values.name,
+    form.state.values.category,
+  ])
 
   return (
     <form

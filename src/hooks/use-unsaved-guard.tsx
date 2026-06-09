@@ -52,9 +52,7 @@ export function useUnsavedGuard({
             onClose={() => setOpen(false)}
             showCloseButton={false}
           >
-            <DialogTitle>
-              {t('common.unsavedChanges.discardTitle')}
-            </DialogTitle>
+            <DialogTitle>{t('common.unsavedChanges.discardTitle')}</DialogTitle>
             <DialogDescription>
               {t('common.unsavedChanges.body', context)}
             </DialogDescription>
@@ -74,14 +72,7 @@ export function useUnsavedGuard({
           </DialogPanel>
         </Dialog>
       ) : null,
-    [
-      open,
-      t,
-      context,
-      onSaveAndClose,
-      handleSaveAndClose,
-      handleDiscard,
-    ]
+    [open, t, context, onSaveAndClose, handleSaveAndClose, handleDiscard]
   )
 
   return { requestClose, ConfirmDialog }

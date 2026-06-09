@@ -69,13 +69,14 @@ export function PreferencesDialog() {
       setPreferencesOpen(false)
     },
     onSaveAndClose: () => {
-      return new Promise<void>((resolve) => {
+      return new Promise<void>(resolve => {
         const current = useUIStore.getState()
         // The actual preferences object is held inside useSavePreferences' onSuccess path
         // (via the panes). For the 3-button guard we trigger a no-op-shaped save by
         // passing the latest cached preferences — the test mocks this.
         const cached =
-          (savePreferences as unknown as { variables?: unknown }).variables ?? {}
+          (savePreferences as unknown as { variables?: unknown }).variables ??
+          {}
         savePreferences.mutate(cached as never, {
           onSettled: () => {
             setPreferencesDirty(false)

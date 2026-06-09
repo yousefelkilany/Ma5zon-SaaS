@@ -87,7 +87,7 @@ describe('useUpdateProduct', () => {
         const m = useUpdateProduct()
         return { qc, m }
       },
-      { wrapper: (p) => <QueryWrapper {...p} client={client} /> }
+      { wrapper: p => <QueryWrapper {...p} client={client} /> }
     )
 
     await act(async () => {
@@ -102,15 +102,13 @@ describe('useUpdateProduct', () => {
       const data = client.getQueryData<{ id: string; name: string }[]>(
         entityQueryKeys.listFor('products')
       )
-      expect(data?.find((r) => r.id === 'P1')?.name).toBe('New')
+      expect(data?.find(r => r.id === 'P1')?.name).toBe('New')
     })
 
     await waitFor(() => expect(result.current.m.isSuccess).toBe(true))
 
     // Detail cache populated
-    const detail = client.getQueryData(
-      entityQueryKeys.detail('products', 'P1')
-    )
+    const detail = client.getQueryData(entityQueryKeys.detail('products', 'P1'))
     expect(detail).toEqual({
       id: 'P1',
       name: 'New',
@@ -134,7 +132,7 @@ describe('useUpdateProduct', () => {
         const m = useUpdateProduct()
         return { m }
       },
-      { wrapper: (p) => <QueryWrapper {...p} client={client} /> }
+      { wrapper: p => <QueryWrapper {...p} client={client} /> }
     )
 
     await act(async () => {
@@ -149,7 +147,7 @@ describe('useUpdateProduct', () => {
     const data = client.getQueryData<{ id: string; name: string }[]>(
       entityQueryKeys.listFor('products')
     )
-    expect(data?.find((r) => r.id === 'P1')?.name).toBe('Old')
+    expect(data?.find(r => r.id === 'P1')?.name).toBe('Old')
     expect(toast.error).toHaveBeenCalled()
   })
 
@@ -164,10 +162,9 @@ describe('useUpdateProduct', () => {
 
     const onSettled = vi.fn()
 
-    const { result } = renderHook(
-      () => useUpdateProduct({ onSettled }),
-      { wrapper: (p) => <QueryWrapper {...p} client={client} /> }
-    )
+    const { result } = renderHook(() => useUpdateProduct({ onSettled }), {
+      wrapper: p => <QueryWrapper {...p} client={client} />,
+    })
 
     await act(async () => {
       result.current.mutate({
@@ -198,10 +195,9 @@ describe('useCreateProduct', () => {
     )
 
     const onSettled = vi.fn()
-    const { result } = renderHook(
-      () => useCreateProduct({ onSettled }),
-      { wrapper: (p) => <QueryWrapper {...p} client={client} /> }
-    )
+    const { result } = renderHook(() => useCreateProduct({ onSettled }), {
+      wrapper: p => <QueryWrapper {...p} client={client} />,
+    })
 
     await act(async () => {
       result.current.mutate({
@@ -228,7 +224,7 @@ describe('useSoftDeleteProduct', () => {
     vi.mocked(commands.softDelete).mockResolvedValue(mockErr('nope') as never)
 
     const { result } = renderHook(() => useSoftDeleteProduct(), {
-      wrapper: (p) => <QueryWrapper {...p} client={client} />,
+      wrapper: p => <QueryWrapper {...p} client={client} />,
     })
 
     await act(async () => {
@@ -239,7 +235,7 @@ describe('useSoftDeleteProduct', () => {
     const data = client.getQueryData<{ id: string }[]>(
       entityQueryKeys.listFor('products')
     )
-    expect(data?.some((r) => r.id === 'P1')).toBe(true)
+    expect(data?.some(r => r.id === 'P1')).toBe(true)
   })
 })
 

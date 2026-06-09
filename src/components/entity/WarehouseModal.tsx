@@ -27,7 +27,10 @@ import {
   useSoftDeleteWarehouse,
 } from '@/services/entity/mutations'
 import type { WarehouseUpdateValues } from '@/services/entity/types'
-import { registerModalHandle, type ModalHandle } from '@/components/layout/modal-handle-registry'
+import {
+  registerModalHandle,
+  type ModalHandle,
+} from '@/components/layout/modal-handle-registry'
 
 interface WarehouseModalProps {
   entityId?: string
@@ -48,7 +51,11 @@ type TabId = 'details' | 'movements' | 'insights'
 const WAREHOUSE_ROWS = [
   [
     { key: 'name', label: 'entity.warehouse.name', type: 'text' as const },
-    { key: 'location', label: 'entity.warehouse.location', type: 'text' as const },
+    {
+      key: 'location',
+      label: 'entity.warehouse.location',
+      type: 'text' as const,
+    },
   ],
 ]
 
@@ -65,12 +72,19 @@ export function WarehouseModal({
   const [editForm, setEditForm] = useState<EditForm>({ name: '', location: '' })
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [activeTab, setActiveTab] = useState<TabId>('details')
-  const [createDraft, setCreateDraft] = useState<Record<string, unknown> | null>(null)
-  const [editDraft, setEditDraft] = useState<Record<string, unknown> | null>(null)
+  const [createDraft, setCreateDraft] = useState<Record<
+    string,
+    unknown
+  > | null>(null)
+  const [editDraft, setEditDraft] = useState<Record<string, unknown> | null>(
+    null
+  )
   const [isDirty, setIsDirty] = useState(false)
 
   // ----- Data hooks -----
-  const { data: entity, isLoading } = useGetWarehouse(mode === 'view' ? entityId : undefined)
+  const { data: entity, isLoading } = useGetWarehouse(
+    mode === 'view' ? entityId : undefined
+  )
   const {
     data: movements,
     isLoading: isLoadingMovements,
@@ -102,7 +116,9 @@ export function WarehouseModal({
     isDirtyRef.current = isDirty
   }, [isDirty])
 
-  const saveAndCloseRef = useRef<(() => Promise<void> | void) | undefined>(undefined)
+  const saveAndCloseRef = useRef<(() => Promise<void> | void) | undefined>(
+    undefined
+  )
 
   useEffect(() => {
     if (mode !== 'view' && !entityId) return
@@ -139,7 +155,9 @@ export function WarehouseModal({
   const createWarehouseMut = useCreateWarehouse({
     onSettled: (data, error) => {
       if (!error && data) {
-        reactQueryClient.invalidateQueries({ queryKey: ['entity', 'warehouses'] })
+        reactQueryClient.invalidateQueries({
+          queryKey: ['entity', 'warehouses'],
+        })
         useUIStore.getState().clearTabState(entityType)
         onDeleted?.()
       }
@@ -149,7 +167,9 @@ export function WarehouseModal({
     onSettled: (_data, error) => {
       if (!error) {
         setShowDeleteConfirm(false)
-        reactQueryClient.invalidateQueries({ queryKey: ['entity', 'warehouses'] })
+        reactQueryClient.invalidateQueries({
+          queryKey: ['entity', 'warehouses'],
+        })
         onDeleted?.()
       }
     },
@@ -188,9 +208,14 @@ export function WarehouseModal({
     },
     onSaveAndClose: async () => {
       if (mode === 'create') {
-        createWarehouseMut.mutate({ values: editForm as unknown as WarehouseUpdateValues })
+        createWarehouseMut.mutate({
+          values: editForm as unknown as WarehouseUpdateValues,
+        })
       } else if (entity) {
-        updateWarehouse.mutate({ id: entity.id, values: editForm as unknown as WarehouseUpdateValues })
+        updateWarehouse.mutate({
+          id: entity.id,
+          values: editForm as unknown as WarehouseUpdateValues,
+        })
       }
     },
     context: { entityName: entity?.name ?? '' },
@@ -199,9 +224,14 @@ export function WarehouseModal({
   // ----- Save handlers -----
   function handleSave(values: EditForm) {
     if (mode === 'create') {
-      createWarehouseMut.mutate({ values: values as unknown as WarehouseUpdateValues })
+      createWarehouseMut.mutate({
+        values: values as unknown as WarehouseUpdateValues,
+      })
     } else if (entity) {
-      updateWarehouse.mutate({ id: entity.id, values: values as unknown as WarehouseUpdateValues })
+      updateWarehouse.mutate({
+        id: entity.id,
+        values: values as unknown as WarehouseUpdateValues,
+      })
     }
   }
 
@@ -232,7 +262,8 @@ export function WarehouseModal({
       return
     }
     if (!entity) return
-    const isChanged = editForm.name !== entity.name || editForm.location !== entity.location
+    const isChanged =
+      editForm.name !== entity.name || editForm.location !== entity.location
     setIsDirty(isChanged)
   }, [editForm, entity, createDraft, mode])
 
@@ -240,17 +271,27 @@ export function WarehouseModal({
   if (mode === 'create') {
     return (
       <>
-        <Dialog open={true} onClose={guard.requestClose} modal={false} {...(container ? { container } : {})}>
+        <Dialog
+          open={true}
+          onClose={guard.requestClose}
+          modal={false}
+          {...(container ? { container } : {})}
+        >
           <DialogPanel onClose={guard.requestClose}>
             <DialogTitle>{t('entity.create.warehouse.title')}</DialogTitle>
             <WarehouseForm
               onSubmit={handleSave}
               isLoading={createWarehouseMut.isPending}
               initialValues={editForm}
-              onChange={(values) => {
+              onChange={values => {
                 setEditForm(values)
                 setCreateDraft(values as unknown as Record<string, unknown>)
-                useUIStore.getState().setTabCreateDraft(entityType, values as unknown as Record<string, unknown>)
+                useUIStore
+                  .getState()
+                  .setTabCreateDraft(
+                    entityType,
+                    values as unknown as Record<string, unknown>
+                  )
               }}
             />
           </DialogPanel>
@@ -262,12 +303,17 @@ export function WarehouseModal({
 
   return (
     <>
-      <Dialog open={true} onClose={guard.requestClose} modal={false} {...(container ? { container } : {})}>
+      <Dialog
+        open={true}
+        onClose={guard.requestClose}
+        modal={false}
+        {...(container ? { container } : {})}
+      >
         <DialogPanel onClose={guard.requestClose}>
-          <DialogTitle>{entity?.name ?? t('entity.detail.loading')}</DialogTitle>
-          <DialogDescription>
-            {entity ? entity.location : ''}
-          </DialogDescription>
+          <DialogTitle>
+            {entity?.name ?? t('entity.detail.loading')}
+          </DialogTitle>
+          <DialogDescription>{entity ? entity.location : ''}</DialogDescription>
 
           <div role="tablist" className="flex border-b mb-4">
             {(['details', 'movements', 'insights'] as const).map(id => (
@@ -302,10 +348,17 @@ export function WarehouseModal({
                       onSubmit={handleSave}
                       isLoading={updateWarehouse.isPending}
                       initialValues={editForm}
-                      onChange={(values) => {
+                      onChange={values => {
                         setEditForm(values)
-                        setEditDraft(values as unknown as Record<string, unknown>)
-                        useUIStore.getState().setTabEditDraft(entityType, values as unknown as Record<string, unknown>)
+                        setEditDraft(
+                          values as unknown as Record<string, unknown>
+                        )
+                        useUIStore
+                          .getState()
+                          .setTabEditDraft(
+                            entityType,
+                            values as unknown as Record<string, unknown>
+                          )
                       }}
                       submitText={t('entity.update.button')}
                     />
@@ -325,7 +378,9 @@ export function WarehouseModal({
                       className="text-error"
                       onClick={() => setShowDeleteConfirm(true)}
                     >
-                      <span className="material-symbols-outlined text-sm">delete</span>
+                      <span className="material-symbols-outlined text-sm">
+                        delete
+                      </span>
                       {t('entity.detail.delete')}
                     </Button>
                     <div className="flex gap-2">
@@ -349,7 +404,9 @@ export function WarehouseModal({
                         </>
                       ) : (
                         <Button onClick={handleEdit}>
-                          <span className="material-symbols-outlined text-sm">edit</span>
+                          <span className="material-symbols-outlined text-sm">
+                            edit
+                          </span>
                           {t('entity.detail.edit')}
                         </Button>
                       )}
@@ -383,12 +440,18 @@ export function WarehouseModal({
       <ConfirmationDialog
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
-        title={t('entity.detail.deleteConfirmTitle', { name: entity?.name ?? '' })}
+        title={t('entity.detail.deleteConfirmTitle', {
+          name: entity?.name ?? '',
+        })}
         description={t('entity.detail.deleteConfirmMessage')}
         onConfirm={handleDelete}
         isDestructive
         isLoading={deleteWarehouse.isPending}
-        error={deleteWarehouse.isError ? (deleteWarehouse.error as Error).message : ''}
+        error={
+          deleteWarehouse.isError
+            ? (deleteWarehouse.error as Error).message
+            : ''
+        }
       />
     </>
   )
