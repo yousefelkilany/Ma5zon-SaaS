@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { QueryWrapper } from '@/lib/test-utils/query-wrapper'
 import { ModalManager } from '../ModalManager'
 import { useUIStore } from '@/store/ui-store'
@@ -48,7 +48,15 @@ describe('ModalManager', () => {
     mockSearch = ''
     useUIStore.setState({ tabState: {} })
     vi.mocked(commands.getById).mockResolvedValue(
-      mockOk({ id: 'P1', company: 'ACME', name: 'Widget', category: 'A' })
+      mockOk({
+        id: 'P1',
+        company: 'ACME',
+        name: 'Widget',
+        category: 'A',
+        created_at: '2025-01-01',
+        updated_at: '2025-01-01',
+        deleted_at: null,
+      })
     )
     vi.mocked(commands.warehousesGetAll).mockResolvedValue(mockOk([]))
     vi.mocked(commands.stockLevelsGetByProduct).mockResolvedValue(mockOk([]))
