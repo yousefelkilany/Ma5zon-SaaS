@@ -5,7 +5,11 @@ import { VariantModal } from '@/components/entity/VariantModal'
 import { WarehouseModal } from '@/components/entity/WarehouseModal'
 import type { ModalType } from '@/lib/utils'
 
-export function ModalManager() {
+interface ModalManagerProps {
+  portalTarget: HTMLElement | null
+}
+
+export function ModalManager({ portalTarget }: ModalManagerProps) {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const location = useLocation({
@@ -26,6 +30,8 @@ export function ModalManager() {
 
   if (!entity_modal) return null
 
+  const portalProps = portalTarget ? { container: portalTarget } : {}
+
   switch (entity_modal) {
     case 'product':
       if (!entity_id) return null
@@ -35,6 +41,7 @@ export function ModalManager() {
           queryClient={queryClient}
           mode="view"
           onDeleted={handleClose}
+          {...portalProps}
         />
       )
     case 'variant':
@@ -45,6 +52,7 @@ export function ModalManager() {
           queryClient={queryClient}
           mode="view"
           onDeleted={handleClose}
+          {...portalProps}
         />
       )
     case 'warehouse':
@@ -55,6 +63,7 @@ export function ModalManager() {
           queryClient={queryClient}
           mode="view"
           onDeleted={handleClose}
+          {...portalProps}
         />
       )
     case 'create-product':
@@ -63,6 +72,7 @@ export function ModalManager() {
           queryClient={queryClient}
           mode="create"
           onDeleted={handleClose}
+          {...portalProps}
         />
       )
     case 'create-warehouse':
@@ -71,6 +81,7 @@ export function ModalManager() {
           queryClient={queryClient}
           mode="create"
           onDeleted={handleClose}
+          {...portalProps}
         />
       )
     case 'create-variant':
@@ -81,6 +92,7 @@ export function ModalManager() {
           queryClient={queryClient}
           mode="create"
           onDeleted={handleClose}
+          {...portalProps}
         />
       )
     default:
