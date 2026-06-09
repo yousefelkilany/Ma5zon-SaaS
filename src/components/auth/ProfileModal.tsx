@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogPanel } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuth } from '@/hooks/useAuth'
+import { useUnsavedGuard } from '@/hooks/use-unsaved-guard'
 import { useQueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 
@@ -92,6 +93,17 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
       setIsConfirmPasswordDirty(false)
     }
   }, [open])
+
+  const isProfileDirty =
+    isNewPasswordDirty ||
+    isConfirmPasswordDirty ||
+    formData.name !== (user?.name ?? '') ||
+    formData.email !== 'user@example.com'
+
+  const guard = useUnsavedGuard({
+    isDirty: isProfileDirty,
+    onDiscard: () => onOpenChange(false),
+  })
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     const currentIndex = tabsWithLabels.findIndex(tab => tab.id === activeTab)
@@ -244,23 +256,10 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="bg-surface-container border-outline-variant rounded-lg shadow-2xl overflow-hidden transition-all duration-300"
-        style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          margin: 0,
-          maxWidth: '48rem',
-          width: 'calc(100% - 2rem)',
-          maxHeight: '85vh',
-          overflow: 'auto',
-          zIndex: 51,
-        }}
-        title=""
-        aria-description="Profile Dialog"
+    <Dialog open={open} onClose={guard.requestClose}>
+      <DialogPanel
+        className="bg-surface-container border-outline-variant rounded-lg shadow-2xl max-w-3xl w-[calc(100%-2rem)] max-h-[85vh] overflow-auto"
+        onClose={guard.requestClose}
       >
         <div className="flex flex-col h-full">
           <header className="px-cozy-padding pt-cozy-padding pb-gutter bg-surface-container-high">
@@ -802,7 +801,8 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
             )}
           </div>
         </div>
-      </DialogContent>
+        <guard.ConfirmDialog />
+      </DialogPanel>
     </Dialog>
   )
 }
