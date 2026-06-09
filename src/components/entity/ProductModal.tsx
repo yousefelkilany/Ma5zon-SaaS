@@ -1,40 +1,42 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useQuery } from '@tanstack/react-query'
-import { toast } from 'sonner'
-import type { QueryClient } from '@tanstack/react-query'
+import { useQueryClient, type QueryClient } from '@tanstack/react-query'
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
+  DialogPanel,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { commands } from '@/lib/tauri-bindings'
 import { ConfirmationDialog } from './ConfirmationDialog'
-import type { StockMovement } from '@/lib/bindings'
 import { StockLevelsTable } from './StockLevelsTable'
 import { StockMovementsTable } from './StockMovementsTable'
 import { ProductForm } from '@/components/entity-form'
 import { updateProductSchema } from '@/lib/validation/schemas'
 import { EntityFieldGrid } from './EntityFieldGrid'
+import { useUnsavedGuard } from '@/hooks/use-unsaved-guard'
+import { useUIStore } from '@/store/ui-store'
+import {
+  useGetProduct,
+  useStockLevelsForProduct,
+  useStockMovements,
+  useWarehouses,
+} from '@/services/entity/queries'
+import {
+  useCreateProduct,
+  useUpdateProduct,
+  useSoftDeleteProduct,
+} from '@/services/entity/mutations'
+import { registerModalHandle, type ModalHandle } from '@/components/layout/MainWindowContent'
 
 interface ProductModalProps {
   entityId?: string
   queryClient: QueryClient
   mode: 'view' | 'create'
   onDeleted?: () => void
-}
-
-interface Product {
-  id: string
-  company: string
-  name: string
-  category: string
-  created_at: string | null
-  updated_at: string | null
-  deleted_at: string | null
+  container?: HTMLElement
+  entityType?: 'products' | 'variants' | 'warehouses'
 }
 
 type TabId = 'details' | 'stock' | 'insights' | 'audits'
@@ -42,457 +44,348 @@ type TabId = 'details' | 'stock' | 'insights' | 'audits'
 const PRODUCT_ROWS = [
   [
     { key: 'company', label: 'entity.product.company', type: 'text' as const },
-    {
-      key: 'category',
-      label: 'entity.product.category',
-      type: 'text' as const,
-    },
+    { key: 'category', label: 'entity.product.category', type: 'text' as const },
   ],
   [{ key: 'name', label: 'entity.product.name', type: 'text' as const }],
   [
-    {
-      key: 'updated_at',
-      label: 'entity.common.updatedAt',
-      type: 'date' as const,
-    },
-    {
-      key: 'created_at',
-      label: 'entity.common.createdAt',
-      type: 'date' as const,
-    },
+    { key: 'updated_at', label: 'entity.common.updatedAt', type: 'date' as const },
+    { key: 'created_at', label: 'entity.common.createdAt', type: 'date' as const },
   ],
 ]
 
 export function ProductModal({
   entityId,
-  queryClient,
   mode,
   onDeleted,
+  container,
+  entityType = 'products',
 }: ProductModalProps) {
   const { t } = useTranslation()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [entity, setEntity] = useState<Product | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const reactQueryClient = useQueryClient()
   const [isEditing, setIsEditing] = useState(false)
-  const [editForm, setEditForm] = useState({
-    company: '',
-    name: '',
-    category: '',
-  })
-  const [isSaving, setIsSaving] = useState(false)
-  const [saveError, setSaveError] = useState('')
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [editForm, setEditForm] = useState({ company: '', name: '', category: '' })
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [deleteError, setDeleteError] = useState('')
   const [activeTab, setActiveTab] = useState<TabId>('details')
-  const [loadError, setLoadError] = useState('')
-  const [warehouseNames, setWarehouseNames] = useState<Map<string, string>>(
-    new Map()
+  const [createDraft, setCreateDraft] = useState<Record<string, unknown> | null>(null)
+  const [editDraft, setEditDraft] = useState<Record<string, unknown> | null>(null)
+  const [isDirty, setIsDirty] = useState(false)
+
+  // ----- Data hooks -----
+  const { data: entity, isLoading } = useGetProduct(mode === 'view' ? entityId : undefined)
+  const { data: stockLevels, isLoading: isLoadingStock } = useStockLevelsForProduct(
+    mode === 'view' ? entityId : undefined
   )
-  const [_isDirty, setIsDirty] = useState(false)
+  const { data: movements, isLoading: isLoadingMovements, error: movementsError } = useStockMovements(
+    'product',
+    mode === 'view' ? entityId : undefined
+  )
+  const { data: warehouses } = useWarehouses()
 
-  const tabs: { id: TabId; label: string }[] = [
-    { id: 'details', label: t('entity.detail.tabs.details') },
-    { id: 'stock', label: t('entity.detail.tabs.stock') },
-    { id: 'audits', label: t('entity.detail.tabs.audits') },
-    { id: 'insights', label: t('entity.detail.tabs.insights') },
-  ]
+  const warehouseNames = new Map<string, string>()
+  if (warehouses) for (const w of warehouses) warehouseNames.set(w.id, w.name)
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    const currentIndex = tabs.findIndex(tab => tab.id === activeTab)
-    if (e.key === 'ArrowRight') {
-      const nextTab = tabs[(currentIndex + 1) % tabs.length]
-      if (nextTab) setActiveTab(nextTab.id)
-    } else if (e.key === 'ArrowLeft') {
-      const prevTab = tabs[(currentIndex - 1 + tabs.length) % tabs.length]
-      if (prevTab) setActiveTab(prevTab.id)
-    }
-  }
-
-  const loadEntity = useCallback(async () => {
-    if (!entityId) return
-    setIsLoading(true)
-    setLoadError('')
-    const result = await commands.getById(entityId)
-    setIsLoading(false)
-    if (result.status === 'ok') {
-      if (result.data) {
-        setEntity(result.data)
-        setIsDirty(false)
-        setEditForm({
-          company: result.data.company,
-          name: result.data.name,
-          category: result.data.category,
-        })
-      } else {
-        setLoadError(t('entity.detail.notFound'))
-      }
-    } else {
-      setLoadError(result.error ?? 'Failed to load product')
-    }
-  }, [entityId, t])
-
-  const { data: stockLevels, isLoading: isLoadingStock } = useQuery({
-    queryKey: ['stock-levels-product', entityId],
-    queryFn: async () => {
-      if (!entityId) throw new Error('entityId required')
-      const result = await commands.stockLevelsGetByProduct(entityId)
-      if (result.status !== 'ok') throw new Error(result.error)
-      return result.data
-    },
-    enabled: activeTab === 'stock' && !!entityId,
-  })
-
-  const { data: warehouses } = useQuery({
-    queryKey: ['warehouses', 'all'],
-    queryFn: async () => {
-      const result = await commands.warehousesGetAll([], [], null)
-      if (result.status === 'ok') return result.data
-      return []
-    },
-  })
-
+  // ----- Sync edit form when entity loads -----
   useEffect(() => {
-    if (warehouses) {
-      const names = new Map<string, string>()
-      for (const w of warehouses) {
-        names.set(w.id, w.name)
-      }
-      setWarehouseNames(names)
-    }
-  }, [warehouses])
-
-  const {
-    data: movements,
-    isLoading: isLoadingMovements,
-    error: movementsError,
-  } = useQuery({
-    queryKey: ['stock-movements-product', entityId],
-    queryFn: async () => {
-      if (!entityId) throw new Error('entityId required')
-      const variantsResult =
-        await commands.variantsGetByProductWithStock(entityId)
-      if (variantsResult.status !== 'ok') {
-        throw new Error(variantsResult.error ?? 'Failed to load variants')
-      }
-
-      const allMovements: StockMovement[] = []
-      for (const variant of variantsResult.data) {
-        const movResult = await commands.stockMovementsGetByVariant(variant.id)
-        if (movResult.status === 'ok') {
-          const sorted = movResult.data.sort(
-            (a, b) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-          )
-          allMovements.push(...sorted.slice(0, 5))
-        }
-      }
-
-      return allMovements.sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      )
-    },
-  })
-
-  useEffect(() => {
-    if (entityId) {
-      loadEntity()
-    }
-  }, [entityId, loadEntity])
-
-  useEffect(() => {
-    if (!showDeleteConfirm) {
-      setDeleteError('')
-    }
-  }, [showDeleteConfirm])
-
-  useEffect(() => {
-    if (!entity) return
-    const isActuallyDirty =
-      editForm.company !== entity.company ||
-      editForm.name !== entity.name ||
-      editForm.category !== entity.category
-    setIsDirty(isActuallyDirty)
-  }, [editForm, entity])
-
-  async function handleSave(values: {
-    company: string
-    name: string
-    category: string
-  }) {
-    if (!entity) return
-    setIsSaving(true)
-    const saveResult = await commands.update(
-      entity.id,
-      values.company,
-      values.name,
-      values.category
-    )
-    setIsSaving(false)
-    if (saveResult.status === 'ok') {
-      setEntity(saveResult.data)
-      setEditForm({
-        company: saveResult.data.company,
-        name: saveResult.data.name,
-        category: saveResult.data.category,
-      })
-      setIsEditing(false)
-      queryClient.invalidateQueries({ queryKey: ['entity', 'products'] })
-    } else {
-      setSaveError(saveResult.error ?? 'Save failed')
-    }
-  }
-
-  async function handleDelete() {
-    if (!entity) return
-    setIsDeleting(true)
-    setDeleteError('')
-    const result = await commands.softDelete(entity.id)
-    setIsDeleting(false)
-    if (result.status === 'ok') {
-      setShowDeleteConfirm(false)
-      queryClient.invalidateQueries({ queryKey: ['entity', 'products'] })
-      onDeleted?.()
-    } else {
-      setDeleteError(result.error ?? 'Delete failed')
-    }
-  }
-
-  function handleCancelEdit() {
     if (entity) {
-      setEditForm({
-        company: entity.company,
-        name: entity.name,
-        category: entity.category,
-      })
+      setEditForm({ company: entity.company, name: entity.name, category: entity.category })
     }
-    setIsEditing(false)
+  }, [entity])
+
+  // ----- Register imperative handle for the per-tab effect in MainWindowContent -----
+  const editDraftRef = useRef(editDraft)
+  editDraftRef.current = editDraft
+  const createDraftRef = useRef(createDraft)
+  createDraftRef.current = createDraft
+  const isDirtyRef = useRef(isDirty)
+  isDirtyRef.current = isDirty
+
+  useEffect(() => {
+    if (mode !== 'view' && !entityId) return
+    const handle: ModalHandle = {
+      getIsDirty: () => isDirtyRef.current,
+      getCreateDraft: () => createDraftRef.current ?? undefined,
+      getEditDraft: () => editDraftRef.current ?? undefined,
+      discardDrafts: () => {
+        setEditDraft(null)
+        setCreateDraft(null)
+        setIsDirty(false)
+        if (entity) {
+          setEditForm({ company: entity.company, name: entity.name, category: entity.category })
+        }
+        useUIStore.getState().clearTabState(entityType)
+      },
+    }
+    return registerModalHandle(entityType, handle)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, entityId, entityType])
+
+  // ----- Mutations -----
+  const updateProduct = useUpdateProduct({
+    onSettled: (data, error) => {
+      if (!error && data) {
+        setIsEditing(false)
+        setIsDirty(false)
+        setEditDraft(null)
+        useUIStore.getState().setTabIsDirty(entityType, false)
+        useUIStore.getState().setTabEditDraft(entityType, undefined)
+      }
+    },
+  })
+  const createProduct = useCreateProduct({
+    onSettled: (data, error) => {
+      if (!error && data) {
+        reactQueryClient.invalidateQueries({ queryKey: ['entity', 'products'] })
+        useUIStore.getState().clearTabState(entityType)
+        onDeleted?.()
+      }
+    },
+  })
+  const deleteProduct = useSoftDeleteProduct({
+    onSettled: (_data, error) => {
+      if (!error) {
+        setShowDeleteConfirm(false)
+        reactQueryClient.invalidateQueries({ queryKey: ['entity', 'products'] })
+        onDeleted?.()
+      }
+    },
+  })
+
+  // ----- Unsaved guard -----
+  const guard = useUnsavedGuard({
+    isDirty,
+    onDiscard: () => {
+      if (entity) {
+        setEditForm({ company: entity.company, name: entity.name, category: entity.category })
+      }
+      setIsEditing(false)
+      setIsDirty(false)
+      setEditDraft(null)
+      setCreateDraft(null)
+      useUIStore.getState().setTabIsDirty(entityType, false)
+      useUIStore.getState().setTabEditDraft(entityType, undefined)
+      useUIStore.getState().setTabCreateDraft(entityType, undefined)
+      onDeleted?.()
+    },
+    onSaveAndClose: async () => {
+      if (mode === 'create') {
+        createProduct.mutate({ values: editForm })
+      } else if (entity) {
+        updateProduct.mutate({ id: entity.id, values: editForm })
+      }
+    },
+    context: { entityName: entity?.name ?? '' },
+  })
+
+  // ----- Save handlers -----
+  function handleSave(values: { company: string; name: string; category: string }) {
+    if (mode === 'create') {
+      createProduct.mutate({ values })
+    } else if (entity) {
+      updateProduct.mutate({ id: entity.id, values })
+    }
+  }
+
+  function handleDelete() {
+    if (entity) deleteProduct.mutate({ id: entity.id })
   }
 
   function handleEdit() {
     if (entity) {
-      setEditForm({
-        company: entity.company,
-        name: entity.name,
-        category: entity.category,
-      })
+      setEditForm({ company: entity.company, name: entity.name, category: entity.category })
     }
     setIsEditing(true)
   }
 
+  function handleCancelEdit() {
+    if (entity) {
+      setEditForm({ company: entity.company, name: entity.name, category: entity.category })
+    }
+    setIsEditing(false)
+    setIsDirty(false)
+    setEditDraft(null)
+  }
+
+  // Track form changes for the unsaved guard
+  useEffect(() => {
+    if (mode === 'create') {
+      setIsDirty(!!createDraft && Object.keys(createDraft).length > 0)
+      return
+    }
+    if (!entity) return
+    const isChanged =
+      editForm.company !== entity.company ||
+      editForm.name !== entity.name ||
+      editForm.category !== entity.category
+    setIsDirty(isChanged)
+  }, [editForm, entity, createDraft, mode])
+
+  // ----- Render -----
   if (mode === 'create') {
     return (
-      <Dialog open={true}>
-        <DialogContent>
-          <DialogHeader>
+      <>
+        <Dialog open={true} onClose={guard.requestClose} modal={false} {...(container ? { container } : {})}>
+          <DialogPanel onClose={guard.requestClose}>
             <DialogTitle>{t('entity.create.product.title')}</DialogTitle>
-          </DialogHeader>
-          <ProductForm
-            onSubmit={async values => {
-              setIsSubmitting(true)
-              try {
-                const result = await commands.create(
-                  values.company,
-                  values.name,
-                  values.category
-                )
-                if (result.status === 'ok') {
-                  queryClient.invalidateQueries({
-                    queryKey: ['entity', 'products'],
-                  })
-                  onDeleted?.()
-                } else {
-                  toast.error(result.error)
-                }
-              } catch (err: unknown) {
-                toast.error(err instanceof Error ? err.message : String(err))
-              } finally {
-                setIsSubmitting(false)
-              }
-            }}
-            isLoading={isSubmitting}
-            initialValues={{ company: '', name: '', category: '' }}
-          />
-        </DialogContent>
-      </Dialog>
+            <ProductForm
+              onSubmit={handleSave}
+              isLoading={createProduct.isPending}
+              initialValues={editForm}
+              onChange={(values) => {
+                setEditForm(values)
+                setCreateDraft(values as unknown as Record<string, unknown>)
+                useUIStore.getState().setTabCreateDraft(entityType, values as unknown as Record<string, unknown>)
+              }}
+            />
+          </DialogPanel>
+        </Dialog>
+        <guard.ConfirmDialog />
+      </>
     )
   }
 
   return (
     <>
-      <Dialog open={true}>
-        <DialogContent>
-          <div className="flex flex-col h-full">
-            <div
-              className="flex border-b border-outline-variant mb-4"
-              role="tablist"
-              onKeyDown={handleKeyDown}
-            >
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  id={`${tab.id}-tab`}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeTab === tab.id}
-                  aria-controls={`${tab.id}-panel`}
-                  tabIndex={activeTab === tab.id ? 0 : -1}
-                  className={`px-4 py-2 text-body-sm font-medium transition-colors border-b-2 -mb-px ${
-                    activeTab === tab.id
-                      ? 'border-secondary text-secondary'
-                      : 'border-transparent text-on-surface-variant hover:text-on-surface'
-                  }`}
-                  onClick={() => setActiveTab(tab.id)}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+      <Dialog open={true} onClose={guard.requestClose} modal={false} {...(container ? { container } : {})}>
+        <DialogPanel onClose={guard.requestClose}>
+          <DialogTitle>{entity?.name ?? t('entity.detail.loading')}</DialogTitle>
+          <DialogDescription>
+            {entity ? `${entity.company} — ${entity.category}` : ''}
+          </DialogDescription>
 
-            <div className="flex-1 overflow-auto">
-              {activeTab === 'details' && (
-                <div
-                  id="details-panel"
-                  role="tabpanel"
-                  aria-labelledby="details-tab"
-                >
-                  {isLoading ? (
-                    <div className="grid grid-cols-2 gap-4">
-                      {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="space-y-1">
-                          <Skeleton className="h-3 w-20" />
-                          <Skeleton className="h-5 w-full" />
-                        </div>
-                      ))}
-                    </div>
-                  ) : entity ? (
-                    <div className="space-y-4">
-                      {isEditing ? (
-                        <ProductForm
-                          schema={updateProductSchema}
-                          onSubmit={handleSave}
-                          isLoading={isSaving}
-                          initialValues={editForm}
-                          submitText={t('entity.update.button')}
-                        />
-                      ) : (
-                        <EntityFieldGrid rows={PRODUCT_ROWS} entity={entity} />
-                      )}
+          <div role="tablist" className="flex border-b mb-4">
+            {(['details', 'stock', 'insights', 'audits'] as const).map(id => (
+              <button
+                key={id}
+                role="tab"
+                aria-selected={activeTab === id}
+                onClick={() => setActiveTab(id)}
+                className={`px-4 py-2 ${activeTab === id ? 'border-b-2 border-secondary' : ''}`}
+              >
+                {t('entity.detail.tabs.' + id)}
+              </button>
+            ))}
+          </div>
 
-                      {saveError && (
-                        <p className="text-body-sm text-error">{saveError}</p>
-                      )}
-                      <div className="flex items-center justify-between pt-4 border-t border-outline-variant">
-                        <Button
-                          variant="ghost"
-                          className="text-error"
-                          onClick={() => setShowDeleteConfirm(true)}
-                        >
-                          <span className="material-symbols-outlined text-sm">
-                            delete
-                          </span>
-                          {t('entity.detail.delete')}
-                        </Button>
-                        <div className="flex gap-2">
-                          {isEditing ? (
-                            <>
-                              <Button
-                                variant="outline"
-                                onClick={handleCancelEdit}
-                                disabled={isSaving}
-                              >
-                                {t('common.cancel')}
-                              </Button>
-                            </>
-                          ) : (
-                            <Button onClick={handleEdit}>
-                              <span className="material-symbols-outlined text-sm">
-                                edit
-                              </span>
-                              {t('entity.detail.edit')}
-                            </Button>
-                          )}
-                        </div>
-                      </div>
+          {activeTab === 'details' && (
+            <div>
+              {isLoading ? (
+                <div className="grid grid-cols-2 gap-4">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="space-y-1">
+                      <Skeleton className="h-3 w-20" />
+                      <Skeleton className="h-5 w-full" />
                     </div>
-                  ) : loadError ? (
-                    <p className="text-body-md text-error">{loadError}</p>
+                  ))}
+                </div>
+              ) : entity ? (
+                <div className="space-y-4">
+                  {isEditing ? (
+                    <ProductForm
+                      schema={updateProductSchema}
+                      onSubmit={handleSave}
+                      isLoading={updateProduct.isPending}
+                      initialValues={editForm}
+                      onChange={(values) => {
+                        setEditForm(values)
+                        setEditDraft(values as unknown as Record<string, unknown>)
+                        useUIStore.getState().setTabEditDraft(entityType, values as unknown as Record<string, unknown>)
+                      }}
+                      submitText={t('entity.update.button')}
+                    />
                   ) : (
-                    <p className="text-body-md text-on-surface-variant">
-                      {t('entity.detail.notFound')}
+                    <EntityFieldGrid rows={PRODUCT_ROWS} entity={entity} />
+                  )}
+
+                  {updateProduct.isError && (
+                    <p className="text-body-sm text-error">
+                      {(updateProduct.error as Error).message}
                     </p>
                   )}
-                </div>
-              )}
 
-              {activeTab === 'stock' && (
-                <div
-                  id="stock-panel"
-                  role="tabpanel"
-                  aria-labelledby="stock-tab"
-                >
-                  <StockLevelsTable
-                    stockLevels={stockLevels ?? []}
-                    isLoading={isLoadingStock}
-                    view="product"
-                    warehouseNames={warehouseNames}
-                    onTransferSuccess={() =>
-                      queryClient.invalidateQueries({
-                        queryKey: ['stock-levels-product', entityId],
-                      })
-                    }
-                  />
-                </div>
-              )}
-
-              {activeTab === 'insights' && (
-                <div
-                  id="insights-panel"
-                  role="tabpanel"
-                  aria-labelledby="insights-tab"
-                >
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-3 gap-4">
-                      {Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} className="space-y-1">
-                          <Skeleton className="h-3 w-16" />
-                          <Skeleton className="h-8 w-full" />
-                        </div>
-                      ))}
+                  <div className="flex items-center justify-between pt-4 border-t">
+                    <Button
+                      variant="ghost"
+                      className="text-error"
+                      onClick={() => setShowDeleteConfirm(true)}
+                    >
+                      <span className="material-symbols-outlined text-sm">delete</span>
+                      {t('entity.detail.delete')}
+                    </Button>
+                    <div className="flex gap-2">
+                      {isEditing ? (
+                        <>
+                          <Button variant="outline" onClick={handleCancelEdit}>
+                            {t('common.cancel')}
+                          </Button>
+                          <Button
+                            onClick={() => handleSave(editForm)}
+                            disabled={!isDirty || updateProduct.isPending}
+                          >
+                            {t('entity.update.button')}
+                          </Button>
+                          <Button
+                            onClick={guard.requestClose}
+                            disabled={!isDirty || updateProduct.isPending}
+                          >
+                            {t('common.saveAndClose')}
+                          </Button>
+                        </>
+                      ) : (
+                        <Button onClick={handleEdit}>
+                          <span className="material-symbols-outlined text-sm">edit</span>
+                          {t('entity.detail.edit')}
+                        </Button>
+                      )}
                     </div>
-                    <Skeleton className="h-48 w-full rounded-lg" />
                   </div>
                 </div>
-              )}
-
-              {activeTab === 'audits' && (
-                <StockMovementsTable
-                  movements={movements ?? []}
-                  isLoading={isLoadingMovements}
-                  error={movementsError?.message ?? ''}
-                  variant="product"
-                  warehouseNames={warehouseNames}
-                  emptyMessage={t('entity.stockMovement.noMovementsProduct')}
-                />
-              )}
+              ) : null}
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          )}
 
+          {activeTab === 'stock' && (
+            <StockLevelsTable
+              stockLevels={stockLevels ?? []}
+              isLoading={isLoadingStock}
+              view="product"
+              warehouseNames={warehouseNames}
+              onTransferSuccess={() =>
+                reactQueryClient.invalidateQueries({
+                  queryKey: ['stock-levels-product', entityId],
+                })
+              }
+            />
+          )}
+
+          {activeTab === 'audits' && (
+            <StockMovementsTable
+              movements={movements ?? []}
+              isLoading={isLoadingMovements}
+              error={movementsError?.message ?? ''}
+              variant="product"
+              warehouseNames={warehouseNames}
+              emptyMessage={t('entity.stockMovement.noMovementsProduct')}
+            />
+          )}
+
+          {activeTab === 'insights' && (
+            <div className="space-y-4">
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-48 w-full rounded-lg" />
+            </div>
+          )}
+        </DialogPanel>
+      </Dialog>
+      <guard.ConfirmDialog />
       <ConfirmationDialog
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
-        title={t('entity.detail.deleteConfirmTitle', {
-          name: entity?.name ?? '',
-        })}
+        title={t('entity.detail.deleteConfirmTitle', { name: entity?.name ?? '' })}
         description={t('entity.detail.deleteConfirmMessage')}
         onConfirm={handleDelete}
         isDestructive
-        isLoading={isDeleting}
-        error={deleteError}
+        isLoading={deleteProduct.isPending}
+        error={deleteProduct.isError ? (deleteProduct.error as Error).message : ''}
       />
     </>
   )

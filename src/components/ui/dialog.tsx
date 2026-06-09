@@ -1,17 +1,18 @@
-import { type ReactNode, type ComponentPropsWithoutRef } from 'react'
+import type { ReactNode, ComponentPropsWithoutRef } from 'react'
 import {
   Dialog as HuiDialog,
   DialogBackdrop as HuiDialogBackdrop,
   DialogPanel as HuiDialogPanel,
   DialogTitle as HuiDialogTitle,
-  DialogDescription as HuiDialogDescription,
+  Description as HuiDialogDescription,
 } from '@headlessui/react'
 import { XIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface DialogProps {
   open: boolean
-  onClose: (value: boolean) => void
+  onClose?: (value: boolean) => void
+  onOpenChange?: (open: boolean) => void
   modal?: boolean
   children: ReactNode
   className?: string
@@ -28,15 +29,20 @@ interface DialogProps {
 function Dialog({
   open,
   onClose,
+  onOpenChange,
   modal = true,
   children,
   className,
   container,
 }: DialogProps) {
+  const handleClose: (value: boolean) => void = (value) => {
+    if (onClose) onClose(value)
+    else if (onOpenChange) onOpenChange(value)
+  }
   return (
     <HuiDialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       {...(container ? { container } : {})}
       className={cn('relative z-50', className)}
     >

@@ -1,19 +1,23 @@
 /* eslint-disable react/no-children-prop */
+import { useEffect, useRef } from 'react'
 import { useAppForm } from './createFormHook'
 import { createProductSchema } from '@/lib/validation/schemas'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
 
+interface ProductFormValues {
+  company: string
+  name: string
+  category: string
+}
+
 interface ProductFormProps {
-  onSubmit: (values: {
-    company: string
-    name: string
-    category: string
-  }) => void
+  onSubmit: (values: ProductFormValues) => void
   isLoading?: boolean
-  initialValues?: { company: string; name: string; category: string }
+  initialValues?: ProductFormValues
   submitText?: string
+  onChange?: (values: ProductFormValues) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema?: any
 }
@@ -24,8 +28,11 @@ export function ProductForm({
   initialValues,
   schema = createProductSchema,
   submitText,
+  onChange,
 }: ProductFormProps) {
   const { t } = useTranslation()
+  const onChangeRef = useRef(onChange)
+  onChangeRef.current = onChange
 
   const form = useAppForm({
     defaultValues: initialValues ?? { company: '', name: '', category: '' },
@@ -36,6 +43,17 @@ export function ProductForm({
       onSubmit(value)
     },
   })
+
+  useEffect(() => {
+    const company = form.state.values.company
+    const name = form.state.values.name
+    const category = form.state.values.category
+    onChangeRef.current?.({
+      company: company ?? '',
+      name: name ?? '',
+      category: category ?? '',
+    })
+  }, [form.state.values.company, form.state.values.name, form.state.values.category])
 
   return (
     <form
