@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useParams } from '@tanstack/react-router'
@@ -16,6 +16,7 @@ import { cn, type ModalType, ModalTypes } from '@/lib/utils'
 import { PrintPreviewDialog } from './PrintPreviewDialog'
 import { exportSelectedToCSV, exportSelectedToExcel } from '@/lib/utils'
 import { useTabStore } from '@/store/workspace-store'
+import { WorkspacePortalContext } from './workspace-portal-context'
 
 function EntityHeader({
   entityType,
@@ -89,6 +90,7 @@ export function EntityWorkspace() {
   const [selectedForPrint, setSelectedForPrint] = useState<EntityRow[]>([])
   const [_isExporting, setIsExporting] = useState(false)
   const [_isDeleting, setIsDeleting] = useState(false)
+  const workspaceRef = useRef<HTMLDivElement | null>(null)
 
   const tabUIState = useTabStore(state => state.tabUIStates[state.activeTabId])
   const page = tabUIState?.page ?? 1
@@ -318,42 +320,48 @@ export function EntityWorkspace() {
   )
 
   return (
-    <div className="px-margin-edge flex flex-col h-full bg-background py-6">
-      <EntityHeader entityType={entityType} onAddNewClick={handleAddNewClick} />
-      <DataTableShell
-        entityType={entityType}
-        queryClient={queryClient}
-        columns={columns}
-        data={entityData ?? []}
-        pagination={{
-          page,
-          pageSize,
-          totalRows: totalCount,
-          totalPages,
-        }}
-        onPageChange={handlePageChange}
-        isLoading={isLoading}
-        onSaveColumnPrefs={handleSaveColumnPrefs}
-        onFiltersApply={handleFiltersApply}
-        onPrintSelected={handleBulkPrint}
-        onExportFormatSelect={handleExportFormatSelect}
-        onDelete={handleBulkDelete}
-        sort={sort}
-        onSortChange={handleSortChange}
-        onVariantClick={handleVariantClick}
-        onAddVariant={handleAddVariant}
-        onProductClick={handleProductClick}
-      />
-      <PrintPreviewDialog
-        open={printPreviewOpen}
-        onOpenChange={setPrintPreviewOpen}
-        columns={columns}
-        selectedData={selectedForPrint}
-        entityType={entityType}
-        onPrint={() => {
-          setPrintPreviewOpen(false)
-        }}
-      />
+    <div
+      ref={workspaceRef}
+      style={{ position: 'relative' }}
+      className="px-margin-edge flex flex-col h-full bg-background py-6"
+    >
+      <WorkspacePortalContext.Provider value={workspaceRef}>
+        <EntityHeader entityType={entityType} onAddNewClick={handleAddNewClick} />
+        <DataTableShell
+          entityType={entityType}
+          queryClient={queryClient}
+          columns={columns}
+          data={entityData ?? []}
+          pagination={{
+            page,
+            pageSize,
+            totalRows: totalCount,
+            totalPages,
+          }}
+          onPageChange={handlePageChange}
+          isLoading={isLoading}
+          onSaveColumnPrefs={handleSaveColumnPrefs}
+          onFiltersApply={handleFiltersApply}
+          onPrintSelected={handleBulkPrint}
+          onExportFormatSelect={handleExportFormatSelect}
+          onDelete={handleBulkDelete}
+          sort={sort}
+          onSortChange={handleSortChange}
+          onVariantClick={handleVariantClick}
+          onAddVariant={handleAddVariant}
+          onProductClick={handleProductClick}
+        />
+        <PrintPreviewDialog
+          open={printPreviewOpen}
+          onOpenChange={setPrintPreviewOpen}
+          columns={columns}
+          selectedData={selectedForPrint}
+          entityType={entityType}
+          onPrint={() => {
+            setPrintPreviewOpen(false)
+          }}
+        />
+      </WorkspacePortalContext.Provider>
     </div>
   )
 }
