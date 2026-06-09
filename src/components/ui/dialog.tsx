@@ -1,126 +1,117 @@
-import * as React from 'react'
-import * as DialogPrimitive from '@radix-ui/react-dialog'
+import { type ReactNode, type ComponentPropsWithoutRef } from 'react'
+import {
+  Dialog as HuiDialog,
+  DialogBackdrop as HuiDialogBackdrop,
+  DialogPanel as HuiDialogPanel,
+  DialogTitle as HuiDialogTitle,
+  DialogDescription as HuiDialogDescription,
+} from '@headlessui/react'
 import { XIcon } from 'lucide-react'
-
 import { cn } from '@/lib/utils'
 
+interface DialogProps {
+  open: boolean
+  onClose: (value: boolean) => void
+  modal?: boolean
+  children: ReactNode
+  className?: string
+  container?: HTMLElement
+}
+
+/**
+ * Dialog root. Wraps Headless UI Dialog.
+ *
+ * `modal={true}` (default): draws a backdrop, locks body scroll, traps focus.
+ * `modal={false}`: no backdrop, no scroll lock, no focus trap — the rest of
+ *   the app stays interactive. Escape still closes.
+ */
 function Dialog({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />
-}
-
-function DialogTrigger({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
-  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
-}
-
-function DialogPortal({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Portal>) {
-  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
-}
-
-function DialogClose({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Close>) {
-  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
-}
-
-const DialogContent = React.forwardRef<
-  React.ComponentRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
-    showCloseButton?: boolean
-  }
->(({ className, children, showCloseButton = true, ...props }, ref) => (
-  <DialogPortal data-slot="dialog-portal">
-    <DialogPrimitive.Content
-      ref={ref}
-      data-slot="dialog-content"
-      className={cn(
-        'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed z-50 grid w-full gap-4 rounded-lg border p-6 shadow-lg duration-200 min-w-200 max-w-[65vw]',
-        className
-      )}
-      style={{
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-      }}
-      {...props}
+  open,
+  onClose,
+  modal = true,
+  children,
+  className,
+  container,
+}: DialogProps) {
+  return (
+    <HuiDialog
+      open={open}
+      onClose={onClose}
+      {...(container ? { container } : {})}
+      className={cn('relative z-50', className)}
     >
+      {modal && <DialogBackdrop />}
       {children}
-      {showCloseButton && (
-        <DialogPrimitive.Close
-          data-slot="dialog-close"
-          className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 inset-e-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-        >
-          <XIcon />
-          <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
-      )}
-    </DialogPrimitive.Content>
-  </DialogPortal>
-))
-DialogContent.displayName = DialogPrimitive.Content.displayName
+    </HuiDialog>
+  )
+}
 
-function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
+function DialogBackdrop() {
   return (
-    <div
-      data-slot="dialog-header"
-      className={cn('flex flex-col gap-2 text-center sm:text-start', className)}
+    <HuiDialogBackdrop className="fixed inset-0 bg-black/50 transition-opacity" />
+  )
+}
+
+interface DialogPanelProps extends ComponentPropsWithoutRef<'div'> {
+  showCloseButton?: boolean
+  onClose?: () => void
+}
+
+function DialogPanel({
+  className,
+  children,
+  showCloseButton = true,
+  onClose,
+  ...props
+}: DialogPanelProps) {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center p-4">
+      <HuiDialogPanel
+        data-slot="dialog-content"
+        className={cn(
+          'bg-background grid w-full gap-4 rounded-lg border p-6 shadow-lg min-w-200 max-w-[65vw] max-h-[80vh] overflow-auto',
+          className
+        )}
+        {...props}
+      >
+        {children}
+        {showCloseButton && onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            data-slot="dialog-close"
+            aria-label="Close"
+            className="ring-offset-background focus:ring-ring absolute top-4 inset-e-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden"
+          >
+            <XIcon />
+          </button>
+        )}
+      </HuiDialogPanel>
+    </div>
+  )
+}
+
+function DialogTitle({ className, ...props }: ComponentPropsWithoutRef<'h2'>) {
+  return (
+    <HuiDialogTitle
+      data-slot="dialog-title"
+      className={cn('text-lg leading-none font-semibold', className)}
       {...props}
     />
   )
 }
 
-function DialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
+function DialogDescription({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<'p'>) {
   return (
-    <div
-      data-slot="dialog-footer"
-      className={cn(
-        'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
-        className
-      )}
+    <HuiDialogDescription
+      data-slot="dialog-description"
+      className={cn('text-muted-foreground text-sm', className)}
       {...props}
     />
   )
 }
 
-const DialogTitle = React.forwardRef<
-  React.ComponentRef<typeof DialogPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Title
-    ref={ref}
-    data-slot="dialog-title"
-    className={cn('text-lg leading-none font-semibold', className)}
-    {...props}
-  />
-))
-DialogTitle.displayName = DialogPrimitive.Title.displayName
-
-const DialogDescription = React.forwardRef<
-  React.ComponentRef<typeof DialogPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Description
-    ref={ref}
-    data-slot="dialog-description"
-    className={cn('text-muted-foreground text-sm', className)}
-    {...props}
-  />
-))
-DialogDescription.displayName = DialogPrimitive.Description.displayName
-
-export {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger,
-}
+export { Dialog, DialogBackdrop, DialogPanel, DialogTitle, DialogDescription }
