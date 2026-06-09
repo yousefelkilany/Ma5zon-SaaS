@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ColumnDef } from '@/lib/types/entity'
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
+  DialogPanel,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { useUnsavedGuard } from '@/hooks/use-unsaved-guard'
 import {
   DndContext,
   closestCenter,
@@ -33,8 +32,7 @@ import { GripVertical } from 'lucide-react'
 interface SortableRowProps {
   col: ColumnDef
   onToggle: () => void
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: (key: string, options?: any) => string
+  t: (key: string, options?: Record<string, unknown>) => string
 }
 
 function SortableRow({ col, onToggle, t }: SortableRowProps) {
@@ -89,6 +87,22 @@ interface ColumnVisibilityDialogProps {
   onSave: (columns: ColumnDef[]) => void
 }
 
+function columnsEqual(a: ColumnDef[], b: ColumnDef[]): boolean {
+  if (a.length !== b.length) return false
+  for (let i = 0; i < a.length; i++) {
+    const x = a[i]!
+    const y = b[i]!
+    if (
+      x.id !== y.id ||
+      x.visible !== y.visible ||
+      x.order !== y.order
+    ) {
+      return false
+    }
+  }
+  return true
+}
+
 export function ColumnVisibilityDialog({
   open,
   onOpenChange,
@@ -133,16 +147,24 @@ export function ColumnVisibilityDialog({
     )
   }
 
+  const isDirty = useMemo(
+    () => !columnsEqual(localColumns, columns),
+    [localColumns, columns]
+  )
+
+  const guard = useUnsavedGuard({
+    isDirty,
+    onDiscard: () => onOpenChange(false),
+  })
+
   const handleSave = () => {
     onSave(localColumns)
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('entity.workspace.columns.manage')}</DialogTitle>
-        </DialogHeader>
+    <Dialog open={open} onClose={guard.requestClose}>
+      <DialogPanel onClose={guard.requestClose}>
+        <DialogTitle>{t('entity.workspace.columns.manage')}</DialogTitle>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -182,15 +204,16 @@ export function ColumnVisibilityDialog({
             ) : null}
           </DragOverlay>
         </DndContext>
-        <DialogFooter className="flex justify-end gap-2">
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+        <div className="flex justify-end gap-2">
+          <Button variant="ghost" onClick={guard.requestClose}>
             {t('common.cancel')}
           </Button>
           <Button onClick={handleSave}>
             {t('entity.workspace.columns.saveChanges')}
           </Button>
-        </DialogFooter>
-      </DialogContent>
+        </div>
+        <guard.ConfirmDialog />
+      </DialogPanel>
     </Dialog>
   )
 }
