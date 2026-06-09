@@ -1,15 +1,14 @@
 import { useTranslation } from 'react-i18next'
 import {
   Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
+  DialogPanel,
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import type { ColumnDef, EntityRow } from '@/lib/types/entity'
 import { langDir } from '@/i18n/config'
 import { ibmPlexFont500, ibmPlexFont700 } from '@/lib/fonts/ibmPlexFonts'
+import { useUnsavedGuard } from '@/hooks/use-unsaved-guard'
 
 interface PrintPreviewDialogProps {
   open: boolean
@@ -30,6 +29,11 @@ export function PrintPreviewDialog({
 }: PrintPreviewDialogProps) {
   const { t, i18n } = useTranslation()
 
+  const guard = useUnsavedGuard({
+    isDirty: false,
+    onDiscard: () => onOpenChange(false),
+  })
+
   const visibleCols = columns.filter(c => c.visible && c.type !== 'actions')
   const direction = langDir(i18n.language)
 
@@ -44,19 +48,19 @@ export function PrintPreviewDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
+    <Dialog open={open} onClose={guard.requestClose}>
+      <DialogPanel
         showCloseButton={false}
         className="max-w-4xl max-h-[90vh] flex flex-col"
       >
-        <DialogHeader>
+        <div>
           <DialogTitle>{t('entity.workspace.print.title')}</DialogTitle>
           <p className="text-body-sm text-on-surface-variant">
             {t('entity.workspace.print.itemsCount', {
               count: selectedData.length,
             })}
           </p>
-        </DialogHeader>
+        </div>
 
         <div className="flex-1 overflow-auto bg-surface border rounded p-4">
           <iframe
@@ -72,15 +76,16 @@ export function PrintPreviewDialog({
           />
         </div>
 
-        <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={guard.requestClose}>
             {t('entity.workspace.print.cancelButton')}
           </Button>
           <Button onClick={handlePrintClick}>
             {t('entity.workspace.print.printButton')}
           </Button>
-        </DialogFooter>
-      </DialogContent>
+        </div>
+        <guard.ConfirmDialog />
+      </DialogPanel>
     </Dialog>
   )
 }
