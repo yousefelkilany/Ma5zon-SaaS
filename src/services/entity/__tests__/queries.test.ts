@@ -6,6 +6,10 @@ import {
   useGetProduct,
   useGetVariant,
   useGetWarehouse,
+  useBulkProducts,
+  useBulkVariants,
+  useBulkWarehouses,
+  useBulkUsers,
   useStockLevelsForProduct,
   useStockLevelsForVariant,
   useStockMovements,
@@ -24,6 +28,10 @@ vi.mock('@/lib/tauri-bindings', () => ({
     stockMovementsGetByWarehouse: vi.fn(),
     variantsGetByProductWithStock: vi.fn(),
     warehousesGetAll: vi.fn(),
+    productsGetByIds: vi.fn(),
+    variantsGetByIds: vi.fn(),
+    warehousesGetByIds: vi.fn(),
+    usersGetByIds: vi.fn(),
   },
 }))
 
@@ -174,5 +182,70 @@ describe('entity read hooks', () => {
     })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(result.current.data).toEqual([])
+  })
+})
+
+describe('bulk fetch hooks', () => {
+  it('useBulkProducts is disabled on empty ids and prefills on success', async () => {
+    const { result: empty } = renderHook(() => useBulkProducts([]), {
+      wrapper: QueryWrapper,
+    })
+    expect(empty.current.fetchStatus).toBe('idle')
+
+    vi.mocked(commands.productsGetByIds).mockResolvedValue(
+      mockOk([
+        { id: '1', company: 'ACME', name: 'Widget', category: 'A' },
+        { id: '2', company: 'ACME', name: 'Gizmo', category: 'B' },
+      ]) as never
+    )
+
+    const { result } = renderHook(() => useBulkProducts(['1', '2']), {
+      wrapper: QueryWrapper,
+    })
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+    expect(commands.productsGetByIds).toHaveBeenCalledWith(['1', '2'])
+    expect(result.current.data).toHaveLength(2)
+  })
+
+  it('useBulkVariants passes ids through as strings', async () => {
+    vi.mocked(commands.variantsGetByIds).mockResolvedValue(
+      mockOk([{ id: '10', product_id: '1', sku: 'SKU-10', variant_name: 'Red' }]) as never
+    )
+
+    const { result } = renderHook(() => useBulkVariants(['10']), {
+      wrapper: QueryWrapper,
+    })
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+    expect(commands.variantsGetByIds).toHaveBeenCalledWith(['10'])
+    expect(result.current.data?.[0].variant_name).toBe('Red')
+  })
+
+  it('useBulkWarehouses passes ids through as strings', async () => {
+    vi.mocked(commands.warehousesGetByIds).mockResolvedValue(
+      mockOk([{ id: '20', name: 'Main', location: 'HQ' }]) as never
+    )
+
+    const { result } = renderHook(() => useBulkWarehouses(['20']), {
+      wrapper: QueryWrapper,
+    })
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+    expect(commands.warehousesGetByIds).toHaveBeenCalledWith(['20'])
+    expect(result.current.data?.[0].name).toBe('Main')
+  })
+
+  it('useBulkUsers passes ids as strings and filters empties', async () => {
+    vi.mocked(commands.usersGetByIds).mockResolvedValue(
+      mockOk([{ id: 'u-1', name: 'admin', email: 'a@b', role: 'admin' }]) as never
+    )
+
+    const { result } = renderHook(() => useBulkUsers(['u-1', '']), {
+      wrapper: QueryWrapper,
+    })
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+    expect(commands.usersGetByIds).toHaveBeenCalledWith(['u-1'])
   })
 })
