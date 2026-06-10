@@ -15,6 +15,7 @@ import { StockMovementsTable } from './StockMovementsTable'
 import { ProductForm } from '@/components/entity-form'
 import { updateProductSchema } from '@/lib/validation/schemas'
 import { EntityFieldGrid } from './EntityFieldGrid'
+import { EntityMissingState } from './EntityMissingState'
 import { useUnsavedGuard } from '@/hooks/use-unsaved-guard'
 import { useUIStore } from '@/store/ui-store'
 import {
@@ -324,6 +325,10 @@ export function ProductModal({
         <guard.ConfirmDialog />
       </>
     )
+  }
+
+  if (mode === 'view' && !isLoading && entity === undefined) {
+    return <EntityMissingState onClose={() => onDeleted?.()} />
   }
 
   return (
