@@ -27,10 +27,12 @@ export function formatCurrency(
 export const productEntity = 'product' as const
 export const variantEntity = 'variant' as const
 export const warehouseEntity = 'warehouse' as const
+export const userEntity = 'user' as const
 export const EntityTypes = [
   productEntity,
   variantEntity,
   warehouseEntity,
+  userEntity,
 ] as const
 export type EntityType = (typeof EntityTypes)[number]
 export type NullableEntityType = EntityType | null
