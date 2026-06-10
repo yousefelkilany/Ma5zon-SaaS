@@ -1,13 +1,13 @@
 use async_trait::async_trait;
 use chrono::Local;
-use rusqlite::params;
+use rusqlite::{params, params_from_iter};
 use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::seed::variants as seed_variants;
 use crate::sql::variants::{
-    create, create_table, get_all, get_by_id, get_by_product_with_quantity, soft_delete, update,
+    self, create, create_table, get_all, get_by_id, get_by_product_with_quantity, soft_delete, update,
 };
 use crate::types::{NewVariant, ProductVariantWithStock, UpdateVariant, Variant};
 use crate::validation::validate_variant;
@@ -257,4 +257,42 @@ pub async fn variants_delete(app: AppHandle, id: String) -> Result<(), String> {
     conn.execute(soft_delete(), params![now, id_i64])
         .map_err(|e| format!("Failed to delete variant: {e}"))?;
     Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn variants_get_by_ids(
+    app: AppHandle,
+    ids: Vec<i64>,
+) -> Result<Vec<Variant>, String> {
+    if ids.is_empty() {
+        return Ok(vec![]);
+    }
+    let conn = get_conn(&app)?;
+    let sql = variants::get_by_ids(ids.len());
+    let mut stmt = conn
+        .prepare(&sql)
+        .map_err(|e| format!("variants_get_by_ids Failed to prepare: {e}"))?;
+
+    let variants = stmt
+        .query_map(params_from_iter(ids.iter()), |row| {
+            Ok(Variant {
+                id: row.get::<_, i64>(0)?.to_string(),
+                product_id: row.get::<_, i64>(1)?.to_string(),
+                sku: row.get(2)?,
+                variant_name: row.get(3)?,
+                uom_id: row.get::<_, i64>(4)?.to_string(),
+                retail_price: row.get(5)?,
+                wholesale_price: row.get(6)?,
+                distribution_price: row.get(7)?,
+                created_at: row.get(8)?,
+                updated_at: row.get(9)?,
+                deleted_at: row.get(10)?,
+            })
+        })
+        .map_err(|e| format!("variants_get_by_ids Failed to query: {e}"))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("variants_get_by_ids Failed to collect: {e}"))?;
+
+    Ok(variants)
 }
