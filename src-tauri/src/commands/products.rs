@@ -1,12 +1,13 @@
 use async_trait::async_trait;
 use chrono::Local;
-use rusqlite::params;
+use rusqlite::{params, params_from_iter};
 use tauri::AppHandle;
 
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::seed::products as seed_products;
 use crate::sql::products::{
+    self,
     build_count, build_get_all, build_where_clause, build_with_stock_paginated,
     create as sql_create, create_table, get_by_id as sql_get_by_id,
     get_created_at as sql_get_created_at, soft_delete as sql_soft_delete, update as sql_update,
@@ -222,4 +223,38 @@ pub async fn soft_delete(app: AppHandle, id: String) -> Result<(), String> {
         return Err("Product not found".to_string());
     }
     Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn products_get_by_ids(
+    app: AppHandle,
+    ids: Vec<i64>,
+) -> Result<Vec<Product>, String> {
+    if ids.is_empty() {
+        return Ok(vec![]);
+    }
+    let conn = get_conn(&app)?;
+    let sql = products::get_by_ids(ids.len());
+    let mut stmt = conn
+        .prepare(&sql)
+        .map_err(|e| format!("products_get_by_ids Failed to prepare: {e}"))?;
+
+    let products = stmt
+        .query_map(params_from_iter(ids.iter()), |row| {
+            Ok(Product {
+                id: row.get::<_, i64>(0)?.to_string(),
+                company: row.get(1)?,
+                name: row.get(2)?,
+                category: row.get(3)?,
+                created_at: row.get(4)?,
+                updated_at: row.get(5)?,
+                deleted_at: row.get(6)?,
+            })
+        })
+        .map_err(|e| format!("products_get_by_ids Failed to query: {e}"))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("products_get_by_ids Failed to collect: {e}"))?;
+
+    Ok(products)
 }
