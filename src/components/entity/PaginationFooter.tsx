@@ -1,3 +1,4 @@
+import { formatNumber } from '@/lib/format'
 import type { PaginationFooterProps } from '@/lib/types/entity'
 import { useTranslation } from 'react-i18next'
 
@@ -51,7 +52,7 @@ export function PaginationFooter({
           {t('entity.workspace.showing', {
             start,
             end,
-            total: totalRows.toLocaleString(),
+            total: formatNumber(totalRows),
           })}
         </span>
       </div>
