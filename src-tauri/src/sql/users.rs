@@ -26,6 +26,16 @@ pub fn get_by_id() -> &'static str {
     "SELECT id, name, email, role, avatar_url FROM active_users WHERE id = ?1"
 }
 
+pub fn get_by_ids(n: usize) -> String {
+    let placeholders = std::iter::repeat("?")
+        .take(n)
+        .collect::<Vec<_>>()
+        .join(",");
+    format!(
+        "SELECT id, name, email, role, avatar_url FROM active_users WHERE id IN ({placeholders})"
+    )
+}
+
 pub fn upsert() -> &'static str {
     "INSERT INTO users (id, name, role, avatar_url) VALUES (?1, ?2, ?3, ?4) \
      ON CONFLICT(id) DO UPDATE SET name = ?2, role = ?3, avatar_url = ?4"
@@ -45,4 +55,24 @@ pub fn update_password() -> &'static str {
 
 pub fn update_user() -> &'static str {
     "UPDATE users SET name = ?1, email = ?2, avatar_url = ?3 WHERE id = ?4"
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn get_by_ids_builds_n_placeholders() {
+        let sql = get_by_ids(0);
+        assert_eq!(
+            sql,
+            "SELECT id, name, email, role, avatar_url FROM active_users WHERE id IN ()"
+        );
+
+        let sql = get_by_ids(3);
+        assert_eq!(
+            sql,
+            "SELECT id, name, email, role, avatar_url FROM active_users WHERE id IN (?,?,?)"
+        );
+    }
 }
