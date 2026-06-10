@@ -762,7 +762,7 @@ export function useBulkProducts(ids: string[]) {
     queryKey: ['entity', 'products', 'bulk', [...ids].sort()],
     queryFn: async () => {
       const result = await commands.productsGetByIds(ids)
-      const data = unwrap(result)
+      const data = await unwrap(result)
       data.forEach((p) => {
         queryClient.setQueryData(entityQueryKeys.detail('product', p.id), p)
       })
@@ -778,7 +778,7 @@ export function useBulkVariants(ids: string[]) {
     queryKey: ['entity', 'variants', 'bulk', [...ids].sort()],
     queryFn: async () => {
       const result = await commands.variantsGetByIds(ids)
-      const data = unwrap(result)
+      const data = await unwrap(result)
       data.forEach((v) => {
         queryClient.setQueryData(entityQueryKeys.detail('variant', v.id), v)
       })
@@ -794,7 +794,7 @@ export function useBulkWarehouses(ids: string[]) {
     queryKey: ['entity', 'warehouses', 'bulk', [...ids].sort()],
     queryFn: async () => {
       const result = await commands.warehousesGetByIds(ids)
-      const data = unwrap(result)
+      const data = await unwrap(result)
       data.forEach((w) => {
         queryClient.setQueryData(entityQueryKeys.detail('warehouse', w.id), w)
       })
@@ -812,7 +812,7 @@ export function useBulkUsers(ids: string[]) {
       const result = await commands.usersGetByIds(
         ids.filter((id) => id.length > 0)
       )
-      const data = unwrap(result)
+      const data = await unwrap(result)
       data.forEach((u) => {
         queryClient.setQueryData(entityQueryKeys.detail('user', u.id), u)
       })
@@ -822,6 +822,8 @@ export function useBulkUsers(ids: string[]) {
   })
 }
 ```
+
+(`unwrap` is the local `async` helper in this file — must be awaited.)
 
 - [ ] **Step 3: Type-check**
 
