@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 import type { StockMovement } from '@/lib/bindings'
 import { entityQueryKeys, type MovementScope } from './queryKeys'
@@ -134,5 +134,71 @@ export function useWarehouses() {
       if (result.status === 'ok') return result.data
       return []
     },
+  })
+}
+
+export function useBulkProducts(ids: string[]) {
+  const queryClient = useQueryClient()
+  return useQuery({
+    queryKey: ['entity', 'products', 'bulk', [...ids].sort()],
+    queryFn: async () => {
+      const result = await commands.productsGetByIds(ids)
+      const data = await unwrap(result)
+      data.forEach((p) => {
+        queryClient.setQueryData(entityQueryKeys.detail('product', p.id), p)
+      })
+      return data
+    },
+    enabled: ids.length > 0,
+  })
+}
+
+export function useBulkVariants(ids: string[]) {
+  const queryClient = useQueryClient()
+  return useQuery({
+    queryKey: ['entity', 'variants', 'bulk', [...ids].sort()],
+    queryFn: async () => {
+      const result = await commands.variantsGetByIds(ids)
+      const data = await unwrap(result)
+      data.forEach((v) => {
+        queryClient.setQueryData(entityQueryKeys.detail('variant', v.id), v)
+      })
+      return data
+    },
+    enabled: ids.length > 0,
+  })
+}
+
+export function useBulkWarehouses(ids: string[]) {
+  const queryClient = useQueryClient()
+  return useQuery({
+    queryKey: ['entity', 'warehouses', 'bulk', [...ids].sort()],
+    queryFn: async () => {
+      const result = await commands.warehousesGetByIds(ids)
+      const data = await unwrap(result)
+      data.forEach((w) => {
+        queryClient.setQueryData(entityQueryKeys.detail('warehouse', w.id), w)
+      })
+      return data
+    },
+    enabled: ids.length > 0,
+  })
+}
+
+export function useBulkUsers(ids: string[]) {
+  const queryClient = useQueryClient()
+  return useQuery({
+    queryKey: ['entity', 'users', 'bulk', [...ids].sort()],
+    queryFn: async () => {
+      const result = await commands.usersGetByIds(
+        ids.filter((id) => id.length > 0)
+      )
+      const data = await unwrap(result)
+      data.forEach((u) => {
+        queryClient.setQueryData(entityQueryKeys.detail('user', u.id), u)
+      })
+      return data
+    },
+    enabled: ids.length > 0,
   })
 }
