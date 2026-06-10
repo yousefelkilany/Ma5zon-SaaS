@@ -6,13 +6,19 @@ import { commands } from '@/lib/tauri-bindings'
 import i18n from '@/i18n/config'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { StockScope } from '@/services/entity/queryKeys'
-import { productEntity, type transferState, variantEntity } from '@/lib/utils'
+import {
+  productEntity,
+  type transferState,
+  variantEntity,
+  warehouseEntity,
+} from '@/lib/utils'
+import { useBulkEntity } from '@/services/entity/queries'
+import type { Warehouse } from '@/lib/bindings'
 
 interface StockLevelsTableProps {
   stockLevels: StockLevelWithVariant[]
   isLoading?: boolean
   entity: StockScope
-  warehouseNames?: Map<string, string>
   onTransferSuccess?: () => void
 }
 
@@ -20,12 +26,26 @@ export function StockLevelsTable({
   stockLevels,
   isLoading,
   entity,
-  warehouseNames,
   onTransferSuccess,
 }: StockLevelsTableProps) {
   const { t } = useTranslation()
   const locale = i18n.language
   const [transferState, setTransferState] = useState<transferState | null>(null)
+
+  const warehouseIds = useMemo(
+    () => Array.from(new Set(stockLevels.map(sl => sl.warehouse_id))),
+    [stockLevels]
+  )
+  const { data: rawBulkWarehouses } = useBulkEntity(
+    warehouseEntity,
+    warehouseIds
+  )
+  const warehouseNames = useMemo(() => {
+    const bulkWarehouses = (rawBulkWarehouses ?? []) as Warehouse[]
+    const m = new Map<string, string>()
+    for (const w of bulkWarehouses) m.set(w.id, w.name)
+    return m
+  }, [rawBulkWarehouses])
 
   if (isLoading) {
     return (

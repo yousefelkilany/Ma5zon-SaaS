@@ -2,13 +2,35 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 import type { StockMovement } from '@/lib/bindings'
 import { entityQueryKeys, type MovementScope } from './queryKeys'
-import { productEntity, variantEntity } from '@/lib/utils'
+import {
+  type BulkResult,
+  type EntityType,
+  productEntity,
+  type RustCommandResponse,
+  userEntity,
+  variantEntity,
+  warehouseEntity,
+} from '@/lib/utils'
 
-async function unwrap<T>(
-  result: { status: 'ok'; data: T } | { status: 'error'; error: string }
-): Promise<T> {
+async function unwrap<T>(result: RustCommandResponse<T>): Promise<T> {
   if (result.status === 'error') throw new Error(result.error)
   return result.data
+}
+
+async function bulkFetch(
+  entity: EntityType,
+  ids: string[]
+): Promise<BulkResult> {
+  switch (entity) {
+    case productEntity:
+      return (await commands.productsGetByIds(ids)) as BulkResult
+    case variantEntity:
+      return (await commands.variantsGetByIds(ids)) as BulkResult
+    case warehouseEntity:
+      return (await commands.warehousesGetByIds(ids)) as BulkResult
+    case userEntity:
+      return (await commands.usersGetByIds(ids.filter(Boolean))) as BulkResult
+  }
 }
 
 export function useGetProduct(id: string | undefined) {
@@ -137,66 +159,16 @@ export function useWarehouses() {
   })
 }
 
-export function useBulkProducts(ids: string[]) {
+export function useBulkEntity(entity: EntityType, ids: string[]) {
   const queryClient = useQueryClient()
   return useQuery({
-    queryKey: ['entity', 'products', 'bulk', [...ids].sort()],
+    queryKey: ['entity', entity, 'bulk', [...ids].sort()],
     queryFn: async () => {
-      const result = await commands.productsGetByIds(ids)
+      const result = await bulkFetch(entity, ids)
       const data = await unwrap(result)
-      data.forEach((p) => {
-        queryClient.setQueryData(entityQueryKeys.detail('product', p.id), p)
-      })
-      return data
-    },
-    enabled: ids.length > 0,
-  })
-}
-
-export function useBulkVariants(ids: string[]) {
-  const queryClient = useQueryClient()
-  return useQuery({
-    queryKey: ['entity', 'variants', 'bulk', [...ids].sort()],
-    queryFn: async () => {
-      const result = await commands.variantsGetByIds(ids)
-      const data = await unwrap(result)
-      data.forEach((v) => {
-        queryClient.setQueryData(entityQueryKeys.detail('variant', v.id), v)
-      })
-      return data
-    },
-    enabled: ids.length > 0,
-  })
-}
-
-export function useBulkWarehouses(ids: string[]) {
-  const queryClient = useQueryClient()
-  return useQuery({
-    queryKey: ['entity', 'warehouses', 'bulk', [...ids].sort()],
-    queryFn: async () => {
-      const result = await commands.warehousesGetByIds(ids)
-      const data = await unwrap(result)
-      data.forEach((w) => {
-        queryClient.setQueryData(entityQueryKeys.detail('warehouse', w.id), w)
-      })
-      return data
-    },
-    enabled: ids.length > 0,
-  })
-}
-
-export function useBulkUsers(ids: string[]) {
-  const queryClient = useQueryClient()
-  return useQuery({
-    queryKey: ['entity', 'users', 'bulk', [...ids].sort()],
-    queryFn: async () => {
-      const result = await commands.usersGetByIds(
-        ids.filter((id) => id.length > 0)
+      data.forEach(e =>
+        queryClient.setQueryData(entityQueryKeys.detail(entity, e.id), e)
       )
-      const data = await unwrap(result)
-      data.forEach((u) => {
-        queryClient.setQueryData(entityQueryKeys.detail('user', u.id), u)
-      })
       return data
     },
     enabled: ids.length > 0,

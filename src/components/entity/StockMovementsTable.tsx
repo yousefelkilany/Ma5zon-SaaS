@@ -1,15 +1,11 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { StockMovement } from '@/lib/bindings'
+import type { Product, StockMovement, Variant, Warehouse } from '@/lib/bindings'
 import { Skeleton } from '@/components/ui/skeleton'
 import i18n from '@/i18n/config'
 import { cn, productEntity, variantEntity, warehouseEntity } from '@/lib/utils'
 import type { MovementScope } from '@/services/entity/queryKeys'
-import {
-  useBulkProducts,
-  useBulkVariants,
-  useBulkWarehouses,
-} from '@/services/entity/queries'
+import { useBulkEntity } from '@/services/entity/queries'
 
 function groupMovementsByVariantId(
   movements: StockMovement[]
@@ -53,21 +49,35 @@ export function StockMovementsTable({
   const productIds = useMemo(
     () =>
       Array.from(
-        new Set(
-          movements.flatMap((m) => (m.product_id ? [m.product_id] : []))
-        )
+        new Set(movements.flatMap(m => (m.product_id ? [m.product_id] : [])))
       ),
     [movements]
   )
+  const { data: rawBulkProducts } = useBulkEntity(productEntity, productIds)
+  const productNames = useMemo(() => {
+    const bulkProducts = (rawBulkProducts ?? []) as Product[]
+    const m = new Map<string, string>()
+    for (const p of bulkProducts) m.set(p.id, p.name)
+    return m
+  }, [rawBulkProducts])
+
   const variantIds = useMemo(
-    () => Array.from(new Set(movements.map((m) => m.variant_id))),
+    () => Array.from(new Set(movements.map(m => m.variant_id))),
     [movements]
   )
+  const { data: rawBulkVariants } = useBulkEntity(variantEntity, variantIds)
+  const variantNames = useMemo(() => {
+    const bulkVariants = (rawBulkVariants ?? []) as Variant[]
+    const m = new Map<string, string>()
+    for (const v of bulkVariants) m.set(v.id, v.variant_name)
+    return m
+  }, [rawBulkVariants])
+
   const warehouseIds = useMemo(
     () =>
       Array.from(
         new Set(
-          movements.flatMap((m) =>
+          movements.flatMap(m =>
             [m.from_warehouse_id, m.to_warehouse_id].filter(
               (id): id is string => !!id
             )
@@ -76,28 +86,16 @@ export function StockMovementsTable({
       ),
     [movements]
   )
-
-  const { data: bulkProducts } = useBulkProducts(productIds)
-  const { data: bulkVariants } = useBulkVariants(variantIds)
-  const { data: bulkWarehouses } = useBulkWarehouses(warehouseIds)
-
-  const productNames = useMemo(() => {
-    const m = new Map<string, string>()
-    for (const p of bulkProducts ?? []) m.set(p.id, p.name)
-    return m
-  }, [bulkProducts])
-
-  const variantNames = useMemo(() => {
-    const m = new Map<string, string>()
-    for (const v of bulkVariants ?? []) m.set(v.id, v.variant_name)
-    return m
-  }, [bulkVariants])
-
+  const { data: rawBulkWarehouses } = useBulkEntity(
+    warehouseEntity,
+    warehouseIds
+  )
   const warehouseNames = useMemo(() => {
+    const bulkWarehouses = (rawBulkWarehouses ?? []) as Warehouse[]
     const m = new Map<string, string>()
-    for (const w of bulkWarehouses ?? []) m.set(w.id, w.name)
+    for (const w of bulkWarehouses) m.set(w.id, w.name)
     return m
-  }, [bulkWarehouses])
+  }, [rawBulkWarehouses])
 
   if (isLoading) {
     return (

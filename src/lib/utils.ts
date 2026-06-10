@@ -3,6 +3,7 @@ import { twMerge } from 'tailwind-merge'
 import { invoke } from '@tauri-apps/api/core'
 import * as XLSX from 'xlsx'
 import type { ColumnDef } from './types'
+import type { Product, User, Variant, Warehouse } from './bindings'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -93,6 +94,13 @@ export interface transferState {
   warehouseId: string
   fromWarehouseId: string
 }
+
+export type RustCommandResponse<T> =
+  | { status: 'ok'; data: T }
+  | { status: 'error'; error: string }
+
+export type RustEntity = Product | Variant | Warehouse | User
+export type BulkResult = RustCommandResponse<RustEntity[]>
 
 export async function exportSelectedToCSV(
   columns: ColumnDef[],
