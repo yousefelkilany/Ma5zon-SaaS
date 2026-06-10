@@ -12,6 +12,7 @@ import type { ColumnDef, EntityRow, DataTableProps } from '@/lib/types/entity'
 import type { QueryClient } from '@tanstack/react-query'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsRTL } from '@/hooks/user-is-rtl'
+import { formatCurrency, formatNumber } from '@/lib/format'
 import { useTabStore } from '@/store/workspace-store'
 import { commands } from '@/lib/tauri-bindings'
 import {
@@ -41,26 +42,20 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function DataCell({ column, value }: { column: ColumnDef; value: unknown }) {
-  const { t } = useTranslation()
-
   if (column.type === 'status') {
     return <StatusBadge status={String(value)} />
   }
   if (column.type === 'currency') {
-    const currencySymbol = t('common.currency')
     return (
       <span className="font-data-tabular tabular-nums">
-        {currencySymbol}{' '}
-        {(Number(value) || 0).toLocaleString('en-US', {
-          minimumFractionDigits: 2,
-        })}
+        {formatCurrency(Number(value) || 0)}
       </span>
     )
   }
   if (column.type === 'number') {
     return (
       <span className="font-data-tabular tabular-nums text-right">
-        {Number(value).toLocaleString()}
+        {formatNumber(Number(value))}
       </span>
     )
   }
