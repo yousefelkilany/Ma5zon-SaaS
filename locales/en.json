@@ -418,5 +418,38 @@
   "errors.route.title": "Page Error",
   "errors.route.description": "This page couldn't be loaded. Please try again.",
   "errors.reload": "Reload Page",
-  "errors.details": "Error Details (Development Only)"
+  "errors.details": "Error Details (Development Only)",
+  "search": {
+    "noResults": "No results for \"{{query}}\"",
+    "justDeleted": "Just deleted",
+    "showMore": "Show more results",
+    "showMoreInGroup": "+{{count}} more in {{group}}",
+    "removedDuringStale": "{{count}} row(s) just removed",
+    "totalCount": "{{count}} total",
+    "unavailable": "Search is unavailable",
+    "recentSearches": "Recent searches",
+    "recentMatches": "Recent matches",
+    "noRecentMatches": "No matching recent searches",
+    "noHistory": "No recent searches",
+    "deleteEntry": "Delete this entry",
+    "clearAll": "Clear all",
+    "group": {
+      "products": "Products",
+      "variants": "Variants",
+      "warehouses": "Warehouses"
+    },
+    "matchedColumn": {
+      "name": "name",
+      "category": "category",
+      "company": "company",
+      "sku": "sku",
+      "variant_name": "variant name",
+      "location": "location"
+    }
+  },
+  "entity": {
+    "missing": {
+      "message": "This item is no longer available."
+    }
+  }
 }

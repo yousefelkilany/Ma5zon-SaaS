@@ -422,5 +422,38 @@
   "errors.route.title": "خطأ في الصفحة",
   "errors.route.description": "تعذر تحميل هذه الصفحة. يرجى المحاولة مرة أخرى.",
   "errors.reload": "إعادة تحميل الصفحة",
-  "errors.details": "تفاصيل الخطأ (للمطورين فقط)"
+  "errors.details": "تفاصيل الخطأ (للمطورين فقط)",
+  "search": {
+    "noResults": "لا توجد نتائج لـ \"{{query}}\"",
+    "justDeleted": "تم الحذف للتو",
+    "showMore": "عرض المزيد من النتائج",
+    "showMoreInGroup": "+{{count}} أخرى في {{group}}",
+    "removedDuringStale": "تم حذف {{count}} صف/صفوف للتو",
+    "totalCount": "{{count}} إجمالي",
+    "unavailable": "البحث غير متاح",
+    "recentSearches": "عمليات البحث الأخيرة",
+    "recentMatches": "مطابقات حديثة",
+    "noRecentMatches": "لا توجد عمليات بحث حديثة مطابقة",
+    "noHistory": "لا توجد عمليات بحث حديثة",
+    "deleteEntry": "حذف هذا العنصر",
+    "clearAll": "مسح الكل",
+    "group": {
+      "products": "المنتجات",
+      "variants": "المتغيرات",
+      "warehouses": "المخازن"
+    },
+    "matchedColumn": {
+      "name": "الاسم",
+      "category": "الفئة",
+      "company": "الشركة",
+      "sku": "رمز SKU",
+      "variant_name": "اسم المتغير",
+      "location": "الموقع"
+    }
+  },
+  "entity": {
+    "missing": {
+      "message": "هذا العنصر لم يعد متاحًا."
+    }
+  }
 }
