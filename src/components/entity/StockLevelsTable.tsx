@@ -1,9 +1,9 @@
 import { Fragment, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
+import { formatNumber } from '@/lib/format'
 import type { StockLevelWithVariant } from '@/lib/types/entity'
 import { commands } from '@/lib/tauri-bindings'
-import i18n from '@/i18n/config'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { StockScope } from '@/services/entity/queryKeys'
 import {
@@ -29,7 +29,6 @@ export function StockLevelsTable({
   onTransferSuccess,
 }: StockLevelsTableProps) {
   const { t } = useTranslation()
-  const locale = i18n.language
   const [transferState, setTransferState] = useState<transferState | null>(null)
 
   const warehouseIds = useMemo(
@@ -70,7 +69,6 @@ export function StockLevelsTable({
       <VariantStockView
         stockLevels={stockLevels}
         warehouseNames={warehouseNames}
-        locale={locale}
         transferState={transferState}
         setTransferState={setTransferState}
         onTransferSuccess={onTransferSuccess}
@@ -83,7 +81,6 @@ export function StockLevelsTable({
       <ProductStockPivot
         stockLevels={stockLevels}
         warehouseNames={warehouseNames}
-        locale={locale}
         transferState={transferState}
         setTransferState={setTransferState}
         onTransferSuccess={onTransferSuccess}
@@ -95,14 +92,12 @@ export function StockLevelsTable({
 function VariantStockView({
   stockLevels,
   warehouseNames,
-  locale,
   transferState,
   setTransferState,
   onTransferSuccess,
 }: {
   stockLevels: StockLevelWithVariant[]
   warehouseNames?: Map<string, string>
-  locale: string
   transferState: transferState | null
   setTransferState: React.Dispatch<React.SetStateAction<transferState | null>>
   onTransferSuccess?: () => void
@@ -132,7 +127,7 @@ function VariantStockView({
                   : '-'}
               </td>
               <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
-                {level.quantity.toLocaleString(locale)}
+                {formatNumber(level.quantity)}
                 <button
                   onClick={() =>
                     setTransferState({
@@ -169,14 +164,12 @@ function VariantStockView({
 function ProductStockPivot({
   stockLevels,
   warehouseNames,
-  locale,
   transferState,
   setTransferState,
   onTransferSuccess,
 }: {
   stockLevels: StockLevelWithVariant[]
   warehouseNames?: Map<string, string>
-  locale: string
   transferState: transferState | null
   setTransferState: React.Dispatch<React.SetStateAction<transferState | null>>
   onTransferSuccess?: () => void
@@ -279,7 +272,7 @@ function ProductStockPivot({
                   key={col}
                   className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums group"
                 >
-                  {row.quantities.get(col)?.toLocaleString(locale) ?? '-'}
+                  {formatNumber(row.quantities.get(col))}
                   <button
                     onClick={() =>
                       setTransferState({
@@ -298,7 +291,7 @@ function ProductStockPivot({
                 </td>
               ))}
               <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums font-bold">
-                {row.rowTotal.toLocaleString(locale)}
+                {formatNumber(row.rowTotal)}
               </td>
             </tr>
             {columns.map(col =>
@@ -327,13 +320,13 @@ function ProductStockPivot({
               key={col}
               className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums"
             >
-              {((totals as Record<string, number>)[col] || 0).toLocaleString(
-                locale
+              {formatNumber(
+                (totals as Record<string, number>)[col] || 0
               )}
             </td>
           ))}
           <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
-            {totals._rowTotal.toLocaleString(locale)}
+            {formatNumber(totals._rowTotal)}
           </td>
         </tr>
       </tfoot>
