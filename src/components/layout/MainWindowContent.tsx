@@ -87,18 +87,19 @@ export function MainWindowContent() {
 
     const search = { entity_modal, entity_id }
     if (location.pathname !== targetPath) navigate({ to: targetPath, search })
-  }, [
-    activeTabId,
-    tabs,
-    navigate,
-    location.pathname,
-    location.search,
-    setTabModal,
-    setTabCreateDraft,
-    setTabEditDraft,
-    setTabIsDirty,
-    tabState,
-  ])
+  }, [activeTabId, tabs, navigate, location.pathname, location.search])
+  // }, [
+  //   activeTabId,
+  //   tabs,
+  //   navigate,
+  //   location.pathname,
+  //   location.search,
+  //   setTabModal,
+  //   setTabCreateDraft,
+  //   setTabEditDraft,
+  //   setTabIsDirty,
+  //   tabState,
+  // ])
 
   const handleInterceptedDiscard = () => {
     interceptedNavigation?.onDiscard()
