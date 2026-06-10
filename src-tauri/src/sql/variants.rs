@@ -34,6 +34,18 @@ pub fn get_by_id() -> &'static str {
      FROM active_product_variants WHERE id = ?1"
 }
 
+pub fn get_by_ids(n: usize) -> String {
+    let placeholders = std::iter::repeat("?")
+        .take(n)
+        .collect::<Vec<_>>()
+        .join(",");
+    format!(
+        "SELECT id, product_id, sku, variant_name, uom_id, retail_price, \
+         wholesale_price, distribution_price, created_at, updated_at, deleted_at \
+         FROM active_product_variants WHERE id IN ({placeholders})"
+    )
+}
+
 pub fn get_by_product() -> &'static str {
     "SELECT id, product_id, sku, variant_name, uom_id, retail_price, \
      wholesale_price, distribution_price, created_at, updated_at, deleted_at \
@@ -66,4 +78,28 @@ pub fn update() -> &'static str {
 
 pub fn soft_delete() -> &'static str {
     "UPDATE product_variants SET deleted_at = ?1 WHERE id = ?2 AND deleted_at IS NULL"
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn get_by_ids_builds_n_placeholders() {
+        let sql = get_by_ids(0);
+        assert_eq!(
+            sql,
+            "SELECT id, product_id, sku, variant_name, uom_id, retail_price, \
+             wholesale_price, distribution_price, created_at, updated_at, deleted_at \
+             FROM active_product_variants WHERE id IN ()"
+        );
+
+        let sql = get_by_ids(2);
+        assert_eq!(
+            sql,
+            "SELECT id, product_id, sku, variant_name, uom_id, retail_price, \
+             wholesale_price, distribution_price, created_at, updated_at, deleted_at \
+             FROM active_product_variants WHERE id IN (?,?)"
+        );
+    }
 }
