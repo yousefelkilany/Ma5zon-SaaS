@@ -1,12 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 import type { StockMovement } from '@/lib/bindings'
-import {
-  entityQueryKeys,
-  type MovementScope,
-  type StockScope,
-} from './queryKeys'
-import { productEntity } from '@/lib/utils'
+import { entityQueryKeys, type MovementScope } from './queryKeys'
+import { productEntity, variantEntity } from '@/lib/utils'
 
 async function unwrap<T>(
   result: { status: 'ok'; data: T } | { status: 'error'; error: string }
@@ -57,14 +53,11 @@ export function useGetWarehouse(id: string | undefined) {
   })
 }
 
-export function useStockLevelsForProduct(
-  id: string | undefined,
-  scope: StockScope = 'product'
-) {
+export function useStockLevelsForProduct(id: string | undefined) {
   return useQuery({
     queryKey: id
-      ? entityQueryKeys.stockLevels(scope, id)
-      : ['stock-levels-' + scope, '__none__'],
+      ? entityQueryKeys.stockLevels(productEntity, id)
+      : ['stock-levels', productEntity, '__none__'],
     queryFn: async () => {
       const idOrThrow = id
       if (!idOrThrow) throw new Error('id required')
@@ -77,8 +70,8 @@ export function useStockLevelsForProduct(
 export function useStockLevelsForVariant(id: string | undefined) {
   return useQuery({
     queryKey: id
-      ? entityQueryKeys.stockLevels('variant', id)
-      : ['stock-levels-variant', '__none__'],
+      ? entityQueryKeys.stockLevels(variantEntity, id)
+      : ['stock-levels', variantEntity, '__none__'],
     queryFn: async () => {
       const idOrThrow = id
       if (!idOrThrow) throw new Error('id required')

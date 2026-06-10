@@ -21,7 +21,6 @@ import {
   useGetProduct,
   useStockLevelsForProduct,
   useStockMovements,
-  useWarehouses,
 } from '@/services/entity/queries'
 import {
   useCreateProduct,
@@ -32,7 +31,12 @@ import {
   registerModalHandle,
   type ModalHandle,
 } from '@/components/layout/modal-handle-registry'
-import { type EntityType, productEntity } from '@/lib/utils'
+import {
+  type EntityModalTab,
+  EntityModalTabs,
+  type EntityType,
+  productEntity,
+} from '@/lib/utils'
 
 interface ProductModalProps {
   entityId?: string
@@ -42,8 +46,6 @@ interface ProductModalProps {
   container?: HTMLElement
   entityType?: EntityType
 }
-
-type TabId = 'details' | 'stock' | 'insights' | 'audits'
 
 const PRODUCT_ROWS = [
   [
@@ -85,7 +87,7 @@ export function ProductModal({
     category: '',
   })
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [activeTab, setActiveTab] = useState<TabId>('details')
+  const [activeTab, setActiveTab] = useState<EntityModalTab>('details')
   const [createDraft, setCreateDraft] = useState<Record<
     string,
     unknown
@@ -106,10 +108,6 @@ export function ProductModal({
     isLoading: isLoadingMovements,
     error: movementsError,
   } = useStockMovements('product', mode === 'view' ? entityId : undefined)
-  const { data: warehouses } = useWarehouses()
-
-  const warehouseNames = new Map<string, string>()
-  if (warehouses) for (const w of warehouses) warehouseNames.set(w.id, w.name)
 
   // ----- Sync edit form when entity loads -----
   useEffect(() => {
@@ -345,7 +343,7 @@ export function ProductModal({
           </DialogDescription>
 
           <div role="tablist" className="flex border-b mb-4">
-            {(['details', 'stock', 'insights', 'audits'] as const).map(id => (
+            {EntityModalTabs.map(id => (
               <button
                 key={id}
                 role="tab"
@@ -451,7 +449,6 @@ export function ProductModal({
               stockLevels={stockLevels ?? []}
               isLoading={isLoadingStock}
               entity={productEntity}
-              warehouseNames={warehouseNames}
               onTransferSuccess={() =>
                 reactQueryClient.invalidateQueries({
                   queryKey: ['stock-levels-product', entityId],
@@ -466,7 +463,6 @@ export function ProductModal({
               isLoading={isLoadingMovements}
               error={movementsError?.message ?? ''}
               entity={productEntity}
-              warehouseNames={warehouseNames}
               emptyMessage={t('entity.stockMovement.noMovementsProduct')}
             />
           )}

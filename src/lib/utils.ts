@@ -46,6 +46,14 @@ export const ModalTypes = [
 export type ModalType = (typeof ModalTypes)[number]
 export type NullableModalType = ModalType | null
 
+export const EntityModalTabs = [
+  'details',
+  'stock',
+  'audits',
+  'insights',
+] as const
+export type EntityModalTab = (typeof EntityModalTabs)[number]
+
 export const TabTypes = [
   'dashboard',
   'new-tab',

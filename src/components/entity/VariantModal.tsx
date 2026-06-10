@@ -16,7 +16,7 @@ import { updateVariantSchema } from '@/lib/validation/schemas'
 import { VariantForm } from '@/components/entity-form'
 import { EntityFieldGrid } from './EntityFieldGrid'
 import { useUnsavedGuard } from '@/hooks/use-unsaved-guard'
-import { type EntityTabKey, useUIStore } from '@/store/ui-store'
+import { useUIStore } from '@/store/ui-store'
 import {
   useGetVariant,
   useStockLevelsForVariant,
@@ -32,6 +32,12 @@ import {
   registerModalHandle,
   type ModalHandle,
 } from '@/components/layout/modal-handle-registry'
+import {
+  type EntityModalTab,
+  EntityModalTabs,
+  type EntityType,
+  variantEntity,
+} from '@/lib/utils'
 
 interface VariantModalProps {
   entityId?: string
@@ -40,7 +46,7 @@ interface VariantModalProps {
   mode: 'view' | 'create'
   onDeleted?: () => void
   container?: HTMLElement
-  entityType?: EntityTabKey
+  entityType?: EntityType
 }
 
 interface EditForm {
@@ -51,8 +57,6 @@ interface EditForm {
   wholesale_price: number | undefined
   distribution_price: number | undefined
 }
-
-type TabId = 'details' | 'stock' | 'insights' | 'audits'
 
 const VARIANT_ROWS = [
   [
@@ -113,7 +117,7 @@ export function VariantModal({
     distribution_price: undefined,
   })
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [activeTab, setActiveTab] = useState<TabId>('details')
+  const [activeTab, setActiveTab] = useState<EntityModalTab>('details')
   const [createDraft, setCreateDraft] = useState<Record<
     string,
     unknown
@@ -408,7 +412,7 @@ export function VariantModal({
           <DialogDescription>{entity ? entity.sku : ''}</DialogDescription>
 
           <div role="tablist" className="flex border-b mb-4">
-            {(['details', 'stock', 'insights', 'audits'] as const).map(id => (
+            {EntityModalTabs.map(id => (
               <button
                 key={id}
                 role="tab"
@@ -517,7 +521,7 @@ export function VariantModal({
                 sku: '',
               }))}
               isLoading={isLoadingStock}
-              view="variant"
+              entity={variantEntity}
               warehouseNames={warehouseNames}
               onTransferSuccess={() =>
                 reactQueryClient.invalidateQueries({
@@ -532,7 +536,7 @@ export function VariantModal({
               movements={movements ?? []}
               isLoading={isLoadingMovements}
               error={movementsError?.message ?? ''}
-              variant="variant"
+              entity={variantEntity}
               warehouseNames={warehouseNames}
               emptyMessage={t('entity.stockMovement.noMovementsVariant')}
             />

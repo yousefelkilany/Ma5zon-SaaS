@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import i18n from '@/i18n/config'
 import { cn, productEntity, variantEntity, warehouseEntity } from '@/lib/utils'
 import type { MovementScope } from '@/services/entity/queryKeys'
+import { useWarehouses } from '@/services/entity/queries'
 
 function groupMovementsByVariantId(
   movements: StockMovement[]
@@ -22,9 +23,6 @@ interface StockMovementsTableProps {
   isLoading: boolean
   error?: string
   entity?: MovementScope
-  warehouseNames?: Map<string, string>
-  productNames?: Map<string, string>
-  variantNames?: Map<string, string>
   emptyMessage?: string
   isPaginated?: boolean
   currentPage?: number
@@ -38,9 +36,6 @@ export function StockMovementsTable({
   isLoading,
   error,
   entity = variantEntity,
-  warehouseNames,
-  productNames,
-  variantNames,
   emptyMessage,
   isPaginated,
   currentPage = 1,
@@ -50,6 +45,13 @@ export function StockMovementsTable({
 }: StockMovementsTableProps) {
   const { t } = useTranslation()
   const locale = i18n.language
+
+  const productNames = new Map<string, string>()
+  const variantNames = new Map<string, string>()
+  const warehouseNames = new Map<string, string>()
+
+  const { data: warehouses } = useWarehouses()
+  if (warehouses) for (const w of warehouses) warehouseNames.set(w.id, w.name)
 
   if (isLoading) {
     return (

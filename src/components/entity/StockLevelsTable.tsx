@@ -6,7 +6,7 @@ import { commands } from '@/lib/tauri-bindings'
 import i18n from '@/i18n/config'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { StockScope } from '@/services/entity/queryKeys'
-import { productEntity, transferState, variantEntity } from '@/lib/utils'
+import { productEntity, type transferState, variantEntity } from '@/lib/utils'
 
 interface StockLevelsTableProps {
   stockLevels: StockLevelWithVariant[]
@@ -84,9 +84,7 @@ function VariantStockView({
   warehouseNames?: Map<string, string>
   locale: string
   transferState: transferState | null
-  setTransferState: React.Dispatch<
-    React.SetStateAction<transferState | null>
-  >
+  setTransferState: React.Dispatch<React.SetStateAction<transferState | null>>
   onTransferSuccess?: () => void
 }) {
   const { t } = useTranslation()

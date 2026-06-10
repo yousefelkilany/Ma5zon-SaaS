@@ -5,7 +5,8 @@ import {
   type EntityType,
 } from '@/lib/utils'
 
-export type StockScope = 'product' | 'variant'
+const _StockScopeEntities = [productEntity, variantEntity]
+export type StockScope = (typeof _StockScopeEntities)[number]
 const _MovementScopeEntities = [productEntity, variantEntity, warehouseEntity]
 export type MovementScope = (typeof _MovementScopeEntities)[number]
 
@@ -31,9 +32,9 @@ export const entityQueryKeys = {
 
   // secondary reads
   stockLevels: (scope: StockScope, id: string) =>
-    ['stock-levels-' + scope, id] as const,
+    ['stock-levels', scope, id] as const,
   stockMovements: (scope: MovementScope, id: string) =>
-    ['stock-movements-' + scope, id] as const,
+    ['stock-movements', scope, id] as const,
   warehouses: () => ['warehouses', 'all'] as const,
   variantsByProduct: (productId: string) => [variantEntity, productId] as const,
   productsByWarehouse: (warehouseId: string) =>
