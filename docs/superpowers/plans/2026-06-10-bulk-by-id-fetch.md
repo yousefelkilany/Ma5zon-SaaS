@@ -4,7 +4,7 @@
 
 **Goal:** Add four `*_get_by_ids` Rust commands (products, variants, warehouses, users) and matching `useBulk*` TanStack Query hooks, then wire them into `StockMovementsTable` so the three name maps are populated by real data instead of empty `Map`s.
 
-**Architecture:** One symmetric `get_by_ids` command per entity takes a `Vec<i64>` (or `Vec<String>` for users, whose ids round-trip as text in the existing `load_user` command) and returns the matching rows in a single SQL round-trip via dynamically-generated `IN (?, ?, ...)` clauses. Each React hook calls the command and prefills the per-id detail cache used by the existing `useGet*` hooks. StockMovementsTable extracts id lists from its `movements` prop, calls the three relevant hooks, and builds lookup maps from the returned data.
+**Architecture:** One symmetric `get_by_ids` command per entity takes a `Vec<String>` and returns the matching rows in a single SQL round-trip via dynamically-generated `IN (?, ?, ...)` clauses. (All four commands use `Vec<String>` to match the existing `*GetById` convention and to satisfy tauri-specta's default `Typescript` exporter, which rejects `i64`. rusqlite coerces the string parameter to integer for the `IN (...)` clause against the `INTEGER` id column.) Each React hook calls the command and prefills the per-id detail cache used by the existing `useGet*` hooks. StockMovementsTable extracts id lists from its `movements` prop, calls the three relevant hooks, and builds lookup maps from the returned data.
 
 **Tech Stack:** Tauri v2, tauri-specta, rusqlite, TanStack Query v5, Vitest.
 
@@ -352,7 +352,7 @@ Append the new command at the end of `src-tauri/src/commands/products.rs`:
 #[specta::specta]
 pub async fn products_get_by_ids(
     app: AppHandle,
-    ids: Vec<i64>,
+    ids: Vec<String>,
 ) -> Result<Vec<Product>, String> {
     if ids.is_empty() {
         return Ok(vec![]);
@@ -430,7 +430,7 @@ Append at the end of `src-tauri/src/commands/variants.rs`:
 #[specta::specta]
 pub async fn variants_get_by_ids(
     app: AppHandle,
-    ids: Vec<i64>,
+    ids: Vec<String>,
 ) -> Result<Vec<Variant>, String> {
     if ids.is_empty() {
         return Ok(vec![]);
@@ -512,7 +512,7 @@ Append at the end of `src-tauri/src/commands/warehouses.rs`:
 #[specta::specta]
 pub async fn warehouses_get_by_ids(
     app: AppHandle,
-    ids: Vec<i64>,
+    ids: Vec<String>,
 ) -> Result<Vec<Warehouse>, String> {
     if ids.is_empty() {
         return Ok(vec![]);
@@ -761,9 +761,7 @@ export function useBulkProducts(ids: string[]) {
   return useQuery({
     queryKey: ['entity', 'products', 'bulk', [...ids].sort()],
     queryFn: async () => {
-      const result = await commands.productsGetByIds(
-        ids.map(Number).filter(Number.isFinite)
-      )
+      const result = await commands.productsGetByIds(ids)
       const data = unwrap(result)
       data.forEach((p) => {
         queryClient.setQueryData(entityQueryKeys.detail('product', p.id), p)
@@ -779,9 +777,7 @@ export function useBulkVariants(ids: string[]) {
   return useQuery({
     queryKey: ['entity', 'variants', 'bulk', [...ids].sort()],
     queryFn: async () => {
-      const result = await commands.variantsGetByIds(
-        ids.map(Number).filter(Number.isFinite)
-      )
+      const result = await commands.variantsGetByIds(ids)
       const data = unwrap(result)
       data.forEach((v) => {
         queryClient.setQueryData(entityQueryKeys.detail('variant', v.id), v)
@@ -797,9 +793,7 @@ export function useBulkWarehouses(ids: string[]) {
   return useQuery({
     queryKey: ['entity', 'warehouses', 'bulk', [...ids].sort()],
     queryFn: async () => {
-      const result = await commands.warehousesGetByIds(
-        ids.map(Number).filter(Number.isFinite)
-      )
+      const result = await commands.warehousesGetByIds(ids)
       const data = unwrap(result)
       data.forEach((w) => {
         queryClient.setQueryData(entityQueryKeys.detail('warehouse', w.id), w)
@@ -918,11 +912,11 @@ describe('bulk fetch hooks', () => {
     })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
-    expect(commands.productsGetByIds).toHaveBeenCalledWith([1, 2])
+    expect(commands.productsGetByIds).toHaveBeenCalledWith(['1', '2'])
     expect(result.current.data).toHaveLength(2)
   })
 
-  it('useBulkVariants passes numeric ids', async () => {
+  it('useBulkVariants passes ids through as strings', async () => {
     vi.mocked(commands.variantsGetByIds).mockResolvedValue(
       mockOk([{ id: '10', product_id: '1', sku: 'SKU-10', variant_name: 'Red' }]) as never
     )
@@ -932,11 +926,11 @@ describe('bulk fetch hooks', () => {
     })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
-    expect(commands.variantsGetByIds).toHaveBeenCalledWith([10])
+    expect(commands.variantsGetByIds).toHaveBeenCalledWith(['10'])
     expect(result.current.data?.[0].variant_name).toBe('Red')
   })
 
-  it('useBulkWarehouses passes numeric ids', async () => {
+  it('useBulkWarehouses passes ids through as strings', async () => {
     vi.mocked(commands.warehousesGetByIds).mockResolvedValue(
       mockOk([{ id: '20', name: 'Main', location: 'HQ' }]) as never
     )
@@ -946,7 +940,7 @@ describe('bulk fetch hooks', () => {
     })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
-    expect(commands.warehousesGetByIds).toHaveBeenCalledWith([20])
+    expect(commands.warehousesGetByIds).toHaveBeenCalledWith(['20'])
     expect(result.current.data?.[0].name).toBe('Main')
   })
 
