@@ -813,14 +813,14 @@ export function useBulkWarehouses(ids: string[]) {
 export function useBulkUsers(ids: string[]) {
   const queryClient = useQueryClient()
   return useQuery({
-    queryKey: ['users', 'bulk', [...ids].sort()],
+    queryKey: ['entity', 'users', 'bulk', [...ids].sort()],
     queryFn: async () => {
       const result = await commands.usersGetByIds(
         ids.filter((id) => id.length > 0)
       )
       const data = unwrap(result)
       data.forEach((u) => {
-        queryClient.setQueryData(['users', 'detail', u.id], u)
+        queryClient.setQueryData(entityQueryKeys.detail('user', u.id), u)
       })
       return data
     },
@@ -828,8 +828,6 @@ export function useBulkUsers(ids: string[]) {
   })
 }
 ```
-
-(Note: `user` is not part of the `EntityType` framework, so this hook uses its own `['users', 'detail', id]` and `['users', 'bulk', ...sortedIds]` key shape instead of `entityQueryKeys.detail`.)
 
 - [ ] **Step 3: Type-check**
 
