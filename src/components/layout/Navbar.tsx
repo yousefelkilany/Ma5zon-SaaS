@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { ProfileSection } from '@/components/auth'
 import { SettingsPopover } from './SettingsPopover'
+import { GlobalSearch } from './GlobalSearch'
 
 export function Navbar() {
   const { t } = useTranslation()
@@ -26,16 +27,7 @@ export function Navbar() {
 
       {/* Center: Global Search */}
       <div className="flex-1 flex items-center justify-center max-w-xl mx-auto">
-        <div className="relative w-full">
-          <span className="material-symbols-outlined absolute inset-inline-start-1 top-1/2 -translate-y-1/2 me-2 text-on-surface-variant text-[20px]">
-            search
-          </span>
-          <input
-            className="bg-surface-container-high border border-outline-variant/30 rounded-lg ps-10 pe-4 py-2 text-body-sm font-body-sm text-on-surface focus:ring-1 focus:ring-primary w-full transition-all"
-            placeholder={t('nav.globalSearchPlaceholder')}
-            type="text"
-          />
-        </div>
+        <GlobalSearch />
       </div>
 
       {/* Right: Settings & Profile */}
