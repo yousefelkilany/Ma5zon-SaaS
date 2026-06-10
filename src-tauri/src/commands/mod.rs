@@ -12,6 +12,7 @@ pub mod preferences;
 pub mod products;
 pub mod quick_pane;
 pub mod recovery;
+pub mod search;
 pub mod stock_movements;
 pub mod stocks;
 pub mod users;
@@ -25,8 +26,9 @@ pub trait DatabaseInitializable: Send + Sync {
 }
 
 use self::{
-    products::ProductsInitializer, stocks::StockInitializer, users::UserInitializer,
-    variants::VariantsInitializer, warehouses::WarehousesInitializer,
+    products::ProductsInitializer, search::SearchHistoryInitializer, search::SearchInitializer,
+    stocks::StockInitializer, users::UserInitializer, variants::VariantsInitializer,
+    warehouses::WarehousesInitializer,
 };
 
 pub const TABLE_INITIALIZERS: &[&dyn DatabaseInitializable] = &[
@@ -34,5 +36,7 @@ pub const TABLE_INITIALIZERS: &[&dyn DatabaseInitializable] = &[
     &ProductsInitializer,
     &VariantsInitializer,
     &WarehousesInitializer,
+    &SearchInitializer,
+    &SearchHistoryInitializer,
     &StockInitializer,
 ];
