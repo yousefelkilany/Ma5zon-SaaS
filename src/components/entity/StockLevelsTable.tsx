@@ -320,9 +320,7 @@ function ProductStockPivot({
               key={col}
               className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums"
             >
-              {formatNumber(
-                (totals as Record<string, number>)[col] || 0
-              )}
+              {formatNumber((totals as Record<string, number>)[col] || 0)}
             </td>
           ))}
           <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
