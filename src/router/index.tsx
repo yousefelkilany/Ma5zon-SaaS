@@ -18,6 +18,7 @@ const rootRoute = createRootRoute({
 const entitySearchSchema = z.object({
   entity_modal: z.enum(ModalTypes).optional(),
   entity_id: z.string().optional(),
+  product_id: z.string().optional(),
 })
 
 const entityRoute = createRoute({
