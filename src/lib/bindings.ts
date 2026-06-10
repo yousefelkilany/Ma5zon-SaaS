@@ -486,6 +486,54 @@ async productsGetByWarehousePaginated(warehouseId: string, page: number, pageSiz
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async globalSearch(query: string, limit: number, offset: number) : Promise<Result<PaginatedSearchResult, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("global_search", { query, limit, offset }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async refreshSearchIndex() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("refresh_search_index") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async searchHistoryList(userId: string, limit: number) : Promise<Result<SearchHistoryEntry[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("search_history_list", { userId, limit }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async searchHistoryRecord(userId: string, query: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("search_history_record", { userId, query }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async searchHistoryDelete(id: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("search_history_delete", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async searchHistoryClear(userId: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("search_history_clear", { userId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -519,6 +567,7 @@ export type FilterState = { column_id: string; operator: string; value: JsonValu
 export type JsonValue = null | boolean | number | string | JsonValue[] | Partial<{ [key in string]: JsonValue }>
 export type NewVariant = { product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number }
 export type PaginatedResponse<T> = { data: T[]; total_count: number; total_pages: number }
+export type PaginatedSearchResult = { data: SearchHit[]; total_count: number; total_pages: number }
 export type Product = { id: string; company: string; name: string; category: string; created_at: string | null; updated_at: string | null; deleted_at: string | null }
 export type ProductVariantWithStock = { id: string; product_id: string; sku: string; variant_name: string; quantity: number; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number; created_at: string | null; updated_at: string | null; deleted_at: string | null }
 export type ProductWithStock = { id: string; company: string; name: string; quantity: number; category: string }
@@ -546,6 +595,8 @@ export type RecoveryError =
  * JSON serialization/deserialization error
  */
 { type: "ParseError"; message: string }
+export type SearchHistoryEntry = { id: string; user_id: string; query: string; created_at: string | null }
+export type SearchHit = { entity_type: string; id: string; parent_id: string | null; matched_column: string; match_title: string; highlighted_title: string; subtitle: string; meta: string | null; rank: number }
 export type SortState = { column_id: string; direction: string }
 export type StockLevel = { variant_id: string; warehouse_id: string; quantity: number }
 export type StockLevelWithVariant = { variant_id: string; variant_name: string; sku: string; warehouse_id: string; quantity: number }
