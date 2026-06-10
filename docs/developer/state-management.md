@@ -173,3 +173,19 @@ rule:
     - pattern: const { $$$PROPS } = useUIStore($$$ARGS)
     - pattern: const { $$$PROPS } = useNewStore($$$ARGS) # Add new store
 ```
+
+## Global search hooks
+
+- `useGlobalSearch(query)` — `useInfiniteQuery` returning
+  `{ flat: SearchHit[] }` and pagination state. The hook itself debounces
+  by gating on `query.trim().length >= SEARCH_THRESHOLD` (3 characters);
+  consumers do not need to debounce.
+- `useSearchHistory(userId)` — list the last `SEARCH_HISTORY_LIMIT` (10)
+  distinct queries for the active user.
+- `useRecordSearchHistory(userId)`, `useDeleteSearchHistoryEntry(userId)`,
+  `useClearSearchHistory(userId)` — mutations that invalidate the history
+  query on success.
+
+The history is only recorded when the user submits a search (Enter or
+result click) and at least one result was returned. No-result queries are
+not persisted.

@@ -242,6 +242,19 @@ specta-typescript = "=0.0.9"
 
 Note: Using exact versions (`=`) during RC phase to prevent breaking changes.
 
+## Global Search
+
+- `globalSearch(query, limit, offset)` → `PaginatedSearchResult`
+- `refreshSearchIndex()` → `void`
+- `searchHistoryList(userId, limit)` → `SearchHistoryEntry[]`
+- `searchHistoryRecord(userId, query)` → `void`
+- `searchHistoryDelete(id)` → `void`
+- `searchHistoryClear(userId)` → `void`
+
+All backed by per-entity FTS5 virtual tables. See
+`docs/superpowers/specs/2026-06-10-global-search-design.md` for the schema,
+triggers, and the union query.
+
 ## References
 
 - [tauri-specta GitHub](https://github.com/specta-rs/tauri-specta)
