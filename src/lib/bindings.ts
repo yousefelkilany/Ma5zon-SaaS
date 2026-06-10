@@ -207,6 +207,14 @@ async updatePassword(userId: string, currentPassword: string, newPassword: strin
     else return { status: "error", error: e  as any };
 }
 },
+async usersGetByIds(ids: string[]) : Promise<Result<User[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("users_get_by_ids", { ids }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async getAll(filters: FilterState[], columns: string[], sort: SortState | null) : Promise<Result<Product[], string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_all", { filters, columns, sort }) };
@@ -218,6 +226,14 @@ async getAll(filters: FilterState[], columns: string[], sort: SortState | null) 
 async getById(id: string) : Promise<Result<Product | null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_by_id", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async productsGetByIds(ids: string[]) : Promise<Result<Product[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("products_get_by_ids", { ids }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -279,6 +295,14 @@ async variantsGetById(id: string) : Promise<Result<Variant | null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+async variantsGetByIds(ids: string[]) : Promise<Result<Variant[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("variants_get_by_ids", { ids }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async variantsCreate(variant: NewVariant) : Promise<Result<Variant, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("variants_create", { variant }) };
@@ -314,6 +338,14 @@ async warehousesGetAll(filters: FilterState[], columns: string[], sort: SortStat
 async warehousesGetById(id: string) : Promise<Result<Warehouse | null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("warehouses_get_by_id", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async warehousesGetByIds(ids: string[]) : Promise<Result<Warehouse[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("warehouses_get_by_ids", { ids }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
