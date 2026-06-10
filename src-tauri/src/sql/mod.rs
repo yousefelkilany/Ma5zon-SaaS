@@ -5,6 +5,7 @@
 use crate::types::SortState;
 
 pub mod products;
+pub mod search;
 pub mod stocks;
 pub mod users;
 pub mod variants;
