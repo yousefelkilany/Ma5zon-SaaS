@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { PaginationFooter } from '@/components/entity'
 import { commands } from '@/lib/tauri-bindings'
 import { getEntityLayout } from '@/lib/entity-layout'
+import { formatNumber } from '@/lib/format'
 
 export interface WarehousesSubTableProps {
   warehouseId: string
@@ -120,7 +121,7 @@ export function WarehousesSubTable({
                   }`}
                 >
                   {col.id === 'quantity'
-                    ? product.quantity.toLocaleString()
+                    ? formatNumber(product.quantity)
                     : String(product[col.id as keyof ProductWithStock] ?? '-')}
                 </td>
               ))}
