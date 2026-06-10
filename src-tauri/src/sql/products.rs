@@ -103,6 +103,17 @@ pub fn get_by_id() -> &'static str {
      FROM active_products WHERE id = ?1"
 }
 
+pub fn get_by_ids(n: usize) -> String {
+    let placeholders = std::iter::repeat("?")
+        .take(n)
+        .collect::<Vec<_>>()
+        .join(",");
+    format!(
+        "SELECT id, company, name, category, created_at, updated_at, deleted_at \
+         FROM active_products WHERE id IN ({placeholders})"
+    )
+}
+
 pub fn create() -> &'static str {
     "INSERT INTO products (company, name, category, created_at, updated_at) \
      VALUES (?1, ?2, ?3, ?4, ?5)"
@@ -266,5 +277,27 @@ pub fn build_get_all(where_clause: &str, sort: Option<&SortState>) -> String {
     match sort {
         Some(s) => format!("{query} ORDER BY {} {}", s.column_id, s.direction),
         None => format!("{query} ORDER BY name"),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn get_by_ids_builds_n_placeholders() {
+        let sql = get_by_ids(0);
+        assert_eq!(
+            sql,
+            "SELECT id, company, name, category, created_at, updated_at, deleted_at \
+             FROM active_products WHERE id IN ()"
+        );
+
+        let sql = get_by_ids(3);
+        assert_eq!(
+            sql,
+            "SELECT id, company, name, category, created_at, updated_at, deleted_at \
+             FROM active_products WHERE id IN (?,?,?)"
+        );
     }
 }
