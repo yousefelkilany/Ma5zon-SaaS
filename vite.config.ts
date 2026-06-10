@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { devtools } from '@tanstack/devtools-vite'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
@@ -13,6 +14,7 @@ export default defineConfig(async () => ({
     __APP_VERSION__: JSON.stringify(packageJson.version),
   },
   plugins: [
+    devtools(),
     react(),
     babel({
       presets: [reactCompilerPreset()],
