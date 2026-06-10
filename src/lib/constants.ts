@@ -1,3 +1,5 @@
+import { formatDateTime, formatNumber, formatCurrency } from './format'
+
 export const UOM_LIST = [
   '', // placeholder - DB uses 1-based index
   'pcs قطعة',
@@ -23,10 +25,11 @@ export function formatFieldValue(value: unknown, type: FieldType): string {
   if (value == null) return '—'
   switch (type) {
     case 'date':
-      return new Date(value as string).toLocaleString()
+      return formatDateTime(value as string)
     case 'number':
+      return typeof value === 'number' ? formatNumber(value) : String(value)
     case 'currency':
-      return typeof value === 'number' ? value.toLocaleString() : String(value)
+      return typeof value === 'number' ? formatCurrency(value) : String(value)
     case 'uom':
       return getUomLabelByIndex(String(value))
     default:
