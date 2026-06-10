@@ -5,7 +5,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 import i18n from '@/i18n/config'
 import { cn, productEntity, variantEntity, warehouseEntity } from '@/lib/utils'
 import type { MovementScope } from '@/services/entity/queryKeys'
-import { useWarehouses } from '@/services/entity/queries'
+import {
+  useBulkProducts,
+  useBulkVariants,
+  useBulkWarehouses,
+} from '@/services/entity/queries'
 
 function groupMovementsByVariantId(
   movements: StockMovement[]
@@ -46,12 +50,54 @@ export function StockMovementsTable({
   const { t } = useTranslation()
   const locale = i18n.language
 
-  const productNames = new Map<string, string>()
-  const variantNames = new Map<string, string>()
-  const warehouseNames = new Map<string, string>()
+  const productIds = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          movements.flatMap((m) => (m.product_id ? [m.product_id] : []))
+        )
+      ),
+    [movements]
+  )
+  const variantIds = useMemo(
+    () => Array.from(new Set(movements.map((m) => m.variant_id))),
+    [movements]
+  )
+  const warehouseIds = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          movements.flatMap((m) =>
+            [m.from_warehouse_id, m.to_warehouse_id].filter(
+              (id): id is string => !!id
+            )
+          )
+        )
+      ),
+    [movements]
+  )
 
-  const { data: warehouses } = useWarehouses()
-  if (warehouses) for (const w of warehouses) warehouseNames.set(w.id, w.name)
+  const { data: bulkProducts } = useBulkProducts(productIds)
+  const { data: bulkVariants } = useBulkVariants(variantIds)
+  const { data: bulkWarehouses } = useBulkWarehouses(warehouseIds)
+
+  const productNames = useMemo(() => {
+    const m = new Map<string, string>()
+    for (const p of bulkProducts ?? []) m.set(p.id, p.name)
+    return m
+  }, [bulkProducts])
+
+  const variantNames = useMemo(() => {
+    const m = new Map<string, string>()
+    for (const v of bulkVariants ?? []) m.set(v.id, v.variant_name)
+    return m
+  }, [bulkVariants])
+
+  const warehouseNames = useMemo(() => {
+    const m = new Map<string, string>()
+    for (const w of bulkWarehouses ?? []) m.set(w.id, w.name)
+    return m
+  }, [bulkWarehouses])
 
   if (isLoading) {
     return (
