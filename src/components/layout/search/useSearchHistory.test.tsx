@@ -29,7 +29,7 @@ describe('useSearchHistory', () => {
     })
     const { result } = renderHook(() => useSearchHistory('u1'), { wrapper: wrapper() })
     await waitFor(() => expect(result.current.data).toHaveLength(1))
-    expect(result.current.data?.[0].query).toBe('hello')
+    expect(result.current.data?.[0]?.query).toBe('hello')
   })
 
   it('records a query and invalidates the list', async () => {

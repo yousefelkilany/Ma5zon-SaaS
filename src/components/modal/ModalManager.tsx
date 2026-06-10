@@ -16,9 +16,10 @@ export function ModalManager() {
   })
   const searchParams = new URLSearchParams(location.search)
   const entity_modal = searchParams.get('entity_modal') as ModalType
-  const raw_entity_id = decodeURIComponent(searchParams.get('entity_id') || '')
-  const entity_id = raw_entity_id.replace(/["\\]/g, '')
-  const product_id = searchParams.get('product_id') || undefined
+  const raw_entity_id = searchParams.get('entity_id') || ''
+  const entity_id = decodeURIComponent(raw_entity_id).replace(/["\\]/g, '')
+  const raw_product_id = searchParams.get('product_id') || ''
+  const product_id = decodeURIComponent(raw_product_id).replace(/["\\]/g, '')
 
   function handleClose() {
     searchParams.delete('entity_modal')
