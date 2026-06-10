@@ -86,7 +86,7 @@ pub fn create_table() -> &'static str {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         deleted_at DATETIME DEFAULT NULL
-    ) SRTICT;
+    ) STRICT;
 
     CREATE VIEW IF NOT EXISTS active_products AS
     SELECT * FROM products WHERE deleted_at IS NULL;"
