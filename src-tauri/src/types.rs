@@ -328,3 +328,35 @@ pub struct SortState {
     pub column_id: String,
     pub direction: String,
 }
+
+// ============================================================================
+// Global Search
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct SearchHit {
+    pub entity_type: String,
+    pub id: String,
+    pub parent_id: Option<String>,
+    pub matched_column: String,
+    pub match_title: String,
+    pub highlighted_title: String,
+    pub subtitle: String,
+    pub meta: Option<String>,
+    pub rank: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct PaginatedSearchResult {
+    pub data: Vec<SearchHit>,
+    pub total_count: i32,
+    pub total_pages: i32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct SearchHistoryEntry {
+    pub id: String,
+    pub user_id: String,
+    pub query: String,
+    pub created_at: Option<String>,
+}
