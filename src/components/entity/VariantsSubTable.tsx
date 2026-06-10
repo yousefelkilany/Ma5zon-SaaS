@@ -5,7 +5,6 @@ import { formatCurrency, productEntity } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { useMemo } from 'react'
-import i18n from '@/i18n/config'
 import { useQuery } from '@tanstack/react-query'
 import { commands } from '@/lib/tauri-bindings'
 
@@ -35,7 +34,6 @@ export function VariantsSubTable({
   const { t } = useTranslation()
 
   const columns = useMemo(() => getEntityLayout('variant', t), [t])
-  const locale = i18n.language
 
   if (isLoading) {
     return (
@@ -110,8 +108,7 @@ export function VariantsSubTable({
                   >
                     {col.type === 'currency'
                       ? formatCurrency(
-                          variant[col.id as keyof VariantRow] as number,
-                          locale
+                          variant[col.id as keyof VariantRow] as number
                         )
                       : String(variant[col.id as keyof VariantRow] ?? '-')}
                   </td>
