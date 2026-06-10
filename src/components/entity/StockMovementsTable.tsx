@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { formatDateTime, formatNumber } from '@/lib/format'
 import type { Product, StockMovement, Variant, Warehouse } from '@/lib/bindings'
 import { Skeleton } from '@/components/ui/skeleton'
 import i18n from '@/i18n/config'
@@ -183,7 +184,6 @@ function VariantMovementsView({
   movements,
   warehouseNames,
   variantNames,
-  locale,
   isPaginated,
   currentPage,
   totalPages: externalTotalPages,
@@ -257,7 +257,7 @@ function VariantMovementsView({
                       {movement.movement_type}
                     </td>
                     <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
-                      {movement.quantity.toLocaleString(locale)}
+                      {formatNumber(movement.quantity)}
                     </td>
                     <td className="px-3 py-2 text-on-surface">
                       {movement.from_warehouse_id
@@ -272,7 +272,7 @@ function VariantMovementsView({
                         : '-'}
                     </td>
                     <td className="px-3 py-2 text-on-surface">
-                      {new Date(movement.created_at).toLocaleDateString(locale)}
+                      {formatDateTime(movement.created_at)}
                     </td>
                   </tr>
                 ))}
@@ -316,7 +316,6 @@ function ProductMovementsView({
   movements,
   warehouseNames,
   variantNames,
-  locale,
 }: {
   movements: StockMovement[]
   warehouseNames?: Map<string, string>
@@ -369,7 +368,7 @@ function ProductMovementsView({
                       {movement.movement_type}
                     </td>
                     <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
-                      {movement.quantity.toLocaleString(locale)}
+                      {formatNumber(movement.quantity)}
                     </td>
                     <td className="px-3 py-2 text-on-surface">
                       {movement.from_warehouse_id
@@ -384,7 +383,7 @@ function ProductMovementsView({
                         : '-'}
                     </td>
                     <td className="px-3 py-2 text-on-surface">
-                      {new Date(movement.created_at).toLocaleDateString(locale)}
+                      {formatDateTime(movement.created_at)}
                     </td>
                   </tr>
                 ))}
@@ -401,7 +400,6 @@ function WarehouseMovementsView({
   movements,
   warehouseNames,
   productNames,
-  locale,
 }: {
   movements: StockMovement[]
   warehouseNames?: Map<string, string>
@@ -483,7 +481,7 @@ function WarehouseMovementsView({
                       {movement.movement_type}
                     </td>
                     <td className="px-3 py-2 text-end text-on-surface font-data-tabular tabular-nums">
-                      {movement.quantity.toLocaleString(locale)}
+                      {formatNumber(movement.quantity)}
                     </td>
                     <td className="px-3 py-2 text-on-surface">
                       {movement.from_warehouse_id
@@ -498,7 +496,7 @@ function WarehouseMovementsView({
                         : '-'}
                     </td>
                     <td className="px-3 py-2 text-on-surface">
-                      {new Date(movement.created_at).toLocaleDateString(locale)}
+                      {formatDateTime(movement.created_at)}
                     </td>
                   </tr>
                 ))}
