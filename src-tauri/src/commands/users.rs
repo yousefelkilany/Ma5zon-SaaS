@@ -6,12 +6,15 @@ use argon2::{
 };
 use async_trait::async_trait;
 use chrono::Local;
-use rusqlite::params;
+use rusqlite::{params, params_from_iter};
 use tauri::AppHandle;
 
-use crate::sql::users::{
-    create_table, get_by_id, get_by_name, get_password_hash,
-    update_password as sql_update_password, update_user as sql_update_user, upsert,
+use crate::sql::{
+    self,
+    users::{
+        create_table, get_by_id, get_by_name, get_password_hash,
+        update_password as sql_update_password, update_user as sql_update_user, upsert,
+    },
 };
 use crate::types::User;
 use crate::{commands::db_utils::get_conn, types::ADMIN_ROLE};
@@ -259,4 +262,36 @@ pub async fn update_user(
         .map_err(|e| format!("Failed to get updated user: {e}"))?;
 
     Ok(user)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn users_get_by_ids(
+    app: AppHandle,
+    ids: Vec<String>,
+) -> Result<Vec<User>, String> {
+    if ids.is_empty() {
+        return Ok(vec![]);
+    }
+    let conn = get_conn(&app)?;
+    let sql = sql::users::get_by_ids(ids.len());
+    let mut stmt = conn
+        .prepare(&sql)
+        .map_err(|e| format!("users_get_by_ids Failed to prepare: {e}"))?;
+
+    let users = stmt
+        .query_map(params_from_iter(ids.iter()), |row| {
+            Ok(User {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                email: row.get(2)?,
+                role: row.get(3)?,
+                avatar_url: row.get(4)?,
+            })
+        })
+        .map_err(|e| format!("users_get_by_ids Failed to query: {e}"))?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| format!("users_get_by_ids Failed to collect: {e}"))?;
+
+    Ok(users)
 }

@@ -28,6 +28,7 @@ pub fn generate_bindings() -> Builder<tauri::Wry> {
         users::authenticate,
         users::update_user,
         users::update_password,
+        users::users_get_by_ids,
         products::get_all,
         products::get_by_id,
         products::create,
