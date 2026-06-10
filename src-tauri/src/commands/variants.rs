@@ -263,7 +263,7 @@ pub async fn variants_delete(app: AppHandle, id: String) -> Result<(), String> {
 #[specta::specta]
 pub async fn variants_get_by_ids(
     app: AppHandle,
-    ids: Vec<i64>,
+    ids: Vec<String>,
 ) -> Result<Vec<Variant>, String> {
     if ids.is_empty() {
         return Ok(vec![]);
