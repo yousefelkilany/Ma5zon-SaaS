@@ -34,7 +34,7 @@ pub struct AppPreferences {
     /// Global shortcut for quick pane (e.g., "CommandOrControl+Shift+.")
     /// If None, uses the default shortcut
     pub quick_pane_shortcut: Option<String>,
-    /// User's preferred language (e.g., "en", "es", "de")
+    /// User's preferred language (e.g., "ar", "en")
     /// If None, uses system locale detection
     pub language: Option<String>,
 }

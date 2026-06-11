@@ -147,7 +147,7 @@ describe('UserPreferences validation', () => {
 
   it('rejects invalid language', () => {
     const result = userPreferencesSchema.safeParse({
-      language: 'fr',
+      language: 'de',
     })
     expect(result.success).toBe(false)
   })

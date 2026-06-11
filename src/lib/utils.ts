@@ -64,6 +64,7 @@ export interface Tab {
 export function normalizeArabic(text: string): string {
   if (!text) return ''
   return text
+    .normalize('NFKD')
     .replace(/[أإآ]/g, 'ا')
     .replace(/ة/g, 'ه')
     .replace(/ى/g, 'ي')
