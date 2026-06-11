@@ -105,20 +105,20 @@ mod tests {
 
     #[test]
     fn test_validate_variant_valid() {
-        let result = validate_variant("SKU-001", "Blue Widget", Some("UNIT"), 10.0, 5.0, 3.0);
+        let result = validate_variant("SKU-001", "Blue Widget", Some("UNIT"), 1000, 500, 300);
         assert!(result.is_ok());
     }
 
     #[test]
     fn test_validate_variant_empty_sku() {
-        let result = validate_variant("", "Blue Widget", None, 10.0, 5.0, 3.0);
+        let result = validate_variant("", "Blue Widget", None, 1000, 500, 300);
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), "sku: required");
     }
 
     #[test]
     fn test_validate_variant_invalid_sku_chars() {
-        let result = validate_variant("SKU@001!", "Blue Widget", None, 10.0, 5.0, 3.0);
+        let result = validate_variant("SKU@001!", "Blue Widget", None, 1000, 500, 300);
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err(),
@@ -155,13 +155,13 @@ mod tests {
 
     #[test]
     fn test_validate_variant_sku_boundary_50_chars() {
-        let result = validate_variant(&"A".repeat(50), "Blue Widget", None, 10.0, 5.0, 3.0);
+        let result = validate_variant(&"A".repeat(50), "Blue Widget", None, 1000, 500, 300);
         assert!(result.is_ok());
     }
 
     #[test]
     fn test_validate_variant_sku_boundary_51_chars() {
-        let result = validate_variant(&"A".repeat(51), "Blue Widget", None, 10.0, 5.0, 3.0);
+        let result = validate_variant(&"A".repeat(51), "Blue Widget", None, 1000, 500, 300);
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), "sku: must be 50 characters or less");
     }
@@ -201,9 +201,9 @@ mod tests {
             "SKU-001",
             "Blue Widget",
             Some(&"U".repeat(51)),
-            10.0,
-            5.0,
-            3.0,
+            1000,
+            500,
+            300,
         );
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), "uom_id: must be 50 characters or less");
