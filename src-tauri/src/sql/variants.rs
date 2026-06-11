@@ -7,12 +7,12 @@ pub fn create_table() -> &'static str {
         sku TEXT UNIQUE NOT NULL,
         variant_name TEXT NOT NULL,
         uom_id INTEGER NOT NULL,
-        retail_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-        wholesale_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-        distribution_price DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        deleted_at DATETIME DEFAULT NULL,
+        retail_price INTEGER NOT NULL DEFAULT 0,
+        wholesale_price INTEGER NOT NULL DEFAULT 0,
+        distribution_price INTEGER NOT NULL DEFAULT 0,
+        created_at INTEGER DEFAULT (unixepoch('now')),
+        updated_at INTEGER DEFAULT (unixepoch('now')),
+        deleted_at INTEGER DEFAULT NULL,
         FOREIGN KEY(product_id) REFERENCES products(id)
     ) STRICT;
 

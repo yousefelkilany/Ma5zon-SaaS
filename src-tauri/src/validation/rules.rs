@@ -24,9 +24,9 @@ pub fn validate_variant(
     sku: &str,
     variant_name: &str,
     uom_id: Option<&str>,
-    retail_price: f64,
-    wholesale_price: f64,
-    distribution_price: f64,
+    retail_price: i64,
+    wholesale_price: i64,
+    distribution_price: i64,
 ) -> Result<(), String> {
     if sku.trim().is_empty() {
         return Err("sku: required".to_string());
@@ -48,13 +48,13 @@ pub fn validate_variant(
             return Err("uom_id: must be 50 characters or less".to_string());
         }
     }
-    if retail_price < 0.0 {
+    if retail_price < 0 {
         return Err("retail_price: must be 0 or greater".to_string());
     }
-    if wholesale_price < 0.0 {
+    if wholesale_price < 0 {
         return Err("wholesale_price: must be 0 or greater".to_string());
     }
-    if distribution_price < 0.0 {
+    if distribution_price < 0 {
         return Err("distribution_price: must be 0 or greater".to_string());
     }
     Ok(())
@@ -180,14 +180,14 @@ mod tests {
 
     #[test]
     fn test_validate_variant_negative_wholesale_price() {
-        let result = validate_variant("SKU-001", "Blue Widget", None, 10.0, -5.0, 3.0);
+        let result = validate_variant("SKU-001", "Blue Widget", None, 1000, -500, 300);
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), "wholesale_price: must be 0 or greater");
     }
 
     #[test]
     fn test_validate_variant_negative_distribution_price() {
-        let result = validate_variant("SKU-001", "Blue Widget", None, 10.0, 5.0, -3.0);
+        let result = validate_variant("SKU-001", "Blue Widget", None, 1000, 500, -300);
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err(),

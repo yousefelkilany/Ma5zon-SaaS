@@ -354,7 +354,7 @@ pub const PRODUCTS: &[(&str, &str, &str)] = &[
 ];
 
 pub fn seed(conn: &Connection) -> Result<(), String> {
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp().to_string();
 
     for product in PRODUCTS {
         conn.execute(

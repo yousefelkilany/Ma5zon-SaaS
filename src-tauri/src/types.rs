@@ -146,9 +146,9 @@ pub struct Variant {
     pub sku: String,
     pub variant_name: String,
     pub uom_id: String,
-    pub retail_price: f64,
-    pub wholesale_price: f64,
-    pub distribution_price: f64,
+    pub retail_price: i64,
+    pub wholesale_price: i64,
+    pub distribution_price: i64,
     pub created_at: Option<String>,
     pub updated_at: Option<String>,
     pub deleted_at: Option<String>,
@@ -162,9 +162,9 @@ pub struct ProductVariantWithStock {
     pub variant_name: String,
     pub quantity: i32,
     pub uom_id: String,
-    pub retail_price: f64,
-    pub wholesale_price: f64,
-    pub distribution_price: f64,
+    pub retail_price: i64,
+    pub wholesale_price: i64,
+    pub distribution_price: i64,
     pub created_at: Option<String>,
     pub updated_at: Option<String>,
     pub deleted_at: Option<String>,
@@ -176,9 +176,9 @@ pub struct NewVariant {
     pub sku: String,
     pub variant_name: String,
     pub uom_id: String,
-    pub retail_price: f64,
-    pub wholesale_price: f64,
-    pub distribution_price: f64,
+    pub retail_price: i64,
+    pub wholesale_price: i64,
+    pub distribution_price: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
@@ -186,9 +186,9 @@ pub struct UpdateVariant {
     pub sku: Option<String>,
     pub variant_name: Option<String>,
     pub uom_id: Option<String>,
-    pub retail_price: Option<f64>,
-    pub wholesale_price: Option<f64>,
-    pub distribution_price: Option<f64>,
+    pub retail_price: Option<i64>,
+    pub wholesale_price: Option<i64>,
+    pub distribution_price: Option<i64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]

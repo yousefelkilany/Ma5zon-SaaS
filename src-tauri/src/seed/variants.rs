@@ -99,18 +99,33 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
         let options = template.1;
 
         for v in 0..num_variants {
-            let variant_name = format!(
-                "{} - {} - {}",
-                template.0,
-                options[v % options.len()],
-                template.2
-            );
+            let parts: Vec<_> = [template.0, options[v % options.len()], template.2]
+                .iter()
+                .map(|s| {
+                    let split: Vec<&str> = s.splitn(2, ' ').collect();
+                    (
+                        split[0].to_string(),
+                        split.get(1).map(|x| x.to_string()).unwrap_or_default(),
+                    )
+                })
+                .collect();
+            let left = parts
+                .iter()
+                .map(|p| p.0.as_str())
+                .collect::<Vec<_>>()
+                .join(" ");
+            let right = parts
+                .iter()
+                .map(|p| p.1.as_str())
+                .collect::<Vec<_>>()
+                .join(" ");
+            let variant_name = format!("{} - {}", left, right);
             let sku = format!("SKU-{:04}-{:02}", product_id, v + 1);
             let uom_id = (rng.gen_range(0..UOM_NAMES.len()) + 1) as i64;
 
-            let retail_price: f64 = ((rng.gen_range(10.0_f64..800.0_f64) * 100.0).round()) / 100.0;
-            let wholesale_price: f64 = (retail_price * 0.75 * 100.0).round() / 100.0;
-            let distribution_price: f64 = (retail_price * 0.6 * 100.0).round() / 100.0;
+            let retail_price: i64 = (rng.gen_range(10.0_f64..800.0_f64) * 100.0).round() as i64;
+            let wholesale_price: i64 = (retail_price as f64 * 0.75).round() as i64;
+            let distribution_price: i64 = (retail_price as f64 * 0.6).round() as i64;
 
             conn.execute(
                 "INSERT INTO product_variants (product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",

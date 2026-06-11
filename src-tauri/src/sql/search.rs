@@ -420,26 +420,26 @@ mod tests {
                  name TEXT NOT NULL,
                  category TEXT NOT NULL,
                  company TEXT NOT NULL,
-                 deleted_at DATETIME DEFAULT NULL
-             );
-             CREATE VIEW active_products AS SELECT * FROM products WHERE deleted_at IS NULL;
+                  deleted_at INTEGER DEFAULT NULL
+              );
+              CREATE VIEW active_products AS SELECT * FROM products WHERE deleted_at IS NULL;
 
-             CREATE TABLE product_variants (
-                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                 product_id INTEGER NOT NULL,
-                 sku TEXT NOT NULL,
-                 variant_name TEXT NOT NULL,
-                 deleted_at DATETIME DEFAULT NULL
-             );
-             CREATE VIEW active_product_variants AS SELECT * FROM product_variants WHERE deleted_at IS NULL;
+              CREATE TABLE product_variants (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  product_id INTEGER NOT NULL,
+                  sku TEXT NOT NULL,
+                  variant_name TEXT NOT NULL,
+                  deleted_at INTEGER DEFAULT NULL
+              );
+              CREATE VIEW active_product_variants AS SELECT * FROM product_variants WHERE deleted_at IS NULL;
 
-             CREATE TABLE warehouses (
-                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                 name TEXT NOT NULL,
-                 location TEXT,
-                 deleted_at DATETIME DEFAULT NULL
-             );
-             CREATE VIEW active_warehouses AS SELECT * FROM warehouses WHERE deleted_at IS NULL;",
+              CREATE TABLE warehouses (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  name TEXT NOT NULL,
+                  location TEXT,
+                  deleted_at INTEGER DEFAULT NULL
+              );
+              CREATE VIEW active_warehouses AS SELECT * FROM warehouses WHERE deleted_at IS NULL;",
         )
         .unwrap();
         register_udfs(&conn).unwrap();

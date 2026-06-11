@@ -83,9 +83,9 @@ pub fn create_table() -> &'static str {
         company TEXT NOT NULL,
         name TEXT NOT NULL,
         category TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        deleted_at DATETIME DEFAULT NULL
+        created_at INTEGER DEFAULT (unixepoch('now')),
+        updated_at INTEGER DEFAULT (unixepoch('now')),
+        deleted_at INTEGER DEFAULT NULL
     ) STRICT;
 
     CREATE VIEW IF NOT EXISTS active_products AS

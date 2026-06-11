@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS warehouses (
 
 ### product_variants table
 
+Prices are stored as INTEGER (cents) for precise sorting and arithmetic. Convert to dollars by dividing by 100.
+
 ```sql
 CREATE TABLE IF NOT EXISTS product_variants (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,12 +44,12 @@ CREATE TABLE IF NOT EXISTS product_variants (
     sku TEXT UNIQUE NOT NULL,
     variant_name TEXT NOT NULL,
     uom_id INTEGER NOT NULL,
-    retail_price REAL NOT NULL DEFAULT 0,
-    wholesale_price REAL NOT NULL DEFAULT 0,
-    distribution_price REAL NOT NULL DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    deleted_at DATETIME DEFAULT NULL,
+    retail_price INTEGER NOT NULL DEFAULT 0,
+    wholesale_price INTEGER NOT NULL DEFAULT 0,
+    distribution_price INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER DEFAULT (unixepoch('now')),
+    updated_at INTEGER DEFAULT (unixepoch('now')),
+    deleted_at INTEGER DEFAULT NULL,
     FOREIGN KEY(product_id) REFERENCES products(id)
 );
 ```

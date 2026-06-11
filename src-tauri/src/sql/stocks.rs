@@ -79,7 +79,7 @@ pub fn create_movements_table() -> &'static str {
         to_warehouse_id INTEGER,
         quantity INTEGER NOT NULL CHECK (quantity > 0),
         \"type\" TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_at INTEGER DEFAULT (unixepoch('now')),
         FOREIGN KEY(variant_id) REFERENCES product_variants(id),
         FOREIGN KEY(product_id) REFERENCES products(id),
         FOREIGN KEY(from_warehouse_id) REFERENCES warehouses(id),

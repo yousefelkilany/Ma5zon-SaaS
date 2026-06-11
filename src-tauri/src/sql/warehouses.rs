@@ -79,9 +79,9 @@ pub fn create_table() -> &'static str {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         location TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        deleted_at DATETIME DEFAULT NULL
+        created_at INTEGER DEFAULT (unixepoch('now')),
+        updated_at INTEGER DEFAULT (unixepoch('now')),
+        deleted_at INTEGER DEFAULT NULL
     ) STRICT;
 
     CREATE VIEW IF NOT EXISTS active_warehouses AS

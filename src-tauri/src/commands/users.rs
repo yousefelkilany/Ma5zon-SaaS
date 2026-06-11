@@ -52,9 +52,8 @@ impl DatabaseInitializable for UserInitializer {
             let password_hash =
                 hash_password("admin").map_err(|e| format!("Failed to hash password: {e}"))?;
             conn.execute(
-                "INSERT INTO users (id, name, email, role, avatar_url, password_hash) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+                "INSERT INTO users (name, email, role, avatar_url, password_hash) VALUES (?1, ?2, ?3, ?4, ?5)",
                 rusqlite::params![
-                    uuid::Uuid::new_v4().to_string(),
                     "admin",
                     "admin@localhost",
                     ADMIN_ROLE,

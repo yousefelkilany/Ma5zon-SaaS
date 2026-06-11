@@ -19,6 +19,8 @@ Implement automatic database initialization on app startup using a convention-ba
 
 ### New `product_variants` Schema
 
+Prices are stored as INTEGER (cents) for precise sorting and arithmetic. Convert to dollars by dividing by 100.
+
 ```sql
 CREATE TABLE product_variants (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,9 +28,12 @@ CREATE TABLE product_variants (
     sku TEXT UNIQUE NOT NULL,
     variant_name TEXT NOT NULL,
     uom_id INTEGER NOT NULL,
-    retail_price REAL NOT NULL DEFAULT 0,
-    wholesale_price REAL NOT NULL DEFAULT 0,
-    distribution_price REAL NOT NULL DEFAULT 0,
+    retail_price INTEGER NOT NULL DEFAULT 0,
+    wholesale_price INTEGER NOT NULL DEFAULT 0,
+    distribution_price INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER DEFAULT (unixepoch('now')),
+    updated_at INTEGER DEFAULT (unixepoch('now')),
+    deleted_at INTEGER DEFAULT NULL,
     FOREIGN KEY(product_id) REFERENCES products(id)
 )
 ```
