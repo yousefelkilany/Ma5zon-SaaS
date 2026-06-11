@@ -99,7 +99,7 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
         let options = template.1;
 
         for v in 0..num_variants {
-            let parts: Vec<_> = [template.0, options[v % options.len()], template.2]
+            let parts: Vec<_> = [template.0, options[v % options.len()]]
                 .iter()
                 .map(|s| {
                     let split: Vec<&str> = s.splitn(2, ' ').collect();
