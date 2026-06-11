@@ -595,8 +595,8 @@ export type RecoveryError =
  * JSON serialization/deserialization error
  */
 { type: "ParseError"; message: string }
-export type SearchHistoryEntry = { id: string; user_id: string; query: string; created_at: string | null }
-export type SearchHit = { entity_type: string; id: string; parent_id: string | null; matched_column: string; match_title: string; highlighted_title: string; subtitle: string; meta: string | null; rank: number }
+export type SearchHistoryEntry = { id: string; user_id: string; query: string; created_at: string | null; count: number }
+export type SearchHit = { entity_type: string; id: string; parent_id: string | null; matched_column: string | null; match_title: string; highlighted_title: string; subtitle: string; meta: string | null; rank: number }
 export type SortState = { column_id: string; direction: string }
 export type StockLevel = { variant_id: string; warehouse_id: string; quantity: number }
 export type StockLevelWithVariant = { variant_id: string; variant_name: string; sku: string; warehouse_id: string; quantity: number }

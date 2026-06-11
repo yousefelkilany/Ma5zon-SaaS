@@ -18,7 +18,7 @@ export function VariantResultRow({ hit }: { hit: SearchHit }) {
         </span>
       </div>
       <span className="text-[10px] uppercase text-on-surface-variant">
-        {t('search.matchedColumn.' + hit.matched_column, { defaultValue: hit.matched_column })}
+        {t('search.matchedColumn.' + (hit.matched_column ?? 'name'), { defaultValue: hit.matched_column ?? 'name' })}
       </span>
     </div>
   )

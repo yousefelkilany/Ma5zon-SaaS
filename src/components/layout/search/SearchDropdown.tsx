@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from '@tanstack/react-router'
+import { useLocation, useMatchRoute, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTabStore } from '@/store/workspace-store'
 import { SearchHistoryList } from './SearchHistoryList'
@@ -23,6 +23,8 @@ export function SearchDropdown({
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const matchRoute = useMatchRoute()
+  const location = useLocation()
   const record = useRecordSearchHistory(userId)
   const addTab = useTabStore(s => s.addTab)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -47,12 +49,28 @@ export function SearchDropdown({
         params: { entityType: hit.entity_type },
         search: { entity_modal, entity_id: hit.id, product_id: hit.parent_id ?? undefined },
       })
+    } else if (matchRoute({ to: '/entity/$entityType' })) {
+      navigate({
+        from: '/entity/$entityType',
+        replace: true,
+        search: prev => ({
+          ...prev,
+          entity_modal,
+          entity_id: hit.id,
+          product_id: hit.parent_id ?? undefined,
+        }),
+      })
     } else {
       navigate({
-        to: '/entity/$entityType',
-        params: { entityType: hit.entity_type },
-        search: { entity_modal, entity_id: hit.id, product_id: hit.parent_id ?? undefined },
-      })
+        to: location.pathname,
+        replace: true,
+        search: (prev: Record<string, unknown>) => ({
+          ...prev,
+          entity_modal,
+          entity_id: hit.id,
+          product_id: hit.parent_id ?? undefined,
+        }),
+      } as never)
     }
     if (liveQueryEnabled && userId) record.mutate(trimmed)
     onClose()

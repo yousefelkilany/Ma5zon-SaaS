@@ -10,9 +10,18 @@ export function sanitizeHighlight(html: string): string {
 
   let result = ''
   let i = 0
-  let seenTag = false
+  let inForeignTag: string | null = null
 
   while (i < html.length) {
+    if (inForeignTag) {
+      const closeToken = `</${inForeignTag}>`
+      const closeIndex = html.indexOf(closeToken, i)
+      if (closeIndex === -1) break
+      i = closeIndex + closeToken.length
+      inForeignTag = null
+      continue
+    }
+
     if (html.slice(i).startsWith('<mark')) {
       const closeIndex = html.indexOf('</mark>', i)
       if (closeIndex === -1) {
@@ -28,19 +37,24 @@ export function sanitizeHighlight(html: string): string {
       }
       result += '</mark>'
       i = closeIndex + 7
-      seenTag = true
     } else if (html[i] === '<') {
       const closeIndex = html.indexOf('>', i)
       if (closeIndex === -1) {
         i++
         continue
       }
-      i = closeIndex + 1
-      seenTag = true
-    } else {
-      if (!seenTag) {
-        result += html[i]
+      const tagName = html
+        .slice(i + 1, closeIndex)
+        .trim()
+        .split(/\s+/)[0]
+        ?.replace(/[\\/]/g, '')
+        .toLowerCase()
+      if (tagName && !tagName.startsWith('/')) {
+        inForeignTag = tagName
       }
+      i = closeIndex + 1
+    } else {
+      result += html[i]
       i++
     }
   }

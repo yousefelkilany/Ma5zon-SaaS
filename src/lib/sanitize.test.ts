@@ -17,4 +17,14 @@ describe('sanitizeHighlight', () => {
   it('returns empty string for empty input', () => {
     expect(sanitizeHighlight('')).toBe('')
   })
+
+  it('keeps text after a closing </mark>', () => {
+    expect(sanitizeHighlight('<mark>a</mark>mo')).toBe('<mark>a</mark>mo')
+  })
+
+  it('keeps text between two <mark> spans', () => {
+    expect(sanitizeHighlight('<mark>a</mark>m<mark>o</mark>')).toBe(
+      '<mark>a</mark>m<mark>o</mark>'
+    )
+  })
 })

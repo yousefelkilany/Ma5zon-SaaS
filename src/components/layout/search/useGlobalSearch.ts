@@ -14,12 +14,10 @@ export function useGlobalSearch(query: string) {
   >({
     queryKey: ['globalSearch', trimmed] as const,
     queryFn: ({ pageParam }) =>
-      commands
-        .globalSearch(trimmed, SEARCH_PAGE_SIZE, pageParam)
-        .then(r => {
-          if (r.status === 'error') throw new Error(r.error)
-          return r.data
-        }),
+      commands.globalSearch(trimmed, SEARCH_PAGE_SIZE, pageParam).then(r => {
+        if (r.status === 'error') throw new Error(r.error)
+        return r.data
+      }),
     enabled: trimmed.length >= SEARCH_THRESHOLD,
     staleTime: 30_000,
     initialPageParam: 0,

@@ -20,7 +20,13 @@ function wrapper() {
   )
 }
 
-const entry = (q: string) => ({ id: q, user_id: 'u1', query: q, created_at: null })
+const entry = (q: string, count = 1) => ({
+  id: q,
+  user_id: 'u1',
+  query: q,
+  created_at: null,
+  count,
+})
 
 describe('SearchHistoryList', () => {
   beforeEach(() => {
@@ -68,5 +74,37 @@ describe('SearchHistoryList', () => {
       wrapper: wrapper(),
     })
     expect(await screen.findByText(/no recent searches/i)).toBeInTheDocument()
+  })
+
+  it('renders entry text without stray mark tags when filter is empty', async () => {
+    ;(commands.searchHistoryList as ReturnType<typeof vi.fn>).mockResolvedValue({
+      status: 'ok',
+      data: [entry('amo')],
+    })
+    const { container } = render(
+      <SearchHistoryList userId="u1" filter="" onPick={() => {}} />,
+      { wrapper: wrapper() }
+    )
+    await waitFor(() => {
+      const list = screen.getByTestId('search-history-list')
+      const markCount = list.querySelectorAll('mark').length
+      expect(markCount).toBe(0)
+      expect(container.textContent).toContain('amo')
+    })
+  })
+
+  it('shows the count badge when count > 1 and hides it otherwise', async () => {
+    ;(commands.searchHistoryList as ReturnType<typeof vi.fn>).mockResolvedValue({
+      status: 'ok',
+      data: [entry('apple', 3), entry('banana', 1)],
+    })
+    render(<SearchHistoryList userId="u1" filter="" onPick={() => {}} />, {
+      wrapper: wrapper(),
+    })
+    await waitFor(() => {
+      const badges = screen.getAllByTestId('search-history-count')
+      expect(badges).toHaveLength(1)
+      expect(badges[0]).toHaveTextContent('×3')
+    })
   })
 })

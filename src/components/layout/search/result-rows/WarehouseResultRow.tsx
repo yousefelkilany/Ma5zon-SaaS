@@ -15,7 +15,7 @@ export function WarehouseResultRow({ hit }: { hit: SearchHit }) {
         <span className="text-label-caps text-on-surface-variant truncate">{hit.subtitle}</span>
       </div>
       <span className="text-[10px] uppercase text-on-surface-variant">
-        {t('search.matchedColumn.' + hit.matched_column, { defaultValue: hit.matched_column })}
+        {t('search.matchedColumn.' + (hit.matched_column ?? 'name'), { defaultValue: hit.matched_column ?? 'name' })}
       </span>
     </div>
   )

@@ -437,9 +437,10 @@
     "noHistory": "لا توجد عمليات بحث حديثة",
     "deleteEntry": "حذف هذا العنصر",
     "clearAll": "مسح الكل",
+    "historyCount": "تم البحث {count} مرة",
     "group": {
       "products": "المنتجات",
-      "variants": "المتغيرات",
+      "variants": "الأصناف",
       "warehouses": "المخازن"
     },
     "matchedColumn": {
@@ -447,7 +448,7 @@
       "category": "الفئة",
       "company": "الشركة",
       "sku": "رمز SKU",
-      "variant_name": "اسم المتغير",
+      "variant_name": "اسم الصنف",
       "location": "الموقع"
     }
   },

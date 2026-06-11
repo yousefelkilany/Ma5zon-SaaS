@@ -126,57 +126,107 @@ pub fn refresh_index(conn: &Connection) -> DbErr<()> {
     Ok(())
 }
 
+/// Convert a user query into a safe FTS5 prefix expression.
+/// Splits on whitespace, strips non-alphanumeric/underscore characters from
+/// the edges of each token, escapes internal double-quotes, wraps each token
+/// in double quotes, appends `*` for prefix matching, and AND-joins them.
+/// Returns None when no usable tokens remain.
+pub fn build_fts_query(raw: &str) -> Option<String> {
+    let tokens: Vec<String> = raw
+        .split_whitespace()
+        .map(|t| t.trim_matches(|c: char| !c.is_alphanumeric() && c != '_'))
+        .filter(|t| !t.is_empty())
+        .map(|t| {
+            let escaped = t.replace('"', "\"\"");
+            format!("\"{escaped}\"*")
+        })
+        .collect();
+    if tokens.is_empty() {
+        return None;
+    }
+    Some(tokens.join(" AND "))
+}
+
+/// Wrap a base FTS5 expression produced by `build_fts_query` in a single-column
+/// filter. Each phrase in the base expression is re-scoped to `col`, e.g.
+/// `"amox"* AND "anti"*` becomes `amox:"amox"* AND amox:"anti"*`. The FTS5
+/// column filter syntax is `colname : phrase` (case-insensitive; see SQLite
+/// FTS5 docs §3.6).
+pub fn column_query(col: &str, base: &str) -> String {
+    let prefixed: Vec<String> = base
+        .split(" AND ")
+        .map(|phrase| format!("{col}:{phrase}"))
+        .collect();
+    prefixed.join(" AND ")
+}
+
 /// The single SQL statement that powers `global_search`. Returns one row per
 /// hit, with the entity's own id, the parent id (only for variants), the
 /// raw matched title and column, and a rank. The frontend groups these into
-/// per-entity buckets.
-pub fn union_search_query() ->&'static str {
-    "SELECT 'product' AS entity_type,
-            CAST(p.id AS TEXT) AS id,
-            NULL AS parent_id,
-            NULL AS matched_column,
-            p.name AS match_title,
-            p.name AS highlighted_title,
-            p.company AS subtitle,
-            p.category AS meta,
-            fts.rank
-       FROM fts_products fts
-       JOIN active_products p ON p.id = fts.rowid
-      WHERE fts_products MATCH ?1
+/// per-entity buckets. `?1` is the sanitized FTS5 expression (used for the
+/// main MATCH in WHERE); per-column probe expressions for matched-column
+/// detection are bound to `?2..=?N` and consumed by EXISTS subqueries that
+/// use the FTS5 column-name LHS MATCH syntax (allowed only in WHERE, per
+/// SQLite FTS5 docs §3.6).
+pub fn union_search_query() -> String {
+    format!(
+        "SELECT 'product' AS entity_type,
+                CAST(p.id AS TEXT) AS id,
+                NULL AS parent_id,
+                CASE
+                  WHEN EXISTS (SELECT 1 FROM fts_products p_fts WHERE p_fts.rowid = fts.rowid AND p_fts.name MATCH ?2) THEN 'name'
+                  WHEN EXISTS (SELECT 1 FROM fts_products p_fts WHERE p_fts.rowid = fts.rowid AND p_fts.category MATCH ?3) THEN 'category'
+                  WHEN EXISTS (SELECT 1 FROM fts_products p_fts WHERE p_fts.rowid = fts.rowid AND p_fts.company MATCH ?4) THEN 'company'
+                END AS matched_column,
+                p.name AS match_title,
+                p.name AS highlighted_title,
+                p.company AS subtitle,
+                p.category AS meta,
+                fts.rank
+           FROM fts_products fts
+           JOIN active_products p ON p.id = fts.rowid
+          WHERE fts_products MATCH ?1
 
-     UNION ALL
+         UNION ALL
 
-     SELECT 'variant',
-            CAST(v.id AS TEXT),
-            CAST(p.id AS TEXT),
-            NULL AS matched_column,
-            v.variant_name,
-            v.variant_name,
-            p.name,
-            v.sku,
-            fts.rank
-       FROM fts_product_variants fts
-       JOIN active_product_variants v ON v.id = fts.rowid
-       JOIN active_products p ON p.id = v.product_id
-      WHERE fts_product_variants MATCH ?1
+         SELECT 'variant',
+                CAST(v.id AS TEXT),
+                CAST(p.id AS TEXT),
+                CASE
+                  WHEN EXISTS (SELECT 1 FROM fts_product_variants v_fts WHERE v_fts.rowid = fts.rowid AND v_fts.sku MATCH ?6) THEN 'sku'
+                  WHEN EXISTS (SELECT 1 FROM fts_product_variants v_fts WHERE v_fts.rowid = fts.rowid AND v_fts.variant_name MATCH ?7) THEN 'variant_name'
+                END AS matched_column,
+                v.variant_name,
+                v.variant_name,
+                p.name,
+                v.sku,
+                fts.rank
+           FROM fts_product_variants fts
+           JOIN active_product_variants v ON v.id = fts.rowid
+           JOIN active_products p ON p.id = v.product_id
+          WHERE fts_product_variants MATCH ?5
 
-     UNION ALL
+         UNION ALL
 
-     SELECT 'warehouse',
-            CAST(w.id AS TEXT),
-            NULL AS parent_id,
-            NULL AS matched_column,
-            w.name,
-            w.name,
-            COALESCE(w.location, ''),
-            NULL,
-            fts.rank
-       FROM fts_warehouses fts
-       JOIN active_warehouses w ON w.id = fts.rowid
-      WHERE fts_warehouses MATCH ?1
+         SELECT 'warehouse',
+                CAST(w.id AS TEXT),
+                NULL AS parent_id,
+                CASE
+                  WHEN EXISTS (SELECT 1 FROM fts_warehouses w_fts WHERE w_fts.rowid = fts.rowid AND w_fts.name MATCH ?9) THEN 'name'
+                  WHEN EXISTS (SELECT 1 FROM fts_warehouses w_fts WHERE w_fts.rowid = fts.rowid AND w_fts.location MATCH ?10) THEN 'location'
+                END AS matched_column,
+                w.name,
+                w.name,
+                COALESCE(w.location, ''),
+                NULL,
+                fts.rank
+           FROM fts_warehouses fts
+           JOIN active_warehouses w ON w.id = fts.rowid
+          WHERE fts_warehouses MATCH ?8
 
-     ORDER BY rank
-     LIMIT ?2 OFFSET ?3;"
+         ORDER BY rank
+         LIMIT ?11 OFFSET ?12;"
+    )
 }
 
 /// Count query that mirrors `union_search_query` (without `LIMIT`/`OFFSET`).
@@ -193,9 +243,24 @@ pub fn union_count_query() -> &'static str {
 // ---------------------------------------------------------------------------
 
 pub fn history_list() -> &'static str {
-    "SELECT id, user_id, query, created_at
-       FROM active_search_history
-      WHERE user_id = ?1
+    "SELECT id, user_id, query, created_at, count
+       FROM (
+         SELECT id, user_id, query, created_at,
+                COUNT(*) OVER (PARTITION BY grp) AS count,
+                LAG(query) OVER (ORDER BY created_at DESC, id DESC) AS prev_query
+           FROM (
+             SELECT id, user_id, query, created_at,
+                    SUM(CASE WHEN query = prev_query THEN 0 ELSE 1 END)
+                      OVER (ORDER BY created_at DESC, id DESC) AS grp
+               FROM (
+                 SELECT id, user_id, query, created_at,
+                        LAG(query) OVER (ORDER BY created_at DESC, id DESC) AS prev_query
+                   FROM active_search_history
+                  WHERE user_id = ?1
+               )
+           )
+       )
+      WHERE prev_query IS NULL OR prev_query != query
       ORDER BY created_at DESC
       LIMIT ?2"
 }
@@ -342,15 +407,83 @@ mod tests {
         conn.execute("INSERT INTO products (name, category, company) VALUES ('Laptop Stand', 'Accessories', 'Acme')", []).unwrap();
         conn.execute("INSERT INTO product_variants (product_id, sku, variant_name) VALUES (1, 'LS-LAPTOP-RED', 'Laptop Red')", []).unwrap();
         conn.execute("INSERT INTO warehouses (name, location) VALUES ('Laptop Hub', 'Cairo')", []).unwrap();
-        let mut stmt = conn.prepare(union_search_query()).unwrap();
+        let q = build_fts_query("Laptop").unwrap();
+        let mut stmt = conn.prepare(&union_search_query()).unwrap();
         let hits: Vec<String> = stmt
-            .query_map(params!["Laptop", 100i32, 0i32], |r| r.get::<_, String>(0))
+            .query_map(
+                params![
+                    q.clone(),
+                    column_query("name", &q),
+                    column_query("category", &q),
+                    column_query("company", &q),
+                    q.clone(),
+                    column_query("sku", &q),
+                    column_query("variant_name", &q),
+                    q.clone(),
+                    column_query("name", &q),
+                    column_query("location", &q),
+                    100i32,
+                    0i32,
+                ],
+                |r| r.get::<_, String>(0),
+            )
             .unwrap()
             .map(|r| r.unwrap())
             .collect();
         assert!(hits.iter().any(|e| e == "product"));
         assert!(hits.iter().any(|e| e == "variant"));
         assert!(hits.iter().any(|e| e == "warehouse"));
+    }
+
+    #[test]
+    fn union_query_resolves_matched_column() {
+        let conn = open_memory();
+        conn.execute_batch(create_fts_tables()).unwrap();
+        conn.execute_batch(create_triggers()).unwrap();
+        conn.execute(
+            "INSERT INTO products (name, category, company) VALUES ('Laptop Stand', 'Accessories', 'Acme')",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO products (name, category, company) VALUES ('Mouse', 'Accessories', 'Beta')",
+            [],
+        )
+        .unwrap();
+        let q = build_fts_query("Accessories").unwrap();
+        let mut stmt = conn.prepare(&union_search_query()).unwrap();
+        let matched: Vec<Option<String>> = stmt
+            .query_map(
+                params![
+                    q.clone(),
+                    column_query("name", &q),
+                    column_query("category", &q),
+                    column_query("company", &q),
+                    q.clone(),
+                    column_query("sku", &q),
+                    column_query("variant_name", &q),
+                    q.clone(),
+                    column_query("name", &q),
+                    column_query("location", &q),
+                    100i32,
+                    0i32,
+                ],
+                |r| r.get::<_, Option<String>>(3),
+            )
+            .unwrap()
+            .map(|r| r.unwrap())
+            .collect();
+        assert!(matched.iter().all(|c| c.as_deref() == Some("category")));
+    }
+
+    #[test]
+    fn column_query_scopes_tokens_to_column() {
+        let base = build_fts_query("Laptop Stand").unwrap();
+        assert_eq!(
+            column_query("name", &base),
+            "name:\"Laptop\"* AND name:\"Stand\"*"
+        );
+        assert_eq!(column_query("sku", "amox"), "sku:amox");
     }
 
     #[test]
@@ -372,5 +505,135 @@ mod tests {
             .collect();
         assert_eq!(u1, vec!["hello".to_string()]);
         assert_eq!(u2, vec!["world".to_string()]);
+    }
+
+    #[test]
+    fn search_history_collapses_consecutive_duplicates() {
+        let conn = open_memory();
+        conn.execute_batch(create_search_history_table()).unwrap();
+        let rows = [
+            ("x", "2026-01-01 00:00:00"),
+            ("x", "2026-01-02 00:00:00"),
+            ("x", "2026-01-03 00:00:00"),
+            ("y", "2026-01-04 00:00:00"),
+            ("y", "2026-01-05 00:00:00"),
+            ("y", "2026-01-06 00:00:00"),
+            ("z", "2026-01-07 00:00:00"),
+            ("z", "2026-01-08 00:00:00"),
+            ("x", "2026-01-09 00:00:00"),
+            ("x", "2026-01-10 00:00:00"),
+            ("y", "2026-01-11 00:00:00"),
+        ];
+        for (q, ts) in rows {
+            conn.execute(history_record(), params!["u1", q, ts]).unwrap();
+        }
+        let mut stmt = conn.prepare(history_list()).unwrap();
+        let rows: Vec<(String, i64)> = stmt
+            .query_map(params!["u1", 50i32], |r| {
+                Ok((r.get::<_, String>(2)?, r.get::<_, i64>(4)?))
+            })
+            .unwrap()
+            .map(|r| r.unwrap())
+            .collect();
+        let queries: Vec<String> = rows.iter().map(|(q, _)| q.clone()).collect();
+        let counts: Vec<i64> = rows.iter().map(|(_, c)| *c).collect();
+        assert_eq!(
+            queries,
+            vec!["y", "x", "z", "y", "x"]
+                .into_iter()
+                .map(String::from)
+                .collect::<Vec<_>>()
+        );
+        assert_eq!(counts, vec![1, 2, 2, 3, 3]);
+    }
+
+    #[test]
+    fn search_history_run_lengths_match_actual_consecutive_runs() {
+        // Regression: previously, the islands-of-equal-values trick
+        // (`ROW_NUMBER - ROW_NUMBER PARTITION BY query`) mis-grouped adjacent
+        // distinct values whose partitions started on the same overall row,
+        // producing wrong counts.
+        let conn = open_memory();
+        conn.execute_batch(create_search_history_table()).unwrap();
+        // Insert oldest -> newest, matching the user's bug report.
+        let rows = [
+            ("Iro", "2026-01-01 00:00:00"),
+            ("asd", "2026-01-02 00:00:00"),
+            ("Iro", "2026-01-03 00:00:00"),
+            ("amo", "2026-01-04 00:00:00"),
+            ("amo", "2026-01-05 00:00:00"),
+            ("amo", "2026-01-06 00:00:00"),
+            ("amo", "2026-01-07 00:00:00"),
+        ];
+        for (q, ts) in rows {
+            conn.execute(history_record(), params!["u1", q, ts]).unwrap();
+        }
+        let mut stmt = conn.prepare(history_list()).unwrap();
+        let rows: Vec<(String, i64)> = stmt
+            .query_map(params!["u1", 50i32], |r| {
+                Ok((r.get::<_, String>(2)?, r.get::<_, i64>(4)?))
+            })
+            .unwrap()
+            .map(|r| r.unwrap())
+            .collect();
+        let queries: Vec<String> = rows.iter().map(|(q, _)| q.clone()).collect();
+        let counts: Vec<i64> = rows.iter().map(|(_, c)| *c).collect();
+        assert_eq!(
+            queries,
+            vec!["amo", "Iro", "asd", "Iro"]
+                .into_iter()
+                .map(String::from)
+                .collect::<Vec<_>>()
+        );
+        assert_eq!(counts, vec![4, 1, 1, 1]);
+    }
+
+    #[test]
+    fn fts_query_sanitizes_user_input() {
+        assert_eq!(
+            build_fts_query("Laptop Stand").unwrap(),
+            "\"Laptop\"* AND \"Stand\"*"
+        );
+        assert_eq!(build_fts_query("  hi! ").unwrap(), "\"hi\"*");
+        assert_eq!(build_fts_query("amox").unwrap(), "\"amox\"*");
+        assert!(build_fts_query("!!!").is_none());
+        assert!(build_fts_query("").is_none());
+        assert!(build_fts_query("   ").is_none());
+    }
+
+    #[test]
+    fn fts_query_finds_prefix_match() {
+        let conn = open_memory();
+        conn.execute_batch(create_fts_tables()).unwrap();
+        conn.execute_batch(create_triggers()).unwrap();
+        conn.execute(
+            "INSERT INTO products (name, category, company) VALUES ('Amoxicillin 500mg', 'Antibiotic', 'Pharma')",
+            [],
+        )
+        .unwrap();
+        let q = build_fts_query("amox").unwrap();
+        let mut stmt = conn.prepare(&union_search_query()).unwrap();
+        let hits: Vec<String> = stmt
+            .query_map(
+                params![
+                    q.clone(),
+                    column_query("name", &q),
+                    column_query("category", &q),
+                    column_query("company", &q),
+                    q.clone(),
+                    column_query("sku", &q),
+                    column_query("variant_name", &q),
+                    q.clone(),
+                    column_query("name", &q),
+                    column_query("location", &q),
+                    100i32,
+                    0i32,
+                ],
+                |r| r.get::<_, String>(0),
+            )
+            .unwrap()
+            .map(|r| r.unwrap())
+            .collect();
+        assert!(hits.iter().any(|e| e == "product"));
     }
 }

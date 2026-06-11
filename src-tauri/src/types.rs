@@ -338,7 +338,7 @@ pub struct SearchHit {
     pub entity_type: String,
     pub id: String,
     pub parent_id: Option<String>,
-    pub matched_column: String,
+    pub matched_column: Option<String>,
     pub match_title: String,
     pub highlighted_title: String,
     pub subtitle: String,
@@ -359,4 +359,5 @@ pub struct SearchHistoryEntry {
     pub user_id: String,
     pub query: String,
     pub created_at: Option<String>,
+    pub count: i32,
 }

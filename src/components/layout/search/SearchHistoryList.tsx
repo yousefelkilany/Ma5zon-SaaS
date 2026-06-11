@@ -11,7 +11,9 @@ import type { SearchHistoryEntry } from './types'
 function markMatch(query: string, target: string): string {
   const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const re = new RegExp(escaped, 'ig')
-  return target.replace(re, m => `<mark>${m}</mark>`)
+  const mark = target.replace(re, m => `<mark>${m}</mark>`)
+  console.debug(`query = ${target}, mark = ${mark}`)
+  return mark
 }
 
 export function SearchHistoryList({
@@ -58,12 +60,25 @@ export function SearchHistoryList({
               onClick={() => onPick(entry.query)}
               className="flex-1 text-start"
             >
-              <span
-                className="text-body-sm text-on-surface"
-                dangerouslySetInnerHTML={{
-                  __html: sanitizeHighlight(markMatch(trimmed, entry.query)),
-                }}
-              />
+              {trimmed ? (
+                <span
+                  className="text-body-sm text-on-surface"
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHighlight(markMatch(trimmed, entry.query)),
+                  }}
+                />
+              ) : (
+                <span className="text-body-sm text-on-surface">{entry.query}</span>
+              )}
+              {entry.count > 1 && (
+                <span
+                  className="ms-2 px-1.5 py-0.5 rounded-full bg-surface-container-high text-label-sm text-on-surface-variant"
+                  data-testid="search-history-count"
+                  aria-label={t('search.historyCount', { count: entry.count })}
+                >
+                  ×{entry.count}
+                </span>
+              )}
             </button>
             <button
               type="button"

@@ -433,6 +433,7 @@
     "noHistory": "No recent searches",
     "deleteEntry": "Delete this entry",
     "clearAll": "Clear all",
+    "historyCount": "Searched {count} times",
     "group": {
       "products": "Products",
       "variants": "Variants",

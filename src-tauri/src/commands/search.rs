@@ -7,9 +7,9 @@ use tauri::AppHandle;
 use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::sql::search::{
-    self, create_fts_tables, create_search_history_table, create_triggers, history_clear,
-    history_delete, history_list, history_record, history_soft_delete_now, now_string,
-    refresh_index, union_count_query, union_search_query,
+    self, build_fts_query, column_query, create_fts_tables, create_search_history_table,
+    create_triggers, history_clear, history_delete, history_list, history_record,
+    history_soft_delete_now, now_string, refresh_index, union_count_query, union_search_query,
 };
 use crate::types::{PaginatedSearchResult, SearchHistoryEntry, SearchHit};
 
@@ -77,13 +77,25 @@ pub async fn global_search(
     let limit = limit.clamp(1, 100);
     let offset = offset.max(0);
 
+    let fts_query = match build_fts_query(&query) {
+        Some(q) => q,
+        None => {
+            return Ok(PaginatedSearchResult {
+                data: vec![],
+                total_count: 0,
+                total_pages: 0,
+            });
+        }
+    };
+
     let tx = conn
         .unchecked_transaction()
         .map_err(|e| format!("Failed to start search transaction: {e}"))?;
 
     let total_count: i32 = tx
-        .query_row(union_count_query(), params![query], |r| r.get(0))
+        .query_row(union_count_query(), params![fts_query], |r| r.get(0))
         .map_err(|e| format!("Search count failed: {e}"))?;
+
     let total_pages = if total_count == 0 {
         0
     } else {
@@ -91,25 +103,43 @@ pub async fn global_search(
     };
 
     let mut stmt = tx
-        .prepare(union_search_query())
+        .prepare(&union_search_query())
         .map_err(|e| format!("Search prepare failed: {e}"))?;
+
     let data: Vec<SearchHit> = stmt
-        .query_map(params![query, limit, offset], |r| {
-            Ok(SearchHit {
-                entity_type: r.get(0)?,
-                id: r.get(1)?,
-                parent_id: r.get(2)?,
-                matched_column: r.get(3)?,
-                match_title: r.get(4)?,
-                highlighted_title: r.get(5)?,
-                subtitle: r.get(6)?,
-                meta: r.get(7)?,
-                rank: r.get(8)?,
-            })
-        })
+        .query_map(
+            params![
+                fts_query,
+                column_query("name", &fts_query),
+                column_query("category", &fts_query),
+                column_query("company", &fts_query),
+                fts_query,
+                column_query("sku", &fts_query),
+                column_query("variant_name", &fts_query),
+                fts_query,
+                column_query("name", &fts_query),
+                column_query("location", &fts_query),
+                limit,
+                offset,
+            ],
+            |r| {
+                Ok(SearchHit {
+                    entity_type: r.get(0)?,
+                    id: r.get(1)?,
+                    parent_id: r.get(2)?,
+                    matched_column: r.get(3)?,
+                    match_title: r.get(4)?,
+                    highlighted_title: r.get(5)?,
+                    subtitle: r.get(6)?,
+                    meta: r.get(7)?,
+                    rank: r.get(8)?,
+                })
+            },
+        )
         .map_err(|e| format!("Search query failed: {e}"))?
         .collect::<Result<Vec<_>, _>>()
         .map_err(|e| format!("Search collect failed: {e}"))?;
+
     drop(stmt);
     tx.commit()
         .map_err(|e| format!("Search commit failed: {e}"))?;
@@ -148,10 +178,11 @@ pub async fn search_history_list(
     let rows = stmt
         .query_map(params![user_id, limit], |r| {
             Ok(SearchHistoryEntry {
-                id: r.get(0)?,
+                id: r.get::<_, i64>(0)?.to_string(),
                 user_id: r.get(1)?,
                 query: r.get(2)?,
                 created_at: r.get(3)?,
+                count: r.get::<_, i64>(4)? as i32,
             })
         })
         .map_err(|e| format!("history_list query failed: {e}"))?
@@ -172,11 +203,8 @@ pub async fn search_history_record(
         return Ok(());
     }
     let conn = get_conn(&app)?;
-    conn.execute(
-        history_record(),
-        params![user_id, trimmed, now_string()],
-    )
-    .map_err(|e| format!("history_record failed: {e}"))?;
+    conn.execute(history_record(), params![user_id, trimmed, now_string()])
+        .map_err(|e| format!("history_record failed: {e}"))?;
     Ok(())
 }
 
@@ -197,10 +225,7 @@ pub async fn search_history_delete(app: AppHandle, id: String) -> Result<(), Str
 #[specta::specta]
 pub async fn search_history_clear(app: AppHandle, user_id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
-    conn.execute(
-        history_clear(),
-        params![history_soft_delete_now(), user_id],
-    )
-    .map_err(|e| format!("history_clear failed: {e}"))?;
+    conn.execute(history_clear(), params![history_soft_delete_now(), user_id])
+        .map_err(|e| format!("history_clear failed: {e}"))?;
     Ok(())
 }
