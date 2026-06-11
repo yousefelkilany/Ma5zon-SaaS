@@ -87,6 +87,15 @@ interface WorkspaceState {
   setColumnDialogOpen: (open: boolean) => void
   setDeleteDialogOpen: (open: boolean) => void
   setLocalColumns: (columns: ColumnDef[]) => void
+
+  pushModal: (frame: ModalFrame) => void
+  popModal: () => void
+  clearModalStack: () => void
+
+  setCreateDraft: (draft: Record<string, unknown> | undefined) => void
+  setEditDraft: (draft: Record<string, unknown> | undefined) => void
+  setIsDirty: (dirty: boolean) => void
+  clearTabDrafts: () => void
 }
 
 function ensureUIState(state: WorkspaceState, tabId: string): TabUIState {
@@ -95,6 +104,21 @@ function ensureUIState(state: WorkspaceState, tabId: string): TabUIState {
   return {
     ...defaultUIState,
   }
+}
+
+function ensureTabUIState(
+  state: WorkspaceState,
+  tabId: string
+): TabUIState {
+  return state.tabUIStates[tabId] ?? { ...defaultUIState }
+}
+
+function shallowEqualFrame(a: ModalFrame, b: ModalFrame): boolean {
+  return (
+    a.entity_modal === b.entity_modal &&
+    a.entity_id === b.entity_id &&
+    (a.product_id ?? undefined) === (b.product_id ?? undefined)
+  )
 }
 
 export const useTabStore = create<WorkspaceState>()((set, get) => ({
@@ -344,6 +368,113 @@ export const useTabStore = create<WorkspaceState>()((set, get) => ({
           [activeTabId]: {
             ...current,
             localColumns: columns,
+          },
+        },
+      }
+    })
+  },
+
+  pushModal: frame => {
+    set(state => {
+      const tabId = state.activeTabId
+      const current = ensureTabUIState(state, tabId)
+      const stack = current.modalStack
+      const lastFrame = stack[stack.length - 1]
+      if (stack.length > 0 && lastFrame && shallowEqualFrame(lastFrame, frame)) {
+        return state
+      }
+      return {
+        tabUIStates: {
+          ...state.tabUIStates,
+          [tabId]: { ...current, modalStack: [...stack, frame] },
+        },
+      }
+    })
+  },
+
+  popModal: () => {
+    set(state => {
+      const tabId = state.activeTabId
+      const current = state.tabUIStates[tabId]
+      if (!current || current.modalStack.length === 0) return state
+      return {
+        tabUIStates: {
+          ...state.tabUIStates,
+          [tabId]: {
+            ...current,
+            modalStack: current.modalStack.slice(0, -1),
+          },
+        },
+      }
+    })
+  },
+
+  clearModalStack: () => {
+    set(state => {
+      const tabId = state.activeTabId
+      const current = state.tabUIStates[tabId]
+      if (!current) return state
+      return {
+        tabUIStates: {
+          ...state.tabUIStates,
+          [tabId]: { ...current, modalStack: [] },
+        },
+      }
+    })
+  },
+
+  setCreateDraft: draft => {
+    set(state => {
+      const tabId = state.activeTabId
+      const current = ensureTabUIState(state, tabId)
+      return {
+        tabUIStates: {
+          ...state.tabUIStates,
+          [tabId]: { ...current, createDraft: draft },
+        },
+      }
+    })
+  },
+
+  setEditDraft: draft => {
+    set(state => {
+      const tabId = state.activeTabId
+      const current = ensureTabUIState(state, tabId)
+      return {
+        tabUIStates: {
+          ...state.tabUIStates,
+          [tabId]: { ...current, editDraft: draft },
+        },
+      }
+    })
+  },
+
+  setIsDirty: dirty => {
+    set(state => {
+      const tabId = state.activeTabId
+      const current = ensureTabUIState(state, tabId)
+      return {
+        tabUIStates: {
+          ...state.tabUIStates,
+          [tabId]: { ...current, isDirty: dirty },
+        },
+      }
+    })
+  },
+
+  clearTabDrafts: () => {
+    set(state => {
+      const tabId = state.activeTabId
+      const current = state.tabUIStates[tabId]
+      if (!current) return state
+      return {
+        tabUIStates: {
+          ...state.tabUIStates,
+          [tabId]: {
+            ...current,
+            createDraft: undefined,
+            editDraft: undefined,
+            isDirty: false,
           },
         },
       }
