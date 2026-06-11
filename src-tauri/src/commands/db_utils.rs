@@ -3,6 +3,54 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
+use unicode_normalization::UnicodeNormalization;
+
+/// Mirror of `normalizeArabic` in `src/lib/utils.ts`. Used by the FTS5 + trigram
+/// search subsystem so that indexed text matches user input byte-for-byte
+/// after normalization. Must stay in lock-step with the JS function.
+pub fn normalize_arabic(input: Option<&str>) -> String {
+    let Some(s) = input else {
+        return String::new();
+    };
+    if s.is_empty() {
+        return String::new();
+    }
+    s.nfkd()
+        // 1. Remove diacritics (Harakat)
+        .filter(|&c| !('\u{064B}'..='\u{065F}').contains(&c))
+        // 2. Map and lower-case
+        .map(|c| {
+            match c {
+                // Alifs
+                '\u{0622}' | '\u{0623}' | '\u{0625}' | '\u{0671}' => '\u{0627}',
+                // Taa Marbuta
+                '\u{0629}' => '\u{0647}',
+                // Alif Maqsura
+                '\u{0649}' => '\u{064A}',
+                // Standard case folding for English + Arabic letters
+                _ => c.to_ascii_lowercase(),
+            }
+        })
+        .collect()
+}
+
+/// Register the `normalize_arabic` UDF on a connection. Must be called once
+/// per connection (currently in the `SearchInitializer`) so that the FTS5
+/// triggers can pipe source columns through the function.
+pub fn register_udfs(conn: &Connection) -> Result<(), String> {
+    conn.create_scalar_function(
+        "normalize_arabic",
+        1,
+        rusqlite::functions::FunctionFlags::SQLITE_DETERMINISTIC
+            | rusqlite::functions::FunctionFlags::SQLITE_INNOCUOUS,
+        |ctx| {
+            let arg = ctx.get_raw(0).as_str().ok();
+            Ok(normalize_arabic(arg))
+        },
+    )
+    .map_err(|e| format!("Failed to register normalize_arabic UDF: {e}"))?;
+    Ok(())
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub struct ColumnInfo {

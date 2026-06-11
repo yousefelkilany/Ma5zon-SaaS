@@ -558,7 +558,7 @@ export type AppPreferences = { theme: string;
  */
 quick_pane_shortcut: string | null; 
 /**
- * User's preferred language (e.g., "en", "es", "de")
+ * User's preferred language (e.g., "ar", "en")
  * If None, uses system locale detection
  */
 language: string | null }

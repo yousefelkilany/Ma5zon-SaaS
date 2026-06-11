@@ -4,12 +4,12 @@ use async_trait::async_trait;
 use rusqlite::params;
 use tauri::AppHandle;
 
-use crate::commands::db_utils::get_conn;
+use crate::commands::db_utils::{get_conn, register_udfs};
 use crate::commands::DatabaseInitializable;
 use crate::sql::search::{
-    self, build_fts_query, column_query, create_fts_tables, create_search_history_table,
-    create_triggers, history_clear, history_delete, history_list, history_record,
-    history_soft_delete_now, now_string, refresh_index, union_count_query, union_search_query,
+    build_fts_query, column_match, create_fts_tables, create_search_history_table, create_triggers,
+    history_clear, history_delete, history_list, history_record, history_soft_delete_now,
+    now_string, refresh_index, union_count_query, union_search_query,
 };
 use crate::types::{PaginatedSearchResult, SearchHistoryEntry, SearchHit};
 
@@ -27,6 +27,7 @@ impl DatabaseInitializable for SearchInitializer {
 
     async fn init_and_seed(&self, app: &AppHandle) -> Result<(), String> {
         let conn = get_conn(app)?;
+        register_udfs(&conn).map_err(|e| format!("Failed to register search UDFs: {e}"))?;
         conn.execute_batch(create_fts_tables())
             .map_err(|e| format!("Failed to create FTS5 tables: {e}"))?;
         conn.execute_batch(create_triggers())
@@ -92,8 +93,20 @@ pub async fn global_search(
         .unchecked_transaction()
         .map_err(|e| format!("Failed to start search transaction: {e}"))?;
 
+    let product_match = column_match("name", &fts_query);
+    let category_match = column_match("category", &fts_query);
+    let company_match = column_match("company", &fts_query);
+    let sku_match = column_match("sku", &fts_query);
+    let variant_name_match = column_match("variant_name", &fts_query);
+    let wh_name_match = column_match("name", &fts_query);
+    let wh_location_match = column_match("location", &fts_query);
+
     let total_count: i32 = tx
-        .query_row(union_count_query(), params![fts_query], |r| r.get(0))
+        .query_row(
+            union_count_query(),
+            params![product_match, sku_match, wh_name_match],
+            |r| r.get(0),
+        )
         .map_err(|e| format!("Search count failed: {e}"))?;
 
     let total_pages = if total_count == 0 {
@@ -109,16 +122,13 @@ pub async fn global_search(
     let data: Vec<SearchHit> = stmt
         .query_map(
             params![
-                fts_query,
-                column_query("name", &fts_query),
-                column_query("category", &fts_query),
-                column_query("company", &fts_query),
-                fts_query,
-                column_query("sku", &fts_query),
-                column_query("variant_name", &fts_query),
-                fts_query,
-                column_query("name", &fts_query),
-                column_query("location", &fts_query),
+                product_match,
+                category_match,
+                company_match,
+                sku_match,
+                variant_name_match,
+                wh_name_match,
+                wh_location_match,
                 limit,
                 offset,
             ],
