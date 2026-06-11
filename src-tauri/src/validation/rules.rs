@@ -24,9 +24,9 @@ pub fn validate_variant(
     sku: &str,
     variant_name: &str,
     uom_id: Option<&str>,
-    retail_price: i64,
-    wholesale_price: i64,
-    distribution_price: i64,
+    retail_price: i32,
+    wholesale_price: i32,
+    distribution_price: i32,
 ) -> Result<(), String> {
     if sku.trim().is_empty() {
         return Err("sku: required".to_string());

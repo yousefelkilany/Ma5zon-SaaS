@@ -48,9 +48,9 @@ pub struct Warehouse {
     pub id: String,
     pub name: String,
     pub location: String,
-    pub created_at: Option<String>,
-    pub updated_at: Option<String>,
-    pub deleted_at: Option<String>,
+    pub created_at: Option<i32>,
+    pub updated_at: Option<i32>,
+    pub deleted_at: Option<i32>,
 }
 
 #[tauri::command]
@@ -174,7 +174,7 @@ pub async fn warehouses_create(
 ) -> Result<Warehouse, String> {
     validate_warehouse(&name, &location)?;
     let conn = get_conn(&app)?;
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp() as i32;
     conn.execute(create(), params![name, location, now, now])
         .map_err(|e| format!("Failed to create warehouse: {e}"))?;
 
@@ -200,9 +200,9 @@ pub async fn warehouses_update(
     validate_warehouse(&name, &location)?;
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp() as i32;
 
-    let created_at: String = conn
+    let created_at: i32 = conn
         .query_row(get_created_at(), params![id_i64], |row| row.get(0))
         .map_err(|e| format!("Warehouse not found: {e}"))?;
 
@@ -224,7 +224,7 @@ pub async fn warehouses_update(
 pub async fn warehouses_delete(app: AppHandle, id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp() as i32;
     conn.execute(soft_delete(), params![now, id_i64])
         .map_err(|e| format!("Failed to delete warehouse: {e}"))?;
     Ok(())

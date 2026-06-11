@@ -160,7 +160,7 @@ pub async fn create(
 ) -> Result<Product, String> {
     validate_product(&company, &name, &category)?;
     let conn = get_conn(&app)?;
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp() as i32;
     conn.execute(sql_create(), params![company, name, category, &now, &now])
         .map_err(|e| format!("Failed to create product: {e}"))?;
 
@@ -188,9 +188,9 @@ pub async fn update(
     validate_product(&company, &name, &category)?;
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp() as i32;
 
-    let (created_at,): (String,) = conn
+    let (created_at,): (i32,) = conn
         .query_row(sql_get_created_at(), params![id_i64], |row| {
             Ok((row.get(0)?,))
         })
@@ -215,7 +215,7 @@ pub async fn update(
 pub async fn soft_delete(app: AppHandle, id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp() as i32;
     let affected = conn
         .execute(sql_soft_delete(), params![&now, id_i64])
         .map_err(|e| format!("Failed to delete product: {e}"))?;

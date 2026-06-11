@@ -7,7 +7,8 @@ use crate::commands::db_utils::get_conn;
 use crate::commands::DatabaseInitializable;
 use crate::seed::variants as seed_variants;
 use crate::sql::variants::{
-    self, create, create_table, get_all, get_by_id, get_by_product_with_quantity, soft_delete, update,
+    self, create, create_table, get_all, get_by_id, get_by_product_with_quantity, soft_delete,
+    update,
 };
 use crate::types::{NewVariant, ProductVariantWithStock, UpdateVariant, Variant};
 use crate::validation::validate_variant;
@@ -152,7 +153,7 @@ pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Vari
         variant.distribution_price,
     )?;
     let conn = get_conn(&app)?;
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp() as i32;
     conn.execute(
         create(),
         params![
@@ -163,8 +164,8 @@ pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Vari
             variant.retail_price,
             variant.wholesale_price,
             variant.distribution_price,
-            now,
-            now
+            now.to_string(),
+            now.to_string()
         ],
     )
     .map_err(|e| format!("Failed to create variant: {e}"))?;
@@ -179,7 +180,7 @@ pub async fn variants_create(app: AppHandle, variant: NewVariant) -> Result<Vari
         retail_price: variant.retail_price,
         wholesale_price: variant.wholesale_price,
         distribution_price: variant.distribution_price,
-        created_at: Some(now.clone()),
+        created_at: Some(now),
         updated_at: Some(now),
         deleted_at: None,
     })
@@ -207,7 +208,7 @@ pub async fn variants_update(
     let new_distribution_price = variant
         .distribution_price
         .unwrap_or(current.distribution_price);
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp() as i32;
 
     validate_variant(
         &new_sku,
@@ -227,7 +228,7 @@ pub async fn variants_update(
             new_retail_price,
             new_wholesale_price,
             new_distribution_price,
-            now,
+            now.to_string(),
             id_i64
         ],
     )
@@ -253,7 +254,7 @@ pub async fn variants_update(
 pub async fn variants_delete(app: AppHandle, id: String) -> Result<(), String> {
     let conn = get_conn(&app)?;
     let id_i64: i64 = id.parse().map_err(|e| format!("Invalid id: {e}"))?;
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp() as i32;
     conn.execute(soft_delete(), params![now, id_i64])
         .map_err(|e| format!("Failed to delete variant: {e}"))?;
     Ok(())
@@ -261,10 +262,7 @@ pub async fn variants_delete(app: AppHandle, id: String) -> Result<(), String> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn variants_get_by_ids(
-    app: AppHandle,
-    ids: Vec<String>,
-) -> Result<Vec<Variant>, String> {
+pub async fn variants_get_by_ids(app: AppHandle, ids: Vec<String>) -> Result<Vec<Variant>, String> {
     if ids.is_empty() {
         return Ok(vec![]);
     }

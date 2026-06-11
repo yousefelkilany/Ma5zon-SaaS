@@ -114,9 +114,9 @@ pub struct Product {
     pub company: String,
     pub name: String,
     pub category: String,
-    pub created_at: Option<String>,
-    pub updated_at: Option<String>,
-    pub deleted_at: Option<String>,
+    pub created_at: Option<i32>,
+    pub updated_at: Option<i32>,
+    pub deleted_at: Option<i32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
@@ -146,12 +146,12 @@ pub struct Variant {
     pub sku: String,
     pub variant_name: String,
     pub uom_id: String,
-    pub retail_price: i64,
-    pub wholesale_price: i64,
-    pub distribution_price: i64,
-    pub created_at: Option<String>,
-    pub updated_at: Option<String>,
-    pub deleted_at: Option<String>,
+    pub retail_price: i32,
+    pub wholesale_price: i32,
+    pub distribution_price: i32,
+    pub created_at: Option<i32>,
+    pub updated_at: Option<i32>,
+    pub deleted_at: Option<i32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
@@ -162,12 +162,12 @@ pub struct ProductVariantWithStock {
     pub variant_name: String,
     pub quantity: i32,
     pub uom_id: String,
-    pub retail_price: i64,
-    pub wholesale_price: i64,
-    pub distribution_price: i64,
-    pub created_at: Option<String>,
-    pub updated_at: Option<String>,
-    pub deleted_at: Option<String>,
+    pub retail_price: i32,
+    pub wholesale_price: i32,
+    pub distribution_price: i32,
+    pub created_at: Option<i32>,
+    pub updated_at: Option<i32>,
+    pub deleted_at: Option<i32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
@@ -176,9 +176,9 @@ pub struct NewVariant {
     pub sku: String,
     pub variant_name: String,
     pub uom_id: String,
-    pub retail_price: i64,
-    pub wholesale_price: i64,
-    pub distribution_price: i64,
+    pub retail_price: i32,
+    pub wholesale_price: i32,
+    pub distribution_price: i32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
@@ -186,9 +186,9 @@ pub struct UpdateVariant {
     pub sku: Option<String>,
     pub variant_name: Option<String>,
     pub uom_id: Option<String>,
-    pub retail_price: Option<i64>,
-    pub wholesale_price: Option<i64>,
-    pub distribution_price: Option<i64>,
+    pub retail_price: Option<i32>,
+    pub wholesale_price: Option<i32>,
+    pub distribution_price: Option<i32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
@@ -358,6 +358,6 @@ pub struct SearchHistoryEntry {
     pub id: String,
     pub user_id: String,
     pub query: String,
-    pub created_at: Option<String>,
+    pub created_at: Option<i32>,
     pub count: i32,
 }

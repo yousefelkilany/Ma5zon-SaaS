@@ -8,9 +8,9 @@ pub struct Warehouse {
     pub id: i64,
     pub name: String,
     pub location: String,
-    pub created_at: Option<String>,
-    pub updated_at: Option<String>,
-    pub deleted_at: Option<String>,
+    pub created_at: Option<i32>,
+    pub updated_at: Option<i32>,
+    pub deleted_at: Option<i32>,
 }
 
 impl Warehouse {

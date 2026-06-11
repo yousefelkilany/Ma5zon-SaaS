@@ -59,7 +59,7 @@ pub struct StockMovement {
     pub to_warehouse_id: Option<String>,
     pub quantity: i32,
     pub movement_type: String,
-    pub created_at: String,
+    pub created_at: i32,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]

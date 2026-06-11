@@ -104,7 +104,7 @@ pub async fn authenticate(
 
     let user_result = stmt.query_row(params![username], |row| {
         Ok(UserWithHash {
-            id: row.get(0)?,
+            id: row.get::<_, i64>(0)?.to_string(),
             name: row.get(1)?,
             email: row.get(2)?,
             role: row.get(3)?,
@@ -191,7 +191,7 @@ pub async fn save_user(app: AppHandle, user: User) -> Result<(), String> {
 #[specta::specta]
 pub async fn soft_delete_user(app: AppHandle, user_id: &str) -> Result<(), String> {
     let conn = get_conn(&app)?;
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp() as i32;
     conn.execute(soft_delete(), params![now, user_id])
         .map_err(|e| format!("Failed to delete user: {e}"))?;
 

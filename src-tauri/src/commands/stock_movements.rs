@@ -144,7 +144,7 @@ pub fn execute_movement(
         movement_type,
     )?;
 
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp() as i32;
 
     conn.execute("BEGIN TRANSACTION", [])
         .map_err(|e| format!("Failed to begin transaction: {e}"))?;

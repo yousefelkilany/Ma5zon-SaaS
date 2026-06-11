@@ -123,9 +123,9 @@ pub fn seed(conn: &Connection) -> Result<(), String> {
             let sku = format!("SKU-{:04}-{:02}", product_id, v + 1);
             let uom_id = (rng.gen_range(0..UOM_NAMES.len()) + 1) as i64;
 
-            let retail_price: i64 = (rng.gen_range(10.0_f64..800.0_f64) * 100.0).round() as i64;
-            let wholesale_price: i64 = (retail_price as f64 * 0.75).round() as i64;
-            let distribution_price: i64 = (retail_price as f64 * 0.6).round() as i64;
+            let retail_price: i32 = (rng.gen_range(10.0_f64..800.0_f64) * 100.0).round() as i32;
+            let wholesale_price: i32 = (retail_price as f64 * 0.75).round() as i32;
+            let distribution_price: i32 = (retail_price as f64 * 0.6).round() as i32;
 
             conn.execute(
                 "INSERT INTO product_variants (product_id, sku, variant_name, uom_id, retail_price, wholesale_price, distribution_price) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",

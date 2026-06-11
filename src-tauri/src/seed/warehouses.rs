@@ -23,7 +23,8 @@ pub const WAREHOUSES: &[(&str, &str)] = &[
 ];
 
 pub fn seed(conn: &Connection) -> Result<(), String> {
-    let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    // let now = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    let now = Local::now().timestamp() as i32;
 
     for (name, location) in WAREHOUSES {
         conn.execute(

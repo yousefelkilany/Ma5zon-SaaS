@@ -568,8 +568,8 @@ export type JsonValue = null | boolean | number | string | JsonValue[] | Partial
 export type NewVariant = { product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number }
 export type PaginatedResponse<T> = { data: T[]; total_count: number; total_pages: number }
 export type PaginatedSearchResult = { data: SearchHit[]; total_count: number; total_pages: number }
-export type Product = { id: string; company: string; name: string; category: string; created_at: string | null; updated_at: string | null; deleted_at: string | null }
-export type ProductVariantWithStock = { id: string; product_id: string; sku: string; variant_name: string; quantity: number; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number; created_at: string | null; updated_at: string | null; deleted_at: string | null }
+export type Product = { id: string; company: string; name: string; category: string; created_at: number | null; updated_at: number | null; deleted_at: number | null }
+export type ProductVariantWithStock = { id: string; product_id: string; sku: string; variant_name: string; quantity: number; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number; created_at: number | null; updated_at: number | null; deleted_at: number | null }
 export type ProductWithStock = { id: string; company: string; name: string; quantity: number; category: string }
 /**
  * Error types for recovery operations (typed for frontend matching)
@@ -595,20 +595,20 @@ export type RecoveryError =
  * JSON serialization/deserialization error
  */
 { type: "ParseError"; message: string }
-export type SearchHistoryEntry = { id: string; user_id: string; query: string; created_at: string | null; count: number }
+export type SearchHistoryEntry = { id: string; user_id: string; query: string; created_at: number | null; count: number }
 export type SearchHit = { entity_type: string; id: string; parent_id: string | null; matched_column: string | null; match_title: string; highlighted_title: string; subtitle: string; meta: string | null; rank: number }
 export type SortState = { column_id: string; direction: string }
 export type StockLevel = { variant_id: string; warehouse_id: string; quantity: number }
 export type StockLevelWithVariant = { variant_id: string; variant_name: string; sku: string; warehouse_id: string; quantity: number }
-export type StockMovement = { id: string; variant_id: string; product_id: string; from_warehouse_id: string | null; to_warehouse_id: string | null; quantity: number; movement_type: string; created_at: string }
+export type StockMovement = { id: string; variant_id: string; product_id: string; from_warehouse_id: string | null; to_warehouse_id: string | null; quantity: number; movement_type: string; created_at: number }
 export type TableInfo = { table_name: string; columns: ColumnInfo[] }
 export type UpdateVariant = { sku: string | null; variant_name: string | null; uom_id: string | null; retail_price: number | null; wholesale_price: number | null; distribution_price: number | null }
 /**
  * User data stored in SQLite
  */
 export type User = { id: string; name: string; email: string; role: string; avatar_url: string | null }
-export type Variant = { id: string; product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number; created_at: string | null; updated_at: string | null; deleted_at: string | null }
-export type Warehouse = { id: string; name: string; location: string; created_at: string | null; updated_at: string | null; deleted_at: string | null }
+export type Variant = { id: string; product_id: string; sku: string; variant_name: string; uom_id: string; retail_price: number; wholesale_price: number; distribution_price: number; created_at: number | null; updated_at: number | null; deleted_at: number | null }
+export type Warehouse = { id: string; name: string; location: string; created_at: number | null; updated_at: number | null; deleted_at: number | null }
 
 /** tauri-specta globals **/
 
