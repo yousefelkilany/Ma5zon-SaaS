@@ -1,62 +1,50 @@
-import { useLocation, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
+import { useTabStore } from '@/store/workspace-store'
 import { ProductModal } from '@/components/entity/ProductModal'
 import { VariantModal } from '@/components/entity/VariantModal'
 import { WarehouseModal } from '@/components/entity/WarehouseModal'
-import type { ModalType } from '@/lib/utils'
+
 
 export function ModalManager() {
   const queryClient = useQueryClient()
-  const navigate = useNavigate()
-  const location = useLocation({
-    select: state => ({
-      pathname: state.pathname,
-      search: state.href.split('?')[1] || '',
-    }),
+  const top = useTabStore(state => {
+    const stack = state.tabUIStates[state.activeTabId]?.modalStack
+    return stack && stack.length > 0 ? stack[stack.length - 1] : null
   })
-  const searchParams = new URLSearchParams(location.search)
-  const entity_modal = searchParams.get('entity_modal') as ModalType
-  const raw_entity_id = searchParams.get('entity_id') || ''
-  const entity_id = decodeURIComponent(raw_entity_id).replace(/["\\]/g, '')
-  const raw_product_id = searchParams.get('product_id') || ''
-  const product_id = decodeURIComponent(raw_product_id).replace(/["\\]/g, '')
 
   function handleClose() {
-    searchParams.delete('entity_modal')
-    searchParams.delete('entity_id')
-    navigate({ to: location.pathname, search: {} })
+    useTabStore.getState().popModal()
   }
 
-  if (!entity_modal) return null
+  if (!top) return null
 
-  switch (entity_modal) {
+  switch (top.entity_modal) {
     case 'product':
-      if (!entity_id) return null
+      if (!top.entity_id) return null
       return (
         <ProductModal
-          entityId={entity_id}
+          entityId={top.entity_id}
           queryClient={queryClient}
           mode="view"
           onDeleted={handleClose}
         />
       )
     case 'variant':
-      if (!entity_id) return null
-
+      if (!top.entity_id) return null
       return (
         <VariantModal
-          entityId={entity_id}
-          productId={product_id}
+          entityId={top.entity_id}
+          productId={top.product_id}
           queryClient={queryClient}
           mode="view"
           onDeleted={handleClose}
         />
       )
     case 'warehouse':
-      if (!entity_id) return null
+      if (!top.entity_id) return null
       return (
         <WarehouseModal
-          entityId={entity_id}
+          entityId={top.entity_id}
           queryClient={queryClient}
           mode="view"
           onDeleted={handleClose}
@@ -79,16 +67,18 @@ export function ModalManager() {
         />
       )
     case 'create-variant':
-      if (!entity_id) return null
+      if (!top.product_id) return null
       return (
         <VariantModal
-          productId={entity_id}
+          productId={top.product_id}
           queryClient={queryClient}
           mode="create"
           onDeleted={handleClose}
         />
       )
-    default:
+    default: {
+      top.entity_modal satisfies never
       return null
+    }
   }
 }
