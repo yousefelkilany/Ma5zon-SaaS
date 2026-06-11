@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { Tab, TabType } from '@/lib/utils'
 import type { ColumnDef, FilterState, SortState } from '@/lib/types/entity'
+import type { ModalFrame } from '@/lib/types/modal-frame'
 import { t } from 'i18next'
 
 const DEFAULT_DASHBOARD_TAB = {
@@ -31,6 +32,11 @@ interface TabUIState {
 
   selectedIds: Record<string, boolean>
   expandedIds: Record<string, boolean>
+
+  modalStack: ModalFrame[]
+  createDraft?: Record<string, unknown>
+  editDraft?: Record<string, unknown>
+  isDirty: boolean
 }
 
 export const defaultUIState: TabUIState = {
@@ -48,6 +54,9 @@ export const defaultUIState: TabUIState = {
 
   selectedIds: {},
   expandedIds: {},
+
+  modalStack: [],
+  isDirty: false,
 }
 
 interface WorkspaceState {
