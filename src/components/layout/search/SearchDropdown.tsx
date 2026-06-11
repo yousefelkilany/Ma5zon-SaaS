@@ -69,6 +69,7 @@ export function SearchDropdown({
     >
       {liveQueryEnabled ? (
         <SearchResultList
+          query={query}
           hits={hits}
           totalCount={live.data?.pages.at(-1)?.total_count ?? 0}
           hasMore={Boolean(live.hasNextPage)}

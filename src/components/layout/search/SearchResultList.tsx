@@ -20,6 +20,7 @@ function rowKey(hit: SearchHit) {
 }
 
 export function SearchResultList({
+  query,
   hits,
   totalCount,
   hasMore,
@@ -30,6 +31,7 @@ export function SearchResultList({
   setActiveIndex,
   staleHitIds,
 }: {
+  query: string
   hits: SearchHit[]
   totalCount: number
   hasMore: boolean
@@ -69,13 +71,13 @@ export function SearchResultList({
       const key = rowKey(hit)
       return staleHitIds?.has(key) || staleIds.has(key)
     },
-    [staleHitIds, staleIds],
+    [staleHitIds, staleIds]
   )
 
   if (hits.length === 0) {
     return (
       <div className="px-4 py-6 text-body-sm text-on-surface-variant text-center">
-        {t('search.noResults', { query: '' })}
+        {t('search.noResults', { query })}
       </div>
     )
   }
@@ -103,14 +105,18 @@ export function SearchResultList({
                   data-testid="search-result-row"
                   className={[
                     'flex items-center px-4 py-2 text-start',
-                    isActive ? 'bg-surface-container-high' : 'hover:bg-surface-container',
+                    isActive
+                      ? 'bg-surface-container-high'
+                      : 'hover:bg-surface-container',
                     stale ? 'opacity-60' : '',
                   ].join(' ')}
                 >
                   <div className="flex-1 min-w-0">
                     {group.type === 'product' && <ProductResultRow hit={hit} />}
                     {group.type === 'variant' && <VariantResultRow hit={hit} />}
-                    {group.type === 'warehouse' && <WarehouseResultRow hit={hit} />}
+                    {group.type === 'warehouse' && (
+                      <WarehouseResultRow hit={hit} />
+                    )}
                   </div>
                   {stale && (
                     <span className="text-[10px] text-on-surface-variant ms-2">
